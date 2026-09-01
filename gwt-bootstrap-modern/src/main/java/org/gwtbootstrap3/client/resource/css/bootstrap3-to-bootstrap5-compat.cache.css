@@ -80,6 +80,8 @@ pre { white-space: pre-wrap; word-break: break-word; }
 .dropup .caret { content: ""; border-top: 0; border-bottom: 4px dashed; }
 .dropdown-menu-right { right: 0; left: auto; }
 .dropdown-menu-left { right: auto; left: 0; }
+.open > .dropdown-menu { display: block; }
+.dropdown.open > .dropdown-toggle { outline: 0; }
 .dropdown-header { display: block; padding: 3px 20px; font-size: 12px; line-height: 1.42857143; color: #777; white-space: nowrap; }
 .divider { height: 1px; margin: 9px 0; overflow: hidden; background-color: #e5e5e5; }
 .close { float: right; font-size: 21px; font-weight: 700; line-height: 1; color: #000; text-shadow: 0 1px 0 #fff; opacity: .2; background: transparent; border: 0; padding: 0; }

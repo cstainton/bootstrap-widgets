@@ -1,6 +1,8 @@
 (function (global) {
   'use strict';
 
+  global.gwtBootstrap3CompatibilityLoaded = true;
+
   var $ = global.jQuery;
   var bootstrap = global.bootstrap;
 
@@ -88,6 +90,56 @@
     return null;
   }
 
+  function triggerJQueryEvent(element, name) {
+    if (global.jQuery) {
+      global.jQuery(element).trigger(name);
+    }
+  }
+
+  function toggleLegacyCollapse(trigger, target) {
+    var willShow = !target.classList.contains('show');
+
+    target.classList.add('collapse');
+    target.classList.remove('collapsing');
+    target.classList.toggle('show', willShow);
+    target.style.height = '';
+    target.setAttribute('aria-expanded', String(willShow));
+    trigger.setAttribute('aria-expanded', String(willShow));
+    trigger.classList.toggle('collapsed', !willShow);
+
+    triggerJQueryEvent(target, willShow ? 'shown.bs.collapse' : 'hidden.bs.collapse');
+  }
+
+  function toggleLegacyDropdown(trigger) {
+    var parent = closest(trigger, '.dropdown') || trigger.parentElement;
+    if (!parent) {
+      return;
+    }
+
+    var menu = parent.querySelector('.dropdown-menu');
+    var willShow = !parent.classList.contains('open') && !(menu && menu.classList.contains('show'));
+
+    eachElement($('.dropdown.open, .dropdown.show'), function (element) {
+      if (element !== parent) {
+        element.classList.remove('open', 'show');
+        var openMenu = element.querySelector('.dropdown-menu');
+        if (openMenu) {
+          openMenu.classList.remove('show');
+        }
+      }
+    });
+
+    parent.classList.toggle('open', willShow);
+    parent.classList.toggle('show', willShow);
+    trigger.setAttribute('aria-expanded', String(willShow));
+
+    if (menu) {
+      menu.classList.toggle('show', willShow);
+    }
+
+    triggerJQueryEvent(parent, willShow ? 'shown.bs.dropdown' : 'hidden.bs.dropdown');
+  }
+
   document.addEventListener('click', function (event) {
     var trigger = closest(event.target, '[data-toggle]');
     if (!trigger) {
@@ -95,13 +147,13 @@
     }
 
     var toggle = trigger.getAttribute('data-toggle');
-    if (toggle === 'dropdown' && bootstrap.Dropdown) {
+    if (toggle === 'dropdown') {
       event.preventDefault();
-      bootstrap.Dropdown.getOrCreateInstance(trigger).toggle();
+      toggleLegacyDropdown(trigger);
       return;
     }
 
-    if (toggle === 'collapse' && bootstrap.Collapse) {
+    if (toggle === 'collapse') {
       var selector = selectorFor(trigger);
       if (!selector) {
         return;
@@ -109,7 +161,7 @@
       var target = document.querySelector(selector);
       if (target) {
         event.preventDefault();
-        bootstrap.Collapse.getOrCreateInstance(target, { toggle: false }).toggle();
+        toggleLegacyCollapse(trigger, target);
       }
     }
   });

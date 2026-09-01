@@ -34,7 +34,7 @@ public class GwtBootstrap3EntryPoint implements EntryPoint {
     }-*/;
 
     private native boolean isBootstrapCompatibilityLoaded() /*-{
-        return typeof $wnd.jQuery !== 'undefined' && typeof $wnd.jQuery.fn.modal !== 'undefined';
+        return $wnd.gwtBootstrap3CompatibilityLoaded === true;
     }-*/;
 
     private native boolean isjQueryLoaded() /*-{
