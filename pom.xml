@@ -14,6 +14,7 @@
     <module>gwt-bootstrap-modern</module>
     <module>gwt-bootstrap-modern-extras</module>
     <module>gwt-bootstrap-modern-showcase</module>
+    <module>gwt-teavm-compat</module>
     <module>teavm-bootstrap-modern</module>
   </modules>
 

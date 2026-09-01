@@ -8,7 +8,7 @@ The main target is GWT applications that currently use GwtBootstrap3 and need a 
 
 This project is under active migration.
 
-The GWT build and showcase compile with GWT 2.13.1. The TeaVM module is experimental and currently contains a small compile-checked widget subset.
+The GWT build and showcase compile with GWT 2.13.1. The TeaVM module is experimental and currently contains a small compile-checked subset of GWT-style Bootstrap widgets backed by a TeaVM GWT compatibility module.
 
 ## Artifacts
 
@@ -41,6 +41,7 @@ TeaVM experiment:
 - `gwt-bootstrap-modern`: core GWT widgets.
 - `gwt-bootstrap-modern-extras`: extras widgets and third-party integrations.
 - `gwt-bootstrap-modern-showcase`: GWT showcase used for visual and compile testing.
+- `gwt-teavm-compat`: minimal GWT client API subset backed by TeaVM DOM APIs.
 - `teavm-bootstrap-modern`: experimental TeaVM build target.
 
 ## Build

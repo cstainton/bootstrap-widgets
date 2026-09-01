@@ -28,7 +28,7 @@ CSS compatibility covers common Bootstrap 3-era classes still emitted by the wid
 This repository should keep two buildable outputs:
 
 1. A GWT-compatible output: `gwt-bootstrap-modern`, `gwt-bootstrap-modern-extras`, and the original showcase compiled by GWT 2.13.x.
-2. A TeaVM-compatible output: `teavm-bootstrap-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
+2. A TeaVM-compatible output: `gwt-teavm-compat` plus `teavm-bootstrap-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
 
 ## TeaVM Direction
 

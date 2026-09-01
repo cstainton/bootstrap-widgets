@@ -16,6 +16,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwt-teavm-compat</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.teavm</groupId>
       <artifactId>teavm-jso</artifactId>
       <version>${teavm.version}</version>
@@ -46,7 +51,7 @@
               <goal>compile</goal>
             </goals>
             <configuration>
-              <mainClass>org.gwtbootstrap3.teavm.demo.TeaVmSmokeApp</mainClass>
+              <mainClass>org.gwtbootstrap3.teavm.demo.GwtCompatSmokeApp</mainClass>
               <targetDirectory>${project.build.directory}/teavm</targetDirectory>
               <targetFileName>teavm-bootstrap-modern-smoke.js</targetFileName>
               <minifying>false</minifying>
