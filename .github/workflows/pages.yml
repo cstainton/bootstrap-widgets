@@ -34,16 +34,16 @@ jobs:
         run: mvn -B -DskipTests install
 
       - name: Compile showcase
-        run: mvn -B -f gwtbootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt-bootstrap-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
       - name: Prepare Pages artifact
         shell: bash
         run: |
           set -euo pipefail
-          showcase_dir="$(find gwtbootstrap3-showcase/target -maxdepth 1 -type d -name 'gwtbootstrap3-showcase-*' | head -1)"
+          showcase_dir="$(find gwt-bootstrap-modern-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap-modern-showcase-*' | head -1)"
           mkdir -p public
           cp -R "${showcase_dir}/"* public/
-          cp public/GwtBootstrap3Demo.html public/index.html
+          if [ -f public/GwtBootstrap3Demo.html ]; then cp public/GwtBootstrap3Demo.html public/showcase.html; fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

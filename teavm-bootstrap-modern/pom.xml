@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.gwtbootstrap3</groupId>
+    <artifactId>gwt-bootstrap-modern-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>teavm-bootstrap-modern</artifactId>
+  <name>GWT Bootstrap Modern TeaVM Widget Backend</name>
+  <packaging>jar</packaging>
+  <description>TeaVM-backed widget API exploration for the Bootstrap 5-backed GwtBootstrap3 fork.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-jso</artifactId>
+      <version>${teavm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-jso-apis</artifactId>
+      <version>${teavm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-classlib</artifactId>
+      <version>${teavm.version}</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.teavm</groupId>
+        <artifactId>teavm-maven-plugin</artifactId>
+        <version>${teavm.version}</version>
+        <executions>
+          <execution>
+            <id>compile-teavm-smoke-app</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <mainClass>org.gwtbootstrap3.teavm.demo.TeaVmSmokeApp</mainClass>
+              <targetDirectory>${project.build.directory}/teavm</targetDirectory>
+              <targetFileName>teavm-bootstrap-modern-smoke.js</targetFileName>
+              <minifying>false</minifying>
+              <sourceMapsGenerated>true</sourceMapsGenerated>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

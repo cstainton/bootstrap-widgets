@@ -4,17 +4,17 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.gwtbootstrap3</groupId>
-  <artifactId>gwtbootstrap3-modern-parent</artifactId>
-  <version>0.9.5-graffica-SNAPSHOT</version>
+  <artifactId>gwt-bootstrap-modern-parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>GwtBootstrap3 Modern Parent</name>
-  <description>GwtBootstrap3-compatible fork targeting Bootstrap 5.</description>
+  <name>GWT Bootstrap Modern Parent</name>
+  <description>GWT Bootstrap-compatible fork targeting Bootstrap 5.</description>
 
   <modules>
-    <module>gwtbootstrap3-modern</module>
-    <module>gwtbootstrap3-extras-modern</module>
-    <module>gwtbootstrap3-showcase</module>
-    <module>gwtbootstrap3-teavm</module>
+    <module>gwt-bootstrap-modern</module>
+    <module>gwt-bootstrap-modern-extras</module>
+    <module>gwt-bootstrap-modern-showcase</module>
+    <module>teavm-bootstrap-modern</module>
   </modules>
 
   <properties>
