@@ -8,5 +8,12 @@
 </head>
 <body>
   <script src="teavm/teavm-bootstrap-modern-smoke.js"></script>
+  <script>
+    if (typeof window.main === 'function') {
+      window.main([]);
+    } else {
+      document.body.innerHTML = '<main class="container py-4"><div class="alert alert-danger">TeaVM entry point was not exported.</div></main>';
+    }
+  </script>
 </body>
 </html>

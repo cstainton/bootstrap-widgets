@@ -61,6 +61,59 @@
   installPlugin('tab', bootstrap.Tab);
   installPlugin('tooltip', bootstrap.Tooltip);
 
+  function selectorFor(element) {
+    var selector = element.getAttribute('data-target') || element.getAttribute('href');
+    if (!selector || selector === '#') {
+      return null;
+    }
+    return selector;
+  }
+
+  function matches(element, selector) {
+    if (!element || element.nodeType !== 1) {
+      return false;
+    }
+
+    var matcher = element.matches || element.webkitMatchesSelector || element.msMatchesSelector;
+    return matcher ? matcher.call(element, selector) : false;
+  }
+
+  function closest(element, selector) {
+    while (element && element !== document) {
+      if (matches(element, selector)) {
+        return element;
+      }
+      element = element.parentElement;
+    }
+    return null;
+  }
+
+  document.addEventListener('click', function (event) {
+    var trigger = closest(event.target, '[data-toggle]');
+    if (!trigger) {
+      return;
+    }
+
+    var toggle = trigger.getAttribute('data-toggle');
+    if (toggle === 'dropdown' && bootstrap.Dropdown) {
+      event.preventDefault();
+      bootstrap.Dropdown.getOrCreateInstance(trigger).toggle();
+      return;
+    }
+
+    if (toggle === 'collapse' && bootstrap.Collapse) {
+      var selector = selectorFor(trigger);
+      if (!selector) {
+        return;
+      }
+      var target = document.querySelector(selector);
+      if (target) {
+        event.preventDefault();
+        bootstrap.Collapse.getOrCreateInstance(target, { toggle: false }).toggle();
+      }
+    }
+  });
+
   $.fn.emulateTransitionEnd = $.fn.emulateTransitionEnd || function (duration) {
     var called = false;
     var collection = this;
