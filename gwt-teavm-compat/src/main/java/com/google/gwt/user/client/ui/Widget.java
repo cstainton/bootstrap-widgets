@@ -50,6 +50,14 @@ public class Widget implements IsWidget, HasClickHandlers {
         element.setClassName(styleName);
     }
 
+    public void setStyleName(final String styleName, final boolean add) {
+        if (add) {
+            addStyleName(styleName);
+        } else {
+            removeStyleName(styleName);
+        }
+    }
+
     public String getStyleName() {
         return element.getClassName();
     }

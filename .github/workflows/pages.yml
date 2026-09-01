@@ -44,6 +44,9 @@ jobs:
           mkdir -p public
           cp -R "${showcase_dir}/"* public/
           if [ -f public/GwtBootstrap3Demo.html ]; then cp public/GwtBootstrap3Demo.html public/showcase.html; fi
+          mkdir -p public/teavm
+          cp -R teavm-bootstrap-modern/target/teavm/* public/teavm/
+          cp teavm-bootstrap-modern/src/main/resources/teavm.html public/teavm.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

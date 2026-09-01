@@ -37,6 +37,46 @@ public final class Document {
         return createElement("a");
     }
 
+    public Element createBRElement() {
+        return createElement("br");
+    }
+
+    public Element createDLElement() {
+        return createElement("dl");
+    }
+
+    public Element createFieldSetElement() {
+        return createElement("fieldset");
+    }
+
+    public Element createImageElement() {
+        return createElement("img");
+    }
+
+    public Element createLabelElement() {
+        return createElement("label");
+    }
+
+    public Element createLegendElement() {
+        return createElement("legend");
+    }
+
+    public Element createLIElement() {
+        return createElement("li");
+    }
+
+    public Element createOLElement() {
+        return createElement("ol");
+    }
+
+    public Element createPreElement() {
+        return createElement("pre");
+    }
+
+    public Element createULElement() {
+        return createElement("ul");
+    }
+
     public Element getBody() {
         return new Element(HTMLDocument.current().getBody());
     }

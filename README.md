@@ -70,6 +70,10 @@ GitHub Pages serves the GWT showcase:
 
 https://cstainton.github.io/gwtbootstrap-modern/
 
+The TeaVM smoke page is published alongside it:
+
+https://cstainton.github.io/gwtbootstrap-modern/teavm.html
+
 ## Notes
 
 - Java package names remain `org.gwtbootstrap3.*` for source compatibility.

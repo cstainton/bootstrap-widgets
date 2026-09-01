@@ -56,6 +56,18 @@ public class Element {
         element.removeAttribute(name);
     }
 
+    public void setPropertyBoolean(final String name, final boolean value) {
+        if (value) {
+            element.setAttribute(name, name);
+        } else {
+            element.removeAttribute(name);
+        }
+    }
+
+    public boolean getPropertyBoolean(final String name) {
+        return element.hasAttribute(name);
+    }
+
     public void setId(final String id) {
         element.setId(id == null ? "" : id);
     }
@@ -94,6 +106,15 @@ public class Element {
 
     public void insertBefore(final Element child, final Element before) {
         element.insertBefore((Node) child.unwrap(), before == null ? null : (Node) before.unwrap());
+    }
+
+    public void insertFirst(final Element child) {
+        final Node firstChild = element.getFirstChild();
+        if (firstChild == null) {
+            appendChild(child);
+        } else {
+            element.insertBefore((Node) child.unwrap(), firstChild);
+        }
     }
 
     public void removeFromParent() {

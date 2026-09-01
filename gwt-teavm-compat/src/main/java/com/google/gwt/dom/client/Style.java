@@ -74,6 +74,10 @@ public final class Style {
         setProperty("color", color);
     }
 
+    public void setFontSize(final double value, final Unit unit) {
+        setProperty("font-size", value, unit);
+    }
+
     public void setDisplay(final Display display) {
         setProperty("display", display == null ? "" : display.getCssName());
     }
