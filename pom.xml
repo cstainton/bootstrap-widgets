@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.gwtbootstrap3</groupId>
+  <artifactId>gwtbootstrap3-modern-parent</artifactId>
+  <version>0.9.5-graffica-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>GwtBootstrap3 Modern Parent</name>
+  <description>GwtBootstrap3-compatible fork targeting Bootstrap 5.</description>
+
+  <modules>
+    <module>gwtbootstrap3-modern</module>
+    <module>gwtbootstrap3-extras-modern</module>
+    <module>gwtbootstrap3-showcase</module>
+    <module>gwtbootstrap3-teavm</module>
+  </modules>
+
+  <properties>
+    <dependency-check-maven.version>12.1.0</dependency-check-maven.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>8</maven.compiler.release>
+    <gwt.version>2.13.1</gwt.version>
+    <bootstrap.version>5.3.8</bootstrap.version>
+    <bootstrap.icons.version>1.13.1</bootstrap.icons.version>
+    <jquery.compat.version>3.7.1</jquery.compat.version>
+    <bootbox.version>6.0.4</bootbox.version>
+    <bootstrap.datepicker.version>1.10.1</bootstrap.datepicker.version>
+    <bootstrap.datetimepicker.version>2.4.4</bootstrap.datetimepicker.version>
+    <bootstrap.select.version>1.14.0-beta3</bootstrap.select.version>
+    <bootstrap.slider.version>11.0.2</bootstrap.slider.version>
+    <bootstrap.switch.version>3.4.0</bootstrap.switch.version>
+    <typeahead.version>0.11.1</typeahead.version>
+    <animate.version>4.1.1</animate.version>
+    <summernote.version>0.9.1</summernote.version>
+    <fullcalendar.version>3.10.5</fullcalendar.version>
+    <jquery.ui.version>1.13.3</jquery.ui.version>
+    <moment.version>2.30.1</moment.version>
+    <blueimp.gallery.version>3.4.0</blueimp.gallery.version>
+    <teavm.version>0.15.0</teavm.version>
+  </properties>
+  <profiles>
+    <profile>
+      <id>dependency-audit</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.owasp</groupId>
+            <artifactId>dependency-check-maven</artifactId>
+            <version>${dependency-check-maven.version}</version>
+            <configuration>
+              <nvdApiKey>${nvdApiKey}</nvdApiKey>
+              <failBuildOnCVSS>11</failBuildOnCVSS>
+              <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
+              <skipProvidedScope>true</skipProvidedScope>
+              <skipTestScope>true</skipTestScope>
+              <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

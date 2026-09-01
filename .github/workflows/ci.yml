@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Maven build and showcase compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build and install reactor artifacts
+        run: mvn -B -DskipTests install
+
+      - name: Compile showcase with GWT
+        run: mvn -B -f gwtbootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
+      - name: Dependency audit
+        run: mvn -B -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify
