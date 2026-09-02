@@ -32,6 +32,14 @@ public class Badge extends ElementPanel {
         return variant;
     }
 
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
     public void setPill(boolean pill) {
         setStyleName("rounded-pill", pill);
     }

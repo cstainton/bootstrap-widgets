@@ -15,6 +15,14 @@ public class ButtonGroup extends ElementPanel {
         setStyleName("btn-group", !vertical);
     }
 
+    public void setLarge(boolean large) {
+        setStyleName("btn-group-lg", large);
+    }
+
+    public void setSmall(boolean small) {
+        setStyleName("btn-group-sm", small);
+    }
+
     public void addButton(Widget button) {
         add(button);
     }

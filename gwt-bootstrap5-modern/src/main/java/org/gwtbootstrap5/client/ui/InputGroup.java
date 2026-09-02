@@ -14,4 +14,12 @@ public class InputGroup extends ElementPanel {
     public void setSmall(boolean small) {
         setStyleName("input-group-sm", small);
     }
+
+    public boolean isLarge() {
+        return getStyleName().contains("input-group-lg");
+    }
+
+    public boolean isSmall() {
+        return getStyleName().contains("input-group-sm");
+    }
 }

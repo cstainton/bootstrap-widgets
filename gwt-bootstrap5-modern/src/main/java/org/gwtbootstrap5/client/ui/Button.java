@@ -1,13 +1,39 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
 
 public class Button extends com.google.gwt.user.client.ui.Button {
 
+    public class ButtonStateHandler {
+        private ButtonStateHandler() {
+        }
+
+        public void loading() {
+            setLoading(true);
+        }
+
+        public void reset() {
+            setLoading(false);
+        }
+
+        public void reset(String state) {
+            setText(state);
+            normalText = state == null ? "" : state;
+            setEnabled(true);
+            getElement().removeAttribute("aria-busy");
+            loading = false;
+        }
+    }
+
+    private final ButtonStateHandler buttonStateHandler = new ButtonStateHandler();
     private Variant variant;
     private boolean outline;
     private String normalText = "";
     private String loadingText;
+    private boolean loading;
 
     public Button() {
         this("", Variant.PRIMARY);
@@ -72,13 +98,19 @@ public class Button extends com.google.gwt.user.client.ui.Button {
         getElement().setAttribute("data-loading-text", loadingText == null ? "" : loadingText);
     }
 
+    public void setDataLoadingText(String loadingText) {
+        setLoadingText(loadingText);
+    }
+
     public String getLoadingText() {
         return loadingText;
     }
 
     public void setLoading(boolean loading) {
         if (loading) {
-            normalText = getText();
+            if (!this.loading) {
+                normalText = getText();
+            }
             if (loadingText != null && !loadingText.isEmpty()) {
                 setText(loadingText);
             }
@@ -88,6 +120,36 @@ public class Button extends com.google.gwt.user.client.ui.Button {
             setText(normalText);
             setEnabled(true);
             getElement().removeAttribute("aria-busy");
+        }
+        this.loading = loading;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void toggle() {
+        setActive(!isActive());
+    }
+
+    public ButtonStateHandler state() {
+        return buttonStateHandler;
+    }
+
+    public void click() {
+        NativeEvent event = Document.get().createClickEvent(0, 0, 0, 0, 0, false, false, false, false);
+        DomEvent.fireNativeEvent(event, this);
+    }
+
+    public void setDataToggle(String toggle) {
+        if (toggle == null || toggle.isEmpty()) {
+            getElement().removeAttribute("data-bs-toggle");
+            removeStyleName("dropdown-toggle");
+        } else {
+            getElement().setAttribute("data-bs-toggle", toggle);
+            if ("dropdown".equals(toggle)) {
+                addStyleName("dropdown-toggle");
+            }
         }
     }
 

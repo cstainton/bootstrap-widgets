@@ -86,7 +86,6 @@ import org.gwtbootstrap5.client.ui.NavbarForm;
 import org.gwtbootstrap5.client.ui.NavbarHeader;
 import org.gwtbootstrap5.client.ui.NavbarLink;
 import org.gwtbootstrap5.client.ui.PageHeader;
-import org.gwtbootstrap5.client.ui.PageItem;
 import org.gwtbootstrap5.client.ui.Pager;
 import org.gwtbootstrap5.client.ui.Pagination;
 import org.gwtbootstrap5.client.ui.Panel;
@@ -373,7 +372,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         toggle.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                toggle.setActive(!toggle.isActive());
+                toggle.toggle();
             }
         });
         Button loading = new Button("Click me", Variant.PRIMARY);
@@ -385,14 +384,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 new Timer() {
                     @Override
                     public void run() {
-                        loading.setLoading(false);
+                        loading.state().reset();
                     }
                 }.schedule(1200);
             }
         });
         Button block = new Button("Block level button", Variant.PRIMARY);
         block.setBlock(true);
-        return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.setBlock(true);" );
+        return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.state().loading();\nbutton.state().reset();\nbutton.toggle();\nbutton.setBlock(true);" );
     }
 
     private Widget buttonCompositionPanel() {
@@ -491,7 +490,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
         DropDownItem disabled = new DropDownItem("Action 2 (disabled)", "#");
         disabled.setDisabled(true);
         dropDown.addItem(disabled);
-        return panel("Basic", dropDown, "DropDown dropDown = new DropDown(\"Click to toggle dropdown\");\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));");
+        DropDown endAligned = new DropDown("End aligned");
+        endAligned.setMenuEndAligned(true);
+        endAligned.addItem(new DropDownItem("Action", "#"));
+        endAligned.addItem(new DropDownItem("Another action", "#"));
+        DropDown dropUp = new DropDown("Dropup");
+        dropUp.setDropUp(true);
+        dropUp.addItem(new DropDownItem("Action", "#"));
+        dropUp.addItem(new DropDownItem("Another action", "#"));
+        return panel("Basic", inline(dropDown, endAligned, dropUp), "DropDown dropDown = new DropDown(\"Click to toggle dropdown\");\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));\ndropDown.setMenuEndAligned(true);\ndropDown.setDropUp(true);");
     }
 
     private Widget inputGroupsPanel() {
@@ -554,15 +561,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget paginationPanel() {
         Pagination pagination = new Pagination();
-        pagination.add(new PageItem("Previous", "#"));
-        PageItem active = new PageItem("1", "#");
+        pagination.addPreviousLink();
+        AnchorListItem active = new AnchorListItem("1", "#");
         active.setActive(true);
         pagination.add(active);
-        pagination.add(new PageItem("2", "#"));
-        pagination.add(new PageItem("Next", "#"));
+        pagination.add(new AnchorListItem("2", "#"));
+        pagination.addNextLink();
         Pager pager = new Pager();
         pager.setAlignToSides(true);
-        return panel("Basic", inline(pagination, pager), "Pagination pagination = new Pagination();\npagination.add(new PageItem(\"1\", \"#\"));");
+        return panel("Basic", inline(pagination, pager), "Pagination pagination = new Pagination();\npagination.addPreviousLink();\npagination.add(new AnchorListItem(\"1\", \"#\"));\npagination.addNextLink();\npagination.rebuild(simplePager);");
     }
 
     private Widget progressPanel() {

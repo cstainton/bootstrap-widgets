@@ -1,5 +1,8 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AnchorListItem extends ElementPanel {
@@ -54,5 +57,33 @@ public class AnchorListItem extends ElementPanel {
 
     public Anchor getAnchor() {
         return anchor;
+    }
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return anchor.addHandler(handler, ClickEvent.getType());
+    }
+
+    public void setActive(boolean active) {
+        setStyleName("active", active);
+        anchor.setStyleName("active", active);
+        if (active) {
+            anchor.getElement().setAttribute("aria-current", "page");
+        } else {
+            anchor.getElement().removeAttribute("aria-current");
+        }
+    }
+
+    public boolean isActive() {
+        return getStyleName().contains("active") || anchor.getStyleName().contains("active");
+    }
+
+    public void setEnabled(boolean enabled) {
+        setStyleName("disabled", !enabled);
+        anchor.setEnabled(enabled);
+    }
+
+    public boolean isEnabled() {
+        return anchor.isEnabled();
     }
 }

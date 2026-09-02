@@ -28,6 +28,14 @@ public class Panel extends ElementPanel {
         return variant;
     }
 
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
     private String styleName(Variant variant) {
         return "border-" + variant.cssName();
     }

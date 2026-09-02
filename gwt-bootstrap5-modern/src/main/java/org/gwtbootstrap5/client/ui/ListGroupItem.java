@@ -28,14 +28,34 @@ public class ListGroupItem extends ElementPanel {
         return variant;
     }
 
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
     public void setActive(boolean active) {
         setStyleName("active", active);
         getElement().setAttribute("aria-current", active ? "true" : "false");
     }
 
+    public boolean isActive() {
+        return getStyleName().contains("active");
+    }
+
     public void setDisabled(boolean disabled) {
         setStyleName("disabled", disabled);
         getElement().setAttribute("aria-disabled", disabled ? "true" : "false");
+    }
+
+    public void setEnabled(boolean enabled) {
+        setDisabled(!enabled);
+    }
+
+    public boolean isEnabled() {
+        return !"true".equals(getElement().getAttribute("aria-disabled"));
     }
 
     private String styleName(Variant variant) {

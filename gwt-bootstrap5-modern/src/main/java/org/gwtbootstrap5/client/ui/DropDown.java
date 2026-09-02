@@ -12,7 +12,11 @@ public class DropDown extends ElementPanel {
     }
 
     public DropDown(String text) {
-        super("div");
+        this("div", text);
+    }
+
+    protected DropDown(String tagName, String text) {
+        super(tagName);
         addStyleName("dropdown");
         toggle = new Button(text, Variant.SECONDARY);
         toggle.addStyleName("dropdown-toggle");
@@ -30,11 +34,52 @@ public class DropDown extends ElementPanel {
         return menu;
     }
 
+    @Override
+    public String getText() {
+        return toggle.getText();
+    }
+
+    @Override
+    public void setText(String text) {
+        toggle.setText(text == null ? "" : text);
+    }
+
     public void addItem(DropDownItem item) {
         menu.add(item);
     }
 
     public void addMenuWidget(Widget widget) {
         menu.add(widget);
+    }
+
+    public void setDropUp(boolean dropUp) {
+        setStyleName("dropup", dropUp);
+        setStyleName("dropdown", !dropUp);
+    }
+
+    public void setDropStart(boolean dropStart) {
+        setStyleName("dropstart", dropStart);
+        if (dropStart) {
+            removeStyleName("dropdown");
+            removeStyleName("dropup");
+            removeStyleName("dropend");
+        } else if (!getStyleName().contains("dropend") && !getStyleName().contains("dropup")) {
+            addStyleName("dropdown");
+        }
+    }
+
+    public void setDropEnd(boolean dropEnd) {
+        setStyleName("dropend", dropEnd);
+        if (dropEnd) {
+            removeStyleName("dropdown");
+            removeStyleName("dropup");
+            removeStyleName("dropstart");
+        } else if (!getStyleName().contains("dropstart") && !getStyleName().contains("dropup")) {
+            addStyleName("dropdown");
+        }
+    }
+
+    public void setMenuEndAligned(boolean endAligned) {
+        menu.setEndAligned(endAligned);
     }
 }

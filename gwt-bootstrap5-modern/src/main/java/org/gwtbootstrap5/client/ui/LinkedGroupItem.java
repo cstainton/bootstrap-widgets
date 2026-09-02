@@ -6,6 +6,7 @@ import com.google.gwt.user.client.History;
 public class LinkedGroupItem extends ElementPanel {
 
     private String targetHistoryToken;
+    private Variant variant;
 
     public LinkedGroupItem() {
         this("", "#");
@@ -46,5 +47,39 @@ public class LinkedGroupItem extends ElementPanel {
     public void setDisabled(boolean disabled) {
         setStyleName("disabled", disabled);
         getElement().setAttribute("aria-disabled", disabled ? "true" : "false");
+    }
+
+    public void setEnabled(boolean enabled) {
+        setDisabled(!enabled);
+    }
+
+    public boolean isEnabled() {
+        return !"true".equals(getElement().getAttribute("aria-disabled"));
+    }
+
+    public void setVariant(Variant variant) {
+        if (this.variant != null) {
+            removeStyleName(styleName(this.variant));
+        }
+        this.variant = variant;
+        if (variant != null) {
+            addStyleName(styleName(variant));
+        }
+    }
+
+    public Variant getVariant() {
+        return variant;
+    }
+
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
+    private String styleName(Variant variant) {
+        return "list-group-item-" + variant.cssName();
     }
 }

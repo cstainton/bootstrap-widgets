@@ -49,6 +49,14 @@ public class Alert extends ElementPanel {
         return variant;
     }
 
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
     public void setDismissible(boolean dismissible) {
         setStyleName("alert-dismissible", dismissible);
         setStyleName("fade", dismissible);
@@ -60,6 +68,27 @@ public class Alert extends ElementPanel {
         } else {
             closeButton.removeFromParent();
         }
+    }
+
+    public void setDismissable(boolean dismissable) {
+        setDismissible(dismissable);
+    }
+
+    public boolean isDismissable() {
+        return closeButton.getParent() != null;
+    }
+
+    public void setFade(boolean fade) {
+        setStyleName("fade", fade);
+        setStyleName("show", fade);
+    }
+
+    public boolean isFade() {
+        return getStyleName().contains("fade");
+    }
+
+    public void close() {
+        removeFromParent();
     }
 
     private String styleName(Variant variant) {

@@ -50,6 +50,22 @@ public class ProgressBar extends ElementPanel {
         }
     }
 
+    public Variant getVariant() {
+        return variant;
+    }
+
+    public void setType(Variant variant) {
+        setVariant(variant);
+    }
+
+    public Variant getType() {
+        return getVariant();
+    }
+
+    public void setSrOnly(boolean srOnly) {
+        setStyleName("visually-hidden", srOnly);
+    }
+
     public void setStriped(boolean striped) {
         setStyleName("progress-bar-striped", striped);
     }
