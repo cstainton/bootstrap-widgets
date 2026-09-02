@@ -1,5 +1,8 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import org.gwtbootstrap5.client.ui.base.HasInputType;
 import org.gwtbootstrap5.client.ui.constants.InputType;
 
@@ -73,5 +76,9 @@ public class Input extends ElementPanel implements HasInputType {
 
     public String getName() {
         return getElement().getAttribute("name");
+    }
+
+    public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+        return addDomHandler(handler, ChangeEvent.getType());
     }
 }

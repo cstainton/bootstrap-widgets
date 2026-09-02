@@ -14,6 +14,5 @@ public class ListDropDown extends DropDown {
         getToggle().addStyleName("nav-link");
         getToggle().addStyleName("border-0");
         getToggle().addStyleName("bg-transparent");
-        getToggle().addStyleName("p-0");
     }
 }

@@ -3,4 +3,5 @@
     <inherits name="org.gwtbootstrap5.client.NoThemeResources"/>
     <stylesheet src="css/bootstrap-5.3.8.min.cache.css"/>
     <stylesheet src="css/bootstrap-icons-1.13.1.min.cache.css"/>
+    <stylesheet src="css/gwt-bootstrap5-modern.cache.css"/>
 </module>

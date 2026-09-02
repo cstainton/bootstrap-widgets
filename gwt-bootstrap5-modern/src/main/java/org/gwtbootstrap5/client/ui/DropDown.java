@@ -83,4 +83,12 @@ public class DropDown extends ElementPanel {
     public void setMenuEndAligned(boolean endAligned) {
         menu.setEndAligned(endAligned);
     }
+
+    public void setMenuMatchToggleWidth(boolean matchToggleWidth) {
+        if (matchToggleWidth) {
+            menu.addStyleName("dropdown-menu-match-toggle");
+        } else {
+            menu.removeStyleName("dropdown-menu-match-toggle");
+        }
+    }
 }

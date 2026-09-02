@@ -8,11 +8,11 @@ import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.base.ComplexWidget;
 
-class ElementPanel extends ComplexPanel implements HasHTML, HasClickHandlers, HasDoubleClickHandlers {
+class ElementPanel extends ComplexWidget implements HasHTML, HasClickHandlers, HasDoubleClickHandlers {
 
     ElementPanel(String tagName) {
         setElement(Document.get().createElement(tagName));

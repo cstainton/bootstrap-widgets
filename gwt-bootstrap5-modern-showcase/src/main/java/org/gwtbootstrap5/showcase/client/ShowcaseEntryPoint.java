@@ -3,8 +3,12 @@ package org.gwtbootstrap5.showcase.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
@@ -150,13 +154,80 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         Container container = new Container();
         container.addStyleName("gbm-showcase");
-        container.add(createHome());
-        container.add(createSetup());
-        container.add(createCssSections());
-        container.add(createComponentSections());
-        container.add(createJavaScriptSections(root));
-        container.add(createExtraSections());
         root.add(container);
+
+        final RootPanel modalRoot = root;
+        final Container content = container;
+        History.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                renderToken(content, modalRoot, event.getValue());
+            }
+        });
+        renderToken(content, modalRoot, History.getToken());
+    }
+
+    private void renderToken(Container content, RootPanel root, String token) {
+        content.clear();
+        content.add(createPage(root, normalizeToken(token)));
+    }
+
+    private String normalizeToken(String token) {
+        return token == null || token.isEmpty() ? "home" : token;
+    }
+
+    private Widget createPage(RootPanel root, String token) {
+        if ("home".equals(token)) {
+            return createHome();
+        }
+        if ("setup".equals(token)) {
+            return createSetup();
+        }
+        if (contains(CSS_SECTIONS, token)) {
+            Row row = createCssSections();
+            filterSections(row, token);
+            return row;
+        }
+        if (contains(COMPONENT_SECTIONS, token)) {
+            Row row = createComponentSections();
+            filterSections(row, token);
+            return row;
+        }
+        if (contains(JS_SECTIONS, token)) {
+            Row row = createJavaScriptSections(root);
+            filterSections(row, token);
+            return row;
+        }
+        if (contains(EXTRA_SECTIONS, token)) {
+            Row row = createExtraSections();
+            filterSections(row, token);
+            return row;
+        }
+        return createHome();
+    }
+
+    private boolean contains(String[] values, String value) {
+        for (String candidate : values) {
+            if (candidate.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void filterSections(Row row, String token) {
+        for (Widget rowChild : row) {
+            if (!(rowChild instanceof HasWidgets)) {
+                continue;
+            }
+            boolean visible = false;
+            for (Widget sectionChild : (HasWidgets) rowChild) {
+                if (sectionChild instanceof PageHeader) {
+                    visible = token.equals(sectionChild.getElement().getAttribute("data-section"));
+                }
+                sectionChild.setVisible(visible);
+            }
+        }
     }
 
     private Navbar createNavbar() {
@@ -210,7 +281,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return row;
     }
 
-    private Widget createCssSections() {
+    private Row createCssSections() {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "buttons", "Buttons", "styled, states, icons...");
@@ -243,7 +314,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return row;
     }
 
-    private Widget createComponentSections() {
+    private Row createComponentSections() {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "alerts", "Alerts", null);
@@ -319,7 +390,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return row;
     }
 
-    private Widget createJavaScriptSections(RootPanel root) {
+    private Row createJavaScriptSections(RootPanel root) {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "carousel", "Carousel", null);
@@ -346,7 +417,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return row;
     }
 
-    private Widget createExtraSections() {
+    private Row createExtraSections() {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "cards", "Cards", null);
@@ -486,6 +557,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget dropdownsPanel() {
         DropDown dropDown = new DropDown("Click to toggle dropdown");
+        dropDown.setMenuMatchToggleWidth(true);
         dropDown.addMenuWidget(new DropDownHeader("Header 1"));
         DropDownItem first = new DropDownItem("Action 1", "#");
         first.add(new Icon("camera"));
@@ -496,13 +568,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
         dropDown.addItem(disabled);
         DropDown endAligned = new DropDown("End aligned");
         endAligned.setMenuEndAligned(true);
+        endAligned.setMenuMatchToggleWidth(true);
         endAligned.addItem(new DropDownItem("Action", "#"));
         endAligned.addItem(new DropDownItem("Another action", "#"));
         DropDown dropUp = new DropDown("Dropup");
         dropUp.setDropUp(true);
+        dropUp.setMenuMatchToggleWidth(true);
         dropUp.addItem(new DropDownItem("Action", "#"));
         dropUp.addItem(new DropDownItem("Another action", "#"));
-        return panel("Basic", inline(dropDown, endAligned, dropUp), "DropDown dropDown = new DropDown(\"Click to toggle dropdown\");\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));\ndropDown.setMenuEndAligned(true);\ndropDown.setDropUp(true);");
+        return panel("Basic", inline(dropDown, endAligned, dropUp), "DropDown dropDown = new DropDown(\"Click to toggle dropdown\");\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));\ndropDown.setMenuEndAligned(true);\ndropDown.setDropUp(true);\ndropDown.setMenuMatchToggleWidth(true);");
     }
 
     private Widget inputGroupsPanel() {
@@ -732,7 +806,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private void addPageHeader(Column column, String id, String title, String subText) {
         PageHeader header = new PageHeader();
-        header.getElement().setId(id);
+        header.getElement().setAttribute("data-section", id);
         Heading heading = new Heading(2, title);
         if (subText != null && !subText.isEmpty()) {
             heading.add(new HTML(" <small class='text-body-secondary'>" + subText + "</small>"));

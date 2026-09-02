@@ -11,7 +11,13 @@
     }
 
     .gbm-showcase {
+      max-width: 1170px;
+      padding-top: 1rem;
       padding-bottom: 3rem;
+    }
+
+    .navbar > .container {
+      max-width: 1170px;
     }
 
     .gbm-example-body > * {
@@ -36,6 +42,21 @@
 
     pre {
       white-space: pre-wrap;
+    }
+
+    @media (max-width: 575.98px) {
+      body {
+        padding-top: 56px;
+      }
+
+      .gbm-showcase {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .gbm-showcase .p-5 {
+        padding: 1.5rem !important;
+      }
     }
   </style>
 </head>
