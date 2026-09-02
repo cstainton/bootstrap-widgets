@@ -236,4 +236,12 @@ public final class Document {
     public Element createULElement2() {
         return createElement("ul");
     }
+
+    public Element getHead() {
+        return new Element(HTMLDocument.current().getHead());
+    }
+
+    public Element getDocumentElement() {
+        return new Element(HTMLDocument.current().getDocumentElement());
+    }
 }

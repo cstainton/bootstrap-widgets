@@ -35,6 +35,21 @@ This fork vendors browser JS/CSS resources inside the GWT modules so downstream 
 | bootstrap-notify | 3.1.3 | `bootstrap-notify` | Latest available line, retained. |
 | bootstrap-tagsinput | 0.8.0 | upstream gwtbootstrap3-extras | Newer npm package is older than the bundled upstream asset, retained. |
 
+## Bootstrap 3 Theme Assets
+
+Vendored in `gwt-bootstrap3-modern-themes`, which is a separate artifact because the set
+totals about 1.9 MB. Bootstrap 3 has no dark mode of its own; these supply one.
+
+| Asset | Version | Source package | Licence | Notes |
+| --- | --- | --- | --- | --- |
+| Bootswatch | 3.4.1 | `bootswatch` | MIT | 16 complete Bootstrap 3.4.1 stylesheets. Four are dark: Cyborg, Darkly, Slate, Superhero. Licence text is kept at `gwt-bootstrap3-modern-themes/BOOTSWATCH-LICENSE`. |
+
+Each theme replaces `bootstrap.css` rather than layering over it, so switching swaps one
+stylesheet link. Fourteen of the sixteen `@import` their webfonts from Google Fonts, as
+they do upstream, which means a page using them reaches the network at runtime. Only
+Cerulean and Slate do not, and are the ones to prefer where that matters -- Slate being
+the only dark theme of the set that is self-contained.
+
 ## Bootstrap 5 Native Assets
 
 | Asset | Version | Source package | Notes |

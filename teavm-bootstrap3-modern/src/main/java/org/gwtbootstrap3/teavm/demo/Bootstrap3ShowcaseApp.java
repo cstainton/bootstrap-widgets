@@ -54,6 +54,8 @@ import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 import org.gwtbootstrap3.client.ui.constants.ProgressBarType;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
+import org.gwtbootstrap3.client.ui.theme.Themes;
+import org.gwtbootstrap3.themes.client.BootswatchThemes;
 import org.gwtbootstrap3.client.ui.html.Text;
 
 /**
@@ -66,6 +68,10 @@ import org.gwtbootstrap3.client.ui.html.Text;
 public final class Bootstrap3ShowcaseApp {
 
     public static void main(final String[] args) {
+        // the host page serves the theme stylesheets from themes/
+        Themes.register(BootswatchThemes.all("themes/"));
+        Themes.restore(BootswatchThemes.byName("flatly", "themes/"));
+
         final Container container = new Container();
         container.add(page());
         RootPanel.get().add(container);
@@ -80,6 +86,10 @@ public final class Bootstrap3ShowcaseApp {
         header.setSubText("the same widgets, compiled to JavaScript by TeaVM");
         column.add(header);
 
+        column.add(panel("Theme", themeSection(),
+                "Themes.register(BootswatchThemes.all(\"themes/\"));\n"
+                + "Themes.restore(BootswatchThemes.byName(\"flatly\", \"themes/\"));\n"
+                + "Themes.apply(\"darkly\");"));
         column.add(panel("Buttons", buttons(),
                 "new Button(\"Primary\", ButtonType.PRIMARY);\n"
                 + "ButtonGroup group = new ButtonGroup();"));
@@ -256,6 +266,30 @@ public final class Bootstrap3ShowcaseApp {
         panel.add(footer);
 
         return panel;
+    }
+
+    private static Widget themeSection() {
+        final Well well = new Well();
+        final ButtonGroup group = new ButtonGroup();
+        for (final org.gwtbootstrap3.client.ui.theme.Theme theme : Themes.getThemes()) {
+            final Button button = new Button(theme.getDisplayName());
+            button.setType(theme.isDark() ? ButtonType.PRIMARY : ButtonType.DEFAULT);
+            button.addClickHandler(event -> Themes.apply(theme));
+            group.add(button);
+        }
+        well.add(group);
+        well.add(themeStatus);
+        Themes.addThemeChangeHandler(Bootstrap3ShowcaseApp::showActiveTheme);
+        showActiveTheme(Themes.getCurrent());
+        return well;
+    }
+
+    private static final Paragraph themeStatus = new Paragraph();
+
+    private static void showActiveTheme(final org.gwtbootstrap3.client.ui.theme.Theme theme) {
+        themeStatus.setText(theme == null ? "No theme applied"
+                : "Active theme: " + theme.getDisplayName()
+                        + (theme.isDark() ? " (dark)" : " (light)"));
     }
 
     private static Widget buttons() {
