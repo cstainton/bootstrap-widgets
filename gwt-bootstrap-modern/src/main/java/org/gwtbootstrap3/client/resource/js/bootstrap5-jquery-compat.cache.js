@@ -63,6 +63,77 @@
   installPlugin('tab', bootstrap.Tab);
   installPlugin('tooltip', bootstrap.Tooltip);
 
+  function elementHtml(element) {
+    return element.tagName === 'INPUT' ? element.value : element.innerHTML;
+  }
+
+  function setElementHtml(element, value) {
+    if (element.tagName === 'INPUT') {
+      element.value = value;
+    } else {
+      element.innerHTML = value;
+    }
+  }
+
+  function buttonStateText(element, state) {
+    return element.getAttribute('data-' + state + '-text');
+  }
+
+  function setButtonLoading(element) {
+    if (!$.data(element, 'resetText')) {
+      $.data(element, 'resetText', elementHtml(element));
+    }
+
+    var loadingText = buttonStateText(element, 'loading');
+    if (loadingText) {
+      setElementHtml(element, loadingText);
+    }
+
+    element.classList.add('disabled');
+    element.setAttribute('disabled', 'disabled');
+    element.disabled = true;
+  }
+
+  function resetButton(element, state) {
+    var text = state ? buttonStateText(element, state) : $.data(element, 'resetText');
+    if (text) {
+      setElementHtml(element, text);
+    }
+
+    element.classList.remove('disabled');
+    element.removeAttribute('disabled');
+    element.disabled = false;
+  }
+
+  function toggleButton(element) {
+    element.classList.toggle('active');
+    element.setAttribute('aria-pressed', String(element.classList.contains('active')));
+  }
+
+  function installLegacyButtonPlugin() {
+    $.fn.button = function (option) {
+      return this.each(function () {
+        if (option === 'loading') {
+          setButtonLoading(this);
+        } else if (option === 'reset') {
+          resetButton(this);
+        } else if (option === 'toggle') {
+          toggleButton(this);
+        } else if (typeof option === 'string') {
+          resetButton(this, option);
+        }
+      });
+    };
+
+    $.fn.button.Constructor = bootstrap.Button;
+    $.fn.button.gwtBootstrap3Compatibility = true;
+  }
+
+  installLegacyButtonPlugin();
+  global.setTimeout(installLegacyButtonPlugin, 0);
+  document.addEventListener('DOMContentLoaded', installLegacyButtonPlugin);
+  global.addEventListener('load', installLegacyButtonPlugin);
+
   function selectorFor(element) {
     var selector = element.getAttribute('data-target') || element.getAttribute('href');
     if (!selector || selector === '#') {
@@ -119,7 +190,7 @@
     var menu = parent.querySelector('.dropdown-menu');
     var willShow = !parent.classList.contains('open') && !(menu && menu.classList.contains('show'));
 
-    eachElement($('.dropdown.open, .dropdown.show'), function (element) {
+    eachElement($('.dropdown.open, .btn-group.open, .dropdown.show, .btn-group.show'), function (element) {
       if (element !== parent) {
         element.classList.remove('open', 'show');
         var openMenu = element.querySelector('.dropdown-menu');
@@ -130,7 +201,7 @@
     });
 
     parent.classList.toggle('open', willShow);
-    parent.classList.toggle('show', willShow);
+    parent.classList.remove('show');
     trigger.setAttribute('aria-expanded', String(willShow));
 
     if (menu) {
@@ -147,6 +218,12 @@
     }
 
     var toggle = trigger.getAttribute('data-toggle');
+    if (toggle === 'button') {
+      event.preventDefault();
+      toggleButton(trigger);
+      return;
+    }
+
     if (toggle === 'dropdown') {
       event.preventDefault();
       toggleLegacyDropdown(trigger);
