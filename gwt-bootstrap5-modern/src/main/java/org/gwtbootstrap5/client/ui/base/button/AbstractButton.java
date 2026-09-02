@@ -22,7 +22,6 @@ package org.gwtbootstrap5.client.ui.base.button;
 
 import java.util.List;
 
-import org.gwtbootstrap5.client.shared.js.JQuery;
 import org.gwtbootstrap5.client.ui.base.ComplexWidget;
 import org.gwtbootstrap5.client.ui.base.HasActive;
 import org.gwtbootstrap5.client.ui.base.HasDataTarget;
@@ -62,6 +61,7 @@ import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -78,11 +78,11 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
         }
 
         public void loading() {
-            button(getElement(), "loading");
+            setLoading(true);
         }
 
         public void reset() {
-            button(getElement(), "reset");
+            setLoading(false);
         }
 
         /**
@@ -91,7 +91,11 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
          * @param state Text state
          */
         public void reset(final String state) {
-            button(getElement(), state);
+            setButtonText(state);
+            normalText = state == null ? "" : state;
+            setEnabled(true);
+            getElement().removeAttribute("aria-busy");
+            loading = false;
         }
     }
 
@@ -100,6 +104,9 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     private final ActiveMixin<AbstractButton> activeMixin = new ActiveMixin<AbstractButton>(this);
     private final FocusableMixin<AbstractButton> focusableMixin = new FocusableMixin<AbstractButton>(this);
     private final EnabledMixin<AbstractButton> enabledMixin = new EnabledMixin<AbstractButton>(this);
+    private String normalText = "";
+    private String loadingText;
+    private boolean loading;
 
     /**
      * Creates button with DEFAULT type.
@@ -122,6 +129,7 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     @Override
     public void setActive(final boolean active) {
         activeMixin.setActive(active);
+        getElement().setAttribute("aria-pressed", Boolean.toString(active));
     }
 
     @Override
@@ -245,11 +253,8 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
      * @param block True for block level element
      */
     public void setBlock(final boolean block) {
-        if (block) {
-            addStyleName(Styles.BTN_BLOCK);
-        } else {
-            removeStyleName(Styles.BTN_BLOCK);
-        }
+        setStyleName("d-block", block);
+        setStyleName("w-100", block);
     }
 
     /**
@@ -274,6 +279,7 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     }
 
     public void setDataLoadingText(final String loadingText) {
+        this.loadingText = loadingText;
         if (loadingText != null) {
             getElement().setAttribute(Attributes.DATA_LOADING_TEXT, loadingText);
         } else {
@@ -281,8 +287,12 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
         }
     }
 
+    public void setLoadingText(final String loadingText) {
+        setDataLoadingText(loadingText);
+    }
+
     public void toggle() {
-        button(getElement(), "toggle");
+        setActive(!isActive());
     }
 
     public ButtonStateHandler state() {
@@ -296,9 +306,41 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
 
     protected abstract Element createElement();
 
-    // @formatter:off
+    public String getLoadingText() {
+        return loadingText;
+    }
 
-    private void button(final Element e, final String arg) {
-        JQuery.jQuery(e).button(arg);
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(final boolean loading) {
+        if (loading) {
+            if (!this.loading) {
+                normalText = getButtonText();
+            }
+            if (loadingText != null && !loadingText.isEmpty()) {
+                setButtonText(loadingText);
+            }
+            setEnabled(false);
+            getElement().setAttribute("aria-busy", "true");
+        } else {
+            setButtonText(normalText);
+            setEnabled(true);
+            getElement().removeAttribute("aria-busy");
+        }
+        this.loading = loading;
+    }
+
+    private String getButtonText() {
+        return this instanceof HasText ? ((HasText) this).getText() : getElement().getInnerText();
+    }
+
+    private void setButtonText(String text) {
+        if (this instanceof HasText) {
+            ((HasText) this).setText(text == null ? "" : text);
+        } else {
+            getElement().setInnerText(text == null ? "" : text);
+        }
     }
 }

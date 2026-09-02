@@ -32,7 +32,7 @@ public enum ButtonGroupSize implements Size, Style.HasCssName {
     LARGE("btn-group-lg"),
     DEFAULT(""),
     SMALL("btn-group-sm"),
-    EXTRA_SMALL("btn-group-xs");
+    EXTRA_SMALL("btn-group-sm");
 
     private final String cssClass;
 

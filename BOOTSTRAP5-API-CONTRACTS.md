@@ -3,29 +3,29 @@
 Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3 package names are normalized to `org.gwtbootstrap5` before comparison.
 
 - Shared inventory: `126/126`
-- Full normalized public contract: `36/126`
-- Reduced or missing contract: `90/126`
-- Widgets missing one or more assignable interfaces: `75`
-- Distinct missing interface contracts: `94`
-- Widgets missing one or more public API members: `90`
+- Full normalized public contract: `58/126`
+- Reduced or missing contract: `68/126`
+- Widgets missing one or more assignable interfaces: `58`
+- Distinct missing interface contracts: `85`
+- Widgets missing one or more public API members: `68`
 
 | Widget | Present | Contract | Missing interfaces | Missing API members |
 |---|---:|---|---:|---:|
 | `Abbreviation` | yes | Reduced | 1 (IsEditor) | 3 |
 | `Affix` | yes | Full | 0 | 0 |
-| `Alert` | yes | Reduced | 0 | 2 |
-| `Anchor` | yes | Reduced | 3 (HasHref, HasTarget, HasTargetHistoryToken) | 9 |
-| `AnchorButton` | yes | Reduced | 12 (HasActive, HasAllMouseHandlers, HasHref, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasSize, HasTargetHistoryToken, HasType) | 42 |
+| `Alert` | yes | Full | 0 | 0 |
+| `Anchor` | yes | Full | 0 | 0 |
+| `AnchorButton` | yes | Reduced | 10 (HasActive, HasAllMouseHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasSize, HasType) | 36 |
 | `AnchorListItem` | yes | Full | 0 | 0 |
 | `Badge` | yes | Full | 0 | 0 |
 | `BlockQuote` | yes | Full | 0 | 0 |
 | `BooleanRadioGroup` | yes | Reduced | 14 (Editor, HasBlankValidator, HasDataSpy, HasEditorErrors, HasErrorHandler, HasName, HasValidators, HasValue, HasValueChangeHandlers, InsertPanel, InsertPanel$ForIsWidget, LeafValueEditor, TakesValue, ValidationChangedEvent$HasValidationChangedHandlers) | 54 |
 | `Breadcrumbs` | yes | Reduced | 0 | 2 |
-| `Button` | yes | Reduced | 10 (HasActive, HasBadge, HasIcon, HasIconPosition, HasInlineStyle, HasWidgets, HasWidgets$ForIsWidget, IndexedPanel, IndexedPanel$ForIsWidget, Iterable) | 100 |
-| `ButtonGroup` | yes | Reduced | 6 (HasDataSpy, HasJustified, HasName, HasSize, InsertPanel, InsertPanel$ForIsWidget) | 22 |
-| `ButtonToolBar` | yes | Reduced | 3 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget) | 7 |
+| `Button` | yes | Full | 0 | 0 |
+| `ButtonGroup` | yes | Full | 0 | 0 |
+| `ButtonToolBar` | yes | Full | 0 | 0 |
 | `Caption` | yes | Full | 0 | 0 |
-| `Carousel` | yes | Reduced | 0 | 9 |
+| `Carousel` | yes | Full | 0 | 0 |
 | `CarouselCaption` | yes | Full | 0 | 0 |
 | `CarouselControl` | yes | Reduced | 1 (HasHref) | 10 |
 | `CarouselIndicator` | yes | Reduced | 1 (HasActive) | 2 |
@@ -35,9 +35,9 @@ Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3
 | `CheckBox` | yes | Reduced | 46 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 108 |
 | `CheckBoxButton` | yes | Reduced | 46 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 106 |
 | `Code` | yes | Reduced | 1 (IsEditor) | 3 |
-| `Collapse` | yes | Reduced | 0 | 5 |
+| `Collapse` | yes | Full | 0 | 0 |
 | `Column` | yes | Full | 0 | 0 |
-| `Container` | yes | Reduced | 4 (HasId, HasInlineStyle, HasPull, HasResponsiveness) | 30 |
+| `Container` | yes | Full | 0 | 0 |
 | `Description` | yes | Reduced | 0 | 1 |
 | `DescriptionData` | yes | Reduced | 2 (DescriptionComponent, IsEditor) | 3 |
 | `DescriptionTitle` | yes | Reduced | 2 (DescriptionComponent, IsEditor) | 3 |
@@ -57,7 +57,7 @@ Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3
 | `Icon` | yes | Reduced | 0 | 4 |
 | `IconStack` | yes | Reduced | 1 (HasSize) | 7 |
 | `Image` | yes | Reduced | 2 (HasPull, HasResponsiveness) | 14 |
-| `ImageAnchor` | yes | Reduced | 3 (HasHref, HasTarget, HasTargetHistoryToken) | 9 |
+| `ImageAnchor` | yes | Full | 0 | 0 |
 | `InlineCheckBox` | yes | Reduced | 46 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 108 |
 | `InlineHelpBlock` | yes | Reduced | 1 (IsEditor) | 6 |
 | `InlineRadio` | yes | Reduced | 46 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 109 |
@@ -83,7 +83,7 @@ Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3
 | `LongBox` | yes | Full | 0 | 0 |
 | `MediaBody` | yes | Full | 0 | 0 |
 | `MediaList` | yes | Reduced | 0 | 4 |
-| `Modal` | yes | Reduced | 1 (IsClosable) | 7 |
+| `Modal` | yes | Full | 0 | 0 |
 | `ModalBody` | yes | Reduced | 4 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget, ModalComponent) | 7 |
 | `ModalComponent` | yes | Full | 0 | 0 |
 | `ModalFooter` | yes | Reduced | 4 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget, ModalComponent) | 7 |
@@ -93,13 +93,13 @@ Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3
 | `NavPills` | yes | Reduced | 2 (HasJustified, HasStacked) | 12 |
 | `NavTabs` | yes | Reduced | 1 (HasJustified) | 8 |
 | `Navbar` | yes | Reduced | 1 (HasType) | 8 |
-| `NavbarBrand` | yes | Reduced | 3 (HasHref, HasTarget, HasTargetHistoryToken) | 9 |
-| `NavbarButton` | yes | Reduced | 12 (HasActive, HasBadge, HasHref, HasIcon, HasIconPosition, HasInlineStyle, HasTargetHistoryToken, HasWidgets, HasWidgets$ForIsWidget, IndexedPanel, IndexedPanel$ForIsWidget, Iterable) | 109 |
-| `NavbarCollapse` | yes | Reduced | 3 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget) | 11 |
+| `NavbarBrand` | yes | Full | 0 | 0 |
+| `NavbarButton` | yes | Reduced | 2 (HasHref, HasTargetHistoryToken) | 10 |
+| `NavbarCollapse` | yes | Reduced | 3 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget) | 7 |
 | `NavbarCollapseButton` | yes | Reduced | 1 (IsRenderable) | 8 |
 | `NavbarForm` | yes | Reduced | 1 (FormPanelImplHost) | 20 |
 | `NavbarHeader` | yes | Reduced | 3 (HasDataSpy, InsertPanel, InsertPanel$ForIsWidget) | 7 |
-| `NavbarLink` | yes | Reduced | 3 (HasHref, HasTarget, HasTargetHistoryToken) | 9 |
+| `NavbarLink` | yes | Full | 0 | 0 |
 | `NavbarNav` | yes | Reduced | 0 | 4 |
 | `NavbarText` | yes | Full | 0 | 0 |
 | `PageHeader` | yes | Reduced | 1 (HasSubText) | 4 |
@@ -107,35 +107,35 @@ Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3
 | `Pagination` | yes | Reduced | 0 | 5 |
 | `Panel` | yes | Full | 0 | 0 |
 | `PanelBody` | yes | Full | 0 | 0 |
-| `PanelCollapse` | yes | Reduced | 0 | 6 |
+| `PanelCollapse` | yes | Full | 0 | 0 |
 | `PanelFooter` | yes | Full | 0 | 0 |
 | `PanelGroup` | yes | Full | 0 | 0 |
 | `PanelHeader` | yes | Full | 0 | 0 |
-| `Popover` | yes | Reduced | 3 (AcceptsOneWidget, HasHover, HasOneWidget) | 66 |
+| `Popover` | yes | Full | 0 | 0 |
 | `Pre` | yes | Reduced | 1 (IsEditor) | 4 |
 | `Progress` | yes | Reduced | 1 (HasActive) | 2 |
 | `ProgressBar` | yes | Full | 0 | 0 |
 | `Radio` | yes | Reduced | 46 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 108 |
 | `RadioButton` | yes | Reduced | 51 (Focusable, HasActive, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDirectionEstimator, HasDirectionalSafeHtml, HasDirectionalText, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasIcon, HasIconPosition, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasSafeHtml, HasSize, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, HasType, HasWordWrap, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 166 |
-| `Row` | yes | Reduced | 4 (HasId, HasInlineStyle, HasPull, HasResponsiveness) | 30 |
-| `ScrollSpy` | yes | Reduced | 0 | 2 |
+| `Row` | yes | Full | 0 | 0 |
+| `ScrollSpy` | yes | Full | 0 | 0 |
 | `SimpleCheckBox` | yes | Reduced | 41 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 88 |
 | `SimpleRadioButton` | yes | Reduced | 41 (Focusable, HasAllDragAndDropHandlers, HasAllFocusHandlers, HasAllGestureHandlers, HasAllKeyHandlers, HasAllMouseHandlers, HasAllTouchHandlers, HasBlurHandlers, HasChangeHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDragStartHandlers, HasDropHandlers, HasEnabled, HasFocus, HasFocusHandlers, HasGestureChangeHandlers, HasGestureEndHandlers, HasGestureStartHandlers, HasKeyDownHandlers, HasKeyPressHandlers, HasKeyUpHandlers, HasMouseDownHandlers, HasMouseMoveHandlers, HasMouseOutHandlers, HasMouseOverHandlers, HasMouseUpHandlers, HasMouseWheelHandlers, HasName, HasTouchCancelHandlers, HasTouchEndHandlers, HasTouchMoveHandlers, HasTouchStartHandlers, IsEditor, SourcesClickEvents, SourcesFocusEvents, SourcesKeyboardEvents, SourcesMouseEvents) | 89 |
 | `StringRadioGroup` | yes | Reduced | 14 (Editor, HasBlankValidator, HasDataSpy, HasEditorErrors, HasErrorHandler, HasName, HasValidators, HasValue, HasValueChangeHandlers, InsertPanel, InsertPanel$ForIsWidget, LeafValueEditor, TakesValue, ValidationChangedEvent$HasValidationChangedHandlers) | 54 |
-| `SubmitButton` | yes | Reduced | 10 (HasActive, HasBadge, HasIcon, HasIconPosition, HasInlineStyle, HasWidgets, HasWidgets$ForIsWidget, IndexedPanel, IndexedPanel$ForIsWidget, Iterable) | 99 |
+| `SubmitButton` | yes | Full | 0 | 0 |
 | `SuggestBox` | yes | Reduced | 11 (Editor, HasAutoComplete, HasBlankValidator, HasEditorErrors, HasErrorHandler, HasId, HasPlaceholder, HasResponsiveness, HasSize, HasValidators, ValidationChangedEvent$HasValidationChangedHandlers) | 60 |
 | `TabContent` | yes | Full | 0 | 0 |
-| `TabListItem` | yes | Reduced | 9 (Focusable, HasActive, HasBadge, HasEnabled, HasHref, HasIcon, HasIconPosition, HasTarget, HasTargetHistoryToken) | 80 |
+| `TabListItem` | yes | Reduced | 6 (Focusable, HasBadge, HasIcon, HasIconPosition, HasTarget, HasTargetHistoryToken) | 71 |
 | `TabPane` | yes | Reduced | 1 (HasActive) | 2 |
 | `TabPanel` | yes | Reduced | 1 (HasTabPosition) | 4 |
 | `TextArea` | yes | Full | 0 | 0 |
 | `TextBox` | yes | Full | 0 | 0 |
-| `ThumbnailLink` | yes | Reduced | 3 (HasHref, HasTarget, HasTargetHistoryToken) | 9 |
-| `ThumbnailPanel` | yes | Reduced | 4 (HasId, HasInlineStyle, HasPull, HasResponsiveness) | 30 |
-| `Tooltip` | yes | Reduced | 3 (AcceptsOneWidget, HasHover, HasOneWidget) | 64 |
-| `TooltipHelpBlock` | yes | Reduced | 3 (AcceptsOneWidget, HasHover, HasOneWidget) | 69 |
+| `ThumbnailLink` | yes | Full | 0 | 0 |
+| `ThumbnailPanel` | yes | Full | 0 | 0 |
+| `Tooltip` | yes | Full | 0 | 0 |
+| `TooltipHelpBlock` | yes | Full | 0 | 0 |
 | `ValueListBox` | yes | Reduced | 11 (Editor, HasBlankValidator, HasEditorErrors, HasErrorHandler, HasId, HasName, HasPlaceholder, HasResponsiveness, HasSize, HasValidators, ValidationChangedEvent$HasValidationChangedHandlers) | 57 |
-| `VerticalButtonGroup` | yes | Reduced | 6 (HasDataSpy, HasJustified, HasName, HasSize, InsertPanel, InsertPanel$ForIsWidget) | 22 |
+| `VerticalButtonGroup` | yes | Full | 0 | 0 |
 | `Well` | yes | Reduced | 1 (HasSize) | 6 |
 
 ## Interpretation

@@ -23,11 +23,12 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class ButtonToolBar extends ElementPanel {
+import org.gwtbootstrap5.client.ui.gwt.FlowPanel;
+
+public class ButtonToolBar extends FlowPanel {
 
     public ButtonToolBar() {
-        super("div");
-        addStyleName("btn-toolbar");
+        setStyleName("btn-toolbar");
         getElement().setAttribute("role", "toolbar");
     }
 

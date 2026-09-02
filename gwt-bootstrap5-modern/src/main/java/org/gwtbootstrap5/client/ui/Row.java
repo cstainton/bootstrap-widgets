@@ -23,9 +23,9 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap5.client.ui.html.Div;
 
-public class Row extends FlowPanel {
+public class Row extends Div {
 
     public Row() {
         addStyleName("row");

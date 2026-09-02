@@ -23,9 +23,9 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.FlowPanel;
+import org.gwtbootstrap5.client.ui.html.Div;
 
-public class Container extends FlowPanel {
+public class Container extends Div {
 
     public Container() {
         setFluid(false);

@@ -23,8 +23,16 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.Event;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import org.gwtbootstrap5.client.shared.event.AlertCloseEvent;
+import org.gwtbootstrap5.client.shared.event.AlertCloseHandler;
+import org.gwtbootstrap5.client.shared.event.AlertClosedEvent;
+import org.gwtbootstrap5.client.shared.event.AlertClosedHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
 import org.gwtbootstrap5.client.ui.base.HasType;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
 import org.gwtbootstrap5.client.ui.constants.AlertType;
@@ -32,14 +40,48 @@ import org.gwtbootstrap5.client.ui.constants.AlertType;
 public class Alert extends ElementPanel implements HasType<AlertType> {
 
     private final InlineLabel text = new InlineLabel();
-    private final HTML closeButton = new HTML("<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>");
+    private final ElementPanel closeButton = new ElementPanel("button");
     private Variant variant;
 
     public Alert() {
         super("div");
         addStyleName("alert");
         getElement().setAttribute("role", "alert");
+        closeButton.setStyleName("btn-close");
+        closeButton.getElement().setAttribute("type", "button");
+        closeButton.getElement().setAttribute("data-bs-dismiss", "alert");
+        closeButton.getElement().setAttribute("aria-label", "Close");
         setVariant(Variant.WARNING);
+        addCloseHandler(new AlertCloseHandler() {
+            @Override
+            public void onClose(AlertCloseEvent event) {
+                removeFromParent();
+            }
+        });
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(getElement(), "close.bs.alert", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new AlertCloseEvent(Event.as(event)));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "closed.bs.alert", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new AlertClosedEvent(Event.as(event)));
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(getElement());
+        dispose(getElement());
+        super.onUnload();
     }
 
     public Alert(String text) {
@@ -97,8 +139,6 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
 
     public void setDismissible(boolean dismissible) {
         setStyleName("alert-dismissible", dismissible);
-        setStyleName("fade", dismissible);
-        setStyleName("show", dismissible);
         if (dismissible) {
             if (closeButton.getParent() == null) {
                 add(closeButton);
@@ -126,10 +166,33 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
     }
 
     public void close() {
-        removeFromParent();
+        close(getElement());
+    }
+
+    public HandlerRegistration addCloseHandler(AlertCloseHandler handler) {
+        return addHandler(handler, AlertCloseEvent.getType());
+    }
+
+    public HandlerRegistration addClosedHandler(AlertClosedHandler handler) {
+        return addHandler(handler, AlertClosedEvent.getType());
     }
 
     private String styleName(Variant variant) {
         return "alert-" + variant.cssName();
     }
+
+    private static native void close(com.google.gwt.dom.client.Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.Alert) {
+            $wnd.bootstrap.Alert.getOrCreateInstance(element).close();
+        }
+    }-*/;
+
+    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.Alert) {
+            var instance = $wnd.bootstrap.Alert.getInstance(element);
+            if (instance) {
+                instance.dispose();
+            }
+        }
+    }-*/;
 }

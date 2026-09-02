@@ -23,9 +23,29 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
+import org.gwtbootstrap5.client.shared.event.CarouselSlidEvent;
+import org.gwtbootstrap5.client.shared.event.CarouselSlidHandler;
+import org.gwtbootstrap5.client.shared.event.CarouselSlideEvent;
+import org.gwtbootstrap5.client.shared.event.CarouselSlideHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
+
 public class Carousel extends ElementPanel {
 
+    public static final String HOVER = "hover";
+    public static final String CAROUSEL = "carousel";
+    public static final String CYCLE = "cycle";
+    public static final String PAUSE = "pause";
+    public static final String PREV = "prev";
+    public static final String NEXT = "next";
+
     private final CarouselInner inner = new CarouselInner();
+    private int interval = 5000;
+    private String pause = HOVER;
+    private boolean wrap = true;
 
     public Carousel() {
         super("div");
@@ -39,11 +59,18 @@ public class Carousel extends ElementPanel {
     }
 
     public void setInterval(int intervalMs) {
-        getElement().setAttribute("data-bs-interval", String.valueOf(intervalMs));
+        interval = intervalMs;
+        reconfigureIfAttached();
+    }
+
+    public void setPause(String pause) {
+        this.pause = pause;
+        reconfigureIfAttached();
     }
 
     public void setWrap(boolean wrap) {
-        getElement().setAttribute("data-bs-wrap", String.valueOf(wrap));
+        this.wrap = wrap;
+        reconfigureIfAttached();
     }
 
     public void addSlide(CarouselSlide slide) {
@@ -70,6 +97,61 @@ public class Carousel extends ElementPanel {
         to(getElement(), index);
     }
 
+    public HandlerRegistration addSlideHandler(CarouselSlideHandler handler) {
+        return addHandler(handler, CarouselSlideEvent.getType());
+    }
+
+    public HandlerRegistration addSlidHandler(CarouselSlidHandler handler) {
+        return addHandler(handler, CarouselSlidEvent.getType());
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(getElement(), "slide.bs.carousel", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new CarouselSlideEvent(Carousel.this, Event.as(event)));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "slid.bs.carousel", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new CarouselSlidEvent(Carousel.this, Event.as(event)));
+            }
+        });
+        init(getElement(), interval, pause, wrap);
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(getElement());
+        dispose(getElement());
+        super.onUnload();
+    }
+
+    private void reconfigureIfAttached() {
+        if (isAttached()) {
+            init(getElement(), interval, pause, wrap);
+        }
+    }
+
+    private static native void init(com.google.gwt.dom.client.Element element, int interval,
+                                    String pause, boolean wrap) /*-{
+        if (!$wnd.bootstrap || !$wnd.bootstrap.Carousel) {
+            return;
+        }
+        var existing = $wnd.bootstrap.Carousel.getInstance(element);
+        if (existing) {
+            existing.dispose();
+        }
+        new $wnd.bootstrap.Carousel(element, {
+            interval: interval,
+            pause: pause || false,
+            wrap: wrap
+        });
+    }-*/;
+
     private static native void call(com.google.gwt.dom.client.Element element, String method) /*-{
         if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
             var carousel = $wnd.bootstrap.Carousel.getOrCreateInstance(element);
@@ -80,6 +162,15 @@ public class Carousel extends ElementPanel {
     private static native void to(com.google.gwt.dom.client.Element element, int index) /*-{
         if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
             $wnd.bootstrap.Carousel.getOrCreateInstance(element).to(index);
+        }
+    }-*/;
+
+    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
+            var instance = $wnd.bootstrap.Carousel.getInstance(element);
+            if (instance) {
+                instance.dispose();
+            }
         }
     }-*/;
 }

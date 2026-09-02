@@ -445,16 +445,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "popover", "Popover", null);
         Popover popover = new Popover(new Button("Popover", ButtonType.DEFAULT), "Popover", "Popover content");
-        popover.init();
-        column.add(panel("Basic", popover, "new Popover(widget, \"Popover\", \"Popover content\");"));
+        column.add(panel("Basic", popover.asWidget(), "new Popover(widget, \"Popover\", \"Popover content\");"));
 
         addPageHeader(column, "tabs", "Tabs", null);
         column.add(tabsPanel());
 
         addPageHeader(column, "tooltips", "Tooltips", null);
         Tooltip tooltip = new Tooltip(new Button("Tooltip", ButtonType.DEFAULT), "Tooltip text");
-        tooltip.init();
-        column.add(panel("Basic", inline(tooltip, new TooltipHelpBlock("TooltipHelpBlock")), "new Tooltip(widget, \"Tooltip text\");"));
+        TooltipHelpBlock helpBlock = new TooltipHelpBlock("TooltipHelpBlock");
+        column.add(panel("Basic", inline(tooltip.asWidget(), helpBlock.asWidget()), "new Tooltip(widget, \"Tooltip text\");"));
         return row;
     }
 
@@ -499,7 +498,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
                     public void run() {
                         loading.state().reset();
                     }
-                }.schedule(1200);
+                }.schedule(5000);
             }
         });
         Button block = new Button("Block level button", ButtonType.PRIMARY);
@@ -509,7 +508,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget buttonCompositionPanel() {
         Button button = new Button("With icon and badge", ButtonType.PRIMARY);
-        button.setHTML("<i class='bi bi-star'></i> With icon <span class='badge text-bg-light'>1</span>");
+        button.setIcon(IconType.STAR);
+        button.setBadgeText("1");
         CheckBoxButton checkBoxButton = new CheckBoxButton("CheckBoxButton");
         checkBoxButton.setType(ButtonType.PRIMARY);
         checkBoxButton.setOutline(true);
@@ -521,7 +521,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         disabled.setType(ButtonType.PRIMARY);
         disabled.setOutline(true);
         disabled.setEnabled(false);
-        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setOutline(true);\ncheckBox.setValue(true);" );
+        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setIcon(IconType.STAR);\nbutton.setBadgeText(\"1\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setOutline(true);\ncheckBox.setValue(true);" );
     }
 
     private Widget formsPanel() {

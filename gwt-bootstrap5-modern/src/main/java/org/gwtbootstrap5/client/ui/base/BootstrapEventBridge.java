@@ -23,6 +23,15 @@ public final class BootstrapEventBridge {
         element.addEventListener(eventName, listener);
     }-*/;
 
+    public static native void unbind(Element element, String eventName) /*-{
+        var listeners = element.__gwtBootstrapModernListeners;
+        if (!listeners || !listeners[eventName]) {
+            return;
+        }
+        element.removeEventListener(eventName, listeners[eventName]);
+        delete listeners[eventName];
+    }-*/;
+
     public static native void unbindAll(Element element) /*-{
         var listeners = element.__gwtBootstrapModernListeners;
         if (!listeners) {

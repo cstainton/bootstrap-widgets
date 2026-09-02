@@ -23,12 +23,7 @@ package org.gwtbootstrap5.client.ui.base.button;
 import org.gwtbootstrap5.client.ui.base.HasDataToggle;
 import org.gwtbootstrap5.client.ui.base.mixin.DataToggleMixin;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
-import org.gwtbootstrap5.client.ui.constants.Styles;
 import org.gwtbootstrap5.client.ui.constants.Toggle;
-import org.gwtbootstrap5.client.ui.html.Text;
-
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Element;
 
 /**
  * Base class for buttons that can be toggle buttons
@@ -40,8 +35,6 @@ import com.google.gwt.dom.client.Element;
 public abstract class AbstractToggleButton extends AbstractIconButton implements HasDataToggle {
 
     private final DataToggleMixin<AbstractToggleButton> toggleMixin = new DataToggleMixin<AbstractToggleButton>(this);
-    private final Text separator = new Text(" ");
-    private final Caret caret = new Caret();
 
     protected AbstractToggleButton() {
         this(ButtonType.DEFAULT);
@@ -57,7 +50,7 @@ public abstract class AbstractToggleButton extends AbstractIconButton implements
      * @param toggleCaret show/hide the caret for the button
      */
     public void setToggleCaret(final boolean toggleCaret) {
-        caret.setVisible(toggleCaret);
+        setStyleName("dropdown-toggle-no-caret", !toggleCaret);
     }
 
     /**
@@ -71,22 +64,12 @@ public abstract class AbstractToggleButton extends AbstractIconButton implements
     @Override
     public void setDataToggle(final Toggle toggle) {
         toggleMixin.setDataToggle(toggle);
-
-        // We defer to make sure the elements are available to manipulate their position
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                separator.removeFromParent();
-                caret.removeFromParent();
-
-                if (toggle == Toggle.DROPDOWN) {
-                    addStyleName(Styles.DROPDOWN_TOGGLE);
-
-                    add(separator, (Element) getElement());
-                    add(caret, (Element) getElement());
-                }
-            }
-        });
+        setStyleName("dropdown-toggle", toggle == Toggle.DROPDOWN);
+        if (toggle == Toggle.BUTTON) {
+            getElement().setAttribute("aria-pressed", Boolean.toString(isActive()));
+        } else {
+            getElement().removeAttribute("aria-pressed");
+        }
     }
 
     @Override

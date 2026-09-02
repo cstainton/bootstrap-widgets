@@ -23,11 +23,29 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
 
-public class TabListItem extends ElementPanel {
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import org.gwtbootstrap5.client.shared.event.TabShowEvent;
+import org.gwtbootstrap5.client.shared.event.TabShowHandler;
+import org.gwtbootstrap5.client.shared.event.TabShownEvent;
+import org.gwtbootstrap5.client.shared.event.TabShownHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
+import org.gwtbootstrap5.client.ui.base.HasActive;
+import org.gwtbootstrap5.client.ui.base.HasDataTarget;
+import org.gwtbootstrap5.client.ui.base.HasHref;
+import org.gwtbootstrap5.client.ui.base.mixin.DataTargetMixin;
+import org.gwtbootstrap5.client.ui.constants.Toggle;
+
+public class TabListItem extends ElementPanel implements HasActive, HasEnabled, HasHref, HasDataTarget {
 
     private final Anchor anchor = new Anchor();
+    private final DataTargetMixin<Anchor> targetMixin = new DataTargetMixin<Anchor>(anchor);
 
     public TabListItem() {
         super("li");
@@ -36,6 +54,30 @@ public class TabListItem extends ElementPanel {
         anchor.getElement().setAttribute("data-bs-toggle", "tab");
         anchor.getElement().setAttribute("role", "tab");
         super.add(anchor);
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(anchor.getElement(), "show.bs.tab", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new TabShowEvent(TabListItem.this, Event.as(event)));
+            }
+        });
+        BootstrapEventBridge.bind(anchor.getElement(), "shown.bs.tab", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new TabShownEvent(TabListItem.this, Event.as(event)));
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(anchor.getElement());
+        dispose(anchor.getElement());
+        super.onUnload();
     }
 
     public TabListItem(String text, String targetId) {
@@ -56,17 +98,40 @@ public class TabListItem extends ElementPanel {
 
     public void setTarget(String targetId) {
         String id = targetId == null ? "" : targetId;
-        anchor.setHref("#" + id);
-        anchor.getElement().setAttribute("data-bs-target", "#" + id);
+        setDataTarget("#" + id);
     }
 
+    @Override
     public void setHref(String href) {
-        anchor.setHref(href == null ? "#" : href);
-        anchor.getElement().setAttribute("data-bs-target", href == null ? "#" : href);
+        setDataTarget(href == null ? "#" : href);
     }
 
+    @Override
     public String getHref() {
-        return anchor.getHref();
+        return getDataTarget();
+    }
+
+    @Override
+    public void setDataTargetWidgets(List<Widget> widgets) {
+        targetMixin.setDataTargetWidgets(widgets);
+        anchor.setHref(targetMixin.getDataTarget());
+    }
+
+    @Override
+    public void setDataTargetWidget(Widget widget) {
+        targetMixin.setDataTargetWidget(widget);
+        anchor.setHref(targetMixin.getDataTarget());
+    }
+
+    @Override
+    public void setDataTarget(String dataTarget) {
+        targetMixin.setDataTarget(dataTarget);
+        anchor.setHref(dataTarget == null ? "#" : dataTarget);
+    }
+
+    @Override
+    public String getDataTarget() {
+        return targetMixin.getDataTarget();
     }
 
     @Override
@@ -74,19 +139,28 @@ public class TabListItem extends ElementPanel {
         anchor.add(child);
     }
 
+    @Override
     public void setActive(boolean active) {
         anchor.setStyleName("active", active);
         anchor.getElement().setAttribute("aria-selected", active ? "true" : "false");
     }
 
+    @Override
     public boolean isActive() {
         return anchor.getStyleName().contains("active");
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         anchor.setEnabled(enabled);
         anchor.setStyleName("disabled", !enabled);
         anchor.getElement().setAttribute("aria-disabled", enabled ? "false" : "true");
+        anchor.setDataToggle(enabled ? Toggle.TAB : null);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return anchor.isEnabled();
     }
 
     public void showTab() {
@@ -97,9 +171,34 @@ public class TabListItem extends ElementPanel {
         showTab();
     }
 
+    public HandlerRegistration addShowHandler(TabShowHandler handler) {
+        return addHandler(handler, TabShowEvent.getType());
+    }
+
+    public HandlerRegistration addShownHandler(TabShownHandler handler) {
+        return addHandler(handler, TabShownEvent.getType());
+    }
+
+    public String getHTML() {
+        return anchor.getHTML();
+    }
+
+    public void setHTML(String html) {
+        anchor.setHTML(html);
+    }
+
     private static native void show(com.google.gwt.dom.client.Element element) /*-{
         if ($wnd.bootstrap && $wnd.bootstrap.Tab) {
             $wnd.bootstrap.Tab.getOrCreateInstance(element).show();
+        }
+    }-*/;
+
+    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.Tab) {
+            var instance = $wnd.bootstrap.Tab.getInstance(element);
+            if (instance) {
+                instance.dispose();
+            }
         }
     }-*/;
 }

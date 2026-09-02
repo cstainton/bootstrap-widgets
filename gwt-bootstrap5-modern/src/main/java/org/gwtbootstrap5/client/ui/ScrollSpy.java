@@ -26,6 +26,7 @@ package org.gwtbootstrap5.client.ui;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.UIObject;
+import org.gwtbootstrap5.client.ui.base.HasId;
 
 public class ScrollSpy {
 
@@ -37,6 +38,14 @@ public class ScrollSpy {
 
     public static ScrollSpy scrollSpy(UIObject spyOn, String selector) {
         return new ScrollSpy(spyOn.getElement(), selector);
+    }
+
+    public static ScrollSpy scrollSpy(HasId target) {
+        return new ScrollSpy(Document.get().getBody(), targetSelector(target));
+    }
+
+    public static ScrollSpy scrollSpy(UIObject spyOn, HasId target) {
+        return new ScrollSpy(spyOn.getElement(), targetSelector(target));
     }
 
     public static ScrollSpy scrollSpy(Element spyOn, String selector) {
@@ -55,6 +64,18 @@ public class ScrollSpy {
         refresh(spyOn);
     }
 
+    public void dispose() {
+        dispose(spyOn);
+    }
+
+    private static String targetSelector(HasId target) {
+        String id = target == null ? null : target.getId();
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ScrollSpy target element must have id");
+        }
+        return "#" + id;
+    }
+
     private static native void init(Element element) /*-{
         if ($wnd.bootstrap && $wnd.bootstrap.ScrollSpy) {
             $wnd.bootstrap.ScrollSpy.getOrCreateInstance(element);
@@ -66,6 +87,15 @@ public class ScrollSpy {
             var instance = $wnd.bootstrap.ScrollSpy.getOrCreateInstance(element);
             if (instance && instance.refresh) {
                 instance.refresh();
+            }
+        }
+    }-*/;
+
+    private static native void dispose(Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.ScrollSpy) {
+            var instance = $wnd.bootstrap.ScrollSpy.getInstance(element);
+            if (instance) {
+                instance.dispose();
             }
         }
     }-*/;

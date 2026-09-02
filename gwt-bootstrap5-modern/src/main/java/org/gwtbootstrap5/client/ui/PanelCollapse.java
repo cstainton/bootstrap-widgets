@@ -28,5 +28,14 @@ public class PanelCollapse extends Collapse {
     public PanelCollapse() {
         super();
         addStyleName("card-collapse");
+        setToggle(false);
+    }
+
+    /**
+     * @deprecated use {@link #isShown()} instead.
+     */
+    @Deprecated
+    public boolean isIn() {
+        return isShown();
     }
 }

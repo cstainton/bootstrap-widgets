@@ -23,18 +23,28 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import java.util.List;
+
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap5.client.ui.base.HasBadge;
+import org.gwtbootstrap5.client.ui.base.HasDataTarget;
 import org.gwtbootstrap5.client.ui.base.HasDataToggle;
+import org.gwtbootstrap5.client.ui.base.HasHref;
 import org.gwtbootstrap5.client.ui.base.HasIcon;
 import org.gwtbootstrap5.client.ui.base.HasIconPosition;
+import org.gwtbootstrap5.client.ui.base.HasPull;
+import org.gwtbootstrap5.client.ui.base.HasTarget;
+import org.gwtbootstrap5.client.ui.base.HasTargetHistoryToken;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.base.mixin.DataTargetMixin;
 import org.gwtbootstrap5.client.ui.base.mixin.DataToggleMixin;
 import org.gwtbootstrap5.client.ui.base.mixin.FocusableMixin;
 import org.gwtbootstrap5.client.ui.base.mixin.IconTextMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.PullMixin;
 import org.gwtbootstrap5.client.ui.constants.BadgePosition;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
 import org.gwtbootstrap5.client.ui.constants.IconFlip;
@@ -42,16 +52,20 @@ import org.gwtbootstrap5.client.ui.constants.IconPosition;
 import org.gwtbootstrap5.client.ui.constants.IconRotate;
 import org.gwtbootstrap5.client.ui.constants.IconSize;
 import org.gwtbootstrap5.client.ui.constants.IconType;
+import org.gwtbootstrap5.client.ui.constants.Pull;
 import org.gwtbootstrap5.client.ui.constants.Toggle;
 
-public class Anchor extends ElementPanel implements HasEnabled, HasDataToggle, HasIcon, HasIconPosition, HasBadge, Focusable {
+public class Anchor extends ElementPanel implements HasEnabled, HasHref, HasDataTarget, HasDataToggle,
+        HasIcon, HasIconPosition, HasBadge, HasTarget, HasTargetHistoryToken, HasPull, Focusable {
 
     private String targetHistoryToken;
     private Variant buttonVariant;
     private boolean outline;
+    private final DataTargetMixin<Anchor> targetMixin = new DataTargetMixin<Anchor>(this);
     private final DataToggleMixin<Anchor> toggleMixin = new DataToggleMixin<Anchor>(this);
     private final FocusableMixin<Anchor> focusableMixin = new FocusableMixin<Anchor>(this);
     private final IconTextMixin<Anchor> iconTextMixin = new IconTextMixin<Anchor>(this);
+    private final PullMixin<Anchor> pullMixin = new PullMixin<Anchor>(this);
 
     public Anchor() {
         this("#");
@@ -68,27 +82,53 @@ public class Anchor extends ElementPanel implements HasEnabled, HasDataToggle, H
         setText(text);
     }
 
+    @Override
     public void setHref(String href) {
         AnchorElement.as(getElement()).setHref(href == null ? "#" : href);
     }
 
+    @Override
     public String getHref() {
         return AnchorElement.as(getElement()).getHref();
     }
 
+    @Override
+    public void setDataTargetWidgets(List<Widget> widgets) {
+        targetMixin.setDataTargetWidgets(widgets);
+    }
+
+    @Override
+    public void setDataTargetWidget(Widget widget) {
+        targetMixin.setDataTargetWidget(widget);
+    }
+
+    @Override
+    public void setDataTarget(String dataTarget) {
+        targetMixin.setDataTarget(dataTarget);
+    }
+
+    @Override
+    public String getDataTarget() {
+        return targetMixin.getDataTarget();
+    }
+
+    @Override
     public void setTarget(String target) {
         getElement().setAttribute("target", target == null ? "" : target);
     }
 
+    @Override
     public String getTarget() {
         return getElement().getAttribute("target");
     }
 
+    @Override
     public void setTargetHistoryToken(String targetHistoryToken) {
         this.targetHistoryToken = targetHistoryToken;
         setHref(targetHistoryToken == null ? "#" : "#" + History.encodeHistoryToken(targetHistoryToken));
     }
 
+    @Override
     public String getTargetHistoryToken() {
         return targetHistoryToken;
     }
@@ -282,6 +322,16 @@ public class Anchor extends ElementPanel implements HasEnabled, HasDataToggle, H
     @Override
     public boolean isEnabled() {
         return !"true".equals(getElement().getAttribute("aria-disabled"));
+    }
+
+    @Override
+    public void setPull(Pull pull) {
+        pullMixin.setPull(pull);
+    }
+
+    @Override
+    public Pull getPull() {
+        return pullMixin.getPull();
     }
 
     public void setButtonVariant(Variant variant) {

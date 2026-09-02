@@ -5,8 +5,7 @@
  * Copyright (C) 2013 - 2018 GwtBootstrap3
  * %%
  * Modified from the GwtBootstrap3 original for the Bootstrap 5 track of
- * GWT Bootstrap Modern: moved to the org.gwtbootstrap5 namespace and re-targeted
- * at Bootstrap 5 markup, class names and JavaScript APIs.
+ * GWT Bootstrap Modern.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,27 +22,31 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.AbstractButtonGroup;
+import org.gwtbootstrap5.client.ui.constants.ButtonGroupSize;
+import org.gwtbootstrap5.client.ui.constants.Styles;
+
 import com.google.gwt.user.client.ui.Widget;
 
-public class ButtonGroup extends ElementPanel {
+/** A Bootstrap 5 button group with the original GwtBootstrap3 contracts. */
+public class ButtonGroup extends AbstractButtonGroup {
 
     public ButtonGroup() {
-        super("div");
-        addStyleName("btn-group");
+        super(Styles.BTN_GROUP);
         getElement().setAttribute("role", "group");
     }
 
     public void setVertical(boolean vertical) {
-        setStyleName("btn-group-vertical", vertical);
-        setStyleName("btn-group", !vertical);
+        setStyleName(Styles.BTN_GROUP_VERTICAL, vertical);
+        setStyleName(Styles.BTN_GROUP, !vertical);
     }
 
     public void setLarge(boolean large) {
-        setStyleName("btn-group-lg", large);
+        setSize(large ? ButtonGroupSize.LARGE : ButtonGroupSize.DEFAULT);
     }
 
     public void setSmall(boolean small) {
-        setStyleName("btn-group-sm", small);
+        setSize(small ? ButtonGroupSize.SMALL : ButtonGroupSize.DEFAULT);
     }
 
     public void addButton(Widget button) {

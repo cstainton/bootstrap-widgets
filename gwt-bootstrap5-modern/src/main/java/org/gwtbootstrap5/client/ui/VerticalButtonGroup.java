@@ -5,8 +5,7 @@
  * Copyright (C) 2013 - 2018 GwtBootstrap3
  * %%
  * Modified from the GwtBootstrap3 original for the Bootstrap 5 track of
- * GWT Bootstrap Modern: moved to the org.gwtbootstrap5 namespace and re-targeted
- * at Bootstrap 5 markup, class names and JavaScript APIs.
+ * GWT Bootstrap Modern.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +22,20 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class VerticalButtonGroup extends ButtonGroup {
+import org.gwtbootstrap5.client.ui.base.AbstractButtonGroup;
+import org.gwtbootstrap5.client.ui.constants.Styles;
+
+import com.google.gwt.user.client.ui.Widget;
+
+/** Vertical Bootstrap 5 button group retaining the Bootstrap 3 API. */
+public class VerticalButtonGroup extends AbstractButtonGroup {
 
     public VerticalButtonGroup() {
-        super();
-        setVertical(true);
+        super(Styles.BTN_GROUP_VERTICAL);
+        getElement().setAttribute("role", "group");
+    }
+
+    public void addButton(Widget button) {
+        add(button);
     }
 }

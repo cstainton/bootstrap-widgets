@@ -1,37 +1,62 @@
+package org.gwtbootstrap5.client.ui;
+
 /*
  * #%L
  * GwtBootstrap3
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * Copyright (C) 2015 GwtBootstrap3
  * %%
- * Modified from the GwtBootstrap3 original for the Bootstrap 5 track of
- * GWT Bootstrap Modern: moved to the org.gwtbootstrap5 namespace and re-targeted
- * at Bootstrap 5 markup, class names and JavaScript APIs.
+ * Modified for the Bootstrap 5 track of GWT Bootstrap Modern.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
  * #L%
  */
-package org.gwtbootstrap5.client.ui;
 
-public class TooltipHelpBlock extends HelpBlock {
+import com.google.gwt.user.client.ui.InlineLabel;
+import org.gwtbootstrap5.client.ui.constants.IconType;
+import org.gwtbootstrap5.client.ui.constants.Placement;
+
+/** Inline validation help rendered through a Bootstrap 5 tooltip. */
+public class TooltipHelpBlock extends Tooltip {
+
+    private final Icon icon = new Icon();
+    private final InlineLabel label = new InlineLabel();
+    private final ElementPanel help = new ElementPanel("span");
 
     public TooltipHelpBlock() {
-        this("");
+        help.addStyleName("form-text d-inline-flex align-items-center gap-1");
+        help.add(icon);
+        help.add(label);
+        setWidget(help);
+        setPlacement(Placement.RIGHT);
+        addTooltipClassName("tooltip-danger");
+        setIconType(IconType.EXCLAMATION_TRIANGLE);
     }
 
     public TooltipHelpBlock(String text) {
-        super(text);
-        getElement().setAttribute("data-bs-toggle", "tooltip");
-        getElement().setAttribute("title", text == null ? "" : text);
+        this();
+        setText(text);
+    }
+
+    public IconType getIconType() {
+        return icon.getType();
+    }
+
+    public String getText() {
+        return getTitle();
+    }
+
+    @Override
+    public void setText(String text) {
+        String effectiveText = text == null ? "" : text;
+        label.setText(effectiveText);
+        setTitle(effectiveText);
+    }
+
+    public void setIconType(IconType iconType) {
+        icon.setType(iconType);
     }
 }

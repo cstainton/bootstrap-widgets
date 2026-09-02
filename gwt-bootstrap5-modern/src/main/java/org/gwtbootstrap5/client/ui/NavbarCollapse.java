@@ -28,5 +28,6 @@ public class NavbarCollapse extends Collapse {
     public NavbarCollapse() {
         super();
         addStyleName("navbar-collapse");
+        setToggle(false);
     }
 }

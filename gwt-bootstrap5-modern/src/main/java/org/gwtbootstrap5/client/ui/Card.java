@@ -19,13 +19,13 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.html.Div;
 
-public class Card extends FlowPanel {
+public class Card extends Div {
 
-    private final FlowPanel body = new FlowPanel();
+    private final Div body = new Div();
 
     public Card() {
         setStyleName("card shadow-sm");

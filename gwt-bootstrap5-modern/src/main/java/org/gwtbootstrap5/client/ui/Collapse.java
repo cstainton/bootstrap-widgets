@@ -38,6 +38,8 @@ import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
 
 public class Collapse extends ElementPanel {
 
+    private boolean toggle = true;
+
     public Collapse() {
         super("div");
         addStyleName("collapse");
@@ -46,6 +48,9 @@ public class Collapse extends ElementPanel {
     @Override
     protected void onLoad() {
         super.onLoad();
+        if (toggle) {
+            setShown(true);
+        }
         BootstrapEventBridge.bind(getElement(), "show.bs.collapse", new BootstrapEventHandler() {
             @Override
             public void onEvent(NativeEvent event) {
@@ -81,6 +86,10 @@ public class Collapse extends ElementPanel {
 
     public void setShown(boolean shown) {
         setStyleName("show", shown);
+    }
+
+    public void setToggle(boolean toggle) {
+        this.toggle = toggle;
     }
 
     public void setIn(boolean in) {

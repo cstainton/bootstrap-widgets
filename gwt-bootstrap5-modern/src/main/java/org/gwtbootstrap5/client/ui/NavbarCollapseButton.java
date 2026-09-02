@@ -35,7 +35,9 @@ public class NavbarCollapseButton extends Button {
         getElement().setAttribute("type", "button");
         getElement().setAttribute("data-bs-toggle", "collapse");
         setTarget(targetId);
-        setHTML("<span class=\"navbar-toggler-icon\"></span>");
+        ElementPanel icon = new ElementPanel("span");
+        icon.addStyleName("navbar-toggler-icon");
+        add(icon);
     }
 
     public void setTarget(String targetId) {
