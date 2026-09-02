@@ -11,6 +11,22 @@ public class Collapse extends ElementPanel {
         setStyleName("show", shown);
     }
 
+    public void setIn(boolean in) {
+        setShown(in);
+    }
+
+    public boolean isShown() {
+        return getStyleName().contains("show");
+    }
+
+    public boolean isHidden() {
+        return !isShown();
+    }
+
+    public boolean isCollapsing() {
+        return getStyleName().contains("collapsing");
+    }
+
     public void show() {
         show(getElement());
     }

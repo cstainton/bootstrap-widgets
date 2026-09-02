@@ -12,4 +12,16 @@ public class TabPane extends ElementPanel {
         setStyleName("show", active);
         setStyleName("active", active);
     }
+
+    public boolean isActive() {
+        return getStyleName().contains("active");
+    }
+
+    public void setFade(boolean fade) {
+        setStyleName("fade", fade);
+    }
+
+    public void setIn(boolean in) {
+        setStyleName("show", in);
+    }
 }
