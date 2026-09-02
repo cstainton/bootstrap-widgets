@@ -53,6 +53,8 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
 
     private String emptyTableText = "";
     private RowStyles<T> rowStyles;
+    private final ColumnSortList sortList = new ColumnSortList(this::refresh);
+    private boolean headerListenerBound;
 
     public AbstractCellTable(final Element element, final int pageSize,
             final ProvidesKey<T> keyProvider) {
@@ -147,6 +149,30 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
         return footers.get(index);
     }
 
+    /** The columns this table is sorted by, most significant first. */
+    public ColumnSortList getColumnSortList() {
+        return sortList;
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addColumnSortHandler(
+            final ColumnSortEvent.Handler handler) {
+        return addHandler(handler, ColumnSortEvent.getType());
+    }
+
+    /** Style put on a header whose column can be sorted. */
+    protected String getSortableHeaderStyle() {
+        return "sortable";
+    }
+
+    /** Styles put on the header of the column currently sorted. */
+    protected String getSortedAscendingStyle() {
+        return "sorted-ascending";
+    }
+
+    protected String getSortedDescendingStyle() {
+        return "sorted-descending";
+    }
+
     public void setEmptyTableWidget(final String text) {
         emptyTableText = text == null ? "" : text;
         refresh();
@@ -168,6 +194,7 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
 
     @Override
     protected void render() {
+        ensureHeaderListener();
         renderSection(thead, headers, true);
         renderSection(tfoot, footers, false);
         renderBody();
@@ -191,9 +218,22 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
         for (int i = 0; i < cells.size(); i++) {
             final Header<?> header = cells.get(i);
             final String tag = isHeader ? "th" : "td";
+            final StringBuilder classes = new StringBuilder();
             final String styles = header == null ? null : header.getHeaderStyleNames();
+            if (styles != null && !styles.isEmpty()) {
+                classes.append(styles);
+            }
+            if (isHeader && i < columns.size() && columns.get(i).isSortable()) {
+                appendClass(classes, getSortableHeaderStyle());
+                final ColumnSortList.ColumnSortInfo first =
+                        sortList.size() == 0 ? null : sortList.get(0);
+                if (first != null && first.getColumn() == columns.get(i)) {
+                    appendClass(classes, first.isAscending()
+                            ? getSortedAscendingStyle() : getSortedDescendingStyle());
+                }
+            }
             sb.appendHtmlConstant("<" + tag
-                    + (styles == null ? "" : " class=\"" + styles + "\"") + ">");
+                    + (classes.length() == 0 ? "" : " class=\"" + classes + "\"") + ">");
             if (header != null) {
                 header.render(new Cell.Context(0, i, null), sb);
             }
@@ -201,6 +241,16 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
         }
         sb.appendHtmlConstant("</tr>");
         section.setInnerSafeHtml(sb.toSafeHtml());
+    }
+
+    private static void appendClass(final StringBuilder classes, final String name) {
+        if (name == null || name.isEmpty()) {
+            return;
+        }
+        if (classes.length() > 0) {
+            classes.append(' ');
+        }
+        classes.append(name);
     }
 
     private void renderBody() {
@@ -249,6 +299,46 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
             sb.appendHtmlConstant("</tr>");
         }
         tbody.setInnerSafeHtml(sb.toSafeHtml());
+    }
+
+    /** Binds the header click that drives sorting, once. */
+    private void ensureHeaderListener() {
+        if (headerListenerBound) {
+            return;
+        }
+        headerListenerBound = true;
+        thead.unwrap().addEventListener("click", this::onHeaderClick);
+    }
+
+    private void onHeaderClick(final org.teavm.jso.dom.events.Event nativeEvent) {
+        final NativeEvent event = new NativeEvent(nativeEvent);
+        final Element target = event.getEventTarget();
+        if (target == null) {
+            return;
+        }
+        final Element cellElement = closest(target, "th");
+        if (cellElement == null || !thead.isOrHasChild(cellElement)) {
+            return;
+        }
+        final Element rowElement = closest(cellElement, "tr");
+        if (rowElement == null) {
+            return;
+        }
+        final int columnIndex = indexOfChild(rowElement, cellElement);
+        if (columnIndex < 0 || columnIndex >= columns.size()) {
+            return;
+        }
+
+        final Header<?> header = headers.get(columnIndex);
+        if (header != null) {
+            header.onBrowserEvent(new Cell.Context(0, columnIndex, null), cellElement, event);
+        }
+
+        final Column<T, ?> column = columns.get(columnIndex);
+        if (column.isSortable()) {
+            sortList.push(column);
+            ColumnSortEvent.fire(this, sortList);
+        }
     }
 
     /** Attaches a listener for each event type a cell consumes, once per type. */

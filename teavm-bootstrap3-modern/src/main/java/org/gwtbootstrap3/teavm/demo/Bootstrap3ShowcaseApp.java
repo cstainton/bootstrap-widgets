@@ -98,6 +98,9 @@ public final class Bootstrap3ShowcaseApp {
                 + "table.addColumn(new TextColumn<Person>() { ... }, \"Name\");\n"
                 + "ListDataProvider<Person> data = new ListDataProvider<>(people);\n"
                 + "data.addDataDisplay(table);"));
+        column.add(panel("Cell list and cell tree", cellListAndTree(),
+                "CellList<String> list = new CellList<>(new TextCell());\n"
+                + "CellTree tree = new CellTree(model, \"root\");"));
         column.add(panel("Progress and list groups", status(),
                 "Progress progress = new Progress();\n"
                 + "progress.add(new ProgressBar(60));\n"
@@ -125,12 +128,15 @@ public final class Bootstrap3ShowcaseApp {
         table.setStriped(true);
         table.setBordered(true);
 
-        table.addColumn(new com.google.gwt.user.cellview.client.TextColumn<Person>() {
-            @Override
-            public String getValue(final Person person) {
-                return person.name;
-            }
-        }, "Name");
+        final com.google.gwt.user.cellview.client.TextColumn<Person> nameColumn =
+                new com.google.gwt.user.cellview.client.TextColumn<Person>() {
+                    @Override
+                    public String getValue(final Person person) {
+                        return person.name;
+                    }
+                };
+        nameColumn.setSortable(true);
+        table.addColumn(nameColumn, "Name");
 
         table.addColumn(new com.google.gwt.user.cellview.client.TextColumn<Person>() {
             @Override
@@ -160,6 +166,15 @@ public final class Bootstrap3ShowcaseApp {
                 new com.google.gwt.view.client.ListDataProvider<>(people);
         data.addDataDisplay(table);
 
+        // sorting the underlying list and refreshing is the ListHandler pattern
+        final com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler<Person> sortHandler =
+                new com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler<>(
+                        data.getList());
+        sortHandler.setComparator(nameColumn,
+                (a, b) -> a.name.compareTo(b.name));
+        table.addColumnSortHandler(sortHandler);
+        table.addColumnSortHandler(event -> data.refresh());
+
         final Well well = new Well();
         well.add(table);
         well.add(selection);
@@ -167,6 +182,60 @@ public final class Bootstrap3ShowcaseApp {
     }
 
     private static final Paragraph selection = new Paragraph();
+
+    private static Widget cellListAndTree() {
+        final Well well = new Well();
+
+        final com.google.gwt.user.cellview.client.CellList<String> list =
+                new com.google.gwt.user.cellview.client.CellList<>(
+                        new com.google.gwt.cell.client.TextCell());
+        final java.util.List<String> items = new java.util.ArrayList<>();
+        items.add("Analysis");
+        items.add("Engineering");
+        items.add("Research");
+        final com.google.gwt.view.client.ListDataProvider<String> listData =
+                new com.google.gwt.view.client.ListDataProvider<>(items);
+        listData.addDataDisplay(list);
+
+        final com.google.gwt.user.cellview.client.CellTree tree =
+                new com.google.gwt.user.cellview.client.CellTree(new DepartmentModel(), "root");
+
+        well.add(new Heading(HeadingSize.H4, "CellList"));
+        well.add(list);
+        well.add(new Heading(HeadingSize.H4, "CellTree"));
+        well.add(tree);
+        return well;
+    }
+
+    /** Two-level tree: departments, each with people. */
+    private static final class DepartmentModel
+            implements com.google.gwt.user.cellview.client.TreeViewModel {
+
+        @Override
+        public <T> NodeInfo<?> getNodeInfo(final T value) {
+            final java.util.List<String> children = new java.util.ArrayList<>();
+            if ("root".equals(value)) {
+                children.add("Analysis");
+                children.add("Engineering");
+            } else if ("Analysis".equals(value)) {
+                children.add("Ada Lovelace");
+            } else if ("Engineering".equals(value)) {
+                children.add("Grace Hopper");
+                children.add("Alan Turing");
+            } else {
+                return null;
+            }
+            return new DefaultNodeInfo<>(
+                    new com.google.gwt.view.client.ListDataProvider<>(children),
+                    new com.google.gwt.cell.client.TextCell());
+        }
+
+        @Override
+        public boolean isLeaf(final Object value) {
+            return value != null && !"root".equals(value)
+                    && !"Analysis".equals(value) && !"Engineering".equals(value);
+        }
+    }
 
     /** One demo section: heading, live example, and the code behind it. */
     private static Panel panel(final String title, final Widget example, final String code) {
