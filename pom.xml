@@ -10,6 +10,25 @@
   <name>GWT Bootstrap Modern</name>
   <description>Maintained GwtBootstrap3-compatible fork with a separate Bootstrap 5 migration track.</description>
 
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>GWT Bootstrap Modern</name>
+    <url>https://github.com/cstainton/gwtbootstrap-modern</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:https://github.com/cstainton/gwtbootstrap-modern.git</connection>
+    <developerConnection>scm:git:git@github.com:cstainton/gwtbootstrap-modern.git</developerConnection>
+    <url>https://github.com/cstainton/gwtbootstrap-modern</url>
+  </scm>
+
   <modules>
     <module>gwt-bootstrap3-modern</module>
     <module>gwt-bootstrap3-modern-extras</module>
