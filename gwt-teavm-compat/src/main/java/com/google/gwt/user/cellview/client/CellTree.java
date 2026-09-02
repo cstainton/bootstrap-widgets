@@ -50,7 +50,7 @@ import java.util.List;
  * GWT animates open and close and supports keyboard navigation; neither is reproduced
  * here.</p>
  */
-public class CellTree extends Widget {
+public class CellTree extends AbstractCellTree {
 
     /** GWT's default number of children fetched per node. */
     public static final int DEFAULT_LIST_SIZE = 25;
@@ -203,6 +203,7 @@ public class CellTree extends Widget {
 
     public CellTree(final TreeViewModel viewModel, final Object rootValue,
             final Resources resources) {
+        super(viewModel, rootValue);
         this.viewModel = viewModel;
         this.root = Document.get().createDivElement();
         setElement(root);
