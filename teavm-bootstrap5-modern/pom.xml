@@ -39,6 +39,59 @@
 
   <build>
     <plugins>
+      <!--
+        The Bootstrap 5 widget API is compiled from the GWT module's own sources, so the
+        TeaVM build and the GWT build share one definition of every widget rather than
+        maintaining a parallel copy. Two groups are excluded:
+          * CellTable, DataGrid, ButtonCell and FormPanel - the GWT cell-widget and
+            form-submit bridges, which are GWT data-presentation machinery rather than
+            Bootstrap widgets. HTMLPanel and FlowPanel stay: html.Span and
+            html.Paragraph extend them;
+          * the eight JSNI-bridging widgets, which this module re-implements against
+            TeaVM's @JSBody in src/main/java under the same package and API.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>add-shared-bootstrap5-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.basedir}/../gwt-bootstrap5-modern/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>org/gwtbootstrap5/client/ui/gwt/CellTable.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/gwt/DataGrid.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/gwt/ButtonCell.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/gwt/FormPanel.java</exclude>
+            <exclude>org/gwtbootstrap5/client/GwtBootstrap5EntryPoint.java</exclude>
+            <exclude>org/gwtbootstrap5/client/shared/js/JQuery.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Carousel.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Collapse.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Modal.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Popover.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/ScrollSpy.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/TabListItem.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Tooltip.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.teavm</groupId>
         <artifactId>teavm-maven-plugin</artifactId>

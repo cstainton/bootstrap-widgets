@@ -1,32 +1,40 @@
 package com.google.gwt.user.client.ui;
 
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
+import java.util.HashMap;
+import java.util.Map;
+import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
-import org.teavm.jso.dom.events.MouseEvent;
 import org.teavm.jso.dom.events.Registration;
 
-public class Widget implements IsWidget, HasClickHandlers {
-    private Element element;
+/**
+ * Element-backed widget with GWT's handler-registration surface, implemented over
+ * TeaVM DOM events.
+ */
+public class Widget extends UIObject implements IsWidget, HasHandlers, HasClickHandlers, HasDoubleClickHandlers {
+
     private Widget parent;
+    private HandlerManager handlerManager;
+    private boolean attached;
+
+    /** One native listener per DOM event name; it re-dispatches through the handler manager. */
+    private final Map<String, Registration> nativeListeners = new HashMap<>();
 
     @Override
     public Widget asWidget() {
         return this;
-    }
-
-    public Element getElement() {
-        return element;
-    }
-
-    protected void setElement(final Element element) {
-        if (element == null) {
-            throw new IllegalArgumentException("element must not be null");
-        }
-        this.element = element;
     }
 
     public Widget getParent() {
@@ -34,65 +42,121 @@ public class Widget implements IsWidget, HasClickHandlers {
     }
 
     void setParent(final Widget parent) {
-        this.parent = parent;
+        final Widget oldParent = this.parent;
+        if (parent == null) {
+            if (oldParent != null && oldParent.isAttached()) {
+                onDetach();
+            }
+            this.parent = null;
+        } else {
+            if (oldParent != null) {
+                throw new IllegalStateException("Cannot set a new parent without first clearing the old parent");
+            }
+            this.parent = parent;
+            if (parent.isAttached()) {
+                onAttach();
+            }
+        }
+    }
+
+    public boolean isAttached() {
+        return attached;
+    }
+
+    protected void onAttach() {
+        attached = true;
+        onLoad();
+        com.google.gwt.event.logical.shared.AttachEvent.fire(this, true);
+    }
+
+    protected void onDetach() {
+        try {
+            onUnload();
+            com.google.gwt.event.logical.shared.AttachEvent.fire(this, false);
+        } finally {
+            attached = false;
+        }
+    }
+
+    /** Called after this widget is attached to the document. */
+    protected void onLoad() {
+    }
+
+    /** Called before this widget is detached from the document. */
+    protected void onUnload() {
+    }
+
+    /** Registers for attach/detach notifications on this widget. */
+    public HandlerRegistration addAttachHandler(final com.google.gwt.event.logical.shared.AttachEvent.Handler handler) {
+        return addHandler(handler, com.google.gwt.event.logical.shared.AttachEvent.getType());
+    }
+
+    /** Routes an event to a widget's handler manager, as GWT's static helper does. */
+    public static void delegateEvent(final Widget target, final GwtEvent<?> event) {
+        if (target != null) {
+            target.fireEvent(event);
+        }
     }
 
     public void removeFromParent() {
         if (parent instanceof HasWidgets) {
             ((HasWidgets) parent).remove(this);
-        } else if (element != null) {
-            element.removeFromParent();
+        } else if (getElement() != null) {
+            getElement().removeFromParent();
             parent = null;
         }
     }
 
-    public void setStyleName(final String styleName) {
-        element.setClassName(styleName);
-    }
-
-    public void setStyleName(final String styleName, final boolean add) {
-        if (add) {
-            addStyleName(styleName);
-        } else {
-            removeStyleName(styleName);
+    protected HandlerManager ensureHandlers() {
+        if (handlerManager == null) {
+            handlerManager = new HandlerManager(this);
         }
+        return handlerManager;
     }
 
-    public String getStyleName() {
-        return element.getClassName();
+    public <H extends EventHandler> HandlerRegistration addHandler(final H handler, final GwtEvent.Type<H> type) {
+        return ensureHandlers().addHandler(type, handler);
     }
 
-    public void addStyleName(final String styleName) {
-        element.addClassName(styleName);
+    /**
+     * Registers a handler for a browser event, attaching the underlying native listener
+     * on first use for that event name.
+     */
+    public <H extends EventHandler> HandlerRegistration addDomHandler(final H handler, final DomEvent.Type<H> type) {
+        if (handler == null) {
+            throw new IllegalArgumentException("handler must not be null");
+        }
+        ensureNativeListener(type);
+        return ensureHandlers().addHandler(type, handler);
     }
 
-    public void removeStyleName(final String styleName) {
-        element.removeClassName(styleName);
+    private <H extends EventHandler> void ensureNativeListener(final DomEvent.Type<H> type) {
+        final String name = type.getName();
+        if (nativeListeners.containsKey(name)) {
+            return;
+        }
+        final EventListener<Event> listener = nativeEvent -> {
+            final DomEvent<H> event = type.createEvent();
+            event.setNativeEvent(new NativeEvent(nativeEvent));
+            fireEvent(event);
+        };
+        nativeListeners.put(name, getElement().unwrap().onEvent(name, listener));
     }
 
-    public void setVisible(final boolean visible) {
-        element.getStyle().setDisplay(visible ? null : com.google.gwt.dom.client.Style.Display.NONE);
-    }
-
-    public void setTitle(final String title) {
-        element.setAttribute("title", title);
-    }
-
-    public void setWidth(final String width) {
-        element.getStyle().setProperty("width", width);
-    }
-
-    public void setHeight(final String height) {
-        element.getStyle().setProperty("height", height);
+    @Override
+    public void fireEvent(final GwtEvent<?> event) {
+        if (handlerManager != null) {
+            handlerManager.fireEvent(event);
+        }
     }
 
     @Override
     public HandlerRegistration addClickHandler(final ClickHandler handler) {
-        if (handler == null) {
-            throw new IllegalArgumentException("handler must not be null");
-        }
-        final EventListener<MouseEvent> listener = event -> handler.onClick(new ClickEvent(event));
-        final Registration registration = getElement().unwrap().onEvent(MouseEvent.CLICK, listener);
-        return registration::dispose;
+        return addDomHandler(handler, ClickEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDoubleClickHandler(final DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
     }
 }

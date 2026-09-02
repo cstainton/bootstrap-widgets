@@ -1,5 +1,6 @@
 package com.google.gwt.dom.client;
 
+import org.teavm.jso.JSBody;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.xml.Node;
 
@@ -56,16 +57,83 @@ public class Element {
         element.removeAttribute(name);
     }
 
+    /**
+     * Sets a live DOM property. Properties such as {@code checked} and {@code value}
+     * must not be written as attributes: the attribute only seeds the initial value,
+     * so attribute writes are ignored once the user has interacted with the control.
+     */
     public void setPropertyBoolean(final String name, final boolean value) {
-        if (value) {
-            element.setAttribute(name, name);
-        } else {
-            element.removeAttribute(name);
-        }
+        setBooleanProperty(element, name, value);
     }
 
     public boolean getPropertyBoolean(final String name) {
+        return getBooleanProperty(element, name);
+    }
+
+    public void setPropertyString(final String name, final String value) {
+        setStringProperty(element, name, value == null ? "" : value);
+    }
+
+    public String getPropertyString(final String name) {
+        return getStringProperty(element, name);
+    }
+
+    public void setPropertyInt(final String name, final int value) {
+        setIntProperty(element, name, value);
+    }
+
+    public int getPropertyInt(final String name) {
+        return getIntProperty(element, name);
+    }
+
+    @JSBody(params = {"el", "name", "value"}, script = "el[name] = value;")
+    private static native void setBooleanProperty(HTMLElement el, String name, boolean value);
+
+    @JSBody(params = {"el", "name"}, script = "return !!el[name];")
+    private static native boolean getBooleanProperty(HTMLElement el, String name);
+
+    @JSBody(params = {"el", "name", "value"}, script = "el[name] = value;")
+    private static native void setStringProperty(HTMLElement el, String name, String value);
+
+    @JSBody(params = {"el", "name"}, script = "var v = el[name]; return v == null ? null : String(v);")
+    private static native String getStringProperty(HTMLElement el, String name);
+
+    @JSBody(params = {"el", "name", "value"}, script = "el[name] = value;")
+    private static native void setIntProperty(HTMLElement el, String name, int value);
+
+    @JSBody(params = {"el", "name"}, script = "var v = el[name]; return v == null ? 0 : v | 0;")
+    private static native int getIntProperty(HTMLElement el, String name);
+
+    public boolean hasAttribute(final String name) {
         return element.hasAttribute(name);
+    }
+
+    public Element getFirstChildElement() {
+        final org.teavm.jso.dom.html.HTMLElement first = firstElementChild(element);
+        return first == null ? null : new Element(first);
+    }
+
+    @JSBody(params = {"el"}, script = "return el.firstElementChild;")
+    private static native HTMLElement firstElementChild(HTMLElement el);
+
+    public Element getParentElement() {
+        final HTMLElement parent = parentElement(element);
+        return parent == null ? null : new Element(parent);
+    }
+
+    @JSBody(params = {"el"}, script = "return el.parentElement;")
+    private static native HTMLElement parentElement(HTMLElement el);
+
+    public void focus() {
+        element.focus();
+    }
+
+    public void blur() {
+        element.blur();
+    }
+
+    public String getTagName() {
+        return element.getTagName();
     }
 
     public void setId(final String id) {
@@ -122,5 +190,57 @@ public class Element {
         if (parent != null) {
             parent.removeChild((Node) element);
         }
+    }
+
+    public void setInnerSafeHtml(final com.google.gwt.safehtml.shared.SafeHtml html) {
+        setInnerHTML(html == null ? "" : html.asString());
+    }
+
+    public boolean hasParentElement() {
+        return parentElement(element) != null;
+    }
+
+    public boolean isOrHasChild(final Element child) {
+        return child != null && contains(element, child.unwrap());
+    }
+
+    public void removeChild(final Element child) {
+        if (child != null) {
+            element.removeChild((org.teavm.jso.dom.xml.Node) child.unwrap());
+        }
+    }
+
+    public void removeAllChildren() {
+        setInnerHTML("");
+    }
+
+    public void scrollIntoView() {
+        scrollTo(element);
+    }
+
+    @JSBody(params = {"el", "child"}, script = "return el === child || el.contains(child);")
+    private static native boolean contains(HTMLElement el, HTMLElement child);
+
+    @JSBody(params = {"el"}, script = "el.scrollIntoView();")
+    private static native void scrollTo(HTMLElement el);
+
+    public int getTabIndex() {
+        return getPropertyInt("tabIndex");
+    }
+
+    public void setTabIndex(final int index) {
+        setPropertyInt("tabIndex", index);
+    }
+
+    public void setAccessKey(final String key) {
+        if (key == null || key.isEmpty()) {
+            removeAttribute("accesskey");
+        } else {
+            setAttribute("accesskey", key);
+        }
+    }
+
+    public String getAccessKey() {
+        return getAttribute("accesskey");
     }
 }

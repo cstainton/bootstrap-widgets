@@ -82,11 +82,87 @@ public final class Style {
         setProperty("display", display == null ? "" : display.getCssName());
     }
 
+    public String getProperty(final String name) {
+        return element.getStyle().getPropertyValue(name);
+    }
+
     public void setProperty(final String name, final String value) {
         element.getStyle().setProperty(name, value == null ? "" : value);
     }
 
     public void setProperty(final String name, final double value, final Unit unit) {
         setProperty(name, value + unit.suffix);
+    }
+
+    public void setTop(final double value, final Unit unit) {
+        setProperty("top", value, unit);
+    }
+
+    public void setBottom(final double value, final Unit unit) {
+        setProperty("bottom", value, unit);
+    }
+
+    public void setLeft(final double value, final Unit unit) {
+        setProperty("left", value, unit);
+    }
+
+    public void setRight(final double value, final Unit unit) {
+        setProperty("right", value, unit);
+    }
+
+    public void setWidth(final double value, final Unit unit) {
+        setProperty("width", value, unit);
+    }
+
+    public void setHeight(final double value, final Unit unit) {
+        setProperty("height", value, unit);
+    }
+
+    public void setZIndex(final int value) {
+        setProperty("z-index", Integer.toString(value));
+    }
+
+    public void setPosition(final Position position) {
+        setProperty("position", position == null ? "" : position.getCssName());
+    }
+
+    public void clearProperty(final String name) {
+        setProperty(name, "");
+    }
+
+    /** CSS {@code position} keywords. */
+    public enum Position implements HasCssName {
+        STATIC("static"), RELATIVE("relative"), ABSOLUTE("absolute"), FIXED("fixed"), STICKY("sticky");
+
+        private final String cssName;
+
+        Position(final String cssName) {
+            this.cssName = cssName;
+        }
+
+        @Override
+        public String getCssName() {
+            return cssName;
+        }
+    }
+
+    public String getWidth() {
+        return getProperty("width");
+    }
+
+    public String getHeight() {
+        return getProperty("height");
+    }
+
+    public String getDisplay() {
+        return getProperty("display");
+    }
+
+    public String getTop() {
+        return getProperty("top");
+    }
+
+    public String getLeft() {
+        return getProperty("left");
     }
 }

@@ -1,0 +1,129 @@
+/*
+ * TeaVM port of the Bootstrap 5 widget of the same name.
+ *
+ * Identical to the GWT widget in package, API and behaviour; the only difference is
+ * that Bootstrap's JavaScript is reached through {@link BootstrapJs} (TeaVM @JSBody)
+ * rather than JSNI, which TeaVM cannot compile. When the GWT module moves its JSNI
+ * behind a shared interface, this file collapses back into that one definition.
+ */
+package org.gwtbootstrap5.client.ui;
+
+import com.google.gwt.user.client.ui.Widget;
+
+public class Modal extends ElementPanel {
+
+    private final ElementPanel dialog = new ElementPanel("div");
+    private final ElementPanel content = new ElementPanel("div");
+    private ModalHeader header = new ModalHeader();
+    private final ModalBody body = new ModalBody();
+    private ModalSize size = ModalSize.DEFAULT;
+
+    public Modal() {
+        super("div");
+        addStyleName("modal");
+        getElement().setAttribute("tabindex", "-1");
+        dialog.addStyleName("modal-dialog");
+        content.addStyleName("modal-content");
+        content.add(header);
+        content.add(body);
+        dialog.add(content);
+        super.add(dialog);
+    }
+
+    public void setTitle(String title) {
+        header.setTitle(title);
+    }
+
+    public void addToBody(Widget child) {
+        body.add(child);
+    }
+
+    public void addHeader(ModalHeader header) {
+        this.header.removeFromParent();
+        this.header = header == null ? new ModalHeader() : header;
+        content.insert(this.header, 0);
+    }
+
+    public void addFooter(ModalFooter footer) {
+        content.add(footer);
+    }
+
+    @Override
+    public void add(Widget child) {
+        if (child instanceof ModalHeader) {
+            addHeader((ModalHeader) child);
+        } else if (child instanceof ModalFooter) {
+            addFooter((ModalFooter) child);
+        } else if (child instanceof ModalBody) {
+            body.removeFromParent();
+            content.add(child);
+        } else {
+            addToBody(child);
+        }
+    }
+
+    public void setClosable(boolean closable) {
+        header.setClosable(closable);
+    }
+
+    public boolean isClosable() {
+        return header.isClosable();
+    }
+
+    public void setFade(boolean fade) {
+        setStyleName("fade", fade);
+    }
+
+    public void setWidth(String width) {
+        dialog.setWidth(width);
+    }
+
+    public void setSize(ModalSize size) {
+        if (this.size != null && !this.size.cssName().isEmpty()) {
+            dialog.removeStyleName(this.size.cssName());
+        }
+        this.size = size == null ? ModalSize.DEFAULT : size;
+        if (!this.size.cssName().isEmpty()) {
+            dialog.addStyleName(this.size.cssName());
+        }
+    }
+
+    public ModalSize getSize() {
+        return size;
+    }
+
+    public void setDataBackdrop(String backdrop) {
+        if (backdrop == null || backdrop.isEmpty()) {
+            getElement().removeAttribute("data-bs-backdrop");
+        } else {
+            getElement().setAttribute("data-bs-backdrop", backdrop);
+        }
+    }
+
+    public void setDataKeyboard(boolean keyboard) {
+        getElement().setAttribute("data-bs-keyboard", Boolean.toString(keyboard));
+    }
+
+    public void setRemoveOnHide(boolean removeOnHide) {
+        getElement().setAttribute("data-gbm-remove-on-hide", Boolean.toString(removeOnHide));
+    }
+
+    public void setHideOtherModals(boolean hideOtherModals) {
+        getElement().setAttribute("data-gbm-hide-other-modals", Boolean.toString(hideOtherModals));
+    }
+
+    public void show() {
+        BootstrapJs.call("Modal", getElement(), "show");
+    }
+
+    public void hide() {
+        BootstrapJs.call("Modal", getElement(), "hide");
+    }
+
+    public void toggle() {
+        BootstrapJs.call("Modal", getElement(), "toggle");
+    }
+
+
+
+}

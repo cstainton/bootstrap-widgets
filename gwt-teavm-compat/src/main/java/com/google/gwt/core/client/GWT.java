@@ -1,10 +1,93 @@
 package com.google.gwt.core.client;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ServiceLoader;
+
+/**
+ * Deferred-binding entry points.
+ *
+ * <p>GWT resolves {@code GWT.create()} with a compile-time generator chosen per
+ * permutation. TeaVM emits a single artifact, so there is nothing to defer; an
+ * implementation is found in one of two ways:</p>
+ *
+ * <ol>
+ *   <li>an explicit {@link #register} call, which wins if present; or</li>
+ *   <li>a {@link ServiceLoader} lookup, so a library can declare its own default in
+ *       {@code META-INF/services/&lt;interface&gt;} and callers need do nothing.</li>
+ * </ol>
+ *
+ * <p>The service lookup is what keeps {@code GWT.create} out of application code: the
+ * widget library ships defaults for the types it asks for, so a TeaVM consumer never
+ * calls {@code register} unless they are porting a binding of their own.</p>
+ */
 public final class GWT {
+
+    private static final Map<String, Object> REGISTRY = new HashMap<>();
+
     private GWT() {
+    }
+
+    /** Registers the implementation {@code create()} should return for {@code type}. */
+    public static <T> void register(final Class<T> type, final T implementation) {
+        REGISTRY.put(type.getName(), implementation);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T create(final Class<?> classLiteral) {
+        final Object registered = REGISTRY.get(classLiteral.getName());
+        if (registered != null) {
+            return (T) registered;
+        }
+        final Object provided = fromServiceLoader(classLiteral);
+        if (provided != null) {
+            REGISTRY.put(classLiteral.getName(), provided);
+            return (T) provided;
+        }
+        throw new IllegalStateException("No implementation available for GWT.create("
+                + classLiteral.getName() + "). Declare one in "
+                + "META-INF/services/" + classLiteral.getName()
+                + ", or call GWT.register(" + classLiteral.getSimpleName() + ".class, impl).");
+    }
+
+    private static Object fromServiceLoader(final Class<?> classLiteral) {
+        try {
+            final Iterator<?> providers = ServiceLoader.load(classLiteral).iterator();
+            return providers.hasNext() ? providers.next() : null;
+        } catch (final RuntimeException noProvider) {
+            return null;
+        }
+    }
+
+    public static boolean isClient() {
+        return true;
+    }
+
+    public static boolean isProdMode() {
+        return true;
+    }
+
+    public static boolean isScript() {
+        return true;
+    }
+
+    public static String getModuleName() {
+        return "teavm";
+    }
+
+    public static String getModuleBaseURL() {
+        return "./";
     }
 
     public static void log(final String message) {
         System.out.println(message);
+    }
+
+    public static void log(final String message, final Throwable t) {
+        System.out.println(message);
+        if (t != null) {
+            t.printStackTrace();
+        }
     }
 }

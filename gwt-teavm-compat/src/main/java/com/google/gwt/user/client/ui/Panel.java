@@ -1,52 +1,62 @@
 package com.google.gwt.user.client.ui;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
+/** Base class for widgets that contain other widgets. */
 public abstract class Panel extends Widget implements HasWidgets {
-    private final List<Widget> children = new ArrayList<>();
 
     @Override
-    public void add(final Widget widget) {
-        insert(widget, children.size());
-    }
+    public abstract void add(Widget widget);
 
-    public void insert(final Widget widget, final int beforeIndex) {
-        if (widget == null) {
-            throw new IllegalArgumentException("widget must not be null");
-        }
-        widget.removeFromParent();
-        final int index = Math.max(0, Math.min(beforeIndex, children.size()));
-        children.add(index, widget);
-        widget.setParent(this);
-        if (index == children.size() - 1) {
-            getElement().appendChild(widget.getElement());
-        } else {
-            getElement().insertBefore(widget.getElement(), children.get(index + 1).getElement());
-        }
+    public void add(final IsWidget widget) {
+        add(widget == null ? null : widget.asWidget());
     }
 
     @Override
     public void clear() {
-        while (!children.isEmpty()) {
-            remove(children.get(children.size() - 1));
+        final Iterator<Widget> it = iterator();
+        while (it.hasNext()) {
+            it.next();
+            it.remove();
         }
     }
 
     @Override
-    public boolean remove(final Widget widget) {
-        if (widget == null || widget.getParent() != this) {
-            return false;
-        }
-        widget.getElement().removeFromParent();
-        widget.setParent(null);
-        children.remove(widget);
-        return true;
+    public abstract boolean remove(Widget widget);
+
+    public boolean remove(final IsWidget widget) {
+        return widget != null && remove(widget.asWidget());
+    }
+
+    /** Takes ownership of a child: sets its parent and attaches it if this panel is attached. */
+    protected final void adopt(final Widget child) {
+        child.setParent(this);
     }
 
     @Override
-    public Iterator<Widget> iterator() {
-        return children.iterator();
+    protected void onAttach() {
+        super.onAttach();
+        for (final Widget child : this) {
+            if (!child.isAttached()) {
+                child.onAttach();
+            }
+        }
+    }
+
+    @Override
+    protected void onDetach() {
+        for (final Widget child : this) {
+            if (child.isAttached()) {
+                child.onDetach();
+            }
+        }
+        super.onDetach();
+    }
+
+    /** Releases a child: detaches it and clears its parent. */
+    protected final void orphan(final Widget child) {
+        if (child.getParent() == this) {
+            child.setParent(null);
+        }
     }
 }

@@ -1,13 +1,20 @@
 package com.google.gwt.event.dom.client;
 
-public final class ClickEvent {
-    private final org.teavm.jso.dom.events.MouseEvent nativeEvent;
+public class ClickEvent extends DomEvent<ClickHandler> {
 
-    public ClickEvent(final org.teavm.jso.dom.events.MouseEvent nativeEvent) {
-        this.nativeEvent = nativeEvent;
+    private static final Type<ClickHandler> TYPE = new Type<>("click", ClickEvent::new);
+
+    public static Type<ClickHandler> getType() {
+        return TYPE;
     }
 
-    public org.teavm.jso.dom.events.MouseEvent getNativeEvent() {
-        return nativeEvent;
+    @Override
+    public Type<ClickHandler> getAssociatedType() {
+        return TYPE;
+    }
+
+    @Override
+    protected void dispatch(final ClickHandler handler) {
+        handler.onClick(this);
     }
 }

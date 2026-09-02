@@ -8,6 +8,11 @@ public final class RootPanel extends ComplexPanel {
 
     private RootPanel(final Element element) {
         setElement(element);
+        onAttach();
+    }
+
+    /** No-op on TeaVM: there is no window-close detach pass to register with. */
+    public static void detachOnWindowClose(final Widget widget) {
     }
 
     public static RootPanel get() {

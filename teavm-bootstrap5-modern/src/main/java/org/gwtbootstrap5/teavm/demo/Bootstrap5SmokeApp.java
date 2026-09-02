@@ -1,257 +1,126 @@
 package org.gwtbootstrap5.teavm.demo;
 
-import org.gwtbootstrap5.teavm.ui.Alert;
-import org.gwtbootstrap5.teavm.ui.AnchorButton;
-import org.gwtbootstrap5.teavm.ui.Badge;
-import org.gwtbootstrap5.teavm.ui.Button;
-import org.gwtbootstrap5.teavm.ui.ButtonGroup;
-import org.gwtbootstrap5.teavm.ui.ButtonToolBar;
-import org.gwtbootstrap5.teavm.ui.Card;
-import org.gwtbootstrap5.teavm.ui.CardFooter;
-import org.gwtbootstrap5.teavm.ui.CardHeader;
-import org.gwtbootstrap5.teavm.ui.Carousel;
-import org.gwtbootstrap5.teavm.ui.CarouselCaption;
-import org.gwtbootstrap5.teavm.ui.CarouselControl;
-import org.gwtbootstrap5.teavm.ui.CarouselIndicator;
-import org.gwtbootstrap5.teavm.ui.CarouselIndicators;
-import org.gwtbootstrap5.teavm.ui.CarouselSlide;
-import org.gwtbootstrap5.teavm.ui.CheckBox;
-import org.gwtbootstrap5.teavm.ui.Collapse;
-import org.gwtbootstrap5.teavm.ui.Column;
-import org.gwtbootstrap5.teavm.ui.Container;
-import org.gwtbootstrap5.teavm.ui.Divider;
-import org.gwtbootstrap5.teavm.ui.DropDown;
-import org.gwtbootstrap5.teavm.ui.DropDownItem;
-import org.gwtbootstrap5.teavm.ui.Form;
-import org.gwtbootstrap5.teavm.ui.FormGroup;
-import org.gwtbootstrap5.teavm.ui.FormLabel;
-import org.gwtbootstrap5.teavm.ui.HelpBlock;
-import org.gwtbootstrap5.teavm.ui.Heading;
-import org.gwtbootstrap5.teavm.ui.Input;
-import org.gwtbootstrap5.teavm.ui.InputGroup;
-import org.gwtbootstrap5.teavm.ui.InputGroupAddon;
-import org.gwtbootstrap5.teavm.ui.InputGroupButton;
-import org.gwtbootstrap5.teavm.ui.Jumbotron;
-import org.gwtbootstrap5.teavm.ui.Lead;
-import org.gwtbootstrap5.teavm.ui.ListBox;
-import org.gwtbootstrap5.teavm.ui.ListGroup;
-import org.gwtbootstrap5.teavm.ui.ListGroupItem;
-import org.gwtbootstrap5.teavm.ui.Modal;
-import org.gwtbootstrap5.teavm.ui.ModalFooter;
-import org.gwtbootstrap5.teavm.ui.ModalHeader;
-import org.gwtbootstrap5.teavm.ui.Mount;
-import org.gwtbootstrap5.teavm.ui.NavPills;
-import org.gwtbootstrap5.teavm.ui.NavTabs;
-import org.gwtbootstrap5.teavm.ui.Navbar;
-import org.gwtbootstrap5.teavm.ui.NavbarBrand;
-import org.gwtbootstrap5.teavm.ui.NavbarLink;
-import org.gwtbootstrap5.teavm.ui.PageItem;
-import org.gwtbootstrap5.teavm.ui.Pager;
-import org.gwtbootstrap5.teavm.ui.Pagination;
-import org.gwtbootstrap5.teavm.ui.Paragraph;
-import org.gwtbootstrap5.teavm.ui.Popover;
-import org.gwtbootstrap5.teavm.ui.Progress;
-import org.gwtbootstrap5.teavm.ui.ProgressBar;
-import org.gwtbootstrap5.teavm.ui.Radio;
-import org.gwtbootstrap5.teavm.ui.Row;
-import org.gwtbootstrap5.teavm.ui.TextArea;
-import org.gwtbootstrap5.teavm.ui.Tooltip;
-import org.gwtbootstrap5.teavm.ui.Variant;
-import org.gwtbootstrap5.teavm.ui.Well;
+import org.gwtbootstrap5.client.Bootstrap5;
+import org.gwtbootstrap5.client.ui.Alert;
+import org.gwtbootstrap5.client.ui.Badge;
+import org.gwtbootstrap5.client.ui.Button;
+import org.gwtbootstrap5.client.ui.Card;
+import org.gwtbootstrap5.client.ui.CheckBox;
+import org.gwtbootstrap5.client.ui.Column;
+import org.gwtbootstrap5.client.ui.Container;
+import org.gwtbootstrap5.client.ui.Heading;
+import org.gwtbootstrap5.client.ui.ListGroup;
+import org.gwtbootstrap5.client.ui.ListGroupItem;
+import org.gwtbootstrap5.client.ui.Modal;
+import org.gwtbootstrap5.client.ui.Progress;
+import org.gwtbootstrap5.client.ui.ProgressBar;
+import org.gwtbootstrap5.client.ui.Row;
+import org.gwtbootstrap5.client.ui.TextBox;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.form.validator.BlankValidator;
+import org.gwtbootstrap5.client.ui.form.validator.ValidationMessages;
+import org.gwtbootstrap5.client.ui.html.Paragraph;
 
 /**
- * TeaVM compile smoke app for the widget backend prototype.
+ * Smoke page for the TeaVM build, exercising layout, form, status and JavaScript-backed
+ * widgets.
  */
 public final class Bootstrap5SmokeApp {
 
-    private Bootstrap5SmokeApp() {
-    }
-
     public static void main(final String[] args) {
-        final Navbar navbar = new Navbar();
-        navbar.getContainer().add(new NavbarBrand("TeaVM Bootstrap 5", "#"));
-        navbar.getNav().setEndAligned(true);
-        navbar.getNav().add(new NavbarLink("Smoke", "#").setActive(true));
-        Mount.toBody(navbar);
-
         final Container container = new Container();
         container.addStyleName("py-4");
-        container.add(new Heading(1, "GWT Bootstrap 5 Modern TeaVM"));
-        container.add(new Paragraph("TeaVM-rendered Bootstrap 5 widgets using the non-GWT DOM backend."));
-        container.add(new Jumbotron()
-                .add(new Heading(2, "Jumbotron concept"))
-                .add(new Paragraph("Bootstrap 5 renders this through utility classes.")));
 
+        container.add(new Heading(1, "Bootstrap 5 Modern on TeaVM"));
+        container.add(new Paragraph(
+                "Bootstrap 5 widgets from org.gwtbootstrap5.client.ui, running on TeaVM."));
+
+        container.add(buttonRow());
+        container.add(formRow());
+        container.add(statusCard());
+        container.add(modalCard());
+
+        Bootstrap5.mount(container);
+    }
+
+    private static Row buttonRow() {
         final Row row = new Row();
-        row.add(Column.md(6).add(new Button("Primary action")));
-        row.add(Column.md(6).add(new Paragraph("This is compiled by TeaVM, not the GWT compiler.")));
-        container.add(row);
+        row.addStyleName("g-3 mb-4");
 
+        final Column buttons = new Column(12);
+        buttons.setMediumSpan(6);
+        buttons.add(new Button("Default"));
+        buttons.add(new Button("Primary", ButtonType.PRIMARY));
+        buttons.add(new Button("Success", ButtonType.SUCCESS));
+        buttons.add(new Button("Danger", ButtonType.DANGER));
+
+        final Column badges = new Column(12);
+        badges.setMediumSpan(6);
+        badges.add(new Badge("42"));
+        badges.add(new Alert("Alerts, badges and buttons all render from the shared source."));
+
+        row.add(buttons);
+        row.add(badges);
+        return row;
+    }
+
+    private static Row formRow() {
+        final Row row = new Row();
+        row.addStyleName("g-3 mb-4");
+
+        final Column column = new Column(12);
+        final TextBox textBox = new TextBox();
+        textBox.setPlaceholder("A TextBox from the shared widget source");
+
+        final CheckBox checkBox = new CheckBox("Clicking this label toggles the box");
+        checkBox.addValueChangeHandler(event ->
+                textBox.setValue("checkbox is now " + event.getValue()));
+
+        final BlankValidator<String> blank = new BlankValidator<>();
+        final Paragraph message = new Paragraph("Validator message: "
+                + blank.getInvalidMessage(ValidationMessages.Keys.BLANK));
+
+        column.add(textBox);
+        column.add(checkBox);
+        column.add(message);
+        row.add(column);
+        return row;
+    }
+
+    private static Card statusCard() {
         final Card card = new Card();
-        card.addStyleName("mt-4");
-        card.addHeader(new CardHeader("Bootstrap 5 card"));
-        card.addBody(new Heading(2, "Bootstrap 5-native TeaVM widgets"));
-        card.addBody(new Paragraph("This page uses Bootstrap 5 resources and the org.gwtbootstrap5.teavm API."));
-        card.addFooter(new CardFooter("Compiled by TeaVM"));
-        container.add(card);
+        card.addStyleName("mb-4");
 
-        final Row parity = new Row();
-        parity.setStyleName("row g-4 mt-2");
+        final Progress progress = new Progress();
+        progress.add(new ProgressBar(60));
 
-        final Card feedback = new Card();
-        feedback.addBody(new Alert("TeaVM alert using Bootstrap 5 alert classes.", Variant.INFO).setDismissible(true));
-        feedback.addBody(new Badge("rounded badge", Variant.SUCCESS).setPill(true));
-        parity.add(Column.md(6).add(feedback));
+        final ListGroup listGroup = new ListGroup();
+        listGroup.add(new ListGroupItem("Widgets: org.gwtbootstrap5.client.ui"));
+        listGroup.add(new ListGroupItem("DOM and events: TeaVM JSO"));
+        listGroup.add(new ListGroupItem("Bootstrap JS: reached through BootstrapJs"));
+        listGroup.add(new ListGroupItem("Messages: ResourceBundle, resolved at runtime"));
 
-        final ListGroup listGroup = new ListGroup()
-                .add(new ListGroupItem("Plain list group item"))
-                .add(new ListGroupItem("Active list group item").setActive(true))
-                .add(new ListGroupItem("Warning list group item").setVariant(Variant.WARNING));
-        parity.add(Column.md(6).add(listGroup));
+        card.add(new Heading(2, "Status"));
+        card.add(progress);
+        card.add(listGroup);
+        return card;
+    }
 
-        final Well well = new Well();
-        well.add(new Heading(3, "Well concept"));
-        well.add(new Lead("Bootstrap 5 renders this through utility classes."));
-        parity.add(Column.md(12).add(well));
-
-        container.add(parity);
-
-        final Row interactive = new Row();
-        interactive.setStyleName("row g-4 mt-2");
+    private static Card modalCard() {
+        final Card card = new Card();
 
         final Modal modal = new Modal();
-        modal.addHeader(new ModalHeader("TeaVM Bootstrap 5 modal"));
-        modal.addToBody(new Paragraph("Modal uses Bootstrap 5's JavaScript API through TeaVM JSO."));
-        final ModalFooter modalFooter = new ModalFooter();
-        modalFooter.add(new Button("Close").setButtonStyle("btn-secondary").setAttribute("data-bs-dismiss", "modal"));
-        modal.addFooter(modalFooter);
+        modal.setTitle("A Bootstrap 5 modal");
+        modal.setFade(true);
+        modal.addToBody(new Paragraph(
+                "Shown through Bootstrap's own JavaScript, called via TeaVM @JSBody."));
 
-        final Card modalCard = new Card();
-        modalCard.addBody(new Heading(3, "Modal"));
-        final Button showModal = new Button("Open TeaVM modal");
-        showModal.onClick(() -> modal.show());
-        modalCard.addBody(showModal);
-        interactive.add(Column.md(4).add(modalCard));
+        final Button open = new Button("Show modal", ButtonType.PRIMARY);
+        open.addClickHandler(event -> modal.show());
 
-        final DropDown dropDown = new DropDown("TeaVM actions")
-                .addItem(new DropDownItem("First action", "#"))
-                .addMenuWidget(new Divider())
-                .addItem(new DropDownItem("Disabled action", "#").setDisabled(true));
-        final Card dropdownCard = new Card();
-        dropdownCard.addBody(new Heading(3, "Dropdown"));
-        dropdownCard.addBody(dropDown);
-        interactive.add(Column.md(4).add(dropdownCard));
-
-        final Pagination pagination = new Pagination()
-                .add(new PageItem("Previous", "#").setDisabled(true))
-                .add(new PageItem("1", "#"))
-                .add(new PageItem("2", "#").setActive(true))
-                .add(new PageItem("Next", "#"));
-        final Card paginationCard = new Card();
-        paginationCard.addBody(new Heading(3, "Pagination"));
-        paginationCard.addBody(pagination);
-        paginationCard.addBody(new Pager().setAlignToSides(true).setPreviousEnabled(false));
-        interactive.add(Column.md(4).add(paginationCard));
-
-        container.add(interactive);
-
-        final Row controls = new Row();
-        controls.setStyleName("row g-4 mt-2");
-
-        final ButtonToolBar toolbar = new ButtonToolBar();
-        toolbar.add(new ButtonGroup()
-                .add(new Button("Left").setButtonStyle("btn-primary"))
-                .add(new Button("Middle").setButtonStyle("btn-primary"))
-                .add(new Button("Right").setButtonStyle("btn-primary")));
-        toolbar.add(new ButtonGroup()
-                .setVertical(false)
-                .add(new Button("Extra").setButtonStyle("btn-secondary"))
-                .add(new AnchorButton("Anchor", "#", Variant.SECONDARY)));
-        final Card groupsCard = new Card();
-        groupsCard.addBody(new Heading(3, "Button groups"));
-        groupsCard.addBody(toolbar);
-        controls.add(Column.md(4).add(groupsCard));
-
-        final NavTabs tabs = new NavTabs();
-        tabs.addLink("Active", "#").addStyleName("active");
-        tabs.addLink("Profile", "#");
-        final NavPills pills = new NavPills();
-        pills.addStyleName("mt-3");
-        pills.addLink("Build", "#").addStyleName("active");
-        pills.addLink("Release", "#");
-        final Card navCard = new Card();
-        navCard.addBody(new Heading(3, "Nav"));
-        navCard.addBody(tabs);
-        navCard.addBody(pills);
-        controls.add(Column.md(4).add(navCard));
-
-        final Progress progress = new Progress()
-                .add(new ProgressBar(70).setVariant(Variant.SUCCESS).setStriped(true));
-        final Card progressCard = new Card();
-        progressCard.addBody(new Heading(3, "Progress"));
-        progressCard.addBody(progress);
-        controls.add(Column.md(4).add(progressCard));
-
-        container.add(controls);
-
-        final Form form = new Form();
-        form.add(new FormGroup()
-                .add(new FormLabel("Name"))
-                .add(new Input().setPlaceholder("TeaVM input"))
-                .add(new HelpBlock("HelpBlock maps to Bootstrap 5 form-text.")));
-        form.add(new FormGroup()
-                .add(new FormLabel("Notes"))
-                .add(new TextArea().setText("TeaVM textarea")));
-        form.add(new CheckBox("Checked option").setValue(true));
-        form.add(new Radio("Radio option"));
-        form.add(new FormGroup()
-                .add(new FormLabel("ListBox"))
-                .add(new ListBox().addItem("Alpha", "alpha").addItem("Bravo", "bravo")));
-        form.add(new InputGroup()
-                .add(new InputGroupAddon("@"))
-                .add(new Input().setPlaceholder("Grouped input"))
-                .add(new InputGroupButton().add(new Button("Go").setButtonStyle("btn-primary"))));
-        final Card formCard = new Card();
-        formCard.addBody(new Heading(3, "Forms"));
-        formCard.addBody(form);
-        container.add(new Row().add(Column.md(8).add(formCard)));
-
-        final Collapse collapse = new Collapse();
-        collapse.add(new Well().add(new Paragraph("Collapse uses the Bootstrap 5 JS API.")));
-        final Button collapseButton = new Button("Toggle collapse").setButtonStyle("btn-primary");
-        collapseButton.onClick(collapse::toggle);
-        final Tooltip tooltip = new Tooltip(new Button("Tooltip").setButtonStyle("btn-secondary"), "Bootstrap 5 tooltip");
-        tooltip.init();
-        final Popover popover = new Popover(new Button("Popover").setButtonStyle("btn-secondary"), "Popover title", "Bootstrap 5 popover content");
-        popover.init();
-        final Card scriptedCard = new Card();
-        scriptedCard.addBody(new Heading(3, "Collapse, tooltip and popover"));
-        scriptedCard.addBody(collapseButton);
-        scriptedCard.addBody(collapse);
-        scriptedCard.addBody(tooltip);
-        scriptedCard.addBody(popover);
-        container.add(new Row().add(Column.md(8).add(scriptedCard)));
-
-        final String carouselId = "teavmBootstrap5Carousel";
-        final Carousel carousel = new Carousel();
-        carousel.setId(carouselId);
-        final CarouselIndicators indicators = new CarouselIndicators();
-        indicators.addIndicator(new CarouselIndicator(carouselId, 0).setActive(true));
-        indicators.addIndicator(new CarouselIndicator(carouselId, 1));
-        carousel.getElement().insertFirst(indicators.getElement());
-        final CarouselSlide firstSlide = new CarouselSlide(new Well().add(new Paragraph("First TeaVM slide"))).setActive(true);
-        firstSlide.add(new CarouselCaption().add(new Heading(5, "First slide")));
-        carousel.addSlide(firstSlide);
-        carousel.addSlide(new CarouselSlide(new Well().add(new Paragraph("Second TeaVM slide"))));
-        carousel.add(new CarouselControl(carouselId, true));
-        carousel.add(new CarouselControl(carouselId, false));
-        final Card carouselCard = new Card();
-        carouselCard.addBody(new Heading(3, "Carousel"));
-        carouselCard.addBody(carousel);
-        container.add(new Row().add(Column.md(8).add(carouselCard)));
-
-        container.add(modal);
-
-        Mount.toBody(container);
+        card.add(new Heading(2, "Bootstrap JavaScript"));
+        card.add(open);
+        card.add(modal);
+        return card;
     }
 }

@@ -77,6 +77,69 @@ public final class Document {
         return createElement("ul");
     }
 
+    public Element createInputElement(final String type) {
+        final Element input = createElement("input");
+        input.setAttribute("type", type);
+        return input;
+    }
+
+    public Element createTextAreaElement() {
+        return createElement("textarea");
+    }
+
+    public Element createSelectElement() {
+        return createElement("select");
+    }
+
+    public Element createOptionElement() {
+        return createElement("option");
+    }
+
+    public Element createFormElement() {
+        return createElement("form");
+    }
+
+    public Element createPElement() {
+        return createElement("p");
+    }
+
+    public Element createHRElement() {
+        return createElement("hr");
+    }
+
+    public Element createTableElement() {
+        return createElement("table");
+    }
+
+    public Element createNavElement() {
+        return createElement("nav");
+    }
+
+    public Text createTextNode(final String data) {
+        return new Text(HTMLDocument.current().createTextNode(data == null ? "" : data));
+    }
+
+    public Element createTextInputElement() {
+        return createInputElement("text");
+    }
+
+    public Element createCheckInputElement() {
+        return createInputElement("checkbox");
+    }
+
+    public Element createRadioInputElement(final String name) {
+        final Element input = createInputElement("radio");
+        input.setPropertyString("name", name);
+        return input;
+    }
+
+    /** Returns an id unique within the document, matching GWT's {@code gwt-uid-N}. */
+    public String createUniqueId() {
+        return "gwt-uid-" + (++uniqueId);
+    }
+
+    private int uniqueId;
+
     public Element getBody() {
         return new Element(HTMLDocument.current().getBody());
     }
@@ -85,4 +148,19 @@ public final class Document {
         final HTMLElement found = HTMLDocument.current().getElementById(id);
         return found == null ? null : new Element(found);
     }
+
+    /** Builds a synthetic click event, used to programmatically click a widget. */
+    public NativeEvent createClickEvent(final int detail, final int screenX, final int screenY,
+            final int clientX, final int clientY, final boolean ctrlKey, final boolean altKey,
+            final boolean shiftKey, final boolean metaKey) {
+        return new NativeEvent(newMouseEvent("click", clientX, clientY, ctrlKey, altKey, shiftKey, metaKey));
+    }
+
+    @org.teavm.jso.JSBody(
+            params = {"type", "clientX", "clientY", "ctrlKey", "altKey", "shiftKey", "metaKey"},
+            script = "return new MouseEvent(type, {bubbles: true, cancelable: true,"
+                    + " clientX: clientX, clientY: clientY, ctrlKey: ctrlKey,"
+                    + " altKey: altKey, shiftKey: shiftKey, metaKey: metaKey});")
+    private static native org.teavm.jso.dom.events.Event newMouseEvent(String type, int clientX,
+            int clientY, boolean ctrlKey, boolean altKey, boolean shiftKey, boolean metaKey);
 }
