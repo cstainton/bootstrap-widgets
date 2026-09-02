@@ -1,17 +1,26 @@
 package org.gwtbootstrap5.teavm.demo;
 
 import org.gwtbootstrap5.teavm.ui.Alert;
+import org.gwtbootstrap5.teavm.ui.AnchorButton;
 import org.gwtbootstrap5.teavm.ui.Badge;
 import org.gwtbootstrap5.teavm.ui.Button;
+import org.gwtbootstrap5.teavm.ui.ButtonGroup;
+import org.gwtbootstrap5.teavm.ui.ButtonToolBar;
 import org.gwtbootstrap5.teavm.ui.Card;
 import org.gwtbootstrap5.teavm.ui.CardFooter;
 import org.gwtbootstrap5.teavm.ui.CardHeader;
+import org.gwtbootstrap5.teavm.ui.CheckBox;
 import org.gwtbootstrap5.teavm.ui.Column;
 import org.gwtbootstrap5.teavm.ui.Container;
 import org.gwtbootstrap5.teavm.ui.Divider;
 import org.gwtbootstrap5.teavm.ui.DropDown;
 import org.gwtbootstrap5.teavm.ui.DropDownItem;
+import org.gwtbootstrap5.teavm.ui.Form;
+import org.gwtbootstrap5.teavm.ui.FormGroup;
+import org.gwtbootstrap5.teavm.ui.FormLabel;
+import org.gwtbootstrap5.teavm.ui.HelpBlock;
 import org.gwtbootstrap5.teavm.ui.Heading;
+import org.gwtbootstrap5.teavm.ui.Input;
 import org.gwtbootstrap5.teavm.ui.Lead;
 import org.gwtbootstrap5.teavm.ui.ListGroup;
 import org.gwtbootstrap5.teavm.ui.ListGroupItem;
@@ -19,13 +28,19 @@ import org.gwtbootstrap5.teavm.ui.Modal;
 import org.gwtbootstrap5.teavm.ui.ModalFooter;
 import org.gwtbootstrap5.teavm.ui.ModalHeader;
 import org.gwtbootstrap5.teavm.ui.Mount;
+import org.gwtbootstrap5.teavm.ui.NavPills;
+import org.gwtbootstrap5.teavm.ui.NavTabs;
 import org.gwtbootstrap5.teavm.ui.Navbar;
 import org.gwtbootstrap5.teavm.ui.NavbarBrand;
 import org.gwtbootstrap5.teavm.ui.NavbarLink;
 import org.gwtbootstrap5.teavm.ui.PageItem;
 import org.gwtbootstrap5.teavm.ui.Pagination;
 import org.gwtbootstrap5.teavm.ui.Paragraph;
+import org.gwtbootstrap5.teavm.ui.Progress;
+import org.gwtbootstrap5.teavm.ui.ProgressBar;
+import org.gwtbootstrap5.teavm.ui.Radio;
 import org.gwtbootstrap5.teavm.ui.Row;
+import org.gwtbootstrap5.teavm.ui.TextArea;
 import org.gwtbootstrap5.teavm.ui.Variant;
 import org.gwtbootstrap5.teavm.ui.Well;
 
@@ -120,6 +135,61 @@ public final class Bootstrap5SmokeApp {
         interactive.add(Column.md(4).add(paginationCard));
 
         container.add(interactive);
+
+        final Row controls = new Row();
+        controls.setStyleName("row g-4 mt-2");
+
+        final ButtonToolBar toolbar = new ButtonToolBar();
+        toolbar.add(new ButtonGroup()
+                .add(new Button("Left").setButtonStyle("btn-primary"))
+                .add(new Button("Middle").setButtonStyle("btn-primary"))
+                .add(new Button("Right").setButtonStyle("btn-primary")));
+        toolbar.add(new ButtonGroup()
+                .setVertical(false)
+                .add(new Button("Extra").setButtonStyle("btn-secondary"))
+                .add(new AnchorButton("Anchor", "#", Variant.SECONDARY)));
+        final Card groupsCard = new Card();
+        groupsCard.addBody(new Heading(3, "Button groups"));
+        groupsCard.addBody(toolbar);
+        controls.add(Column.md(4).add(groupsCard));
+
+        final NavTabs tabs = new NavTabs();
+        tabs.addLink("Active", "#").addStyleName("active");
+        tabs.addLink("Profile", "#");
+        final NavPills pills = new NavPills();
+        pills.addStyleName("mt-3");
+        pills.addLink("Build", "#").addStyleName("active");
+        pills.addLink("Release", "#");
+        final Card navCard = new Card();
+        navCard.addBody(new Heading(3, "Nav"));
+        navCard.addBody(tabs);
+        navCard.addBody(pills);
+        controls.add(Column.md(4).add(navCard));
+
+        final Progress progress = new Progress()
+                .add(new ProgressBar(70).setVariant(Variant.SUCCESS).setStriped(true));
+        final Card progressCard = new Card();
+        progressCard.addBody(new Heading(3, "Progress"));
+        progressCard.addBody(progress);
+        controls.add(Column.md(4).add(progressCard));
+
+        container.add(controls);
+
+        final Form form = new Form();
+        form.add(new FormGroup()
+                .add(new FormLabel("Name"))
+                .add(new Input().setPlaceholder("TeaVM input"))
+                .add(new HelpBlock("HelpBlock maps to Bootstrap 5 form-text.")));
+        form.add(new FormGroup()
+                .add(new FormLabel("Notes"))
+                .add(new TextArea().setText("TeaVM textarea")));
+        form.add(new CheckBox("Checked option").setValue(true));
+        form.add(new Radio("Radio option"));
+        final Card formCard = new Card();
+        formCard.addBody(new Heading(3, "Forms"));
+        formCard.addBody(form);
+        container.add(new Row().add(Column.md(8).add(formCard)));
+
         container.add(modal);
 
         Mount.toBody(container);

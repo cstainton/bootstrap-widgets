@@ -5,7 +5,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Current Scope
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
-- Bootstrap 5 top-level UI Java classes currently present: `37`, including small enum/helper classes.
+- Bootstrap 5 top-level UI Java classes currently present: `54`, including small enum/helper classes.
 - Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
 
@@ -16,9 +16,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Column` present
 - [x] `Button` present
 - [x] `Anchor`
-- [ ] `AnchorButton`
-- [ ] `ButtonGroup`
-- [ ] `ButtonToolBar`
+- [x] `AnchorButton`
+- [x] `ButtonGroup`
+- [x] `ButtonToolBar`
 - [x] `DropDown`
 - [x] `DropDownMenu`
 - [x] `Divider`
@@ -29,9 +29,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `NavbarNav`
 - [x] `NavbarLink`
 - [x] `NavbarText`
-- [ ] `Nav`
-- [ ] `NavTabs`
-- [ ] `NavPills`
+- [x] `Nav`
+- [x] `NavTabs`
+- [x] `NavPills`
 - [x] `Modal`
 - [x] `ModalHeader`
 - [x] `ModalBody`
@@ -39,20 +39,20 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Alert`
 - [x] `Badge`
 - [x] `Label`
-- [ ] `Progress`
-- [ ] `ProgressBar`
+- [x] `Progress`
+- [x] `ProgressBar`
 - [x] `Pagination`
 - [ ] `Pager`
-- [ ] `Form`
-- [ ] `FormGroup`
-- [ ] `FormLabel`
-- [ ] `Input`
-- [ ] `TextBox`
-- [ ] `TextArea`
+- [x] `Form`
+- [x] `FormGroup`
+- [x] `FormLabel`
+- [x] `Input`
+- [x] `TextBox`
+- [x] `TextArea`
 - [ ] `ListBox`
-- [ ] `CheckBox`
-- [ ] `Radio`
-- [ ] `HelpBlock`
+- [x] `CheckBox`
+- [x] `Radio`
+- [x] `HelpBlock`
 - [ ] `InputGroup`
 - [ ] `InputGroupAddon`
 - [ ] `InputGroupButton`
@@ -73,15 +73,15 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `Affix`
 - [x] `Alert`
 - [x] `Anchor`
-- [ ] `AnchorButton`
+- [x] `AnchorButton`
 - [ ] `AnchorListItem`
 - [x] `Badge`
 - [ ] `BlockQuote`
 - [ ] `BooleanRadioGroup`
 - [ ] `Breadcrumbs`
 - [x] `Button`
-- [ ] `ButtonGroup`
-- [ ] `ButtonToolBar`
+- [x] `ButtonGroup`
+- [x] `ButtonToolBar`
 - [ ] `Caption`
 - [ ] `Carousel`
 - [ ] `CarouselCaption`
@@ -90,7 +90,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `CarouselIndicators`
 - [ ] `CarouselInner`
 - [ ] `CarouselSlide`
-- [ ] `CheckBox`
+- [x] `CheckBox`
 - [ ] `CheckBoxButton`
 - [ ] `Code`
 - [ ] `Collapse`
@@ -106,12 +106,12 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `DropDownHeader`
 - [x] `DropDownMenu`
 - [ ] `FieldSet`
-- [ ] `Form`
+- [x] `Form`
 - [ ] `FormControlStatic`
-- [ ] `FormGroup`
-- [ ] `FormLabel`
+- [x] `FormGroup`
+- [x] `FormLabel`
 - [x] `Heading`
-- [ ] `HelpBlock`
+- [x] `HelpBlock`
 - [ ] `Icon`
 - [ ] `IconStack`
 - [ ] `Image`
@@ -119,7 +119,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `InlineCheckBox`
 - [ ] `InlineHelpBlock`
 - [ ] `InlineRadio`
-- [ ] `Input`
+- [x] `Input`
 - [ ] `InputGroup`
 - [ ] `InputGroupAddon`
 - [ ] `InputGroupButton`
@@ -147,9 +147,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `ModalFooter`
 - [x] `ModalHeader`
 - [ ] `ModalSize`
-- [ ] `Nav`
-- [ ] `NavPills`
-- [ ] `NavTabs`
+- [x] `Nav`
+- [x] `NavPills`
+- [x] `NavTabs`
 - [x] `Navbar`
 - [x] `NavbarBrand`
 - [ ] `NavbarButton`
@@ -171,9 +171,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `PanelHeader`
 - [ ] `Popover`
 - [ ] `Pre`
-- [ ] `Progress`
-- [ ] `ProgressBar`
-- [ ] `Radio`
+- [x] `Progress`
+- [x] `ProgressBar`
+- [x] `Radio`
 - [ ] `RadioButton`
 - [x] `Row`
 - [ ] `ScrollSpy`
@@ -186,8 +186,8 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `TabListItem`
 - [ ] `TabPane`
 - [ ] `TabPanel`
-- [ ] `TextArea`
-- [ ] `TextBox`
+- [x] `TextArea`
+- [x] `TextBox`
 - [ ] `ThumbnailLink`
 - [ ] `ThumbnailPanel`
 - [ ] `Tooltip`
