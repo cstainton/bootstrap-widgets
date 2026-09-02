@@ -1,19 +1,32 @@
 package org.gwtbootstrap5.client.ui;
 
+import java.util.List;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.base.HasDataTarget;
 import org.gwtbootstrap5.client.ui.base.HasDataToggle;
+import org.gwtbootstrap5.client.ui.base.HasId;
+import org.gwtbootstrap5.client.ui.base.HasPull;
+import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
 import org.gwtbootstrap5.client.ui.base.HasSize;
 import org.gwtbootstrap5.client.ui.base.HasType;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.base.mixin.DataTargetMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.IdMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.PullMixin;
 import org.gwtbootstrap5.client.ui.constants.Attributes;
 import org.gwtbootstrap5.client.ui.constants.ButtonSize;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.constants.DeviceSize;
+import org.gwtbootstrap5.client.ui.constants.Pull;
 import org.gwtbootstrap5.client.ui.constants.Toggle;
 
-public class Button extends com.google.gwt.user.client.ui.Button implements HasType<ButtonType>, HasSize<ButtonSize>, HasDataToggle {
+public class Button extends com.google.gwt.user.client.ui.Button implements HasType<ButtonType>, HasSize<ButtonSize>,
+        HasDataToggle, HasDataTarget, HasId, HasResponsiveness, HasPull {
 
     public class ButtonStateHandler {
         private ButtonStateHandler() {
@@ -43,6 +56,9 @@ public class Button extends com.google.gwt.user.client.ui.Button implements HasT
     private String loadingText;
     private boolean loading;
     private Toggle dataToggle;
+    private final DataTargetMixin<Button> targetMixin = new DataTargetMixin<Button>(this);
+    private final IdMixin<Button> idMixin = new IdMixin<Button>(this);
+    private final PullMixin<Button> pullMixin = new PullMixin<Button>(this);
 
     public Button() {
         this("", Variant.SECONDARY);
@@ -178,6 +194,56 @@ public class Button extends com.google.gwt.user.client.ui.Button implements HasT
     @Override
     public Toggle getDataToggle() {
         return dataToggle;
+    }
+
+    @Override
+    public void setDataTargetWidgets(final List<Widget> widgets) {
+        targetMixin.setDataTargetWidgets(widgets);
+    }
+
+    @Override
+    public void setDataTargetWidget(final Widget widget) {
+        targetMixin.setDataTargetWidget(widget);
+    }
+
+    @Override
+    public void setDataTarget(final String dataTarget) {
+        targetMixin.setDataTarget(dataTarget);
+    }
+
+    @Override
+    public String getDataTarget() {
+        return targetMixin.getDataTarget();
+    }
+
+    @Override
+    public void setId(final String id) {
+        idMixin.setId(id);
+    }
+
+    @Override
+    public String getId() {
+        return idMixin.getId();
+    }
+
+    @Override
+    public void setVisibleOn(final DeviceSize deviceSize) {
+        StyleHelper.setVisibleOn(this, deviceSize);
+    }
+
+    @Override
+    public void setHiddenOn(final DeviceSize deviceSize) {
+        StyleHelper.setHiddenOn(this, deviceSize);
+    }
+
+    @Override
+    public void setPull(final Pull pull) {
+        pullMixin.setPull(pull);
+    }
+
+    @Override
+    public Pull getPull() {
+        return pullMixin.getPull();
     }
 
     @Override

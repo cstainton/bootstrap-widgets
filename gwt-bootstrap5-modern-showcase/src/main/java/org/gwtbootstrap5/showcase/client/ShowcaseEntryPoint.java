@@ -124,7 +124,12 @@ import org.gwtbootstrap5.client.ui.TooltipHelpBlock;
 import org.gwtbootstrap5.client.ui.ValueListBox;
 import org.gwtbootstrap5.client.ui.constants.AlertType;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.constants.ColumnOffset;
+import org.gwtbootstrap5.client.ui.constants.ColumnSize;
+import org.gwtbootstrap5.client.ui.constants.IconSize;
+import org.gwtbootstrap5.client.ui.constants.IconType;
 import org.gwtbootstrap5.client.ui.constants.ImageType;
+import org.gwtbootstrap5.client.ui.constants.InputGroupSize;
 import org.gwtbootstrap5.client.ui.constants.LabelType;
 import org.gwtbootstrap5.client.ui.constants.PaginationSize;
 import org.gwtbootstrap5.client.ui.constants.PanelType;
@@ -536,7 +541,16 @@ public class ShowcaseEntryPoint implements EntryPoint {
         right.add(new HTML("<div class='p-3 text-bg-secondary rounded'>.col-md-6</div>"));
         grid.add(left);
         grid.add(right);
-        return panel("Basic", grid, "Column column = new Column(12);\ncolumn.setMediumSpan(6);");
+        Row compatibilityGrid = row();
+        Column stringSized = new Column("XS_12 MD_6");
+        stringSized.add(new HTML("<div class='p-3 text-bg-success rounded'>new Column(\"XS_12 MD_6\")</div>"));
+        Column offset = new Column(ColumnSize.XS_12);
+        offset.addSize(ColumnSize.MD_3);
+        offset.setOffset(ColumnOffset.MD_3);
+        offset.add(new HTML("<div class='p-3 text-bg-warning rounded'>MD_3 with MD_3 offset</div>"));
+        compatibilityGrid.add(stringSized);
+        compatibilityGrid.add(offset);
+        return panel("Basic and Compatibility", stacked(grid, compatibilityGrid), "Column column = new Column(12);\ncolumn.setMediumSpan(6);\nnew Column(\"XS_12 MD_6\");\ncolumn.addSize(ColumnSize.MD_3);\ncolumn.setOffset(ColumnOffset.MD_3);");
     }
 
     private Widget alertsBasicPanel() {
@@ -652,7 +666,19 @@ public class ShowcaseEntryPoint implements EntryPoint {
         input.setPlaceholder("Username");
         inputGroup.add(input);
         inputGroup.add(new InputGroupButton(new Button("Go", ButtonType.PRIMARY)));
-        return panel("Basic", inputGroup, "InputGroup inputGroup = new InputGroup();\ninputGroup.add(new InputGroupAddon(\"@\"));");
+        InputGroup large = new InputGroup();
+        large.setSize(InputGroupSize.LARGE);
+        large.add(new InputGroupAddon("Large"));
+        Input largeInput = new Input("text");
+        largeInput.setPlaceholder("InputGroupSize.LARGE");
+        large.add(largeInput);
+        InputGroup small = new InputGroup();
+        small.setSmall(true);
+        small.add(new InputGroupAddon("Small"));
+        Input smallInput = new Input("text");
+        smallInput.setPlaceholder("setSmall(true)");
+        small.add(smallInput);
+        return panel("Basic and Sizing", stacked(inputGroup, large, small), "InputGroup inputGroup = new InputGroup();\ninputGroup.add(new InputGroupAddon(\"@\"));\ninputGroup.setSize(InputGroupSize.LARGE);\ninputGroup.setSmall(true);");
     }
 
     private Widget listGroupPanel() {
@@ -719,7 +745,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         aligned.setPreviousText("Older");
         aligned.setNextText("Newer");
         aligned.setAlignToSides(true);
-        return panel("Pager", stacked(pager, custom, aligned), "new Pager();\npager.setPreviousText(\"Older\");\npager.setNextText(\"Newer\");\npager.setAlignToSides(true);");
+        Pager iconPager = new Pager();
+        iconPager.setPreviousIcon(IconType.ANGLE_LEFT);
+        iconPager.setNextIcon(IconType.ANGLE_RIGHT);
+        iconPager.setPreviousIconSize(IconSize.LARGE);
+        iconPager.setNextIconSize(IconSize.LARGE);
+        return panel("Pager", stacked(pager, custom, aligned, iconPager), "new Pager();\npager.setPreviousText(\"Older\");\npager.setNextText(\"Newer\");\npager.setAlignToSides(true);\npager.setPreviousIcon(IconType.ANGLE_LEFT);\npager.setNextIcon(IconType.ANGLE_RIGHT);");
     }
 
     private Pagination pagination(PaginationSize size) {
