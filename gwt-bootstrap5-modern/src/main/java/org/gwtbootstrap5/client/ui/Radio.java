@@ -10,4 +10,9 @@ public class Radio extends CheckBox {
         super(text);
         getInput().setType("radio");
     }
+
+    public Radio(String name, String text) {
+        this(text);
+        setName(name);
+    }
 }

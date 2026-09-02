@@ -12,10 +12,19 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Compatibility Notes
 
 - The Bootstrap 5 module now represents the current GwtBootstrap3 top-level widget catalogue, but it is not a source-compatible Bootstrap 3 drop-in. Bootstrap 3-only behaviours are mapped to Bootstrap 5 idioms where possible.
+- The intended migration contract is that composition, event handling, value handling, active/disabled state, and familiar constructors should stay as close to GwtBootstrap3 as possible. Users should normally be thinking about Bootstrap 5 markup/classes, not a new widget programming model.
 - `Panel`, `Well`, `ThumbnailPanel`, `ThumbnailLink`, `PageHeader`, and `Jumbotron` render through Bootstrap 5 card, spacing, border, background, and utility classes.
 - `Affix` maps to `sticky-top`; Bootstrap 5 no longer ships the old affix plugin.
 - `ScrollSpy`, dropdowns, collapse, carousel, popover, tooltip, modal, and tabs use Bootstrap 5 `data-bs-*` attributes and JavaScript APIs rather than jQuery plugins.
 - `CheckBoxButton` preserves the button-toggle concept with explicit `active`/`aria-pressed` state rather than relying on the removed Bootstrap 3 button plugin loading/toggle API.
+
+## Parity Workstream
+
+- Prefer widening the Bootstrap 5 widgets to match GwtBootstrap3-style constructors and methods before asking application code to change.
+- Anchor-backed widgets should compose children into the clickable anchor element.
+- Value widgets should implement GWT value-change semantics where the Bootstrap 3 widget did.
+- Container widgets should expose standard GWT click/double-click handlers unless there is a strong reason not to.
+- Deliberate deviations should be recorded here, not hidden in the showcase.
 
 ## First-Port Priority
 

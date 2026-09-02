@@ -1,6 +1,14 @@
 package org.gwtbootstrap5.client.ui;
 
-public class CheckBox extends ElementPanel {
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.ui.HasValue;
+
+public class CheckBox extends ElementPanel implements HasValue<Boolean>, HasValueChangeHandlers<Boolean> {
 
     private final Input input = new Input("checkbox");
     private final FormLabel label = new FormLabel();
@@ -19,14 +27,54 @@ public class CheckBox extends ElementPanel {
         label.setText(text);
         add(input);
         add(label);
+        input.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                ValueChangeEvent.fire(CheckBox.this, getValue());
+            }
+        });
     }
 
-    public boolean getValue() {
+    @Override
+    public Boolean getValue() {
         return input.getElement().getPropertyBoolean("checked");
     }
 
-    public void setValue(boolean value) {
-        input.getElement().setPropertyBoolean("checked", value);
+    @Override
+    public void setValue(Boolean value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(Boolean value, boolean fireEvents) {
+        Boolean effectiveValue = value != null && value;
+        Boolean oldValue = getValue();
+        input.getElement().setPropertyBoolean("checked", effectiveValue);
+        if (fireEvents && !oldValue.equals(effectiveValue)) {
+            ValueChangeEvent.fire(this, effectiveValue);
+        }
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Boolean> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    public void setName(String name) {
+        input.getElement().setAttribute("name", name == null ? "" : name);
+    }
+
+    public String getName() {
+        return input.getElement().getAttribute("name");
+    }
+
+    public void setEnabled(boolean enabled) {
+        input.getElement().setPropertyBoolean("disabled", !enabled);
+        setStyleName("disabled", !enabled);
+    }
+
+    public boolean isEnabled() {
+        return !input.getElement().getPropertyBoolean("disabled");
     }
 
     protected Input getInput() {

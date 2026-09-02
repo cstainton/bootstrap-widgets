@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public class NavbarLink extends ElementPanel {
 
     private final Anchor anchor = new Anchor();
@@ -8,7 +10,7 @@ public class NavbarLink extends ElementPanel {
         super("li");
         addStyleName("nav-item");
         anchor.addStyleName("nav-link");
-        add(anchor);
+        super.add(anchor);
     }
 
     public NavbarLink(String text, String href) {
@@ -29,6 +31,15 @@ public class NavbarLink extends ElementPanel {
 
     public void setHref(String href) {
         anchor.setHref(href == null ? "#" : href);
+    }
+
+    public String getHref() {
+        return anchor.getHref();
+    }
+
+    @Override
+    public void add(Widget child) {
+        anchor.add(child);
     }
 
     public void setActive(boolean active) {

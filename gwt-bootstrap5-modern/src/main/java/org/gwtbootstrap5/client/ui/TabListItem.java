@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public class TabListItem extends ElementPanel {
 
     private final Anchor anchor = new Anchor();
@@ -10,7 +12,7 @@ public class TabListItem extends ElementPanel {
         anchor.addStyleName("nav-link");
         anchor.getElement().setAttribute("data-bs-toggle", "tab");
         anchor.getElement().setAttribute("role", "tab");
-        add(anchor);
+        super.add(anchor);
     }
 
     public TabListItem(String text, String targetId) {
@@ -28,6 +30,11 @@ public class TabListItem extends ElementPanel {
         String id = targetId == null ? "" : targetId;
         anchor.setHref("#" + id);
         anchor.getElement().setAttribute("data-bs-target", "#" + id);
+    }
+
+    @Override
+    public void add(Widget child) {
+        anchor.add(child);
     }
 
     public void setActive(boolean active) {

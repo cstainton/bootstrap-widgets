@@ -1,6 +1,6 @@
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Widget;
 
 public class DropDownItem extends ElementPanel {
 
@@ -9,7 +9,7 @@ public class DropDownItem extends ElementPanel {
     public DropDownItem() {
         super("li");
         anchor.addStyleName("dropdown-item");
-        add(anchor);
+        super.add(anchor);
     }
 
     public DropDownItem(String text, String href) {
@@ -30,6 +30,15 @@ public class DropDownItem extends ElementPanel {
 
     public void setHref(String href) {
         anchor.setHref(href == null ? "#" : href);
+    }
+
+    public String getHref() {
+        return anchor.getHref();
+    }
+
+    @Override
+    public void add(Widget child) {
+        anchor.add(child);
     }
 
     public void setActive(boolean active) {

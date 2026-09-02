@@ -1,20 +1,68 @@
 package org.gwtbootstrap5.client.ui;
 
-public class Anchor extends com.google.gwt.user.client.ui.Anchor {
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.HasEnabled;
 
+public class Anchor extends ElementPanel implements HasEnabled {
+
+    private String targetHistoryToken;
     private Variant buttonVariant;
     private boolean outline;
 
     public Anchor() {
-        super();
+        this("#");
     }
 
-    public Anchor(String text) {
-        super(text);
+    public Anchor(String href) {
+        super("a");
+        setHref(href);
     }
 
     public Anchor(String text, String href) {
-        super(text, href);
+        this(href);
+        setText(text);
+    }
+
+    public void setHref(String href) {
+        AnchorElement.as(getElement()).setHref(href == null ? "#" : href);
+    }
+
+    public String getHref() {
+        return AnchorElement.as(getElement()).getHref();
+    }
+
+    public void setTarget(String target) {
+        getElement().setAttribute("target", target == null ? "" : target);
+    }
+
+    public String getTarget() {
+        return getElement().getAttribute("target");
+    }
+
+    public void setTargetHistoryToken(String targetHistoryToken) {
+        this.targetHistoryToken = targetHistoryToken;
+        setHref("#" + History.encodeHistoryToken(targetHistoryToken));
+    }
+
+    public String getTargetHistoryToken() {
+        return targetHistoryToken;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        setStyleName("disabled", !enabled);
+        getElement().setAttribute("aria-disabled", enabled ? "false" : "true");
+        if (!enabled) {
+            getElement().setAttribute("tabindex", "-1");
+        } else {
+            getElement().removeAttribute("tabindex");
+        }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !"true".equals(getElement().getAttribute("aria-disabled"));
     }
 
     public void setButtonVariant(Variant variant) {

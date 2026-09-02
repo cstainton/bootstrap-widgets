@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public class PageItem extends ElementPanel {
 
     private final Anchor link = new Anchor();
@@ -8,7 +10,7 @@ public class PageItem extends ElementPanel {
         super("li");
         addStyleName("page-item");
         link.addStyleName("page-link");
-        add(link);
+        super.add(link);
     }
 
     public PageItem(String text, String href) {
@@ -29,6 +31,15 @@ public class PageItem extends ElementPanel {
 
     public void setHref(String href) {
         link.setHref(href == null ? "#" : href);
+    }
+
+    public String getHref() {
+        return link.getHref();
+    }
+
+    @Override
+    public void add(Widget child) {
+        link.add(child);
     }
 
     public void setActive(boolean active) {

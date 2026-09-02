@@ -1,12 +1,14 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.user.client.ui.Widget;
+
 public class AnchorListItem extends ElementPanel {
 
     private final Anchor anchor = new Anchor();
 
     public AnchorListItem() {
         super("li");
-        add(anchor);
+        super.add(anchor);
     }
 
     public AnchorListItem(String text) {
@@ -31,6 +33,23 @@ public class AnchorListItem extends ElementPanel {
 
     public void setHref(String href) {
         anchor.setHref(href == null ? "#" : href);
+    }
+
+    public String getHref() {
+        return anchor.getHref();
+    }
+
+    public void setTargetHistoryToken(String targetHistoryToken) {
+        anchor.setTargetHistoryToken(targetHistoryToken);
+    }
+
+    public String getTargetHistoryToken() {
+        return anchor.getTargetHistoryToken();
+    }
+
+    @Override
+    public void add(Widget child) {
+        anchor.add(child);
     }
 
     public Anchor getAnchor() {

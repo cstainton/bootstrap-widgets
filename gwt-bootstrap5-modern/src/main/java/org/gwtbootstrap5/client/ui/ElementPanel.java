@@ -1,11 +1,18 @@
 package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.ComplexPanel;
-import com.google.gwt.user.client.ui.HasText;
+import com.google.gwt.user.client.ui.HasHTML;
 import com.google.gwt.user.client.ui.Widget;
 
-class ElementPanel extends ComplexPanel implements HasText {
+class ElementPanel extends ComplexPanel implements HasHTML, HasClickHandlers, HasDoubleClickHandlers {
 
     ElementPanel(String tagName) {
         setElement(Document.get().createElement(tagName));
@@ -18,6 +25,16 @@ class ElementPanel extends ComplexPanel implements HasText {
 
     public void insert(Widget child, int beforeIndex) {
         insert(child, getElement(), beforeIndex, true);
+    }
+
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addDomHandler(handler, ClickEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addDoubleClickHandler(DoubleClickHandler handler) {
+        return addDomHandler(handler, DoubleClickEvent.getType());
     }
 
     @Override
