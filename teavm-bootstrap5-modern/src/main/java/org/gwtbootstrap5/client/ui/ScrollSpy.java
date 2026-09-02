@@ -1,15 +1,13 @@
 /*
  * #%L
- * GwtBootstrap3
+ * GWT Bootstrap Modern
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * Copyright (C) 2026 Carl Stainton
  * %%
- * Modified from the GwtBootstrap3 original for the TeaVM track of GWT Bootstrap
- * Modern. Identical to the Bootstrap 5 widget of the same name in package, API
- * and behaviour; it exists separately only because that widget reaches
- * Bootstrap's JavaScript through JSNI, which TeaVM cannot compile. The calls go
- * through BootstrapJs instead. If the JSNI moves behind a shared interface, this
- * file collapses back into the one definition.
+ * Reimplements, over TeaVM's JSO libraries, part of the GWT client API. Class,
+ * method and package names follow GWT (https://github.com/gwtproject/gwt),
+ * Copyright (C) The GWT Project Authors, licensed under the Apache License,
+ * Version 2.0. No GWT source is included.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +22,22 @@
  * limitations under the License.
  * #L%
  */
+
+/*
+ * TeaVM implementation of the Bootstrap 5 widget of the same name.
+ *
+ * Identical to the GWT widget in package, API and behaviour. It exists separately only
+ * because that widget reaches Bootstrap's JavaScript through JSNI, which TeaVM cannot
+ * compile; the calls go through BootstrapJs instead. Keep this file in step with the
+ * GWT one -- or, better, move the remaining JSNI behind a shared seam so both builds
+ * can use a single definition, as BootstrapEventBridge already does for events.
+ */
 package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.UIObject;
+import org.gwtbootstrap5.client.ui.base.HasId;
 
 public class ScrollSpy {
 
@@ -40,6 +49,14 @@ public class ScrollSpy {
 
     public static ScrollSpy scrollSpy(UIObject spyOn, String selector) {
         return new ScrollSpy(spyOn.getElement(), selector);
+    }
+
+    public static ScrollSpy scrollSpy(HasId target) {
+        return new ScrollSpy(Document.get().getBody(), targetSelector(target));
+    }
+
+    public static ScrollSpy scrollSpy(UIObject spyOn, HasId target) {
+        return new ScrollSpy(spyOn.getElement(), targetSelector(target));
     }
 
     public static ScrollSpy scrollSpy(Element spyOn, String selector) {
@@ -57,6 +74,19 @@ public class ScrollSpy {
     public void refresh() {
         BootstrapJs.call("ScrollSpy", spyOn, "refresh");
     }
+
+    public void dispose() {
+        BootstrapJs.dispose("ScrollSpy", spyOn);
+    }
+
+    private static String targetSelector(HasId target) {
+        String id = target == null ? null : target.getId();
+        if (id == null || id.isEmpty()) {
+            throw new IllegalArgumentException("ScrollSpy target element must have id");
+        }
+        return "#" + id;
+    }
+
 
 
 }

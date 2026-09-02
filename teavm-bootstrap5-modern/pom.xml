@@ -81,13 +81,14 @@
             <exclude>org/gwtbootstrap5/client/ui/gwt/FormPanel.java</exclude>
             <exclude>org/gwtbootstrap5/client/GwtBootstrap5EntryPoint.java</exclude>
             <exclude>org/gwtbootstrap5/client/shared/js/JQuery.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/Alert.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/base/AbstractTooltip.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/base/BootstrapEventBridge.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/Carousel.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/Collapse.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/Modal.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Popover.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/ScrollSpy.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/TabListItem.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Tooltip.java</exclude>
           </excludes>
         </configuration>
       </plugin>

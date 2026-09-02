@@ -1,15 +1,13 @@
 /*
  * #%L
- * GwtBootstrap3
+ * GWT Bootstrap Modern
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * Copyright (C) 2026 Carl Stainton
  * %%
- * Modified from the GwtBootstrap3 original for the TeaVM track of GWT Bootstrap
- * Modern. Identical to the Bootstrap 5 widget of the same name in package, API
- * and behaviour; it exists separately only because that widget reaches
- * Bootstrap's JavaScript through JSNI, which TeaVM cannot compile. The calls go
- * through BootstrapJs instead. If the JSNI moves behind a shared interface, this
- * file collapses back into the one definition.
+ * Reimplements, over TeaVM's JSO libraries, part of the GWT client API. Class,
+ * method and package names follow GWT (https://github.com/gwtproject/gwt),
+ * Copyright (C) The GWT Project Authors, licensed under the Apache License,
+ * Version 2.0. No GWT source is included.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +22,41 @@
  * limitations under the License.
  * #L%
  */
+
+/*
+ * TeaVM implementation of the Bootstrap 5 widget of the same name.
+ *
+ * Identical to the GWT widget in package, API and behaviour. It exists separately only
+ * because that widget reaches Bootstrap's JavaScript through JSNI, which TeaVM cannot
+ * compile; the calls go through BootstrapJs instead. Keep this file in step with the
+ * GWT one -- or, better, move the remaining JSNI behind a shared seam so both builds
+ * can use a single definition, as BootstrapEventBridge already does for events.
+ */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
 
-public class TabListItem extends ElementPanel {
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.ui.HasEnabled;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+import org.gwtbootstrap5.client.shared.event.TabShowEvent;
+import org.gwtbootstrap5.client.shared.event.TabShowHandler;
+import org.gwtbootstrap5.client.shared.event.TabShownEvent;
+import org.gwtbootstrap5.client.shared.event.TabShownHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
+import org.gwtbootstrap5.client.ui.base.HasActive;
+import org.gwtbootstrap5.client.ui.base.HasDataTarget;
+import org.gwtbootstrap5.client.ui.base.HasHref;
+import org.gwtbootstrap5.client.ui.base.mixin.DataTargetMixin;
+import org.gwtbootstrap5.client.ui.constants.Toggle;
+
+public class TabListItem extends ElementPanel implements HasActive, HasEnabled, HasHref, HasDataTarget {
 
     private final Anchor anchor = new Anchor();
+    private final DataTargetMixin<Anchor> targetMixin = new DataTargetMixin<Anchor>(anchor);
 
     public TabListItem() {
         super("li");
@@ -39,6 +65,30 @@ public class TabListItem extends ElementPanel {
         anchor.getElement().setAttribute("data-bs-toggle", "tab");
         anchor.getElement().setAttribute("role", "tab");
         super.add(anchor);
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(anchor.getElement(), "show.bs.tab", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new TabShowEvent(TabListItem.this, Event.as(event)));
+            }
+        });
+        BootstrapEventBridge.bind(anchor.getElement(), "shown.bs.tab", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new TabShownEvent(TabListItem.this, Event.as(event)));
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(anchor.getElement());
+        BootstrapJs.dispose("Tab", anchor.getElement());
+        super.onUnload();
     }
 
     public TabListItem(String text, String targetId) {
@@ -59,17 +109,40 @@ public class TabListItem extends ElementPanel {
 
     public void setTarget(String targetId) {
         String id = targetId == null ? "" : targetId;
-        anchor.setHref("#" + id);
-        anchor.getElement().setAttribute("data-bs-target", "#" + id);
+        setDataTarget("#" + id);
     }
 
+    @Override
     public void setHref(String href) {
-        anchor.setHref(href == null ? "#" : href);
-        anchor.getElement().setAttribute("data-bs-target", href == null ? "#" : href);
+        setDataTarget(href == null ? "#" : href);
     }
 
+    @Override
     public String getHref() {
-        return anchor.getHref();
+        return getDataTarget();
+    }
+
+    @Override
+    public void setDataTargetWidgets(List<Widget> widgets) {
+        targetMixin.setDataTargetWidgets(widgets);
+        anchor.setHref(targetMixin.getDataTarget());
+    }
+
+    @Override
+    public void setDataTargetWidget(Widget widget) {
+        targetMixin.setDataTargetWidget(widget);
+        anchor.setHref(targetMixin.getDataTarget());
+    }
+
+    @Override
+    public void setDataTarget(String dataTarget) {
+        targetMixin.setDataTarget(dataTarget);
+        anchor.setHref(dataTarget == null ? "#" : dataTarget);
+    }
+
+    @Override
+    public String getDataTarget() {
+        return targetMixin.getDataTarget();
     }
 
     @Override
@@ -77,19 +150,28 @@ public class TabListItem extends ElementPanel {
         anchor.add(child);
     }
 
+    @Override
     public void setActive(boolean active) {
         anchor.setStyleName("active", active);
         anchor.getElement().setAttribute("aria-selected", active ? "true" : "false");
     }
 
+    @Override
     public boolean isActive() {
         return anchor.getStyleName().contains("active");
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         anchor.setEnabled(enabled);
         anchor.setStyleName("disabled", !enabled);
         anchor.getElement().setAttribute("aria-disabled", enabled ? "false" : "true");
+        anchor.setDataToggle(enabled ? Toggle.TAB : null);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return anchor.isEnabled();
     }
 
     public void showTab() {
@@ -99,5 +181,22 @@ public class TabListItem extends ElementPanel {
     public void showTab(boolean fireEvents) {
         showTab();
     }
+
+    public HandlerRegistration addShowHandler(TabShowHandler handler) {
+        return addHandler(handler, TabShowEvent.getType());
+    }
+
+    public HandlerRegistration addShownHandler(TabShownHandler handler) {
+        return addHandler(handler, TabShownEvent.getType());
+    }
+
+    public String getHTML() {
+        return anchor.getHTML();
+    }
+
+    public void setHTML(String html) {
+        anchor.setHTML(html);
+    }
+
 
 }

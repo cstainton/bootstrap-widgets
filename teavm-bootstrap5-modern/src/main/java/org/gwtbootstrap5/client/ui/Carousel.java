@@ -1,15 +1,13 @@
 /*
  * #%L
- * GwtBootstrap3
+ * GWT Bootstrap Modern
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * Copyright (C) 2026 Carl Stainton
  * %%
- * Modified from the GwtBootstrap3 original for the TeaVM track of GWT Bootstrap
- * Modern. Identical to the Bootstrap 5 widget of the same name in package, API
- * and behaviour; it exists separately only because that widget reaches
- * Bootstrap's JavaScript through JSNI, which TeaVM cannot compile. The calls go
- * through BootstrapJs instead. If the JSNI moves behind a shared interface, this
- * file collapses back into the one definition.
+ * Reimplements, over TeaVM's JSO libraries, part of the GWT client API. Class,
+ * method and package names follow GWT (https://github.com/gwtproject/gwt),
+ * Copyright (C) The GWT Project Authors, licensed under the Apache License,
+ * Version 2.0. No GWT source is included.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +22,41 @@
  * limitations under the License.
  * #L%
  */
+
+/*
+ * TeaVM implementation of the Bootstrap 5 widget of the same name.
+ *
+ * Identical to the GWT widget in package, API and behaviour. It exists separately only
+ * because that widget reaches Bootstrap's JavaScript through JSNI, which TeaVM cannot
+ * compile; the calls go through BootstrapJs instead. Keep this file in step with the
+ * GWT one -- or, better, move the remaining JSNI behind a shared seam so both builds
+ * can use a single definition, as BootstrapEventBridge already does for events.
+ */
 package org.gwtbootstrap5.client.ui;
+
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
+import org.gwtbootstrap5.client.shared.event.CarouselSlidEvent;
+import org.gwtbootstrap5.client.shared.event.CarouselSlidHandler;
+import org.gwtbootstrap5.client.shared.event.CarouselSlideEvent;
+import org.gwtbootstrap5.client.shared.event.CarouselSlideHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
 
 public class Carousel extends ElementPanel {
 
+    public static final String HOVER = "hover";
+    public static final String CAROUSEL = "carousel";
+    public static final String CYCLE = "cycle";
+    public static final String PAUSE = "pause";
+    public static final String PREV = "prev";
+    public static final String NEXT = "next";
+
     private final CarouselInner inner = new CarouselInner();
+    private int interval = 5000;
+    private String pause = HOVER;
+    private boolean wrap = true;
 
     public Carousel() {
         super("div");
@@ -42,11 +70,18 @@ public class Carousel extends ElementPanel {
     }
 
     public void setInterval(int intervalMs) {
-        getElement().setAttribute("data-bs-interval", String.valueOf(intervalMs));
+        interval = intervalMs;
+        reconfigureIfAttached();
+    }
+
+    public void setPause(String pause) {
+        this.pause = pause;
+        reconfigureIfAttached();
     }
 
     public void setWrap(boolean wrap) {
-        getElement().setAttribute("data-bs-wrap", String.valueOf(wrap));
+        this.wrap = wrap;
+        reconfigureIfAttached();
     }
 
     public void addSlide(CarouselSlide slide) {
@@ -72,6 +107,47 @@ public class Carousel extends ElementPanel {
     public void jumpToSlide(int index) {
         BootstrapJs.call("Carousel", getElement(), "to", index);
     }
+
+    public HandlerRegistration addSlideHandler(CarouselSlideHandler handler) {
+        return addHandler(handler, CarouselSlideEvent.getType());
+    }
+
+    public HandlerRegistration addSlidHandler(CarouselSlidHandler handler) {
+        return addHandler(handler, CarouselSlidEvent.getType());
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(getElement(), "slide.bs.carousel", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new CarouselSlideEvent(Carousel.this, Event.as(event)));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "slid.bs.carousel", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new CarouselSlidEvent(Carousel.this, Event.as(event)));
+            }
+        });
+        BootstrapJs.initCarousel(getElement(), interval, pause, wrap);
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(getElement());
+        BootstrapJs.dispose("Carousel", getElement());
+        super.onUnload();
+    }
+
+    private void reconfigureIfAttached() {
+        if (isAttached()) {
+            BootstrapJs.initCarousel(getElement(), interval, pause, wrap);
+        }
+    }
+
+
 
 
 }

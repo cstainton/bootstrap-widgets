@@ -1,15 +1,13 @@
 /*
  * #%L
- * GwtBootstrap3
+ * GWT Bootstrap Modern
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * Copyright (C) 2026 Carl Stainton
  * %%
- * Modified from the GwtBootstrap3 original for the TeaVM track of GWT Bootstrap
- * Modern. Identical to the Bootstrap 5 widget of the same name in package, API
- * and behaviour; it exists separately only because that widget reaches
- * Bootstrap's JavaScript through JSNI, which TeaVM cannot compile. The calls go
- * through BootstrapJs instead. If the JSNI moves behind a shared interface, this
- * file collapses back into the one definition.
+ * Reimplements, over TeaVM's JSO libraries, part of the GWT client API. Class,
+ * method and package names follow GWT (https://github.com/gwtproject/gwt),
+ * Copyright (C) The GWT Project Authors, licensed under the Apache License,
+ * Version 2.0. No GWT source is included.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +22,85 @@
  * limitations under the License.
  * #L%
  */
+
+/*
+ * TeaVM implementation of the Bootstrap 5 widget of the same name.
+ *
+ * Identical to the GWT widget in package, API and behaviour. It exists separately only
+ * because that widget reaches Bootstrap's JavaScript through JSNI, which TeaVM cannot
+ * compile; the calls go through BootstrapJs instead. Keep this file in step with the
+ * GWT one -- or, better, move the remaining JSNI behind a shared seam so both builds
+ * can use a single definition, as BootstrapEventBridge already does for events.
+ */
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import org.gwtbootstrap5.client.shared.event.HiddenEvent;
+import org.gwtbootstrap5.client.shared.event.HiddenHandler;
+import org.gwtbootstrap5.client.shared.event.HideEvent;
+import org.gwtbootstrap5.client.shared.event.HideHandler;
+import org.gwtbootstrap5.client.shared.event.ShowEvent;
+import org.gwtbootstrap5.client.shared.event.ShowHandler;
+import org.gwtbootstrap5.client.shared.event.ShownEvent;
+import org.gwtbootstrap5.client.shared.event.ShownHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
+
 public class Collapse extends ElementPanel {
+
+    private boolean toggle = true;
 
     public Collapse() {
         super("div");
         addStyleName("collapse");
     }
 
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        if (toggle) {
+            setShown(true);
+        }
+        BootstrapEventBridge.bind(getElement(), "show.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new ShowEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "shown.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new ShownEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "hide.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new HideEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "hidden.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new HiddenEvent(event));
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(getElement());
+        BootstrapJs.dispose("Collapse", getElement());
+        super.onUnload();
+    }
+
     public void setShown(boolean shown) {
         setStyleName("show", shown);
+    }
+
+    public void setToggle(boolean toggle) {
+        this.toggle = toggle;
     }
 
     public void setIn(boolean in) {
@@ -53,6 +119,22 @@ public class Collapse extends ElementPanel {
         return getStyleName().contains("collapsing");
     }
 
+    public HandlerRegistration addShowHandler(ShowHandler handler) {
+        return addHandler(handler, ShowEvent.getType());
+    }
+
+    public HandlerRegistration addShownHandler(ShownHandler handler) {
+        return addHandler(handler, ShownEvent.getType());
+    }
+
+    public HandlerRegistration addHideHandler(HideHandler handler) {
+        return addHandler(handler, HideEvent.getType());
+    }
+
+    public HandlerRegistration addHiddenHandler(HiddenHandler handler) {
+        return addHandler(handler, HiddenEvent.getType());
+    }
+
     public void show() {
         BootstrapJs.callCollapse(getElement(), "show");
     }
@@ -64,6 +146,7 @@ public class Collapse extends ElementPanel {
     public void toggle() {
         BootstrapJs.callCollapse(getElement(), "toggle");
     }
+
 
 
 
