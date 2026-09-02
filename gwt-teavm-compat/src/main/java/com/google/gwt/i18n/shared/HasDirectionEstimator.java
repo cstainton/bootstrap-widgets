@@ -22,9 +22,14 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.i18n.client;
+package com.google.gwt.i18n.shared;
 
-/** Deprecated spelling of {@link com.google.gwt.i18n.shared.HasDirectionEstimator}. */
-@Deprecated
-public interface HasDirectionEstimator extends com.google.gwt.i18n.shared.HasDirectionEstimator {
+/** A widget whose text direction can be estimated automatically. */
+public interface HasDirectionEstimator {
+
+    DirectionEstimator getDirectionEstimator();
+
+    void setDirectionEstimator(boolean enabled);
+
+    void setDirectionEstimator(DirectionEstimator directionEstimator);
 }

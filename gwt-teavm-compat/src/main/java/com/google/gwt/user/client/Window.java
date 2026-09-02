@@ -62,4 +62,25 @@ public final class Window {
 
     @org.teavm.jso.JSBody(script = "return (window.pageYOffset || 0) | 0;")
     private static native int scrollTop();
+
+    /** Registers for window resize notifications. */
+    public static com.google.gwt.event.shared.HandlerRegistration addResizeHandler(
+            final com.google.gwt.event.logical.shared.ResizeHandler handler) {
+        if (handler == null) {
+            throw new IllegalArgumentException("handler must not be null");
+        }
+        final org.teavm.jso.dom.events.EventListener<org.teavm.jso.dom.events.Event> listener =
+                event -> handler.onResize(new ResizeEventImpl(getClientWidth(), getClientHeight()));
+        final org.teavm.jso.dom.events.Registration registration =
+                org.teavm.jso.browser.Window.current().onEvent("resize", listener);
+        return registration::dispose;
+    }
+
+    /** Concrete ResizeEvent, since the event's constructor is protected. */
+    private static final class ResizeEventImpl
+            extends com.google.gwt.event.logical.shared.ResizeEvent {
+        ResizeEventImpl(final int width, final int height) {
+            super(width, height);
+        }
+    }
 }

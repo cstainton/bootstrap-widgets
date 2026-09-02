@@ -41,12 +41,12 @@ public final class Document {
         return new Element(HTMLDocument.current().createElement(tagName));
     }
 
-    public Element createDivElement() {
-        return createElement("div");
+    public DivElement createDivElement() {
+        return DivElement.as(createElement("div"));
     }
 
-    public Element createSpanElement() {
-        return createElement("span");
+    public SpanElement createSpanElement() {
+        return SpanElement.as(createElement("span"));
     }
 
     public Element createHElement(final int size) {
@@ -57,8 +57,8 @@ public final class Document {
         return createElement("button");
     }
 
-    public Element createAnchorElement() {
-        return createElement("a");
+    public AnchorElement createAnchorElement() {
+        return AnchorElement.as(createElement("a"));
     }
 
     public Element createBRElement() {
@@ -77,8 +77,8 @@ public final class Document {
         return createElement("img");
     }
 
-    public Element createLabelElement() {
-        return createElement("label");
+    public LabelElement createLabelElement() {
+        return LabelElement.as(createElement("label"));
     }
 
     public Element createLegendElement() {
@@ -101,14 +101,14 @@ public final class Document {
         return createElement("ul");
     }
 
-    public Element createInputElement(final String type) {
+    public InputElement createInputElement(final String type) {
         final Element input = createElement("input");
         input.setAttribute("type", type);
-        return input;
+        return InputElement.as(input);
     }
 
-    public Element createTextAreaElement() {
-        return createElement("textarea");
+    public TextAreaElement createTextAreaElement() {
+        return TextAreaElement.as(createElement("textarea"));
     }
 
     public Element createSelectElement() {
@@ -119,8 +119,8 @@ public final class Document {
         return createElement("option");
     }
 
-    public Element createFormElement() {
-        return createElement("form");
+    public FormElement createFormElement() {
+        return FormElement.as(createElement("form"));
     }
 
     public Element createPElement() {
@@ -147,12 +147,12 @@ public final class Document {
         return createInputElement("text");
     }
 
-    public Element createCheckInputElement() {
+    public InputElement createCheckInputElement() {
         return createInputElement("checkbox");
     }
 
-    public Element createRadioInputElement(final String name) {
-        final Element input = createInputElement("radio");
+    public InputElement createRadioInputElement(final String name) {
+        final InputElement input = createInputElement("radio");
         input.setPropertyString("name", name);
         return input;
     }
@@ -216,4 +216,24 @@ public final class Document {
     @org.teavm.jso.JSBody(params = {"type"},
             script = "return new Event(type, {bubbles: true, cancelable: true});")
     private static native org.teavm.jso.dom.events.Event newEvent(String type);
+
+    public Element createSubmitButtonElement() {
+        final Element button = createElement("button");
+        button.setAttribute("type", "submit");
+        return button;
+    }
+
+    public Element createResetButtonElement() {
+        final Element button = createElement("button");
+        button.setAttribute("type", "reset");
+        return button;
+    }
+
+    public Element createBlockQuoteElement() {
+        return createElement("blockquote");
+    }
+
+    public Element createULElement2() {
+        return createElement("ul");
+    }
 }

@@ -45,6 +45,13 @@ public class SimpleCheckBox extends FocusWidget implements HasName, HasValue<Boo
         setStyleName("gwt-SimpleCheckBox");
     }
 
+    /**
+     * Hook for subclasses to attach their DOM handlers. GWT calls this once, lazily;
+     * here handlers bind on registration, so the default does nothing.
+     */
+    protected void ensureDomEventHandlers() {
+    }
+
     protected InputElement getInputElement() {
         return InputElement.as(getElement());
     }

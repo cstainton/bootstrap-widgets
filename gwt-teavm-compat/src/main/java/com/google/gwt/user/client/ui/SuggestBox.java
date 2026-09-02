@@ -34,7 +34,12 @@ import java.util.List;
 /**
  * A text box with a dropdown of completions supplied by a {@link SuggestOracle}.
  */
-public class SuggestBox extends Composite implements HasValue<String> {
+public class SuggestBox extends Composite implements HasValue<String>, HasEnabled {
+
+    /** Receives the suggestion a user picked. */
+    public interface SuggestionCallback {
+        void onSuggestionSelected(SuggestOracle.Suggestion suggestion);
+    }
 
     /** Renders the suggestion list and reports the user's choice. */
     public static class SuggestionDisplay {
@@ -56,7 +61,10 @@ public class SuggestBox extends Composite implements HasValue<String> {
             return popup;
         }
 
-        protected void showSuggestions(final List<SuggestOracle.Suggestion> suggestions) {
+        protected void showSuggestions(final SuggestBox suggestBox,
+                final java.util.Collection<? extends SuggestOracle.Suggestion> suggestions,
+                final boolean isDisplayStringHTML, final boolean isAutoSelectEnabled,
+                final SuggestionCallback callback) {
             popup.clear();
             if (suggestions.isEmpty()) {
                 hideSuggestions();
@@ -68,7 +76,7 @@ public class SuggestBox extends Composite implements HasValue<String> {
                 item.setHref("javascript:;");
                 item.addClickHandler(event -> {
                     event.preventDefault();
-                    owner.applySuggestion(suggestion);
+                    callback.onSuggestionSelected(suggestion);
                 });
                 popup.add(item);
             }
@@ -83,6 +91,40 @@ public class SuggestBox extends Composite implements HasValue<String> {
 
         public boolean isSuggestionListShowing() {
             return popup.isVisible();
+        }
+
+        /** The panel the suggestions are rendered into. */
+        protected Widget getPopupPanel() {
+            return popup;
+        }
+
+        protected void setPositionRelativeTo(final UIObject target) {
+        }
+    }
+
+    /**
+     * The display GWT uses by default: a popup list beneath the text box.
+     */
+    public static class DefaultSuggestionDisplay extends SuggestionDisplay {
+
+        private boolean animationEnabled;
+
+        public boolean isAnimationEnabled() {
+            return animationEnabled;
+        }
+
+        public void setAnimationEnabled(final boolean enable) {
+            animationEnabled = enable;
+        }
+
+        /** GWT exposes the popup so callers can restyle or reposition it. */
+        @Override
+        public PopupPanel getPopupPanel() {
+            return null;
+        }
+
+        public void hideSuggestions() {
+            super.hideSuggestions();
         }
     }
 
@@ -122,19 +164,28 @@ public class SuggestBox extends Composite implements HasValue<String> {
         final String query = box.getValueAsString();
         oracle.requestSuggestions(new SuggestOracle.Request(query, limit),
                 (request, response) -> {
-                    final List<SuggestOracle.Suggestion> list =
-                            new ArrayList<>(response.getSuggestions());
-                    display.showSuggestions(list);
+                    display.showSuggestions(this, response.getSuggestions(),
+                            oracle.isDisplayStringHTML(), true, this::applySuggestion);
                 });
     }
 
-    void applySuggestion(final SuggestOracle.Suggestion suggestion) {
+    public void applySuggestion(final SuggestOracle.Suggestion suggestion) {
         setValue(suggestion.getReplacementString(), true);
         display.hideSuggestions();
     }
 
     public ValueBoxBase<String> getTextBox() {
         return box;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return box.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(final boolean enabled) {
+        box.setEnabled(enabled);
     }
 
     public SuggestOracle getSuggestOracle() {

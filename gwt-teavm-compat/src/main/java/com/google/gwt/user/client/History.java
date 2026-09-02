@@ -53,4 +53,24 @@ public final class History {
                 .replace(";", "%3B")
                 .replace("+", "%2B");
     }
+
+    /** Sets the history token, which for a hash-based app navigates the page. */
+    public static void newItem(final String token) {
+        newItem(token, true);
+    }
+
+    public static void newItem(final String token, final boolean issueEvent) {
+        setHash(token == null ? "" : token);
+    }
+
+    public static String getToken() {
+        final String hash = currentHash();
+        return hash == null || hash.isEmpty() ? "" : hash.substring(1);
+    }
+
+    @org.teavm.jso.JSBody(params = {"t"}, script = "window.location.hash = t;")
+    private static native void setHash(String t);
+
+    @org.teavm.jso.JSBody(script = "return window.location.hash;")
+    private static native String currentHash();
 }

@@ -22,9 +22,25 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.i18n.client;
+package com.google.gwt.dom.client;
 
-/** Deprecated spelling of {@link com.google.gwt.i18n.shared.HasDirectionEstimator}. */
-@Deprecated
-public interface HasDirectionEstimator extends com.google.gwt.i18n.shared.HasDirectionEstimator {
+import org.teavm.jso.dom.html.HTMLElement;
+
+/** Typed view of a {@code <div>} element. */
+public class DivElement extends Element {
+
+    public static final String TAG = "div";
+
+    public DivElement(final HTMLElement element) {
+        super(element);
+    }
+
+    public static DivElement as(final Element element) {
+        return element == null ? null : new DivElement(element.unwrap());
+    }
+
+    /** True when the element is a {@code <div>}. */
+    public static boolean is(final Element element) {
+        return element != null && TAG.equalsIgnoreCase(element.getTagName());
+    }
 }

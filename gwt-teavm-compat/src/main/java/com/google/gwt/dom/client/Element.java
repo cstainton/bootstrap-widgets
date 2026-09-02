@@ -317,4 +317,30 @@ public class Element {
         final HTMLElement next = nextElementSibling(element);
         return next == null ? null : new Element(next);
     }
+
+    public int getAbsoluteRight() {
+        return getAbsoluteLeft() + getOffsetWidth();
+    }
+
+    public int getAbsoluteBottom() {
+        return getAbsoluteTop() + getOffsetHeight();
+    }
+
+    /** Appends a text node, as GWT's overload does. */
+    public void appendChild(final Text text) {
+        if (text != null) {
+            element.appendChild(text.unwrap());
+        }
+    }
+
+    public void insertBefore(final Text text, final Element before) {
+        if (text == null) {
+            return;
+        }
+        if (before == null) {
+            element.appendChild(text.unwrap());
+        } else {
+            element.insertBefore(text.unwrap(), (org.teavm.jso.dom.xml.Node) before.unwrap());
+        }
+    }
 }

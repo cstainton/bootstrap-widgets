@@ -176,4 +176,29 @@ public abstract class UIObject {
     public void setTabIndex(final int index) {
         getElement().setPropertyInt("tabIndex", index);
     }
+
+    public void ensureDebugId(final String id) {
+        onEnsureDebugId(id);
+    }
+
+    protected void onEnsureDebugId(final String baseId) {
+        getElement().setId(DEBUG_ID_PREFIX + baseId);
+    }
+
+    /** Sets a debug id on a nested element, as GWT's static helper does. */
+    public static void ensureDebugId(final com.google.gwt.dom.client.Element element,
+            final String baseId) {
+        if (element != null) {
+            element.setId(DEBUG_ID_PREFIX + baseId);
+        }
+    }
+
+    public static void ensureDebugId(final com.google.gwt.dom.client.Element element,
+            final String baseId, final String id) {
+        if (element != null) {
+            element.setId(DEBUG_ID_PREFIX + baseId + "-" + id);
+        }
+    }
+
+    public static final String DEBUG_ID_PREFIX = "gwt-debug-";
 }

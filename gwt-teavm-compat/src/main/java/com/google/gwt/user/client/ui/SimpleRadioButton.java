@@ -25,12 +25,17 @@
 package com.google.gwt.user.client.ui;
 
 import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.InputElement;
 
 /** A radio button with no label of its own. */
 public class SimpleRadioButton extends SimpleCheckBox {
 
     public SimpleRadioButton(final String name) {
-        super(Document.get().createRadioInputElement(name));
+        this(Document.get().createRadioInputElement(name));
+    }
+
+    protected SimpleRadioButton(final InputElement element) {
+        super(element);
         setStyleName("gwt-SimpleRadioButton");
     }
 }

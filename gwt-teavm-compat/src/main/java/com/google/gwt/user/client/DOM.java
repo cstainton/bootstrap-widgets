@@ -25,7 +25,7 @@
 package com.google.gwt.user.client;
 
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
+
 import com.google.gwt.dom.client.NativeEvent;
 
 /** Element creation and low-level DOM helpers. */
@@ -34,52 +34,52 @@ public final class DOM {
     private DOM() {
     }
 
-    public static void appendChild(final Element parent, final Element child) {
+    public static void appendChild(final com.google.gwt.dom.client.Element parent, final com.google.gwt.dom.client.Element child) {
         parent.appendChild(child);
     }
 
-    public static void insertChild(final Element parent, final Element child, final int index) {
+    public static void insertChild(final com.google.gwt.dom.client.Element parent, final com.google.gwt.dom.client.Element child, final int index) {
         parent.insertBefore(child, childAt(parent, index));
     }
 
-    public static void removeChild(final Element parent, final Element child) {
+    public static void removeChild(final com.google.gwt.dom.client.Element parent, final com.google.gwt.dom.client.Element child) {
         parent.removeChild(child);
     }
 
     public static Element createLabel() {
-        return Document.get().createElement("label");
+        return Element.as(Document.get().createElement("label"));
     }
 
     public static Element createDiv() {
-        return Document.get().createDivElement();
+        return Element.as(Document.get().createDivElement());
     }
 
     public static Element createSpan() {
-        return Document.get().createSpanElement();
+        return Element.as(Document.get().createSpanElement());
     }
 
     public static Element createAnchor() {
-        return Document.get().createAnchorElement();
+        return Element.as(Document.get().createAnchorElement());
     }
 
     public static Element createInputCheck() {
-        return Document.get().createCheckInputElement();
+        return Element.as(Document.get().createCheckInputElement());
     }
 
     public static Element createInputRadio(final String name) {
-        return Document.get().createRadioInputElement(name);
+        return Element.as(Document.get().createRadioInputElement(name));
     }
 
     public static Element createButton() {
-        return Document.get().createPushButtonElement();
+        return Element.as(Document.get().createPushButtonElement());
     }
 
     public static Element createTable() {
-        return Document.get().createTableElement();
+        return Element.as(Document.get().createTableElement());
     }
 
     public static Element getElementById(final String id) {
-        return Document.get().getElementById(id);
+        return Element.as(Document.get().getElementById(id));
     }
 
     public static String createUniqueId() {
@@ -117,14 +117,15 @@ public final class DOM {
      * No-op. GWT registers an element with its central event dispatcher here; this
      * layer binds listeners when a handler is added instead.
      */
-    public static void setEventListener(final Element element, final Object listener) {
+    public static void setEventListener(final com.google.gwt.dom.client.Element element, final Object listener) {
     }
 
-    public static void sinkEvents(final Element element, final int eventBits) {
+    public static void sinkEvents(final com.google.gwt.dom.client.Element element, final int eventBits) {
     }
 
-    private static Element childAt(final Element parent, final int index) {
-        Element child = parent.getFirstChildElement();
+    private static com.google.gwt.dom.client.Element childAt(
+            final com.google.gwt.dom.client.Element parent, final int index) {
+        com.google.gwt.dom.client.Element child = parent.getFirstChildElement();
         for (int i = 0; i < index && child != null; i++) {
             child = child.getNextSiblingElement();
         }

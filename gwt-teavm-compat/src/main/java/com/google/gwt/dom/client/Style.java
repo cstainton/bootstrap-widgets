@@ -28,12 +28,18 @@ import org.teavm.jso.dom.html.HTMLElement;
 
 public final class Style {
     public enum Unit {
-        PX("px"), PCT("%"), EM("em"), REM("rem");
+        PX("px"), PCT("%"), EM("em"), REM("rem"), EX("ex"), PT("pt"), PC("pc"),
+        IN("in"), CM("cm"), MM("mm");
 
         private final String suffix;
 
         Unit(final String suffix) {
             this.suffix = suffix;
+        }
+
+        /** The CSS unit suffix, e.g. {@code "px"}. */
+        public String getType() {
+            return suffix;
         }
     }
 
@@ -212,5 +218,9 @@ public final class Style {
         public String getCssName() {
             return cssName;
         }
+    }
+
+    public String getWhiteSpace() {
+        return getProperty("white-space");
     }
 }

@@ -54,4 +54,57 @@ public class Image extends Widget {
     public void setAltText(final String altText) {
         getElement().setAttribute("alt", altText == null ? "" : altText);
     }
+
+    public Image(final com.google.gwt.safehtml.shared.SafeUri url) {
+        this();
+        setUrl(url);
+    }
+
+    public Image(final String url, final int left, final int top, final int width, final int height) {
+        this();
+        setUrlAndVisibleRect(url, left, top, width, height);
+    }
+
+    public Image(final com.google.gwt.safehtml.shared.SafeUri url, final int left, final int top,
+            final int width, final int height) {
+        this(url == null ? "" : url.asString(), left, top, width, height);
+    }
+
+    public Image(final com.google.gwt.resources.client.ImageResource resource) {
+        this();
+        setResource(resource);
+    }
+
+    public void setUrl(final com.google.gwt.safehtml.shared.SafeUri url) {
+        setUrl(url == null ? "" : url.asString());
+    }
+
+    public void setResource(final com.google.gwt.resources.client.ImageResource resource) {
+        if (resource == null) {
+            return;
+        }
+        setUrlAndVisibleRect(resource.getURL(), resource.getLeft(), resource.getTop(),
+                resource.getWidth(), resource.getHeight());
+    }
+
+    /**
+     * Shows a rectangle of a larger image, as GWT's clipped mode does: the image
+     * becomes a sized element with the source as a positioned background.
+     */
+    public void setUrlAndVisibleRect(final String url, final int left, final int top,
+            final int width, final int height) {
+        getElement().removeAttribute("src");
+        getElement().getStyle().setProperty("background-image", "url(" + url + ")");
+        getElement().getStyle().setProperty("background-position", -left + "px " + -top + "px");
+        getElement().getStyle().setProperty("width", width + "px");
+        getElement().getStyle().setProperty("height", height + "px");
+    }
+
+    public int getOriginLeft() {
+        return 0;
+    }
+
+    public int getOriginTop() {
+        return 0;
+    }
 }
