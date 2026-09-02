@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.dom.client.Document;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -27,6 +29,9 @@ public class CheckBox extends ElementPanel implements HasValue<Boolean>, HasValu
         label.removeStyleName("form-label");
         label.addStyleName("form-check-label");
         label.setText(text);
+        String inputId = Document.get().createUniqueId();
+        input.getElement().setId(inputId);
+        label.setFor(inputId);
         add(input);
         add(label);
         input.addClickHandler(new ClickHandler() {
@@ -95,5 +100,9 @@ public class CheckBox extends ElementPanel implements HasValue<Boolean>, HasValu
 
     protected Input getInput() {
         return input;
+    }
+
+    protected FormLabel getLabel() {
+        return label;
     }
 }

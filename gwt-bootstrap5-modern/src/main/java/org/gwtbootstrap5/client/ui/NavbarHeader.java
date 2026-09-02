@@ -4,6 +4,6 @@ public class NavbarHeader extends ElementPanel {
 
     public NavbarHeader() {
         super("div");
-        addStyleName("navbar-header");
+        addStyleName("d-flex align-items-center gap-2");
     }
 }

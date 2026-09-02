@@ -16,7 +16,6 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
         super("div");
         addStyleName("alert");
         getElement().setAttribute("role", "alert");
-        add(text);
         setVariant(Variant.WARNING);
     }
 
@@ -42,7 +41,13 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
 
     @Override
     public void setText(String text) {
-        this.text.setText(text == null ? "" : text);
+        String effectiveText = text == null ? "" : text;
+        this.text.setText(effectiveText);
+        if (effectiveText.isEmpty()) {
+            this.text.removeFromParent();
+        } else if (this.text.getParent() == null) {
+            insert(this.text, 0);
+        }
     }
 
     public void setVariant(Variant variant) {

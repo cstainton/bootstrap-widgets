@@ -4,6 +4,6 @@ public class MediaList extends ElementPanel {
 
     public MediaList() {
         super("div");
-        addStyleName("vstack gap-3");
+        addStyleName("d-flex align-items-start gap-3");
     }
 }

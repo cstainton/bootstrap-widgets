@@ -8,6 +8,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -240,7 +241,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Navbar createNavbar() {
         Navbar navbar = new Navbar();
-        navbar.addStyleName("fixed-top");
+        navbar.addStyleName("sticky-top");
         NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("navbar-collapse");
         NavbarCollapse navbarCollapse = new NavbarCollapse();
         navbarCollapse.getElement().setId("navbar-collapse");
@@ -340,7 +341,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(badgesPanel());
 
         addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
-        column.add(panel("Basic", new Breadcrumbs(new AnchorListItem("Home", "#home"), new ListItem("Current")), "new Breadcrumbs(new AnchorListItem(\"Home\", \"#home\"), new ListItem(\"Current\"));"));
+        column.add(breadcrumbsPanel());
 
         addPageHeader(column, "buttonDropdowns", "Button Dropdowns", null);
         column.add(panel("Basic", dropdown("Action", new String[] {"First", "Second"}, new String[] {"#", "#"}), "ListDropDown dropDown = new ListDropDown(\"Action\");"));
@@ -448,11 +449,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget buttonSizesPanel() {
+        Button medium = new Button("Default / medium", ButtonType.PRIMARY);
         Button small = new Button("Small", ButtonType.PRIMARY);
         small.setSmall(true);
         Button large = new Button("Large", ButtonType.PRIMARY);
         large.setLarge(true);
-        return panel("Sizes", inline(small, large, note("Bootstrap 5 has small and large button sizes; extra-small is not a Bootstrap 5 button size.")), "button.setSmall(true);\nbutton.setLarge(true);" );
+        return panel("Sizes", inline(small, medium, large, note("Bootstrap 5's medium size is the default button size; only small and large require modifier classes.")), "button.setSize(ButtonSize.SMALL);\nbutton.setSize(ButtonSize.DEFAULT);\nbutton.setSize(ButtonSize.LARGE);" );
     }
 
     private Widget buttonStatesPanel() {
@@ -489,7 +491,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Button button = new Button("With icon and badge", ButtonType.PRIMARY);
         button.setHTML("<i class='bi bi-star'></i> With icon <span class='badge text-bg-light'>1</span>");
         CheckBoxButton checkBoxButton = new CheckBoxButton("CheckBoxButton");
-        return panel("Composition", inline(button, checkBoxButton), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nnew CheckBoxButton(\"CheckBoxButton\");" );
+        checkBoxButton.setType(ButtonType.PRIMARY);
+        CheckBoxButton initiallyChecked = new CheckBoxButton("Initially checked");
+        initiallyChecked.setValue(true);
+        CheckBoxButton disabled = new CheckBoxButton("Disabled");
+        disabled.setEnabled(false);
+        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setValue(true);" );
     }
 
     private Widget formsPanel() {
@@ -582,20 +589,36 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget badgesPanel() {
-        Badge deleted = new Badge("42");
-        Anchor deletedItems = new Anchor("Deleted Items ", "#");
-        deletedItems.add(deleted);
-        Badge inbox = new Badge();
-        inbox.add(new HTML("12 <i class='bi bi-envelope'></i> <em>unread</em>"));
-        Anchor inboxLink = new Anchor("Inbox ", "#");
-        inboxLink.add(inbox);
-        Badge pill = new Badge("Pill", LabelType.SUCCESS);
+        Badge primary = new Badge("Primary", LabelType.PRIMARY);
+        Badge success = new Badge("Success", LabelType.SUCCESS);
+        Badge warning = new Badge("Warning", LabelType.WARNING);
+        Badge danger = new Badge("Danger", LabelType.DANGER);
+        Badge pill = new Badge("Pill badge", LabelType.SUCCESS);
         pill.setPill(true);
-        return panel("Basic and Advanced", stacked(
-                deletedItems,
-                inboxLink,
-                inline(new Label("Label concept", LabelType.DEFAULT), pill)),
-                "new Badge(\"42\");\nBadge badge = new Badge();\nbadge.add(new Icon(\"envelope\"));\nbadge.setPill(true);");
+
+        Anchor inbox = new Anchor("Inbox", "#");
+        inbox.setBadgeText("12");
+
+        return panel("Variants, pills and links", stacked(
+                inline(primary, success, warning, danger, pill),
+                inline(new Heading(4, "Heading with badge "), new Badge("New", LabelType.PRIMARY)),
+                inbox),
+                "new Badge(\"Primary\", LabelType.PRIMARY);\nbadge.setPill(true);\nanchor.setBadgeText(\"12\");");
+    }
+
+    private Widget breadcrumbsPanel() {
+        Breadcrumbs basic = new Breadcrumbs(
+                new AnchorListItem("Home", "#home"),
+                new ListItem("Current"));
+
+        Breadcrumbs nested = new Breadcrumbs(
+                new AnchorListItem("Projects", "#home"),
+                new AnchorListItem("GWT Bootstrap Modern", "#setup"),
+                new ListItem("Bootstrap 5"));
+        nested.getElement().setAttribute("aria-label", "breadcrumb");
+
+        return panel("Basic and multi-level", stacked(basic, nested),
+                "new Breadcrumbs(new AnchorListItem(\"Home\", \"#home\"), new ListItem(\"Current\"));");
     }
 
     private Widget typographyPanel() {
@@ -1043,7 +1066,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         header.getElement().setAttribute("data-section", id);
         Heading heading = new Heading(2, title);
         if (subText != null && !subText.isEmpty()) {
-            heading.add(new HTML(" <small class='text-body-secondary'>" + subText + "</small>"));
+            heading.add(new InlineHTML(" <small class='text-body-secondary'>" + subText + "</small>"));
         }
         header.add(heading);
         column.add(header);

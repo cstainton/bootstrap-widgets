@@ -1,12 +1,14 @@
 package org.gwtbootstrap5.client.ui;
 
-public class FormLabel extends com.google.gwt.user.client.ui.Label {
+/** A semantic HTML label styled with Bootstrap 5's form-label class. */
+public class FormLabel extends ElementPanel {
 
+    private boolean showRequiredIndicator;
     private String text = "";
     private boolean html;
-    private boolean showRequiredIndicator;
 
     public FormLabel() {
+        super("label");
         addStyleName("form-label");
     }
 
@@ -18,7 +20,7 @@ public class FormLabel extends com.google.gwt.user.client.ui.Label {
     @Override
     public void setText(String text) {
         this.text = text == null ? "" : text;
-        this.html = false;
+        html = false;
         render();
     }
 
@@ -27,12 +29,14 @@ public class FormLabel extends com.google.gwt.user.client.ui.Label {
         return text;
     }
 
+    @Override
     public void setHTML(String html) {
         this.text = html == null ? "" : html;
         this.html = true;
         render();
     }
 
+    @Override
     public String getHTML() {
         return getElement().getInnerHTML();
     }
@@ -63,6 +67,7 @@ public class FormLabel extends com.google.gwt.user.client.ui.Label {
     }
 
     private String escape(String value) {
-        return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
+        return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;").replace("\"", "&quot;");
     }
 }
