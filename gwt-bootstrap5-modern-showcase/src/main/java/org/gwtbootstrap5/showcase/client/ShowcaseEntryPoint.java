@@ -124,9 +124,12 @@ import org.gwtbootstrap5.client.ui.TooltipHelpBlock;
 import org.gwtbootstrap5.client.ui.ValueListBox;
 import org.gwtbootstrap5.client.ui.constants.AlertType;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.constants.ImageType;
 import org.gwtbootstrap5.client.ui.constants.LabelType;
+import org.gwtbootstrap5.client.ui.constants.PaginationSize;
 import org.gwtbootstrap5.client.ui.constants.PanelType;
 import org.gwtbootstrap5.client.ui.constants.ProgressBarType;
+import org.gwtbootstrap5.client.ui.constants.ProgressType;
 import org.gwtbootstrap5.client.ui.VerticalButtonGroup;
 import org.gwtbootstrap5.client.ui.Well;
 
@@ -301,7 +304,13 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(gridPanel());
 
         addPageHeader(column, "images", "Images", null);
-        column.add(panel("Responsive images", inline(new Image(IMG_WIDE), new ImageAnchor("#", IMG_THUMB)), "new Image(url);\nnew ImageAnchor(\"#\", url);"));
+        Image rounded = new Image(IMG_THUMB);
+        rounded.setType(ImageType.ROUNDED);
+        Image circle = new Image(IMG_THUMB);
+        circle.setType(ImageType.CIRCLE);
+        Image thumbnail = new Image(IMG_THUMB);
+        thumbnail.setType(ImageType.THUMBNAIL);
+        column.add(panel("Basic", inline(rounded, circle, thumbnail, new ImageAnchor("#", IMG_THUMB)), "Image rounded = new Image(url);\nrounded.setType(ImageType.ROUNDED);\nimage.setType(ImageType.CIRCLE);\nimage.setType(ImageType.THUMBNAIL);"));
 
         addPageHeader(column, "responsiveUtilities", "Responsive Utilities", null);
         column.add(panel("Bootstrap 5 utilities", new HTML("<p class='d-none d-md-block'>Visible on medium screens and wider.</p><p class='d-md-none'>Visible below medium screens.</p>"), "Bootstrap 5 responsive display utilities: d-none, d-md-block, d-md-none."));
@@ -318,14 +327,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "alerts", "Alerts", null);
-        Alert alert = new Alert("Dismissible alert", AlertType.INFO);
-        alert.setDismissible(true);
-        column.add(panel("Basic", alert, "Alert alert = new Alert(\"Dismissible alert\", AlertType.INFO);\nalert.setDismissible(true);"));
+        column.add(alertsBasicPanel());
+        column.add(alertDismissiblePanel());
+        column.add(alertLinksPanel());
 
         addPageHeader(column, "badges", "Badges", null);
-        Badge badge = new Badge("Badge", LabelType.SUCCESS);
-        badge.setPill(true);
-        column.add(panel("Basic", inline(badge, new Label("Label concept", LabelType.DEFAULT)), "new Badge(\"Badge\", LabelType.SUCCESS);\nnew Label(\"Label concept\", LabelType.DEFAULT);"));
+        column.add(badgesPanel());
 
         addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
         column.add(panel("Basic", new Breadcrumbs(new AnchorListItem("Home", "#home"), new ListItem("Current")), "new Breadcrumbs(new AnchorListItem(\"Home\", \"#home\"), new ListItem(\"Current\"));"));
@@ -349,7 +356,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(panel("Bootstrap 5 mapping", new Jumbotron(), "Bootstrap 5 removed jumbotron; this wrapper maps to spacing/background/rounded utilities."));
 
         addPageHeader(column, "labels", "Labels", null);
-        column.add(panel("Basic", inline(new Label("Default", LabelType.DEFAULT), new Label("Primary", LabelType.PRIMARY), new Label("Danger", LabelType.DANGER)), "new Label(\"Primary\", LabelType.PRIMARY);"));
+        column.add(labelsPanel());
 
         addPageHeader(column, "listGroup", "List Group", null);
         column.add(listGroupPanel());
@@ -370,12 +377,17 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "pagination", "Pagination", null);
         column.add(paginationPanel());
+        column.add(pagerPanel());
 
         addPageHeader(column, "panels", "Panels", null);
-        column.add(panel("Bootstrap 5 mapping", samplePanel(), "Panel maps to Bootstrap 5 card markup."));
+        column.add(panel("Basic", basicPanelExample(), "Panel panel = new Panel();\npanel.add(new PanelHeader(\"Panel Header\"));\npanel.add(new PanelBody());\npanel.add(new PanelFooter(\"Panel Footer\"));"));
+        column.add(panel("Contextual Classes", inline(panelExample(PanelType.INFO), panelExample(PanelType.DANGER), panelExample(PanelType.SUCCESS)), "new Panel(PanelType.INFO);\nnew Panel(PanelType.DANGER);\nnew Panel(PanelType.SUCCESS);"));
 
         addPageHeader(column, "progressBars", "Progress Bars", null);
-        column.add(progressPanel());
+        column.add(progressBasicPanel());
+        column.add(progressStripedPanel());
+        column.add(progressAnimatedPanel());
+        column.add(progressStackedPanel());
 
         addPageHeader(column, "suggestBox", "SuggestBox", null);
         column.add(panel("Basic", new SuggestBox(), "new SuggestBox();"));
@@ -384,9 +396,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(thumbnailsPanel());
 
         addPageHeader(column, "wells", "Wells", null);
-        Well well = new Well();
-        well.add(new Paragraph("Bootstrap 5 has no well component; this maps to utility classes."));
-        column.add(panel("Bootstrap 5 mapping", well, "new Well();"));
+        column.add(wellsPanel());
         return row;
     }
 
@@ -398,6 +408,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "collapse", "Collapse", null);
         column.add(collapsePanel());
+        column.add(accordionPanel());
 
         addPageHeader(column, "modals", "Modals", null);
         column.add(modalPanel(root));
@@ -528,6 +539,51 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return panel("Basic", grid, "Column column = new Column(12);\ncolumn.setMediumSpan(6);");
     }
 
+    private Widget alertsBasicPanel() {
+        return panel("Basic", stacked(
+                alert(AlertType.SUCCESS),
+                alert(AlertType.INFO),
+                alert(AlertType.WARNING),
+                alert(AlertType.DANGER)),
+                "new Alert(\"Title Description\", AlertType.SUCCESS);\nnew Alert(\"Title Description\", AlertType.INFO);\nnew Alert(\"Title Description\", AlertType.WARNING);\nnew Alert(\"Title Description\", AlertType.DANGER);");
+    }
+
+    private Widget alertDismissiblePanel() {
+        Alert alert = alert(AlertType.SUCCESS);
+        alert.setDismissible(true);
+        return panel("Dismissible with Handlers", alert, "Alert alert = new Alert(\"Title Description\", AlertType.SUCCESS);\nalert.setDismissible(true);\nalert.addCloseHandler(...);\nalert.addClosedHandler(...);");
+    }
+
+    private Widget alertLinksPanel() {
+        Alert alert = alert(AlertType.SUCCESS);
+        alert.setDismissible(true);
+        alert.add(new Anchor("Link", "#"));
+        return panel("Links Inside", alert, "Alert alert = new Alert(\"Title Description\", AlertType.SUCCESS);\nalert.setDismissible(true);\nalert.add(new Anchor(\"Link\", \"#\"));");
+    }
+
+    private Alert alert(AlertType type) {
+        Alert alert = new Alert("", type);
+        alert.add(new HTML("<strong>Title</strong> Description"));
+        return alert;
+    }
+
+    private Widget badgesPanel() {
+        Badge deleted = new Badge("42");
+        Anchor deletedItems = new Anchor("Deleted Items ", "#");
+        deletedItems.add(deleted);
+        Badge inbox = new Badge();
+        inbox.add(new HTML("12 <i class='bi bi-envelope'></i> <em>unread</em>"));
+        Anchor inboxLink = new Anchor("Inbox ", "#");
+        inboxLink.add(inbox);
+        Badge pill = new Badge("Pill", LabelType.SUCCESS);
+        pill.setPill(true);
+        return panel("Basic and Advanced", stacked(
+                deletedItems,
+                inboxLink,
+                inline(new Label("Label concept", LabelType.DEFAULT), pill)),
+                "new Badge(\"42\");\nBadge badge = new Badge();\nbadge.add(new Icon(\"envelope\"));\nbadge.setPill(true);");
+    }
+
     private Widget typographyPanel() {
         Description description = new Description();
         description.add(new DescriptionTitle("DescriptionTitle"));
@@ -544,15 +600,25 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget buttonGroupsPanel() {
         ButtonGroup group = new ButtonGroup();
-        group.addButton(new Button("Left", ButtonType.DEFAULT));
-        group.addButton(new Button("Middle", ButtonType.DEFAULT));
-        group.addButton(new Button("Right", ButtonType.DEFAULT));
+        group.addButton(new Button("Button 1", ButtonType.DEFAULT));
+        group.addButton(new Button("Button 2", ButtonType.DEFAULT));
+        group.addButton(new Button("Button 3", ButtonType.DEFAULT));
+        ButtonGroup large = new ButtonGroup();
+        large.setLarge(true);
+        large.addButton(new Button("Left", ButtonType.DEFAULT));
+        large.addButton(new Button("Middle", ButtonType.DEFAULT));
+        large.addButton(new Button("Right", ButtonType.DEFAULT));
+        ButtonGroup small = new ButtonGroup();
+        small.setSmall(true);
+        small.addButton(new Button("Left", ButtonType.DEFAULT));
+        small.addButton(new Button("Middle", ButtonType.DEFAULT));
+        small.addButton(new Button("Right", ButtonType.DEFAULT));
         VerticalButtonGroup vertical = new VerticalButtonGroup();
         vertical.addButton(new Button("Top", ButtonType.DEFAULT));
         vertical.addButton(new Button("Bottom", ButtonType.DEFAULT));
         ButtonToolBar toolbar = new ButtonToolBar();
         toolbar.addGroup(group);
-        return panel("Basic", inline(toolbar, vertical), "ButtonGroup group = new ButtonGroup();\ngroup.addButton(new Button(\"Left\"));\nButtonToolBar toolbar = new ButtonToolBar();");
+        return panel("Basic and Sizing", stacked(inline(toolbar, vertical), inline(large, small)), "ButtonGroup group = new ButtonGroup();\ngroup.addButton(new Button(\"Button 1\"));\nlarge.setLarge(true);\nsmall.setSmall(true);\nButtonToolBar toolbar = new ButtonToolBar();");
     }
 
     private Widget dropdownsPanel() {
@@ -638,25 +704,91 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget paginationPanel() {
+        Pagination pagination = pagination(PaginationSize.NONE);
+        Pagination small = pagination(PaginationSize.SMALL);
+        Pagination large = pagination(PaginationSize.LARGE);
+        return panel("Basic", stacked(pagination, small, large), "Pagination pagination = new Pagination();\npagination.setPaginationSize(PaginationSize.SMALL);\npagination.setPaginationSize(PaginationSize.LARGE);");
+    }
+
+    private Widget pagerPanel() {
+        Pager pager = new Pager();
+        Pager custom = new Pager();
+        custom.setPreviousText("Older");
+        custom.setNextText("Newer");
+        Pager aligned = new Pager();
+        aligned.setPreviousText("Older");
+        aligned.setNextText("Newer");
+        aligned.setAlignToSides(true);
+        return panel("Pager", stacked(pager, custom, aligned), "new Pager();\npager.setPreviousText(\"Older\");\npager.setNextText(\"Newer\");\npager.setAlignToSides(true);");
+    }
+
+    private Pagination pagination(PaginationSize size) {
         Pagination pagination = new Pagination();
+        pagination.setPaginationSize(size);
         pagination.addPreviousLink();
         AnchorListItem active = new AnchorListItem("1", "#");
         active.setActive(true);
         pagination.add(active);
         pagination.add(new AnchorListItem("2", "#"));
         pagination.addNextLink();
-        Pager pager = new Pager();
-        pager.setAlignToSides(true);
-        return panel("Basic", inline(pagination, pager), "Pagination pagination = new Pagination();\npagination.addPreviousLink();\npagination.add(new AnchorListItem(\"1\", \"#\"));\npagination.addNextLink();\npagination.rebuild(simplePager);");
+        return pagination;
     }
 
-    private Widget progressPanel() {
+    private Widget progressBasicPanel() {
+        return panel("Basic", stacked(
+                progress(40, ProgressBarType.SUCCESS),
+                progress(20, ProgressBarType.INFO),
+                progress(60, ProgressBarType.WARNING),
+                progress(80, ProgressBarType.DANGER)),
+                "new ProgressBar(40, ProgressBarType.SUCCESS);\nnew ProgressBar(20, ProgressBarType.INFO);\nnew ProgressBar(60, ProgressBarType.WARNING);\nnew ProgressBar(80, ProgressBarType.DANGER);");
+    }
+
+    private Widget progressStripedPanel() {
+        return panel("Striped", stacked(
+                stripedProgress(40, ProgressBarType.SUCCESS),
+                stripedProgress(20, ProgressBarType.INFO),
+                stripedProgress(60, ProgressBarType.WARNING),
+                stripedProgress(80, ProgressBarType.DANGER)),
+                "Progress progress = new Progress();\nprogress.setType(ProgressType.STRIPED);");
+    }
+
+    private Widget progressAnimatedPanel() {
+        Progress progress = stripedProgress(40, ProgressBarType.SUCCESS);
+        progress.setActive(true);
+        return panel("Animated", progress, "Progress progress = new Progress();\nprogress.setType(ProgressType.STRIPED);\nprogress.setActive(true);");
+    }
+
+    private Widget progressStackedPanel() {
+        Progress progress = new Progress();
+        ProgressBar success = new ProgressBar();
+        success.setPercent(35);
+        success.setType(ProgressBarType.SUCCESS);
+        ProgressBar warning = new ProgressBar();
+        warning.setPercent(20);
+        warning.setType(ProgressBarType.WARNING);
+        ProgressBar danger = new ProgressBar();
+        danger.setPercent(10);
+        danger.setType(ProgressBarType.DANGER);
+        progress.add(success);
+        progress.add(warning);
+        progress.add(danger);
+        return panel("Stacked", progress, "Progress progress = new Progress();\nprogress.add(new ProgressBar(...));\nprogress.add(new ProgressBar(...));");
+    }
+
+    private Progress progress(int percent, ProgressBarType type) {
         Progress progress = new Progress();
         ProgressBar bar = new ProgressBar();
-        bar.setPercent(60);
-        bar.setType(ProgressBarType.SUCCESS);
+        bar.setPercent(percent);
+        bar.setText(percent + "%");
+        bar.setType(type);
         progress.add(bar);
-        return panel("Basic", progress, "ProgressBar bar = new ProgressBar();\nbar.setPercent(60);");
+        return progress;
+    }
+
+    private Progress stripedProgress(int percent, ProgressBarType type) {
+        Progress progress = progress(percent, type);
+        progress.setType(ProgressType.STRIPED);
+        return progress;
     }
 
     private Widget thumbnailsPanel() {
@@ -666,6 +798,49 @@ public class ShowcaseEntryPoint implements EntryPoint {
         ThumbnailLink link = new ThumbnailLink("#");
         link.add(new Image(IMG_THUMB));
         return panel("Basic", inline(panel, link), "new ThumbnailPanel();\nnew ThumbnailLink(\"#\");");
+    }
+
+    private Widget labelsPanel() {
+        return panel("Basic", inline(
+                new Label("Default", LabelType.DEFAULT),
+                new Label("Primary", LabelType.PRIMARY),
+                new Label("Success", LabelType.SUCCESS),
+                new Label("Info", LabelType.INFO),
+                new Label("Warning", LabelType.WARNING),
+                new Label("Danger", LabelType.DANGER)),
+                "new Label(\"Primary\", LabelType.PRIMARY);");
+    }
+
+    private Widget wellsPanel() {
+        Well standard = new Well();
+        standard.add(new HTML("<span>Look, I am in a well!</span>"));
+        Well large = new Well();
+        large.addStyleName("p-5");
+        large.add(new HTML("<span>Large well mapping</span>"));
+        Well small = new Well();
+        small.addStyleName("p-2");
+        small.add(new HTML("<span>Small well mapping</span>"));
+        return panel("Default and Optional Classes", stacked(standard, large, small), "new Well();\nwell.addStyleName(\"p-5\");\nwell.addStyleName(\"p-2\");");
+    }
+
+    private Widget basicPanelExample() {
+        Panel panel = new Panel();
+        panel.add(new PanelHeader("Panel Header"));
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<strong>Panel Body</strong>"));
+        panel.add(body);
+        panel.add(new PanelFooter("Panel Footer"));
+        return panel;
+    }
+
+    private Widget panelExample(PanelType type) {
+        Panel panel = new Panel(type);
+        panel.add(new PanelHeader("Panel Header"));
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<strong>Panel Body</strong>"));
+        panel.add(body);
+        panel.add(new PanelFooter("Panel Footer"));
+        return panel;
     }
 
     private Widget collapsePanel() {
@@ -680,6 +855,34 @@ public class ShowcaseEntryPoint implements EntryPoint {
             }
         });
         return panel("Basic", inline(button, collapse), "Collapse collapse = new Collapse();\ncollapse.toggle();");
+    }
+
+    private Widget accordionPanel() {
+        PanelGroup accordion = new PanelGroup();
+        accordion.getElement().setId("accordion");
+        accordion.add(accordionItem("collapseOne", "Collapse Group #1", true));
+        accordion.add(accordionItem("collapseTwo", "Collapse Group #2", false));
+        accordion.add(accordionItem("collapseThree", "Collapse Group #3", false));
+        return panel("Accordion Example using PanelCollapse", accordion, "PanelGroup accordion = new PanelGroup();\naccordion.add(panelWithPanelCollapse(...));");
+    }
+
+    private Widget accordionItem(String id, String title, boolean open) {
+        Panel panel = new Panel();
+        PanelHeader header = new PanelHeader();
+        Anchor anchor = new Anchor(title, "#" + id);
+        anchor.setDataToggle("collapse");
+        anchor.getElement().setAttribute("data-bs-target", "#" + id);
+        anchor.getElement().setAttribute("data-bs-parent", "#accordion");
+        header.add(anchor);
+        panel.add(header);
+        PanelCollapse collapse = new PanelCollapse();
+        collapse.getElement().setId(id);
+        collapse.setIn(open);
+        PanelBody body = new PanelBody();
+        body.add(new Paragraph("I am the content of " + title + "."));
+        collapse.add(body);
+        panel.add(collapse);
+        return panel;
     }
 
     private Widget modalPanel(RootPanel root) {
@@ -836,6 +1039,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Widget inline(Widget... widgets) {
         PanelBody wrapper = new PanelBody();
         wrapper.setStyleName("gbm-inline-demo");
+        for (Widget widget : widgets) {
+            wrapper.add(widget);
+        }
+        return wrapper;
+    }
+
+    private Widget stacked(Widget... widgets) {
+        PanelBody wrapper = new PanelBody();
+        wrapper.setStyleName("gbm-stacked-demo");
         for (Widget widget : widgets) {
             wrapper.add(widget);
         }

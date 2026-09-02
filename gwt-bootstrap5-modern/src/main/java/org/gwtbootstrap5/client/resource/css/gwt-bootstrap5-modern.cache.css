@@ -1,3 +1,33 @@
 .dropdown-menu-match-toggle {
   min-width: 100% !important;
 }
+
+.card.border-primary > .card-header {
+  color: #fff;
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.card.border-success > .card-header {
+  color: #fff;
+  background-color: var(--bs-success);
+  border-color: var(--bs-success);
+}
+
+.card.border-info > .card-header {
+  color: #000;
+  background-color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+.card.border-warning > .card-header {
+  color: #000;
+  background-color: var(--bs-warning);
+  border-color: var(--bs-warning);
+}
+
+.card.border-danger > .card-header {
+  color: #fff;
+  background-color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
