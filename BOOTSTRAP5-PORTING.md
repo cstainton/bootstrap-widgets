@@ -1,0 +1,197 @@
+# Bootstrap 5 Porting Inventory
+
+The Bootstrap 5 module should aim for broad functional coverage of the GwtBootstrap3 widget catalogue, but with Bootstrap 5-native markup, classes, data attributes, and behaviour. Breaking API and template changes are allowed when Bootstrap 5 removed or redesigned a Bootstrap 3 concept.
+
+## Current Scope
+
+- GwtBootstrap3 top-level widget classes inventoried: `126`.
+- Bootstrap 5 top-level widget classes currently present: `5` plus `Variant`.
+- Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
+- The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
+
+## First-Port Priority
+
+- [x] `Container` present
+- [x] `Row` present
+- [x] `Column` present
+- [x] `Button` present
+- [ ] `Anchor`
+- [ ] `AnchorButton`
+- [ ] `ButtonGroup`
+- [ ] `ButtonToolBar`
+- [ ] `DropDown`
+- [ ] `DropDownMenu`
+- [ ] `Divider`
+- [ ] `Navbar`
+- [ ] `NavbarBrand`
+- [ ] `NavbarCollapse`
+- [ ] `NavbarCollapseButton`
+- [ ] `NavbarNav`
+- [ ] `NavbarLink`
+- [ ] `NavbarText`
+- [ ] `Nav`
+- [ ] `NavTabs`
+- [ ] `NavPills`
+- [ ] `Modal`
+- [ ] `ModalHeader`
+- [ ] `ModalBody`
+- [ ] `ModalFooter`
+- [ ] `Alert`
+- [ ] `Badge`
+- [ ] `Label`
+- [ ] `Progress`
+- [ ] `ProgressBar`
+- [ ] `Pagination`
+- [ ] `Pager`
+- [ ] `Form`
+- [ ] `FormGroup`
+- [ ] `FormLabel`
+- [ ] `Input`
+- [ ] `TextBox`
+- [ ] `TextArea`
+- [ ] `ListBox`
+- [ ] `CheckBox`
+- [ ] `Radio`
+- [ ] `HelpBlock`
+- [ ] `InputGroup`
+- [ ] `InputGroupAddon`
+- [ ] `InputGroupButton`
+- [x] `Card` present
+- [ ] `Panel`
+- [ ] `PanelBody`
+- [ ] `PanelHeader`
+- [ ] `PanelFooter`
+- [ ] `Jumbotron`
+- [ ] `Tooltip`
+- [ ] `Popover`
+- [ ] `Collapse`
+- [ ] `Carousel`
+
+## Full GwtBootstrap3 Widget Inventory
+
+- [ ] `Abbreviation`
+- [ ] `Affix`
+- [ ] `Alert`
+- [ ] `Anchor`
+- [ ] `AnchorButton`
+- [ ] `AnchorListItem`
+- [ ] `Badge`
+- [ ] `BlockQuote`
+- [ ] `BooleanRadioGroup`
+- [ ] `Breadcrumbs`
+- [x] `Button`
+- [ ] `ButtonGroup`
+- [ ] `ButtonToolBar`
+- [ ] `Caption`
+- [ ] `Carousel`
+- [ ] `CarouselCaption`
+- [ ] `CarouselControl`
+- [ ] `CarouselIndicator`
+- [ ] `CarouselIndicators`
+- [ ] `CarouselInner`
+- [ ] `CarouselSlide`
+- [ ] `CheckBox`
+- [ ] `CheckBoxButton`
+- [ ] `Code`
+- [ ] `Collapse`
+- [x] `Column`
+- [x] `Container`
+- [ ] `Description`
+- [ ] `DescriptionData`
+- [ ] `DescriptionTitle`
+- [ ] `Divider`
+- [ ] `DoubleBox`
+- [ ] `DoubleRadioGroup`
+- [ ] `DropDown`
+- [ ] `DropDownHeader`
+- [ ] `DropDownMenu`
+- [ ] `FieldSet`
+- [ ] `Form`
+- [ ] `FormControlStatic`
+- [ ] `FormGroup`
+- [ ] `FormLabel`
+- [ ] `Heading`
+- [ ] `HelpBlock`
+- [ ] `Icon`
+- [ ] `IconStack`
+- [ ] `Image`
+- [ ] `ImageAnchor`
+- [ ] `InlineCheckBox`
+- [ ] `InlineHelpBlock`
+- [ ] `InlineRadio`
+- [ ] `Input`
+- [ ] `InputGroup`
+- [ ] `InputGroupAddon`
+- [ ] `InputGroupButton`
+- [ ] `IntegerBox`
+- [ ] `IntegerRadioGroup`
+- [ ] `IsClosable`
+- [ ] `Jumbotron`
+- [ ] `Label`
+- [ ] `Lead`
+- [ ] `Legend`
+- [ ] `LinkedGroup`
+- [ ] `LinkedGroupItem`
+- [ ] `LinkedGroupItemText`
+- [ ] `ListBox`
+- [ ] `ListDropDown`
+- [ ] `ListGroup`
+- [ ] `ListGroupItem`
+- [ ] `ListItem`
+- [ ] `LongBox`
+- [ ] `MediaBody`
+- [ ] `MediaList`
+- [ ] `Modal`
+- [ ] `ModalBody`
+- [ ] `ModalComponent`
+- [ ] `ModalFooter`
+- [ ] `ModalHeader`
+- [ ] `ModalSize`
+- [ ] `Nav`
+- [ ] `NavPills`
+- [ ] `NavTabs`
+- [ ] `Navbar`
+- [ ] `NavbarBrand`
+- [ ] `NavbarButton`
+- [ ] `NavbarCollapse`
+- [ ] `NavbarCollapseButton`
+- [ ] `NavbarForm`
+- [ ] `NavbarHeader`
+- [ ] `NavbarLink`
+- [ ] `NavbarNav`
+- [ ] `NavbarText`
+- [ ] `PageHeader`
+- [ ] `Pager`
+- [ ] `Pagination`
+- [ ] `Panel`
+- [ ] `PanelBody`
+- [ ] `PanelCollapse`
+- [ ] `PanelFooter`
+- [ ] `PanelGroup`
+- [ ] `PanelHeader`
+- [ ] `Popover`
+- [ ] `Pre`
+- [ ] `Progress`
+- [ ] `ProgressBar`
+- [ ] `Radio`
+- [ ] `RadioButton`
+- [x] `Row`
+- [ ] `ScrollSpy`
+- [ ] `SimpleCheckBox`
+- [ ] `SimpleRadioButton`
+- [ ] `StringRadioGroup`
+- [ ] `SubmitButton`
+- [ ] `SuggestBox`
+- [ ] `TabContent`
+- [ ] `TabListItem`
+- [ ] `TabPane`
+- [ ] `TabPanel`
+- [ ] `TextArea`
+- [ ] `TextBox`
+- [ ] `ThumbnailLink`
+- [ ] `ThumbnailPanel`
+- [ ] `Tooltip`
+- [ ] `TooltipHelpBlock`
+- [ ] `ValueListBox`
+- [ ] `VerticalButtonGroup`
+- [ ] `Well`

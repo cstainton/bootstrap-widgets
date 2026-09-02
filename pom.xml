@@ -4,18 +4,21 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.gwtbootstrap3</groupId>
-  <artifactId>gwt-bootstrap-modern-parent</artifactId>
+  <artifactId>gwt-bootstrap-modern</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>GWT Bootstrap Modern Parent</name>
-  <description>GWT Bootstrap-compatible fork targeting Bootstrap 5.</description>
+  <name>GWT Bootstrap Modern</name>
+  <description>Maintained GwtBootstrap3-compatible fork with a separate Bootstrap 5 migration track.</description>
 
   <modules>
-    <module>gwt-bootstrap-modern</module>
-    <module>gwt-bootstrap-modern-extras</module>
-    <module>gwt-bootstrap-modern-showcase</module>
+    <module>gwt-bootstrap3-modern</module>
+    <module>gwt-bootstrap3-modern-extras</module>
+    <module>gwt-bootstrap3-modern-showcase</module>
+    <module>gwt-bootstrap5-modern</module>
+    <module>gwt-bootstrap5-modern-showcase</module>
     <module>gwt-teavm-compat</module>
-    <module>teavm-bootstrap-modern</module>
+    <module>teavm-bootstrap3-modern</module>
+    <module>teavm-bootstrap5-modern</module>
   </modules>
 
   <properties>
@@ -23,8 +26,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>8</maven.compiler.release>
     <gwt.version>2.13.1</gwt.version>
-    <bootstrap.version>5.3.8</bootstrap.version>
-    <bootstrap.icons.version>1.13.1</bootstrap.icons.version>
+    <bootstrap.version>3.4.1</bootstrap.version>
+    <bootstrap5.version>5.3.8</bootstrap5.version>
     <jquery.compat.version>3.7.1</jquery.compat.version>
     <bootbox.version>6.0.4</bootbox.version>
     <bootstrap.datepicker.version>1.10.1</bootstrap.datepicker.version>

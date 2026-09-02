@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.gwtbootstrap5.client.Resources"/>
+    <entry-point class="org.gwtbootstrap5.client.GwtBootstrap5EntryPoint"/>
+</module>

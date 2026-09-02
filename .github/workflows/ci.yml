@@ -26,10 +26,16 @@ jobs:
         run: mvn -B -DskipTests install
 
       - name: Compile showcase with GWT
-        run: mvn -B -f gwt-bootstrap-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt-bootstrap3-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
+      - name: Compile Bootstrap 5 showcase with GWT
+        run: mvn -B -f gwt-bootstrap5-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
       - name: Verify TeaVM backend compile
-        run: test -s teavm-bootstrap-modern/target/teavm/teavm-bootstrap-modern-smoke.js
+        run: test -s teavm-bootstrap3-modern/target/teavm/teavm-bootstrap3-modern-smoke.js
+
+      - name: Verify Bootstrap 5 TeaVM backend compile
+        run: test -s teavm-bootstrap5-modern/target/teavm/teavm-bootstrap5-modern-smoke.js
 
       - name: Dependency audit
         run: mvn -B -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify

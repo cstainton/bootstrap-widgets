@@ -25,6 +25,6 @@ The extras module is now based on latest upstream `gwtbootstrap3-extras` source,
 ## Validation Gates
 
 - `mvn -DskipTests package`
-- `mvn -f gwt-bootstrap-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile`
+- `mvn -f gwt-bootstrap3-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile`
 - `mvn -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify`
 - Browser smoke test of the showcase, especially modal, dropdown, datepicker, select, summernote, and gallery pages.
