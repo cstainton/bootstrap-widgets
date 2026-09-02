@@ -22,32 +22,19 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.user.cellview.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.cell.client.Cell;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+/** A column whose value is the row itself. */
+public class IdentityColumn<T> extends Column<T, T> {
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
-
-    protected SimpleSafeHtmlRenderer() {
+    public IdentityColumn(final Cell<T> cell) {
+        super(cell);
     }
 
     @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    public T getValue(final T object) {
+        return object;
     }
 }

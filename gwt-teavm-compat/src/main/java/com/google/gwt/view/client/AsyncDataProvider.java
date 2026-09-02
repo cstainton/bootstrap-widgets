@@ -22,32 +22,19 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+/** Data provider whose rows are fetched asynchronously. */
+public abstract class AsyncDataProvider<T> extends AbstractDataProvider<T> {
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
-
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
+    protected AsyncDataProvider() {
+        super();
     }
 
-    protected SimpleSafeHtmlRenderer() {
+    protected AsyncDataProvider(final ProvidesKey<T> keyProvider) {
+        super(keyProvider);
     }
 
     @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
-    }
+    protected abstract void onRangeChanged(HasData<T> display);
 }

@@ -22,32 +22,12 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
-
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
-
-    protected SimpleSafeHtmlRenderer() {
-    }
-
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
-    }
+/** A view that lets handlers preview events destined for its cells. */
+public interface HasCellPreviewHandlers<T> extends HasHandlers {
+    HandlerRegistration addCellPreviewHandler(CellPreviewEvent.Handler<T> handler);
 }

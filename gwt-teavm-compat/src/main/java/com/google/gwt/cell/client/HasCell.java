@@ -22,32 +22,14 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.cell.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+/** Pairs a cell with the accessor that extracts its value from a row. */
+public interface HasCell<T, C> {
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+    Cell<C> getCell();
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
+    FieldUpdater<T, C> getFieldUpdater();
 
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
-
-    protected SimpleSafeHtmlRenderer() {
-    }
-
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
-    }
+    C getValue(T object);
 }

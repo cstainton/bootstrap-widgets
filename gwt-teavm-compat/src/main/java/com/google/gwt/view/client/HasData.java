@@ -22,32 +22,25 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.event.shared.HandlerRegistration;
+import java.util.List;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+/** A view that displays a range of row values. */
+public interface HasData<T> extends HasRows, HasCellPreviewHandlers<T> {
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
+    SelectionModel<? super T> getSelectionModel();
 
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
+    T getVisibleItem(int indexOnPage);
 
-    protected SimpleSafeHtmlRenderer() {
-    }
+    int getVisibleItemCount();
 
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
+    Iterable<T> getVisibleItems();
 
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
-    }
+    void setRowData(int start, List<? extends T> values);
+
+    void setSelectionModel(SelectionModel<? super T> selectionModel);
+
+    T getValueKey(T value);
 }

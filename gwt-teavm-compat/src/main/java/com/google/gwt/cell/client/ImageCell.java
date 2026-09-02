@@ -22,32 +22,18 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.cell.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
-
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
-
-    protected SimpleSafeHtmlRenderer() {
-    }
+/** Renders its value as an image URL. */
+public class ImageCell extends AbstractCell<String> {
 
     @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    public void render(final Context context, final String value, final SafeHtmlBuilder sb) {
+        if (value != null) {
+            sb.appendHtmlConstant("<img src=\"" + SafeHtmlUtils.htmlEscape(value) + "\"/>");
+        }
     }
 }

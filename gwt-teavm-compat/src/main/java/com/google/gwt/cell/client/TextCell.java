@@ -22,32 +22,28 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.cell.client;
 
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.text.shared.SafeHtmlRenderer;
+import com.google.gwt.text.shared.SimpleSafeHtmlRenderer;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+/** Renders a string as escaped text. */
+public class TextCell extends AbstractSafeHtmlCell<String> {
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
+    public TextCell() {
+        this(SimpleSafeHtmlRenderer.getInstance());
     }
 
-    protected SimpleSafeHtmlRenderer() {
-    }
-
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
+    public TextCell(final SafeHtmlRenderer<String> renderer) {
+        super(renderer);
     }
 
     @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    protected void render(final Context context, final SafeHtml value, final SafeHtmlBuilder sb) {
+        if (value != null) {
+            sb.append(value);
+        }
     }
 }

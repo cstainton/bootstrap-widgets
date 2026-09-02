@@ -22,32 +22,43 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+/** A start index and length into a list of rows. */
+public class Range {
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+    private final int start;
+    private final int length;
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
+    public Range(final int start, final int length) {
+        this.start = start;
+        this.length = length;
     }
 
-    protected SimpleSafeHtmlRenderer() {
+    public int getStart() {
+        return start;
     }
 
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
+    public int getLength() {
+        return length;
     }
 
     @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    public boolean equals(final Object other) {
+        if (!(other instanceof Range)) {
+            return false;
+        }
+        final Range that = (Range) other;
+        return start == that.start && length == that.length;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * start + length;
+    }
+
+    @Override
+    public String toString() {
+        return "Range(" + start + "," + length + ")";
     }
 }

@@ -22,32 +22,23 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.user.cellview.client;
 
+import com.google.gwt.cell.client.SafeHtmlCell;
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+/** A header showing fixed HTML. */
+public class SafeHtmlHeader extends Header<SafeHtml> {
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
+    private final SafeHtml html;
 
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
-
-    protected SimpleSafeHtmlRenderer() {
+    public SafeHtmlHeader(final SafeHtml html) {
+        super(new SafeHtmlCell());
+        this.html = html;
     }
 
     @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    public SafeHtml getValue() {
+        return html;
     }
 }

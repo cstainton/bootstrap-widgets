@@ -43,9 +43,6 @@
         The Bootstrap 3 widget API is compiled from the GWT module's own sources, so the
         TeaVM build and the GWT build share one definition of every widget rather than
         maintaining a parallel copy. Two groups are excluded:
-          * CellTable, DataGrid, ButtonCell and FormPanel - the GWT cell-widget and
-            form-submit bridges, which are data-presentation machinery rather than
-            Bootstrap widgets;
           * the entry point and the jQuery bridge, which this module re-implements
             against TeaVM's @JSBody under the same package and API.
       -->
@@ -74,10 +71,6 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>org/gwtbootstrap3/client/ui/gwt/CellTable.java</exclude>
-            <exclude>org/gwtbootstrap3/client/ui/gwt/DataGrid.java</exclude>
-            <exclude>org/gwtbootstrap3/client/ui/gwt/ButtonCell.java</exclude>
-            <exclude>org/gwtbootstrap3/client/ui/gwt/FormPanel.java</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/client/shared/js/JQuery.java</exclude>

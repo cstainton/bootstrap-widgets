@@ -22,32 +22,29 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.HasHandlers;
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+/** A view over a finite, paged list of rows. */
+public interface HasRows extends HasHandlers {
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
+    HandlerRegistration addRangeChangeHandler(RangeChangeEvent.Handler handler);
 
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
+    HandlerRegistration addRowCountChangeHandler(RowCountChangeEvent.Handler handler);
 
-    protected SimpleSafeHtmlRenderer() {
-    }
+    int getRowCount();
 
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
+    Range getVisibleRange();
 
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
-    }
+    boolean isRowCountExact();
+
+    void setRowCount(int count);
+
+    void setRowCount(int count, boolean isExact);
+
+    void setVisibleRange(int start, int length);
+
+    void setVisibleRange(Range range);
 }

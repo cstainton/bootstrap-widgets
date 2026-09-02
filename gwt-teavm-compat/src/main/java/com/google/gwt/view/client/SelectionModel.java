@@ -22,32 +22,18 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+/** Tracks which of a view's values are selected. */
+public interface SelectionModel<T> extends SelectionChangeEvent.HasSelectionChangedHandlers {
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+    boolean isSelected(T object);
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
+    void setSelected(T object, boolean selected);
 
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
-    }
+    Object getKey(T item);
 
-    protected SimpleSafeHtmlRenderer() {
-    }
-
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
-    }
-
-    @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    /** A selection model that can report its whole selection. */
+    interface AbstractSelectionModel<T> extends SelectionModel<T> {
     }
 }

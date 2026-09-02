@@ -22,32 +22,33 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.text.shared;
+package com.google.gwt.view.client;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+/** Selection model that tracks the last value acted on without marking it selected. */
+public class NoSelectionModel<T> extends AbstractSelectionModel<T> {
 
-/** Escapes a string and renders it as SafeHtml. */
-public class SimpleSafeHtmlRenderer implements SafeHtmlRenderer<String> {
+    private T lastSelected;
 
-    private static final SimpleSafeHtmlRenderer INSTANCE = new SimpleSafeHtmlRenderer();
-
-    public static SimpleSafeHtmlRenderer getInstance() {
-        return INSTANCE;
+    public NoSelectionModel() {
+        this(null);
     }
 
-    protected SimpleSafeHtmlRenderer() {
+    public NoSelectionModel(final ProvidesKey<T> keyProvider) {
+        super(keyProvider);
     }
 
-    @Override
-    public SafeHtml render(final String object) {
-        return object == null ? SafeHtmlUtils.fromTrustedString("")
-                : SafeHtmlUtils.fromString(object);
+    public T getLastSelectedObject() {
+        return lastSelected;
     }
 
     @Override
-    public void render(final String object, final SafeHtmlBuilder appendable) {
-        appendable.append(render(object));
+    public boolean isSelected(final T object) {
+        return false;
+    }
+
+    @Override
+    public void setSelected(final T object, final boolean selected) {
+        lastSelected = object;
+        fireSelectionChangeEvent();
     }
 }

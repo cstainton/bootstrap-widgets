@@ -93,6 +93,11 @@ public final class Bootstrap3ShowcaseApp {
                 "TextBox box = new TextBox();\n"
                 + "box.setPlaceholder(\"...\");\n"
                 + "new CheckBox(\"Clicking the label toggles this\");"));
+        column.add(panel("Cell table", cellTable(),
+                "CellTable<Person> table = new CellTable<>(5);\n"
+                + "table.addColumn(new TextColumn<Person>() { ... }, \"Name\");\n"
+                + "ListDataProvider<Person> data = new ListDataProvider<>(people);\n"
+                + "data.addDataDisplay(table);"));
         column.add(panel("Progress and list groups", status(),
                 "Progress progress = new Progress();\n"
                 + "progress.add(new ProgressBar(60));\n"
@@ -101,6 +106,67 @@ public final class Bootstrap3ShowcaseApp {
         row.add(column);
         return row;
     }
+
+    /** A row in the cell table demo. */
+    private static final class Person {
+
+        private final String name;
+        private final String role;
+
+        Person(final String name, final String role) {
+            this.name = name;
+            this.role = role;
+        }
+    }
+
+    private static Widget cellTable() {
+        final org.gwtbootstrap3.client.ui.gwt.CellTable<Person> table =
+                new org.gwtbootstrap3.client.ui.gwt.CellTable<>(5);
+        table.setStriped(true);
+        table.setBordered(true);
+
+        table.addColumn(new com.google.gwt.user.cellview.client.TextColumn<Person>() {
+            @Override
+            public String getValue(final Person person) {
+                return person.name;
+            }
+        }, "Name");
+
+        table.addColumn(new com.google.gwt.user.cellview.client.TextColumn<Person>() {
+            @Override
+            public String getValue(final Person person) {
+                return person.role;
+            }
+        }, "Role");
+
+        final com.google.gwt.user.cellview.client.Column<Person, String> action =
+                new com.google.gwt.user.cellview.client.Column<Person, String>(
+                        new com.google.gwt.cell.client.ButtonCell()) {
+                    @Override
+                    public String getValue(final Person person) {
+                        return "Select";
+                    }
+                };
+        action.setFieldUpdater((index, person, value) ->
+                selection.setText("Selected: " + person.name + " (" + person.role + ")"));
+        table.addColumn(action, "Action");
+
+        final java.util.List<Person> people = new java.util.ArrayList<>();
+        people.add(new Person("Ada Lovelace", "Analyst"));
+        people.add(new Person("Grace Hopper", "Engineer"));
+        people.add(new Person("Alan Turing", "Researcher"));
+
+        final com.google.gwt.view.client.ListDataProvider<Person> data =
+                new com.google.gwt.view.client.ListDataProvider<>(people);
+        data.addDataDisplay(table);
+
+        final Well well = new Well();
+        well.add(table);
+        well.add(selection);
+        return well;
+    }
+
+    private static final Paragraph selection = new Paragraph();
 
     /** One demo section: heading, live example, and the code behind it. */
     private static Panel panel(final String title, final Widget example, final String code) {
