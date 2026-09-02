@@ -118,7 +118,11 @@ import org.gwtbootstrap5.client.ui.ThumbnailPanel;
 import org.gwtbootstrap5.client.ui.Tooltip;
 import org.gwtbootstrap5.client.ui.TooltipHelpBlock;
 import org.gwtbootstrap5.client.ui.ValueListBox;
-import org.gwtbootstrap5.client.ui.Variant;
+import org.gwtbootstrap5.client.ui.constants.AlertType;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.constants.LabelType;
+import org.gwtbootstrap5.client.ui.constants.PanelType;
+import org.gwtbootstrap5.client.ui.constants.ProgressBarType;
 import org.gwtbootstrap5.client.ui.VerticalButtonGroup;
 import org.gwtbootstrap5.client.ui.Well;
 
@@ -243,14 +247,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "alerts", "Alerts", null);
-        Alert alert = new Alert("Dismissible alert", Variant.INFO);
+        Alert alert = new Alert("Dismissible alert", AlertType.INFO);
         alert.setDismissible(true);
-        column.add(panel("Basic", alert, "Alert alert = new Alert(\"Dismissible alert\", Variant.INFO);\nalert.setDismissible(true);"));
+        column.add(panel("Basic", alert, "Alert alert = new Alert(\"Dismissible alert\", AlertType.INFO);\nalert.setDismissible(true);"));
 
         addPageHeader(column, "badges", "Badges", null);
-        Badge badge = new Badge("Badge", Variant.SUCCESS);
+        Badge badge = new Badge("Badge", LabelType.SUCCESS);
         badge.setPill(true);
-        column.add(panel("Basic", inline(badge, new Label("Label concept", Variant.SECONDARY)), "new Badge(\"Badge\", Variant.SUCCESS);\nnew Label(\"Label concept\", Variant.SECONDARY);"));
+        column.add(panel("Basic", inline(badge, new Label("Label concept", LabelType.DEFAULT)), "new Badge(\"Badge\", LabelType.SUCCESS);\nnew Label(\"Label concept\", LabelType.DEFAULT);"));
 
         addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
         column.add(panel("Basic", new Breadcrumbs(new AnchorListItem("Home", "#home"), new ListItem("Current")), "new Breadcrumbs(new AnchorListItem(\"Home\", \"#home\"), new ListItem(\"Current\"));"));
@@ -274,7 +278,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(panel("Bootstrap 5 mapping", new Jumbotron(), "Bootstrap 5 removed jumbotron; this wrapper maps to spacing/background/rounded utilities."));
 
         addPageHeader(column, "labels", "Labels", null);
-        column.add(panel("Basic", inline(new Label("Default", Variant.SECONDARY), new Label("Primary", Variant.PRIMARY), new Label("Danger", Variant.DANGER)), "new Label(\"Primary\", Variant.PRIMARY);"));
+        column.add(panel("Basic", inline(new Label("Default", LabelType.DEFAULT), new Label("Primary", LabelType.PRIMARY), new Label("Danger", LabelType.DANGER)), "new Label(\"Primary\", LabelType.PRIMARY);"));
 
         addPageHeader(column, "listGroup", "List Group", null);
         column.add(listGroupPanel());
@@ -328,7 +332,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(modalPanel(root));
 
         addPageHeader(column, "popover", "Popover", null);
-        Popover popover = new Popover(new Button("Popover", Variant.SECONDARY), "Popover", "Popover content");
+        Popover popover = new Popover(new Button("Popover", ButtonType.DEFAULT), "Popover", "Popover content");
         popover.init();
         column.add(panel("Basic", popover, "new Popover(widget, \"Popover\", \"Popover content\");"));
 
@@ -336,7 +340,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(tabsPanel());
 
         addPageHeader(column, "tooltips", "Tooltips", null);
-        Tooltip tooltip = new Tooltip(new Button("Tooltip", Variant.SECONDARY), "Tooltip text");
+        Tooltip tooltip = new Tooltip(new Button("Tooltip", ButtonType.DEFAULT), "Tooltip text");
         tooltip.init();
         column.add(panel("Basic", inline(tooltip, new TooltipHelpBlock("TooltipHelpBlock")), "new Tooltip(widget, \"Tooltip text\");"));
         return row;
@@ -353,29 +357,29 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget buttonsBasicPanel() {
-        return panel("Basic", inline(new Button("Default", Variant.SECONDARY), new Button("Primary", Variant.PRIMARY), new Button("Success", Variant.SUCCESS), new Button("Info", Variant.INFO), new Button("Warning", Variant.WARNING), new Button("Danger", Variant.DANGER), linkButton("Link")), "new Button(\"Primary\", Variant.PRIMARY);" );
+        return panel("Basic", inline(new Button("Default", ButtonType.DEFAULT), new Button("Primary", ButtonType.PRIMARY), new Button("Success", ButtonType.SUCCESS), new Button("Info", ButtonType.INFO), new Button("Warning", ButtonType.WARNING), new Button("Danger", ButtonType.DANGER), linkButton("Link")), "new Button(\"Primary\", ButtonType.PRIMARY);" );
     }
 
     private Widget buttonSizesPanel() {
-        Button small = new Button("Small", Variant.PRIMARY);
+        Button small = new Button("Small", ButtonType.PRIMARY);
         small.setSmall(true);
-        Button large = new Button("Large", Variant.PRIMARY);
+        Button large = new Button("Large", ButtonType.PRIMARY);
         large.setLarge(true);
         return panel("Sizes", inline(small, large, note("Bootstrap 5 has small and large button sizes; extra-small is not a Bootstrap 5 button size.")), "button.setSmall(true);\nbutton.setLarge(true);" );
     }
 
     private Widget buttonStatesPanel() {
-        Button enabled = new Button("Enabled", Variant.PRIMARY);
-        Button disabled = new Button("Disabled", Variant.PRIMARY);
+        Button enabled = new Button("Enabled", ButtonType.PRIMARY);
+        Button disabled = new Button("Disabled", ButtonType.PRIMARY);
         disabled.setEnabled(false);
-        Button toggle = new Button("Toggle button", Variant.SECONDARY);
+        Button toggle = new Button("Toggle button", ButtonType.DEFAULT);
         toggle.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 toggle.toggle();
             }
         });
-        Button loading = new Button("Click me", Variant.PRIMARY);
+        Button loading = new Button("Click me", ButtonType.PRIMARY);
         loading.setLoadingText("Loading...");
         loading.addClickHandler(new ClickHandler() {
             @Override
@@ -389,13 +393,13 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 }.schedule(1200);
             }
         });
-        Button block = new Button("Block level button", Variant.PRIMARY);
+        Button block = new Button("Block level button", ButtonType.PRIMARY);
         block.setBlock(true);
         return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.state().loading();\nbutton.state().reset();\nbutton.toggle();\nbutton.setBlock(true);" );
     }
 
     private Widget buttonCompositionPanel() {
-        Button button = new Button("With icon and badge", Variant.PRIMARY);
+        Button button = new Button("With icon and badge", ButtonType.PRIMARY);
         button.setHTML("<i class='bi bi-star'></i> With icon <span class='badge text-bg-light'>1</span>");
         CheckBoxButton checkBoxButton = new CheckBoxButton("CheckBoxButton");
         return panel("Composition", inline(button, checkBoxButton), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nnew CheckBoxButton(\"CheckBoxButton\");" );
@@ -469,12 +473,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget buttonGroupsPanel() {
         ButtonGroup group = new ButtonGroup();
-        group.addButton(new Button("Left", Variant.SECONDARY));
-        group.addButton(new Button("Middle", Variant.SECONDARY));
-        group.addButton(new Button("Right", Variant.SECONDARY));
+        group.addButton(new Button("Left", ButtonType.DEFAULT));
+        group.addButton(new Button("Middle", ButtonType.DEFAULT));
+        group.addButton(new Button("Right", ButtonType.DEFAULT));
         VerticalButtonGroup vertical = new VerticalButtonGroup();
-        vertical.addButton(new Button("Top", Variant.SECONDARY));
-        vertical.addButton(new Button("Bottom", Variant.SECONDARY));
+        vertical.addButton(new Button("Top", ButtonType.DEFAULT));
+        vertical.addButton(new Button("Bottom", ButtonType.DEFAULT));
         ButtonToolBar toolbar = new ButtonToolBar();
         toolbar.addGroup(group);
         return panel("Basic", inline(toolbar, vertical), "ButtonGroup group = new ButtonGroup();\ngroup.addButton(new Button(\"Left\"));\nButtonToolBar toolbar = new ButtonToolBar();");
@@ -507,7 +511,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Input input = new Input("text");
         input.setPlaceholder("Username");
         inputGroup.add(input);
-        inputGroup.add(new InputGroupButton(new Button("Go", Variant.PRIMARY)));
+        inputGroup.add(new InputGroupButton(new Button("Go", ButtonType.PRIMARY)));
         return panel("Basic", inputGroup, "InputGroup inputGroup = new InputGroup();\ninputGroup.add(new InputGroupAddon(\"@\"));");
     }
 
@@ -576,7 +580,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Progress progress = new Progress();
         ProgressBar bar = new ProgressBar();
         bar.setPercent(60);
-        bar.setVariant(Variant.SUCCESS);
+        bar.setType(ProgressBarType.SUCCESS);
         progress.add(bar);
         return panel("Basic", progress, "ProgressBar bar = new ProgressBar();\nbar.setPercent(60);");
     }
@@ -594,7 +598,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Collapse collapse = new Collapse();
         collapse.getElement().setId("collapseExample");
         collapse.add(new Well());
-        Button button = new Button("Toggle collapse", Variant.PRIMARY);
+        Button button = new Button("Toggle collapse", ButtonType.PRIMARY);
         button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -610,8 +614,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
         modal.setTitle("Cupcake ipsum");
         modal.addToBody(new Paragraph("Modal body..."));
         ModalFooter footer = new ModalFooter();
-        footer.add(new Button("Do something", Variant.PRIMARY));
-        Button close = new Button("Close", Variant.SECONDARY);
+        footer.add(new Button("Do something", ButtonType.PRIMARY));
+        Button close = new Button("Close", ButtonType.DEFAULT);
         close.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
@@ -621,7 +625,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         footer.add(close);
         modal.addFooter(footer);
         root.add(modal);
-        Button show = new Button("Click to show modal", Variant.PRIMARY);
+        Button show = new Button("Click to show modal", ButtonType.PRIMARY);
         show.setLarge(true);
         show.addClickHandler(new ClickHandler() {
             @Override
@@ -674,7 +678,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget samplePanel() {
-        Panel panel = new Panel(Variant.PRIMARY);
+        Panel panel = new Panel(PanelType.PRIMARY);
         panel.add(new PanelHeader("Panel heading"));
         PanelBody body = new PanelBody();
         body.add(new Paragraph("Panel body"));
@@ -692,7 +696,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         org.gwtbootstrap5.client.ui.Card card = new org.gwtbootstrap5.client.ui.Card();
         card.setTitle("Card title");
         card.addBody(new Paragraph("Bootstrap 5 card content."));
-        card.addBody(new AnchorButton("Card action", "#", Variant.PRIMARY));
+        card.addBody(new AnchorButton("Card action", "#", ButtonType.PRIMARY));
         return card;
     }
 

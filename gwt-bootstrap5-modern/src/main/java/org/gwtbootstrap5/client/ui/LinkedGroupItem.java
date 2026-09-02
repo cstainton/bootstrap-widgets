@@ -2,8 +2,11 @@ package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.History;
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.ListGroupItemType;
 
-public class LinkedGroupItem extends ElementPanel {
+public class LinkedGroupItem extends ElementPanel implements HasType<ListGroupItemType> {
 
     private String targetHistoryToken;
     private Variant variant;
@@ -71,12 +74,14 @@ public class LinkedGroupItem extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(ListGroupItemType type) {
+        StyleHelper.addUniqueEnumStyleName(this, ListGroupItemType.class, type == null ? ListGroupItemType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public ListGroupItemType getType() {
+        return ListGroupItemType.fromStyleName(getStyleName());
     }
 
     private String styleName(Variant variant) {

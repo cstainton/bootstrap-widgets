@@ -2,8 +2,11 @@ package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.InlineLabel;
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.AlertType;
 
-public class Alert extends ElementPanel {
+public class Alert extends ElementPanel implements HasType<AlertType> {
 
     private final InlineLabel text = new InlineLabel();
     private final HTML closeButton = new HTML("<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>");
@@ -25,6 +28,11 @@ public class Alert extends ElementPanel {
     public Alert(String text, Variant variant) {
         this(text);
         setVariant(variant);
+    }
+
+    public Alert(String text, AlertType type) {
+        this(text);
+        setType(type);
     }
 
     @Override
@@ -49,12 +57,14 @@ public class Alert extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(AlertType type) {
+        StyleHelper.addUniqueEnumStyleName(this, AlertType.class, type == null ? AlertType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public AlertType getType() {
+        return AlertType.fromStyleName(getStyleName());
     }
 
     public void setDismissible(boolean dismissible) {

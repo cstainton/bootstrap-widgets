@@ -1,6 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
 
 public class DropDown extends ElementPanel {
 
@@ -18,7 +19,7 @@ public class DropDown extends ElementPanel {
     protected DropDown(String tagName, String text) {
         super(tagName);
         addStyleName("dropdown");
-        toggle = new Button(text, Variant.SECONDARY);
+        toggle = new Button(text, ButtonType.DEFAULT);
         toggle.addStyleName("dropdown-toggle");
         toggle.getElement().setAttribute("data-bs-toggle", "dropdown");
         toggle.getElement().setAttribute("aria-expanded", "false");

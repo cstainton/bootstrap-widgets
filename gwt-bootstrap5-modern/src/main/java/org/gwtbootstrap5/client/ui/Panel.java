@@ -1,6 +1,10 @@
 package org.gwtbootstrap5.client.ui;
 
-public class Panel extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.PanelType;
+
+public class Panel extends ElementPanel implements HasType<PanelType> {
 
     private Variant variant;
 
@@ -12,6 +16,11 @@ public class Panel extends ElementPanel {
     public Panel(Variant variant) {
         this();
         setVariant(variant);
+    }
+
+    public Panel(PanelType type) {
+        this();
+        setType(type);
     }
 
     public void setVariant(Variant variant) {
@@ -28,12 +37,14 @@ public class Panel extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(PanelType type) {
+        StyleHelper.addUniqueEnumStyleName(this, PanelType.class, type == null ? PanelType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public PanelType getType() {
+        return PanelType.fromStyleName(getStyleName());
     }
 
     private String styleName(Variant variant) {

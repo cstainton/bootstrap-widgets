@@ -4,8 +4,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.base.HasPaginationSize;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.PaginationSize;
 
-public class Pagination extends ElementPanel {
+public class Pagination extends ElementPanel implements HasPaginationSize {
 
     public Pagination() {
         super("ul");
@@ -18,6 +21,16 @@ public class Pagination extends ElementPanel {
 
     public void setSmall(boolean small) {
         setStyleName("pagination-sm", small);
+    }
+
+    @Override
+    public void setPaginationSize(PaginationSize paginationSize) {
+        StyleHelper.addUniqueEnumStyleName(this, PaginationSize.class, paginationSize == null ? PaginationSize.NONE : paginationSize);
+    }
+
+    @Override
+    public PaginationSize getPaginationSize() {
+        return PaginationSize.fromStyleName(getStyleName());
     }
 
     @Override

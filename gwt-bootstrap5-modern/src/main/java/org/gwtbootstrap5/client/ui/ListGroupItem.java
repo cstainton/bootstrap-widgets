@@ -1,6 +1,10 @@
 package org.gwtbootstrap5.client.ui;
 
-public class ListGroupItem extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.ListGroupItemType;
+
+public class ListGroupItem extends ElementPanel implements HasType<ListGroupItemType> {
 
     private Variant variant;
 
@@ -12,6 +16,11 @@ public class ListGroupItem extends ElementPanel {
     public ListGroupItem(String text) {
         this();
         setText(text);
+    }
+
+    public ListGroupItem(String text, ListGroupItemType type) {
+        this(text);
+        setType(type);
     }
 
     public void setVariant(Variant variant) {
@@ -28,12 +37,14 @@ public class ListGroupItem extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(ListGroupItemType type) {
+        StyleHelper.addUniqueEnumStyleName(this, ListGroupItemType.class, type == null ? ListGroupItemType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public ListGroupItemType getType() {
+        return ListGroupItemType.fromStyleName(getStyleName());
     }
 
     public void setActive(boolean active) {

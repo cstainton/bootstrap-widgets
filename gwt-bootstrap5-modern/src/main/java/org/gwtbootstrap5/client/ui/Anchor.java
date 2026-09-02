@@ -3,6 +3,8 @@ package org.gwtbootstrap5.client.ui;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.HasEnabled;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
 
 public class Anchor extends ElementPanel implements HasEnabled {
 
@@ -72,6 +74,11 @@ public class Anchor extends ElementPanel implements HasEnabled {
         buttonVariant = variant == null ? Variant.PRIMARY : variant;
         addStyleName("btn");
         addStyleName(buttonStyle(buttonVariant, outline));
+    }
+
+    public void setButtonType(ButtonType type) {
+        addStyleName("btn");
+        StyleHelper.addUniqueEnumStyleName(this, ButtonType.class, type == null ? ButtonType.DEFAULT : type);
     }
 
     public void setOutline(boolean outline) {

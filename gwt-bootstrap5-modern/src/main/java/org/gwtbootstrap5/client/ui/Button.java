@@ -4,8 +4,16 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
+import org.gwtbootstrap5.client.ui.base.HasDataToggle;
+import org.gwtbootstrap5.client.ui.base.HasSize;
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.Attributes;
+import org.gwtbootstrap5.client.ui.constants.ButtonSize;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
+import org.gwtbootstrap5.client.ui.constants.Toggle;
 
-public class Button extends com.google.gwt.user.client.ui.Button {
+public class Button extends com.google.gwt.user.client.ui.Button implements HasType<ButtonType>, HasSize<ButtonSize>, HasDataToggle {
 
     public class ButtonStateHandler {
         private ButtonStateHandler() {
@@ -34,13 +42,14 @@ public class Button extends com.google.gwt.user.client.ui.Button {
     private String normalText = "";
     private String loadingText;
     private boolean loading;
+    private Toggle dataToggle;
 
     public Button() {
-        this("", Variant.PRIMARY);
+        this("", Variant.SECONDARY);
     }
 
     public Button(String text) {
-        this(text, Variant.PRIMARY);
+        this(text, Variant.SECONDARY);
     }
 
     public Button(String text, ClickHandler handler) {
@@ -52,6 +61,13 @@ public class Button extends com.google.gwt.user.client.ui.Button {
         super(text);
         normalText = text == null ? "" : text;
         setVariant(variant);
+    }
+
+    public Button(String text, ButtonType type) {
+        super(text);
+        normalText = text == null ? "" : text;
+        addStyleName("btn");
+        setType(type);
     }
 
     public void setVariant(Variant variant) {
@@ -143,14 +159,45 @@ public class Button extends com.google.gwt.user.client.ui.Button {
 
     public void setDataToggle(String toggle) {
         if (toggle == null || toggle.isEmpty()) {
-            getElement().removeAttribute("data-bs-toggle");
+            getElement().removeAttribute(Attributes.DATA_TOGGLE);
             removeStyleName("dropdown-toggle");
         } else {
-            getElement().setAttribute("data-bs-toggle", toggle);
+            getElement().setAttribute(Attributes.DATA_TOGGLE, toggle);
             if ("dropdown".equals(toggle)) {
                 addStyleName("dropdown-toggle");
             }
         }
+    }
+
+    @Override
+    public void setDataToggle(Toggle toggle) {
+        dataToggle = toggle;
+        setDataToggle(toggle == null ? null : toggle.getToggle());
+    }
+
+    @Override
+    public Toggle getDataToggle() {
+        return dataToggle;
+    }
+
+    @Override
+    public void setType(ButtonType type) {
+        StyleHelper.addUniqueEnumStyleName(this, ButtonType.class, type == null ? ButtonType.DEFAULT : type);
+    }
+
+    @Override
+    public ButtonType getType() {
+        return ButtonType.fromStyleName(getStyleName());
+    }
+
+    @Override
+    public void setSize(ButtonSize size) {
+        StyleHelper.addUniqueEnumStyleName(this, ButtonSize.class, size == null ? ButtonSize.DEFAULT : size);
+    }
+
+    @Override
+    public ButtonSize getSize() {
+        return ButtonSize.fromStyleName(getStyleName());
     }
 
     private String styleName(Variant variant, boolean outline) {

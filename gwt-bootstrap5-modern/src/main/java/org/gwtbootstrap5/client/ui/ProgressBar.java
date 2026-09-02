@@ -1,6 +1,10 @@
 package org.gwtbootstrap5.client.ui;
 
-public class ProgressBar extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.ProgressBarType;
+
+public class ProgressBar extends ElementPanel implements HasType<ProgressBarType> {
 
     private Variant variant;
 
@@ -13,6 +17,11 @@ public class ProgressBar extends ElementPanel {
         addStyleName("progress-bar");
         getElement().setAttribute("role", "progressbar");
         setValue(value);
+    }
+
+    public ProgressBar(int value, ProgressBarType type) {
+        this(value);
+        setType(type);
     }
 
     public void setValue(int value) {
@@ -54,12 +63,14 @@ public class ProgressBar extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(ProgressBarType type) {
+        StyleHelper.addUniqueEnumStyleName(this, ProgressBarType.class, type == null ? ProgressBarType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public ProgressBarType getType() {
+        return ProgressBarType.fromStyleName(getStyleName());
     }
 
     public void setSrOnly(boolean srOnly) {

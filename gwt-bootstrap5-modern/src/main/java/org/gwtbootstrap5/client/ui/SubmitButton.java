@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
+
 public class SubmitButton extends Button {
 
     public SubmitButton() {
@@ -7,7 +9,7 @@ public class SubmitButton extends Button {
     }
 
     public SubmitButton(String text) {
-        super(text, Variant.PRIMARY);
+        super(text, ButtonType.PRIMARY);
         getElement().setAttribute("type", "submit");
     }
 }

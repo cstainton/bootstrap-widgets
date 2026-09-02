@@ -7,6 +7,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
+import org.gwtbootstrap5.client.ui.constants.ButtonType;
 
 public class CheckBoxButton extends Button implements HasValue<Boolean>, HasValueChangeHandlers<Boolean> {
 
@@ -17,7 +18,7 @@ public class CheckBoxButton extends Button implements HasValue<Boolean>, HasValu
     }
 
     public CheckBoxButton(String text) {
-        super(text, Variant.SECONDARY);
+        super(text, ButtonType.DEFAULT);
         addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {

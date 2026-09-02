@@ -1,6 +1,9 @@
 package org.gwtbootstrap5.client.ui;
 
-public class Input extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasInputType;
+import org.gwtbootstrap5.client.ui.constants.InputType;
+
+public class Input extends ElementPanel implements HasInputType {
 
     public Input() {
         this("text");
@@ -10,6 +13,10 @@ public class Input extends ElementPanel {
         super("input");
         addStyleName("form-control");
         setType(type);
+    }
+
+    public Input(InputType type) {
+        this(type == null ? InputType.TEXT.getType() : type.getType());
     }
 
     public String getValue() {
@@ -32,7 +39,23 @@ public class Input extends ElementPanel {
         getElement().setAttribute("type", type == null ? "text" : type);
     }
 
-    public String getType() {
+    @Override
+    public void setType(InputType inputType) {
+        setType(inputType == null ? InputType.TEXT.getType() : inputType.getType());
+    }
+
+    @Override
+    public InputType getType() {
+        String type = getElement().getAttribute("type");
+        for (InputType inputType : InputType.values()) {
+            if (inputType.getType().equals(type)) {
+                return inputType;
+            }
+        }
+        return null;
+    }
+
+    public String getTypeName() {
         return getElement().getAttribute("type");
     }
 

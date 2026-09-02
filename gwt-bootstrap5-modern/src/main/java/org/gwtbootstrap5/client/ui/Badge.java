@@ -1,6 +1,10 @@
 package org.gwtbootstrap5.client.ui;
 
-public class Badge extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.LabelType;
+
+public class Badge extends ElementPanel implements HasType<LabelType> {
 
     private Variant variant;
 
@@ -19,6 +23,11 @@ public class Badge extends ElementPanel {
         setVariant(variant);
     }
 
+    public Badge(String text, LabelType type) {
+        this(text);
+        setType(type);
+    }
+
     public void setVariant(Variant variant) {
         if (this.variant != null) {
             removeStyleName(styleName(this.variant));
@@ -32,12 +41,14 @@ public class Badge extends ElementPanel {
         return variant;
     }
 
-    public void setType(Variant variant) {
-        setVariant(variant);
+    @Override
+    public void setType(LabelType type) {
+        StyleHelper.addUniqueEnumStyleName(this, LabelType.class, type == null ? LabelType.DEFAULT : type);
     }
 
-    public Variant getType() {
-        return getVariant();
+    @Override
+    public LabelType getType() {
+        return LabelType.fromStyleName(getStyleName());
     }
 
     public void setPill(boolean pill) {
