@@ -9,7 +9,14 @@ import org.gwtbootstrap5.teavm.ui.ButtonToolBar;
 import org.gwtbootstrap5.teavm.ui.Card;
 import org.gwtbootstrap5.teavm.ui.CardFooter;
 import org.gwtbootstrap5.teavm.ui.CardHeader;
+import org.gwtbootstrap5.teavm.ui.Carousel;
+import org.gwtbootstrap5.teavm.ui.CarouselCaption;
+import org.gwtbootstrap5.teavm.ui.CarouselControl;
+import org.gwtbootstrap5.teavm.ui.CarouselIndicator;
+import org.gwtbootstrap5.teavm.ui.CarouselIndicators;
+import org.gwtbootstrap5.teavm.ui.CarouselSlide;
 import org.gwtbootstrap5.teavm.ui.CheckBox;
+import org.gwtbootstrap5.teavm.ui.Collapse;
 import org.gwtbootstrap5.teavm.ui.Column;
 import org.gwtbootstrap5.teavm.ui.Container;
 import org.gwtbootstrap5.teavm.ui.Divider;
@@ -21,7 +28,12 @@ import org.gwtbootstrap5.teavm.ui.FormLabel;
 import org.gwtbootstrap5.teavm.ui.HelpBlock;
 import org.gwtbootstrap5.teavm.ui.Heading;
 import org.gwtbootstrap5.teavm.ui.Input;
+import org.gwtbootstrap5.teavm.ui.InputGroup;
+import org.gwtbootstrap5.teavm.ui.InputGroupAddon;
+import org.gwtbootstrap5.teavm.ui.InputGroupButton;
+import org.gwtbootstrap5.teavm.ui.Jumbotron;
 import org.gwtbootstrap5.teavm.ui.Lead;
+import org.gwtbootstrap5.teavm.ui.ListBox;
 import org.gwtbootstrap5.teavm.ui.ListGroup;
 import org.gwtbootstrap5.teavm.ui.ListGroupItem;
 import org.gwtbootstrap5.teavm.ui.Modal;
@@ -34,13 +46,16 @@ import org.gwtbootstrap5.teavm.ui.Navbar;
 import org.gwtbootstrap5.teavm.ui.NavbarBrand;
 import org.gwtbootstrap5.teavm.ui.NavbarLink;
 import org.gwtbootstrap5.teavm.ui.PageItem;
+import org.gwtbootstrap5.teavm.ui.Pager;
 import org.gwtbootstrap5.teavm.ui.Pagination;
 import org.gwtbootstrap5.teavm.ui.Paragraph;
+import org.gwtbootstrap5.teavm.ui.Popover;
 import org.gwtbootstrap5.teavm.ui.Progress;
 import org.gwtbootstrap5.teavm.ui.ProgressBar;
 import org.gwtbootstrap5.teavm.ui.Radio;
 import org.gwtbootstrap5.teavm.ui.Row;
 import org.gwtbootstrap5.teavm.ui.TextArea;
+import org.gwtbootstrap5.teavm.ui.Tooltip;
 import org.gwtbootstrap5.teavm.ui.Variant;
 import org.gwtbootstrap5.teavm.ui.Well;
 
@@ -63,6 +78,9 @@ public final class Bootstrap5SmokeApp {
         container.addStyleName("py-4");
         container.add(new Heading(1, "GWT Bootstrap 5 Modern TeaVM"));
         container.add(new Paragraph("TeaVM-rendered Bootstrap 5 widgets using the non-GWT DOM backend."));
+        container.add(new Jumbotron()
+                .add(new Heading(2, "Jumbotron concept"))
+                .add(new Paragraph("Bootstrap 5 renders this through utility classes.")));
 
         final Row row = new Row();
         row.add(Column.md(6).add(new Button("Primary action")));
@@ -132,6 +150,7 @@ public final class Bootstrap5SmokeApp {
         final Card paginationCard = new Card();
         paginationCard.addBody(new Heading(3, "Pagination"));
         paginationCard.addBody(pagination);
+        paginationCard.addBody(new Pager().setAlignToSides(true).setPreviousEnabled(false));
         interactive.add(Column.md(4).add(paginationCard));
 
         container.add(interactive);
@@ -185,10 +204,51 @@ public final class Bootstrap5SmokeApp {
                 .add(new TextArea().setText("TeaVM textarea")));
         form.add(new CheckBox("Checked option").setValue(true));
         form.add(new Radio("Radio option"));
+        form.add(new FormGroup()
+                .add(new FormLabel("ListBox"))
+                .add(new ListBox().addItem("Alpha", "alpha").addItem("Bravo", "bravo")));
+        form.add(new InputGroup()
+                .add(new InputGroupAddon("@"))
+                .add(new Input().setPlaceholder("Grouped input"))
+                .add(new InputGroupButton().add(new Button("Go").setButtonStyle("btn-primary"))));
         final Card formCard = new Card();
         formCard.addBody(new Heading(3, "Forms"));
         formCard.addBody(form);
         container.add(new Row().add(Column.md(8).add(formCard)));
+
+        final Collapse collapse = new Collapse();
+        collapse.add(new Well().add(new Paragraph("Collapse uses the Bootstrap 5 JS API.")));
+        final Button collapseButton = new Button("Toggle collapse").setButtonStyle("btn-primary");
+        collapseButton.onClick(collapse::toggle);
+        final Tooltip tooltip = new Tooltip(new Button("Tooltip").setButtonStyle("btn-secondary"), "Bootstrap 5 tooltip");
+        tooltip.init();
+        final Popover popover = new Popover(new Button("Popover").setButtonStyle("btn-secondary"), "Popover title", "Bootstrap 5 popover content");
+        popover.init();
+        final Card scriptedCard = new Card();
+        scriptedCard.addBody(new Heading(3, "Collapse, tooltip and popover"));
+        scriptedCard.addBody(collapseButton);
+        scriptedCard.addBody(collapse);
+        scriptedCard.addBody(tooltip);
+        scriptedCard.addBody(popover);
+        container.add(new Row().add(Column.md(8).add(scriptedCard)));
+
+        final String carouselId = "teavmBootstrap5Carousel";
+        final Carousel carousel = new Carousel();
+        carousel.setId(carouselId);
+        final CarouselIndicators indicators = new CarouselIndicators();
+        indicators.addIndicator(new CarouselIndicator(carouselId, 0).setActive(true));
+        indicators.addIndicator(new CarouselIndicator(carouselId, 1));
+        carousel.getElement().insertFirst(indicators.getElement());
+        final CarouselSlide firstSlide = new CarouselSlide(new Well().add(new Paragraph("First TeaVM slide"))).setActive(true);
+        firstSlide.add(new CarouselCaption().add(new Heading(5, "First slide")));
+        carousel.addSlide(firstSlide);
+        carousel.addSlide(new CarouselSlide(new Well().add(new Paragraph("Second TeaVM slide"))));
+        carousel.add(new CarouselControl(carouselId, true));
+        carousel.add(new CarouselControl(carouselId, false));
+        final Card carouselCard = new Card();
+        carouselCard.addBody(new Heading(3, "Carousel"));
+        carouselCard.addBody(carousel);
+        container.add(new Row().add(Column.md(8).add(carouselCard)));
 
         container.add(modal);
 

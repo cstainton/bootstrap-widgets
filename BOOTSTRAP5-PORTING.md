@@ -5,7 +5,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Current Scope
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
-- Bootstrap 5 top-level UI Java classes currently present: `54`, including small enum/helper classes.
+- Bootstrap 5 top-level UI Java classes currently present: `72`, including small enum/helper classes.
 - Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
 
@@ -24,8 +24,8 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Divider`
 - [x] `Navbar`
 - [x] `NavbarBrand`
-- [ ] `NavbarCollapse`
-- [ ] `NavbarCollapseButton`
+- [x] `NavbarCollapse`
+- [x] `NavbarCollapseButton`
 - [x] `NavbarNav`
 - [x] `NavbarLink`
 - [x] `NavbarText`
@@ -42,30 +42,30 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Progress`
 - [x] `ProgressBar`
 - [x] `Pagination`
-- [ ] `Pager`
+- [x] `Pager`
 - [x] `Form`
 - [x] `FormGroup`
 - [x] `FormLabel`
 - [x] `Input`
 - [x] `TextBox`
 - [x] `TextArea`
-- [ ] `ListBox`
+- [x] `ListBox`
 - [x] `CheckBox`
 - [x] `Radio`
 - [x] `HelpBlock`
-- [ ] `InputGroup`
-- [ ] `InputGroupAddon`
-- [ ] `InputGroupButton`
+- [x] `InputGroup`
+- [x] `InputGroupAddon`
+- [x] `InputGroupButton`
 - [x] `Card` present
 - [x] `Panel`
 - [x] `PanelBody`
 - [x] `PanelHeader`
 - [x] `PanelFooter`
-- [ ] `Jumbotron`
-- [ ] `Tooltip`
-- [ ] `Popover`
-- [ ] `Collapse`
-- [ ] `Carousel`
+- [x] `Jumbotron`
+- [x] `Tooltip`
+- [x] `Popover`
+- [x] `Collapse`
+- [x] `Carousel`
 
 ## Full GwtBootstrap3 Widget Inventory
 
@@ -83,17 +83,17 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `ButtonGroup`
 - [x] `ButtonToolBar`
 - [ ] `Caption`
-- [ ] `Carousel`
-- [ ] `CarouselCaption`
-- [ ] `CarouselControl`
-- [ ] `CarouselIndicator`
-- [ ] `CarouselIndicators`
-- [ ] `CarouselInner`
-- [ ] `CarouselSlide`
+- [x] `Carousel`
+- [x] `CarouselCaption`
+- [x] `CarouselControl`
+- [x] `CarouselIndicator`
+- [x] `CarouselIndicators`
+- [x] `CarouselInner`
+- [x] `CarouselSlide`
 - [x] `CheckBox`
 - [ ] `CheckBoxButton`
 - [ ] `Code`
-- [ ] `Collapse`
+- [x] `Collapse`
 - [x] `Column`
 - [x] `Container`
 - [ ] `Description`
@@ -120,20 +120,20 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `InlineHelpBlock`
 - [ ] `InlineRadio`
 - [x] `Input`
-- [ ] `InputGroup`
-- [ ] `InputGroupAddon`
-- [ ] `InputGroupButton`
+- [x] `InputGroup`
+- [x] `InputGroupAddon`
+- [x] `InputGroupButton`
 - [ ] `IntegerBox`
 - [ ] `IntegerRadioGroup`
 - [ ] `IsClosable`
-- [ ] `Jumbotron`
+- [x] `Jumbotron`
 - [x] `Label`
 - [x] `Lead`
 - [ ] `Legend`
 - [ ] `LinkedGroup`
 - [ ] `LinkedGroupItem`
 - [ ] `LinkedGroupItemText`
-- [ ] `ListBox`
+- [x] `ListBox`
 - [ ] `ListDropDown`
 - [x] `ListGroup`
 - [x] `ListGroupItem`
@@ -153,15 +153,15 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Navbar`
 - [x] `NavbarBrand`
 - [ ] `NavbarButton`
-- [ ] `NavbarCollapse`
-- [ ] `NavbarCollapseButton`
+- [x] `NavbarCollapse`
+- [x] `NavbarCollapseButton`
 - [ ] `NavbarForm`
 - [ ] `NavbarHeader`
 - [x] `NavbarLink`
 - [x] `NavbarNav`
 - [x] `NavbarText`
 - [ ] `PageHeader`
-- [ ] `Pager`
+- [x] `Pager`
 - [x] `Pagination`
 - [x] `Panel`
 - [x] `PanelBody`
@@ -169,7 +169,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `PanelFooter`
 - [ ] `PanelGroup`
 - [x] `PanelHeader`
-- [ ] `Popover`
+- [x] `Popover`
 - [ ] `Pre`
 - [x] `Progress`
 - [x] `ProgressBar`
@@ -190,7 +190,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `TextBox`
 - [ ] `ThumbnailLink`
 - [ ] `ThumbnailPanel`
-- [ ] `Tooltip`
+- [x] `Tooltip`
 - [ ] `TooltipHelpBlock`
 - [ ] `ValueListBox`
 - [ ] `VerticalButtonGroup`

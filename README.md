@@ -11,7 +11,7 @@ The project also keeps TeaVM tracks for both versions. Both TeaVM tracks use the
 
 This project is under active migration.
 
-The Bootstrap 3 compatibility build and original showcase compile with GWT 2.13.1. The Bootstrap 5 module is an initial native widget track with a compiled showcase covering layout, buttons, cards, alerts, badges, list groups, typography helpers, dropdowns, modals, navbars, navs, progress bars, basic forms, pagination, and Bootstrap 3 panel/well concepts mapped to Bootstrap 5 card/utility idioms. The TeaVM modules are experimental and currently contain compile-checked subsets for Bootstrap 3-compatible and Bootstrap 5-native rendering.
+The Bootstrap 3 compatibility build and original showcase compile with GWT 2.13.1. The Bootstrap 5 module is an initial native widget track with a compiled showcase covering layout, buttons, cards, alerts, badges, list groups, typography helpers, dropdowns, modals, navbars, navs, progress bars, input groups, basic forms, collapse, tooltips, popovers, carousels, pagination, and Bootstrap 3 panel/well concepts mapped to Bootstrap 5 card/utility idioms. The TeaVM modules are experimental and currently contain compile-checked subsets for Bootstrap 3-compatible and Bootstrap 5-native rendering.
 
 ## Migration Paths
 
@@ -78,7 +78,7 @@ Planned module:
 
 ## Bootstrap 5 Coverage
 
-`BOOTSTRAP5-PORTING.md` tracks Bootstrap 5 coverage against the current GwtBootstrap3 top-level widget catalogue. The Bootstrap 5 module is still early, but now has a visible parity slice for common content, status, navigation, overlay, dropdown, progress, basic form and pagination widgets. The compatibility story belongs to Bootstrap 3; Bootstrap 5 keeps native markup and behaviour.
+`BOOTSTRAP5-PORTING.md` tracks Bootstrap 5 coverage against the current GwtBootstrap3 top-level widget catalogue. The Bootstrap 5 module is still early, but now has a visible parity slice for common content, status, navigation, overlay, dropdown, progress, basic form, collapse, tooltip, popover, carousel and pagination widgets. The compatibility story belongs to Bootstrap 3; Bootstrap 5 keeps native markup and behaviour.
 
 The Bootstrap 5 migration path is widget-by-widget: port the Bootstrap 3 widget concept, replace Bootstrap 3 styles and markup with Bootstrap 5 equivalents, and replace jQuery plugin behaviour with Bootstrap 5 JavaScript APIs or direct DOM behaviour.
 

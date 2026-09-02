@@ -6,12 +6,12 @@ The target is a TeaVM-backed widget API for Bootstrap 5 without UiBinder or GWT 
 
 Current scope:
 
-- A small widget facade: `Widget`, `Panel`, `FlowPanel`, `RootPanel`, `Container`, `Row`, `Column`, `Button`, `Anchor`, `Label`, `Paragraph`, `Heading`, `Card`, `CardHeader`, `CardBody`, `CardFooter`, `Alert`, `Badge`, `ListGroup`, `ListGroupItem`, `Lead`, `Well`, `DropDown`, `Modal`, `Navbar`, `Nav`, `Progress`, `Form`, and `Pagination`.
+- A small widget facade: `Widget`, `Panel`, `FlowPanel`, `RootPanel`, `Container`, `Row`, `Column`, `Button`, `Anchor`, `Label`, `Paragraph`, `Heading`, `Card`, `CardHeader`, `CardBody`, `CardFooter`, `Alert`, `Badge`, `ListGroup`, `ListGroupItem`, `Lead`, `Well`, `DropDown`, `Modal`, `Navbar`, `Nav`, `Progress`, `Form`, `Collapse`, `Tooltip`, `Popover`, `Carousel`, and `Pagination`.
 - Shared GWT compatibility entry point/root panel support from `gwt-teavm-compat`.
 - Plain TeaVM mounting through `Mount.toBody(...)` and `Mount.toElement(...)`, so `RootPanel` is optional.
 - TeaVM DOM wrappers for attributes, class names, visibility, text/html, child management, and lookup.
 - Modal interop through TeaVM JSO using Bootstrap 5's `bootstrap.Modal` API.
-- Bootstrap 5 dropdown, navbar, nav, progress, form and pagination markup generated without jQuery.
+- Bootstrap 5 dropdown, navbar, nav, progress, form, collapse, tooltip, popover, carousel and pagination markup generated without jQuery.
 
 Compatibility direction:
 

@@ -13,8 +13,13 @@ public class PageItem extends Panel {
 
     public PageItem(final String text, final String href) {
         this();
-        link.setText(text);
+        setText(text);
         link.setHref(href == null ? "#" : href);
+    }
+
+    public PageItem setText(final String text) {
+        link.setText(text == null ? "" : text);
+        return this;
     }
 
     public PageItem setActive(final boolean active) {
