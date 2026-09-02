@@ -24,7 +24,31 @@ public class Input extends ElementPanel {
         getElement().setAttribute("placeholder", placeholder == null ? "" : placeholder);
     }
 
+    public String getPlaceholder() {
+        return getElement().getAttribute("placeholder");
+    }
+
     public void setType(String type) {
         getElement().setAttribute("type", type == null ? "text" : type);
+    }
+
+    public String getType() {
+        return getElement().getAttribute("type");
+    }
+
+    public void setMin(String min) {
+        getElement().setAttribute("min", min == null ? "" : min);
+    }
+
+    public void setMax(String max) {
+        getElement().setAttribute("max", max == null ? "" : max);
+    }
+
+    public void setName(String name) {
+        getElement().setAttribute("name", name == null ? "" : name);
+    }
+
+    public String getName() {
+        return getElement().getAttribute("name");
     }
 }
