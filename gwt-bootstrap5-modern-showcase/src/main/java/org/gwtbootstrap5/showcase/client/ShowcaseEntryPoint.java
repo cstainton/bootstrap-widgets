@@ -396,7 +396,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(progressStackedPanel());
 
         addPageHeader(column, "suggestBox", "SuggestBox", null);
-        column.add(panel("Basic", new SuggestBox(), "new SuggestBox();"));
+        FormGroup suggestGroup = new FormGroup();
+        suggestGroup.add(new FormLabel("SuggestBox"));
+        suggestGroup.add(new SuggestBox());
+        column.add(panel("Basic", suggestGroup, "FormGroup group = new FormGroup();\ngroup.add(new FormLabel(\"SuggestBox\"));\ngroup.add(new SuggestBox());"));
 
         addPageHeader(column, "thumbnails", "Thumbnails", null);
         column.add(thumbnailsPanel());
@@ -507,8 +510,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
         FormGroup textAreaGroup = new FormGroup();
         textAreaGroup.add(new FormLabel("TextArea"));
         textAreaGroup.add(new TextArea());
+        FormGroup listBoxGroup = new FormGroup();
+        listBoxGroup.add(new FormLabel("ListBox"));
+        ListBox labelledListBox = new ListBox();
+        labelledListBox.addItem("Choose an option");
+        listBoxGroup.add(labelledListBox);
         form.add(nameGroup);
         form.add(textAreaGroup);
+        form.add(listBoxGroup);
         form.add(new CheckBox("CheckBox"));
         form.add(new Radio("form-radio", "Radio"));
         form.add(new InlineCheckBox("InlineCheckBox"));

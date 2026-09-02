@@ -20,6 +20,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 
 ## Parity Workstream
 
+- Class-presence checkboxes below track inventory only. Public API parity is measured separately in `BOOTSTRAP5-API-CONTRACTS.md` by `scripts/audit-bootstrap5-api.py`.
 - Prefer widening the Bootstrap 5 widgets to match GwtBootstrap3-style constructors and methods before asking application code to change.
 - Anchor-backed widgets should compose children into the clickable anchor element.
 - Value widgets should implement GWT value-change semantics where the Bootstrap 3 widget did.

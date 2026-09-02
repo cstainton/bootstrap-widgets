@@ -7,7 +7,7 @@ public class Navbar extends ElementPanel {
 
     public Navbar() {
         super("nav");
-        setStyleName("navbar navbar-expand-lg bg-body-tertiary border-bottom");
+        setStyleName("navbar navbar-expand-xl bg-body-tertiary border-bottom");
         container.addStyleName("py-0");
         container.add(nav);
         add(container);
@@ -22,6 +22,6 @@ public class Navbar extends ElementPanel {
     }
 
     public void setDark(boolean dark) {
-        setStyleName(dark ? "navbar navbar-expand-lg navbar-dark bg-dark" : "navbar navbar-expand-lg bg-body-tertiary border-bottom");
+        setStyleName(dark ? "navbar navbar-expand-xl navbar-dark bg-dark" : "navbar navbar-expand-xl bg-body-tertiary border-bottom");
     }
 }
