@@ -2,6 +2,7 @@ package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import org.gwtbootstrap5.client.ui.base.HasActive;
 import org.gwtbootstrap5.client.ui.base.HasIcon;
@@ -27,6 +28,8 @@ public class CheckBoxButton extends CheckBox implements HasActive,
 
     private Icon icon;
     private IconPosition iconPosition = IconPosition.LEFT;
+    private ButtonType type;
+    private boolean outline;
 
     public CheckBoxButton() {
         this("");
@@ -64,6 +67,13 @@ public class CheckBoxButton extends CheckBox implements HasActive,
         getLabel().removeStyleName("form-check-label");
         getLabel().addStyleName("btn");
         setType(ButtonType.DEFAULT);
+        updateButtonState(false);
+        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Boolean> event) {
+                updateButtonState(Boolean.TRUE.equals(event.getValue()));
+            }
+        });
     }
 
     public void setText(String text) {
@@ -89,8 +99,7 @@ public class CheckBoxButton extends CheckBox implements HasActive,
         boolean oldValue = Boolean.TRUE.equals(getValue());
         boolean effectiveValue = Boolean.TRUE.equals(value);
         super.setValue(effectiveValue, false);
-        getLabel().setStyleName("active", effectiveValue);
-        getLabel().getElement().setAttribute("aria-pressed", Boolean.toString(effectiveValue));
+        updateButtonState(effectiveValue);
         if (fireEvents && oldValue != effectiveValue) {
             ValueChangeEvent.fire(this, effectiveValue);
         }
@@ -108,13 +117,30 @@ public class CheckBoxButton extends CheckBox implements HasActive,
 
     @Override
     public void setType(ButtonType type) {
-        StyleHelper.addUniqueEnumStyleName(getLabel(), ButtonType.class,
-                type == null ? ButtonType.DEFAULT : type);
+        if (this.type != null) {
+            getLabel().removeStyleName(buttonStyle(this.type, outline));
+        }
+        this.type = type == null ? ButtonType.DEFAULT : type;
+        getLabel().addStyleName(buttonStyle(this.type, outline));
     }
 
     @Override
     public ButtonType getType() {
-        return ButtonType.fromStyleName(getLabel().getStyleName());
+        return type == null ? ButtonType.DEFAULT : type;
+    }
+
+    public void setOutline(boolean outline) {
+        if (this.outline == outline) {
+            return;
+        }
+        ButtonType currentType = getType();
+        getLabel().removeStyleName(buttonStyle(currentType, this.outline));
+        this.outline = outline;
+        getLabel().addStyleName(buttonStyle(currentType, this.outline));
+    }
+
+    public boolean isOutline() {
+        return outline;
     }
 
     @Override
@@ -256,6 +282,19 @@ public class CheckBoxButton extends CheckBox implements HasActive,
             icon = new Icon();
         }
         return icon;
+    }
+
+    private void updateButtonState(boolean active) {
+        getLabel().setStyleName("active", active);
+        getLabel().getElement().setAttribute("aria-pressed", Boolean.toString(active));
+    }
+
+    private String buttonStyle(ButtonType type, boolean outline) {
+        String cssName = type.getCssName();
+        if (!outline || type == ButtonType.LINK) {
+            return cssName;
+        }
+        return "btn-outline-" + cssName.substring("btn-".length());
     }
 
     private void renderIcon() {

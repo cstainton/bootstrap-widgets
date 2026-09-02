@@ -493,11 +493,16 @@ public class ShowcaseEntryPoint implements EntryPoint {
         button.setHTML("<i class='bi bi-star'></i> With icon <span class='badge text-bg-light'>1</span>");
         CheckBoxButton checkBoxButton = new CheckBoxButton("CheckBoxButton");
         checkBoxButton.setType(ButtonType.PRIMARY);
+        checkBoxButton.setOutline(true);
         CheckBoxButton initiallyChecked = new CheckBoxButton("Initially checked");
+        initiallyChecked.setType(ButtonType.PRIMARY);
+        initiallyChecked.setOutline(true);
         initiallyChecked.setValue(true);
         CheckBoxButton disabled = new CheckBoxButton("Disabled");
+        disabled.setType(ButtonType.PRIMARY);
+        disabled.setOutline(true);
         disabled.setEnabled(false);
-        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setValue(true);" );
+        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setOutline(true);\ncheckBox.setValue(true);" );
     }
 
     private Widget formsPanel() {
