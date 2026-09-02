@@ -7,6 +7,13 @@ GWT Bootstrap Modern is a maintained fork of GwtBootstrap3 with two deliberately
 
 The project also keeps TeaVM tracks for both versions. Both TeaVM tracks use the shared `gwt-teavm-compat` layer for the small GWT client surface they need, but the version-specific widgets remain separate. The TeaVM modules are not UiBinder/GWT DOM builds; they are direct Java widget APIs backed by TeaVM DOM/JSO calls.
 
+## Showcases
+
+- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/gwtbootstrap-modern/)
+- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/)
+- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/gwtbootstrap-modern/teavm.html)
+- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html)
+
 ## Status
 
 This project is under active migration.
@@ -114,23 +121,23 @@ Compile the TeaVM Bootstrap 5 smoke target:
 mvn -f teavm-bootstrap5-modern/pom.xml -DskipTests package
 ```
 
-## Showcase
+## Showcase Details
 
 GitHub Pages serves the Bootstrap 3-compatible showcase:
 
-https://cstainton.github.io/gwtbootstrap-modern/
+[https://cstainton.github.io/gwtbootstrap-modern/](https://cstainton.github.io/gwtbootstrap-modern/)
 
 The Bootstrap 5-native GWT showcase is published at:
 
-https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/
+[https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/](https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/)
 
 The TeaVM Bootstrap 3 smoke page is published at:
 
-https://cstainton.github.io/gwtbootstrap-modern/teavm.html
+[https://cstainton.github.io/gwtbootstrap-modern/teavm.html](https://cstainton.github.io/gwtbootstrap-modern/teavm.html)
 
 The TeaVM Bootstrap 5 smoke page is published at:
 
-https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html
+[https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html](https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html)
 
 ## Notes
 
