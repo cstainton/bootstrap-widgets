@@ -9,7 +9,7 @@ public class Card extends FlowPanel {
     private final FlowPanel body = new FlowPanel();
 
     public Card() {
-        addStyleName("card shadow-sm");
+        setStyleName("card shadow-sm");
         body.addStyleName("card-body");
         add(body);
     }

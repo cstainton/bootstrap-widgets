@@ -5,7 +5,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Current Scope
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
-- Bootstrap 5 top-level widget classes currently present: `5` plus `Variant`.
+- Bootstrap 5 top-level widget classes currently present: `19` plus small enum/helper classes.
 - Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
 
@@ -15,7 +15,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `Row` present
 - [x] `Column` present
 - [x] `Button` present
-- [ ] `Anchor`
+- [x] `Anchor`
 - [ ] `AnchorButton`
 - [ ] `ButtonGroup`
 - [ ] `ButtonToolBar`
@@ -36,9 +36,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `ModalHeader`
 - [ ] `ModalBody`
 - [ ] `ModalFooter`
-- [ ] `Alert`
-- [ ] `Badge`
-- [ ] `Label`
+- [x] `Alert`
+- [x] `Badge`
+- [x] `Label`
 - [ ] `Progress`
 - [ ] `ProgressBar`
 - [ ] `Pagination`
@@ -57,10 +57,10 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `InputGroupAddon`
 - [ ] `InputGroupButton`
 - [x] `Card` present
-- [ ] `Panel`
-- [ ] `PanelBody`
-- [ ] `PanelHeader`
-- [ ] `PanelFooter`
+- [x] `Panel`
+- [x] `PanelBody`
+- [x] `PanelHeader`
+- [x] `PanelFooter`
 - [ ] `Jumbotron`
 - [ ] `Tooltip`
 - [ ] `Popover`
@@ -71,11 +71,11 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 
 - [ ] `Abbreviation`
 - [ ] `Affix`
-- [ ] `Alert`
-- [ ] `Anchor`
+- [x] `Alert`
+- [x] `Anchor`
 - [ ] `AnchorButton`
 - [ ] `AnchorListItem`
-- [ ] `Badge`
+- [x] `Badge`
 - [ ] `BlockQuote`
 - [ ] `BooleanRadioGroup`
 - [ ] `Breadcrumbs`
@@ -110,7 +110,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `FormControlStatic`
 - [ ] `FormGroup`
 - [ ] `FormLabel`
-- [ ] `Heading`
+- [x] `Heading`
 - [ ] `HelpBlock`
 - [ ] `Icon`
 - [ ] `IconStack`
@@ -127,16 +127,16 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `IntegerRadioGroup`
 - [ ] `IsClosable`
 - [ ] `Jumbotron`
-- [ ] `Label`
-- [ ] `Lead`
+- [x] `Label`
+- [x] `Lead`
 - [ ] `Legend`
 - [ ] `LinkedGroup`
 - [ ] `LinkedGroupItem`
 - [ ] `LinkedGroupItemText`
 - [ ] `ListBox`
 - [ ] `ListDropDown`
-- [ ] `ListGroup`
-- [ ] `ListGroupItem`
+- [x] `ListGroup`
+- [x] `ListGroupItem`
 - [ ] `ListItem`
 - [ ] `LongBox`
 - [ ] `MediaBody`
@@ -163,12 +163,12 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `PageHeader`
 - [ ] `Pager`
 - [ ] `Pagination`
-- [ ] `Panel`
-- [ ] `PanelBody`
+- [x] `Panel`
+- [x] `PanelBody`
 - [ ] `PanelCollapse`
-- [ ] `PanelFooter`
+- [x] `PanelFooter`
 - [ ] `PanelGroup`
-- [ ] `PanelHeader`
+- [x] `PanelHeader`
 - [ ] `Popover`
 - [ ] `Pre`
 - [ ] `Progress`
@@ -194,4 +194,4 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `TooltipHelpBlock`
 - [ ] `ValueListBox`
 - [ ] `VerticalButtonGroup`
-- [ ] `Well`
+- [x] `Well`

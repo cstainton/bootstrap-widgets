@@ -9,10 +9,12 @@
 <body>
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+  <script>window.exports = window;</script>
   <script src="teavm/teavm-bootstrap3-modern-smoke.js"></script>
   <script>
-    if (typeof window.main === 'function') {
-      window.main([]);
+    const teavmMain = window.main || (window.exports && window.exports.main);
+    if (typeof teavmMain === 'function') {
+      teavmMain([]);
     } else {
       document.body.innerHTML = '<main class="container py-4"><div class="alert alert-danger">TeaVM entry point was not exported.</div></main>';
     }

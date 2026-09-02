@@ -14,4 +14,14 @@ public class Card extends FlowPanel {
         body.add(child);
         return this;
     }
+
+    public Card addHeader(final Widget child) {
+        getElement().insertBefore(child.getElement(), body.getElement());
+        return this;
+    }
+
+    public Card addFooter(final Widget child) {
+        add(child);
+        return this;
+    }
 }
