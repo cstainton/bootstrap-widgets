@@ -5,9 +5,17 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Current Scope
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
-- Bootstrap 5 top-level UI Java classes currently present: `72`, including small enum/helper classes.
+- Bootstrap 5 top-level UI Java classes currently present: `134`, including small enum/helper classes.
 - Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
+
+## Compatibility Notes
+
+- The Bootstrap 5 module now represents the current GwtBootstrap3 top-level widget catalogue, but it is not a source-compatible Bootstrap 3 drop-in. Bootstrap 3-only behaviours are mapped to Bootstrap 5 idioms where possible.
+- `Panel`, `Well`, `ThumbnailPanel`, `ThumbnailLink`, `PageHeader`, and `Jumbotron` render through Bootstrap 5 card, spacing, border, background, and utility classes.
+- `Affix` maps to `sticky-top`; Bootstrap 5 no longer ships the old affix plugin.
+- `ScrollSpy`, dropdowns, collapse, carousel, popover, tooltip, modal, and tabs use Bootstrap 5 `data-bs-*` attributes and JavaScript APIs rather than jQuery plugins.
+- `CheckBoxButton` preserves the button-toggle concept with explicit `active`/`aria-pressed` state rather than relying on the removed Bootstrap 3 button plugin loading/toggle API.
 
 ## First-Port Priority
 
@@ -69,20 +77,20 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 
 ## Full GwtBootstrap3 Widget Inventory
 
-- [ ] `Abbreviation`
-- [ ] `Affix`
+- [x] `Abbreviation`
+- [x] `Affix`
 - [x] `Alert`
 - [x] `Anchor`
 - [x] `AnchorButton`
-- [ ] `AnchorListItem`
+- [x] `AnchorListItem`
 - [x] `Badge`
-- [ ] `BlockQuote`
-- [ ] `BooleanRadioGroup`
-- [ ] `Breadcrumbs`
+- [x] `BlockQuote`
+- [x] `BooleanRadioGroup`
+- [x] `Breadcrumbs`
 - [x] `Button`
 - [x] `ButtonGroup`
 - [x] `ButtonToolBar`
-- [ ] `Caption`
+- [x] `Caption`
 - [x] `Carousel`
 - [x] `CarouselCaption`
 - [x] `CarouselControl`
@@ -91,107 +99,107 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [x] `CarouselInner`
 - [x] `CarouselSlide`
 - [x] `CheckBox`
-- [ ] `CheckBoxButton`
-- [ ] `Code`
+- [x] `CheckBoxButton`
+- [x] `Code`
 - [x] `Collapse`
 - [x] `Column`
 - [x] `Container`
-- [ ] `Description`
-- [ ] `DescriptionData`
-- [ ] `DescriptionTitle`
+- [x] `Description`
+- [x] `DescriptionData`
+- [x] `DescriptionTitle`
 - [x] `Divider`
-- [ ] `DoubleBox`
-- [ ] `DoubleRadioGroup`
+- [x] `DoubleBox`
+- [x] `DoubleRadioGroup`
 - [x] `DropDown`
-- [ ] `DropDownHeader`
+- [x] `DropDownHeader`
 - [x] `DropDownMenu`
-- [ ] `FieldSet`
+- [x] `FieldSet`
 - [x] `Form`
-- [ ] `FormControlStatic`
+- [x] `FormControlStatic`
 - [x] `FormGroup`
 - [x] `FormLabel`
 - [x] `Heading`
 - [x] `HelpBlock`
-- [ ] `Icon`
-- [ ] `IconStack`
-- [ ] `Image`
-- [ ] `ImageAnchor`
-- [ ] `InlineCheckBox`
-- [ ] `InlineHelpBlock`
-- [ ] `InlineRadio`
+- [x] `Icon`
+- [x] `IconStack`
+- [x] `Image`
+- [x] `ImageAnchor`
+- [x] `InlineCheckBox`
+- [x] `InlineHelpBlock`
+- [x] `InlineRadio`
 - [x] `Input`
 - [x] `InputGroup`
 - [x] `InputGroupAddon`
 - [x] `InputGroupButton`
-- [ ] `IntegerBox`
-- [ ] `IntegerRadioGroup`
-- [ ] `IsClosable`
+- [x] `IntegerBox`
+- [x] `IntegerRadioGroup`
+- [x] `IsClosable`
 - [x] `Jumbotron`
 - [x] `Label`
 - [x] `Lead`
-- [ ] `Legend`
-- [ ] `LinkedGroup`
-- [ ] `LinkedGroupItem`
-- [ ] `LinkedGroupItemText`
+- [x] `Legend`
+- [x] `LinkedGroup`
+- [x] `LinkedGroupItem`
+- [x] `LinkedGroupItemText`
 - [x] `ListBox`
-- [ ] `ListDropDown`
+- [x] `ListDropDown`
 - [x] `ListGroup`
 - [x] `ListGroupItem`
-- [ ] `ListItem`
-- [ ] `LongBox`
-- [ ] `MediaBody`
-- [ ] `MediaList`
+- [x] `ListItem`
+- [x] `LongBox`
+- [x] `MediaBody`
+- [x] `MediaList`
 - [x] `Modal`
 - [x] `ModalBody`
-- [ ] `ModalComponent`
+- [x] `ModalComponent`
 - [x] `ModalFooter`
 - [x] `ModalHeader`
-- [ ] `ModalSize`
+- [x] `ModalSize`
 - [x] `Nav`
 - [x] `NavPills`
 - [x] `NavTabs`
 - [x] `Navbar`
 - [x] `NavbarBrand`
-- [ ] `NavbarButton`
+- [x] `NavbarButton`
 - [x] `NavbarCollapse`
 - [x] `NavbarCollapseButton`
-- [ ] `NavbarForm`
-- [ ] `NavbarHeader`
+- [x] `NavbarForm`
+- [x] `NavbarHeader`
 - [x] `NavbarLink`
 - [x] `NavbarNav`
 - [x] `NavbarText`
-- [ ] `PageHeader`
+- [x] `PageHeader`
 - [x] `Pager`
 - [x] `Pagination`
 - [x] `Panel`
 - [x] `PanelBody`
-- [ ] `PanelCollapse`
+- [x] `PanelCollapse`
 - [x] `PanelFooter`
-- [ ] `PanelGroup`
+- [x] `PanelGroup`
 - [x] `PanelHeader`
 - [x] `Popover`
-- [ ] `Pre`
+- [x] `Pre`
 - [x] `Progress`
 - [x] `ProgressBar`
 - [x] `Radio`
-- [ ] `RadioButton`
+- [x] `RadioButton`
 - [x] `Row`
-- [ ] `ScrollSpy`
-- [ ] `SimpleCheckBox`
-- [ ] `SimpleRadioButton`
-- [ ] `StringRadioGroup`
-- [ ] `SubmitButton`
-- [ ] `SuggestBox`
-- [ ] `TabContent`
-- [ ] `TabListItem`
-- [ ] `TabPane`
-- [ ] `TabPanel`
+- [x] `ScrollSpy`
+- [x] `SimpleCheckBox`
+- [x] `SimpleRadioButton`
+- [x] `StringRadioGroup`
+- [x] `SubmitButton`
+- [x] `SuggestBox`
+- [x] `TabContent`
+- [x] `TabListItem`
+- [x] `TabPane`
+- [x] `TabPanel`
 - [x] `TextArea`
 - [x] `TextBox`
-- [ ] `ThumbnailLink`
-- [ ] `ThumbnailPanel`
+- [x] `ThumbnailLink`
+- [x] `ThumbnailPanel`
 - [x] `Tooltip`
-- [ ] `TooltipHelpBlock`
-- [ ] `ValueListBox`
-- [ ] `VerticalButtonGroup`
+- [x] `TooltipHelpBlock`
+- [x] `ValueListBox`
+- [x] `VerticalButtonGroup`
 - [x] `Well`
