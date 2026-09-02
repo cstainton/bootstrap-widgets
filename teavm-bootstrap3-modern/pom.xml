@@ -39,6 +39,52 @@
 
   <build>
     <plugins>
+      <!--
+        The Bootstrap 3 widget API is compiled from the GWT module's own sources, so the
+        TeaVM build and the GWT build share one definition of every widget rather than
+        maintaining a parallel copy. Two groups are excluded:
+          * CellTable, DataGrid, ButtonCell and FormPanel - the GWT cell-widget and
+            form-submit bridges, which are data-presentation machinery rather than
+            Bootstrap widgets;
+          * the entry point and the jQuery bridge, which this module re-implements
+            against TeaVM's @JSBody under the same package and API.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <id>add-shared-bootstrap3-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.basedir}/../gwt-bootstrap3-modern/src/main/java</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>org/gwtbootstrap3/client/ui/gwt/CellTable.java</exclude>
+            <exclude>org/gwtbootstrap3/client/ui/gwt/DataGrid.java</exclude>
+            <exclude>org/gwtbootstrap3/client/ui/gwt/ButtonCell.java</exclude>
+            <exclude>org/gwtbootstrap3/client/ui/gwt/FormPanel.java</exclude>
+            <exclude>org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</exclude>
+            <exclude>org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</exclude>
+            <exclude>org/gwtbootstrap3/client/shared/js/JQuery.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.teavm</groupId>
         <artifactId>teavm-maven-plugin</artifactId>
@@ -51,7 +97,7 @@
               <goal>compile</goal>
             </goals>
             <configuration>
-              <mainClass>org.gwtbootstrap3.teavm.demo.TeaVmSmokeApp</mainClass>
+              <mainClass>org.gwtbootstrap3.teavm.demo.Bootstrap3ShowcaseApp</mainClass>
               <targetDirectory>${project.build.directory}/teavm</targetDirectory>
               <targetFileName>teavm-bootstrap3-modern-smoke.js</targetFileName>
               <minifying>false</minifying>

@@ -45,6 +45,41 @@ public class FormPanel extends SimplePanel {
         super(element);
     }
 
+    /**
+     * @param createIFrame whether to create a hidden target frame so the response is
+     *                     not loaded over the page. The frame is created lazily on submit.
+     */
+    public FormPanel(final Element element, final boolean createIFrame) {
+        this(element);
+        this.createIFrame = createIFrame;
+    }
+
+    /** Submits into the named frame. */
+    public FormPanel(final NamedFrame frameTarget) {
+        this();
+        setTarget(frameTarget == null ? null : frameTarget.getName());
+    }
+
+    /** Submits into the frame or window with this name. */
+    public FormPanel(final String target) {
+        this();
+        setTarget(target);
+    }
+
+    private boolean createIFrame = true;
+
+    public String getTarget() {
+        return getFormElement().getTarget();
+    }
+
+    public void setTarget(final String target) {
+        if (target == null || target.isEmpty()) {
+            getElement().removeAttribute("target");
+        } else {
+            getFormElement().setTarget(target);
+        }
+    }
+
     protected FormElement getFormElement() {
         return FormElement.as(getElement());
     }
