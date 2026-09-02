@@ -29,7 +29,7 @@ public class IntegerRadioGroup extends StringRadioGroup {
         super(name);
     }
 
-    public RadioButton addRadio(Integer value, String label) {
+    public Radio addRadio(Integer value, String label) {
         return super.addRadio(value == null ? null : value.toString(), label);
     }
 

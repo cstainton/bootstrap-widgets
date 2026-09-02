@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import java.util.List;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -76,7 +78,7 @@ public class TabListItem extends ElementPanel implements HasActive, HasEnabled, 
     @Override
     protected void onUnload() {
         BootstrapEventBridge.unbindAll(anchor.getElement());
-        dispose(anchor.getElement());
+        BootstrapComponent.dispose(anchor.getElement(), "Tab");
         super.onUnload();
     }
 
@@ -164,7 +166,7 @@ public class TabListItem extends ElementPanel implements HasActive, HasEnabled, 
     }
 
     public void showTab() {
-        show(anchor.getElement());
+        BootstrapComponent.call(anchor.getElement(), "Tab", "show");
     }
 
     public void showTab(boolean fireEvents) {
@@ -187,18 +189,5 @@ public class TabListItem extends ElementPanel implements HasActive, HasEnabled, 
         anchor.setHTML(html);
     }
 
-    private static native void show(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Tab) {
-            $wnd.bootstrap.Tab.getOrCreateInstance(element).show();
-        }
-    }-*/;
 
-    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Tab) {
-            var instance = $wnd.bootstrap.Tab.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }

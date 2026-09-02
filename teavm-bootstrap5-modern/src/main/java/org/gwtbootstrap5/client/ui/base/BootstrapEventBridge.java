@@ -65,6 +65,21 @@ public final class BootstrapEventBridge {
         forElement.put(eventName, element.unwrap().onEvent(eventName, listener));
     }
 
+    /** Removes the binding for a single event name. */
+    public static void unbind(final Element element, final String eventName) {
+        final Map<String, Registration> forElement = REGISTRATIONS.get(element);
+        if (forElement == null) {
+            return;
+        }
+        final Registration registration = forElement.remove(eventName);
+        if (registration != null) {
+            registration.dispose();
+        }
+        if (forElement.isEmpty()) {
+            REGISTRATIONS.remove(element);
+        }
+    }
+
     public static void unbindAll(final Element element) {
         final Map<String, Registration> forElement = REGISTRATIONS.remove(element);
         if (forElement == null) {

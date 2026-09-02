@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.Event;
@@ -80,7 +82,7 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
     @Override
     protected void onUnload() {
         BootstrapEventBridge.unbindAll(getElement());
-        dispose(getElement());
+        BootstrapComponent.dispose(getElement(), "Alert");
         super.onUnload();
     }
 
@@ -166,7 +168,7 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
     }
 
     public void close() {
-        close(getElement());
+        BootstrapComponent.call(getElement(), "Alert", "close");
     }
 
     public HandlerRegistration addCloseHandler(AlertCloseHandler handler) {
@@ -181,18 +183,5 @@ public class Alert extends ElementPanel implements HasType<AlertType> {
         return "alert-" + variant.cssName();
     }
 
-    private static native void close(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Alert) {
-            $wnd.bootstrap.Alert.getOrCreateInstance(element).close();
-        }
-    }-*/;
 
-    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Alert) {
-            var instance = $wnd.bootstrap.Alert.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }

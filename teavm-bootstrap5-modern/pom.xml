@@ -43,12 +43,9 @@
         The Bootstrap 5 widget API is compiled from the GWT module's own sources, so the
         TeaVM build and the GWT build share one definition of every widget rather than
         maintaining a parallel copy. Two groups are excluded:
-          * CellTable, DataGrid, ButtonCell and FormPanel - the GWT cell-widget and
-            form-submit bridges, which are GWT data-presentation machinery rather than
-            Bootstrap widgets. HTMLPanel and FlowPanel stay: html.Span and
-            html.Paragraph extend them;
-          * the eight JSNI-bridging widgets, which this module re-implements against
-            TeaVM's @JSBody in src/main/java under the same package and API.
+          * the three classes that hold JSNI - the entry point, the event bridge and
+            the component seam - which this module re-implements against TeaVM's
+            @JSBody under the same package and API. Every widget is shared source.
       -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -75,20 +72,10 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>org/gwtbootstrap5/client/ui/gwt/CellTable.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/gwt/DataGrid.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/gwt/ButtonCell.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/gwt/FormPanel.java</exclude>
             <exclude>org/gwtbootstrap5/client/GwtBootstrap5EntryPoint.java</exclude>
             <exclude>org/gwtbootstrap5/client/shared/js/JQuery.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Alert.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/base/AbstractTooltip.java</exclude>
             <exclude>org/gwtbootstrap5/client/ui/base/BootstrapEventBridge.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Carousel.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Collapse.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/Modal.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/ScrollSpy.java</exclude>
-            <exclude>org/gwtbootstrap5/client/ui/TabListItem.java</exclude>
+            <exclude>org/gwtbootstrap5/client/ui/base/BootstrapComponent.java</exclude>
           </excludes>
         </configuration>
       </plugin>

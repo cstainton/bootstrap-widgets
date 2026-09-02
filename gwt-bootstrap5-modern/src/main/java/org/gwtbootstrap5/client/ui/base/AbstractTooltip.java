@@ -150,7 +150,7 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
     public void destroy() {
         if (widget != null) {
             unbindEvents(widget.getElement());
-            disposePlugin(widget.getElement(), getBootstrapPluginName());
+            BootstrapComponent.dispose(widget.getElement(), getBootstrapPluginName());
         }
         initialized = false;
         showing = false;
@@ -467,7 +467,7 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
         Element element = widget.getElement();
         applyDataAttributes(element, content);
         bindEvents(element);
-        initializePlugin(element, getBootstrapPluginName(), animated, html,
+        BootstrapComponent.createPlugin(element, getBootstrapPluginName(), animated, html,
                 placement.getCssName(), trigger.getCssName(), showDelayMs, hideDelayMs,
                 container, selector, viewportSelector, viewportPadding, title,
                 prepareTemplate(), content);
@@ -476,7 +476,7 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
 
     protected final void invokePlugin(String method) {
         if (widget != null) {
-            invokePlugin(widget.getElement(), getBootstrapPluginName(), method);
+            BootstrapComponent.call(widget.getElement(), getBootstrapPluginName(), method);
         }
     }
 
@@ -564,62 +564,4 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
         BootstrapEventBridge.unbind(element, "hidden.bs." + eventNamespace);
         BootstrapEventBridge.unbind(element, "inserted.bs." + eventNamespace);
     }
-
-    private static native void initializePlugin(Element element, String pluginName, boolean animation,
-            boolean html, String placement, String trigger, int showDelay, int hideDelay,
-            String container, String selector, String boundary, int padding, String title,
-            String template, String content) /*-{
-        if (!$wnd.bootstrap || !$wnd.bootstrap[pluginName]) {
-            return;
-        }
-        var plugin = $wnd.bootstrap[pluginName];
-        var existing = plugin.getInstance(element);
-        if (existing) {
-            existing.dispose();
-        }
-        var options = {
-            animation: animation,
-            html: html,
-            placement: placement,
-            trigger: trigger,
-            delay: {show: showDelay, hide: hideDelay},
-            title: title,
-            template: template
-        };
-        if (container) options.container = container;
-        if (selector) options.selector = selector;
-        if (boundary) options.boundary = boundary;
-        if (content != null) options.content = content;
-        if (padding > 0) {
-            options.popperConfig = function(defaultConfig) {
-                var modifiers = defaultConfig.modifiers || [];
-                for (var i = 0; i < modifiers.length; i++) {
-                    if (modifiers[i].name === "preventOverflow") {
-                        modifiers[i].options = modifiers[i].options || {};
-                        modifiers[i].options.padding = padding;
-                    }
-                }
-                return defaultConfig;
-            };
-        }
-        new plugin(element, options);
-    }-*/;
-
-    private static native void invokePlugin(Element element, String pluginName, String method) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap[pluginName]) {
-            var instance = $wnd.bootstrap[pluginName].getOrCreateInstance(element);
-            if (instance && instance[method]) {
-                instance[method]();
-            }
-        }
-    }-*/;
-
-    private static native void disposePlugin(Element element, String pluginName) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap[pluginName]) {
-            var instance = $wnd.bootstrap[pluginName].getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }

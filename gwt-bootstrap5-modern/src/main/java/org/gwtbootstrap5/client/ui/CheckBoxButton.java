@@ -1,19 +1,17 @@
+package org.gwtbootstrap5.client.ui;
+
 /*
  * #%L
  * GwtBootstrap3
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
- * %%
- * Modified from the GwtBootstrap3 original for the Bootstrap 5 track of
- * GWT Bootstrap Modern: moved to the org.gwtbootstrap5 namespace and re-targeted
- * at Bootstrap 5 markup, class names and JavaScript APIs.
+ * Copyright (C) 2013 GwtBootstrap3
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,18 +19,12 @@
  * limitations under the License.
  * #L%
  */
-package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.safehtml.shared.SafeHtml;
 import org.gwtbootstrap5.client.ui.base.HasActive;
 import org.gwtbootstrap5.client.ui.base.HasIcon;
 import org.gwtbootstrap5.client.ui.base.HasIconPosition;
 import org.gwtbootstrap5.client.ui.base.HasSize;
 import org.gwtbootstrap5.client.ui.base.HasType;
-import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
 import org.gwtbootstrap5.client.ui.constants.ButtonSize;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
 import org.gwtbootstrap5.client.ui.constants.IconFlip;
@@ -40,92 +32,207 @@ import org.gwtbootstrap5.client.ui.constants.IconPosition;
 import org.gwtbootstrap5.client.ui.constants.IconRotate;
 import org.gwtbootstrap5.client.ui.constants.IconSize;
 import org.gwtbootstrap5.client.ui.constants.IconType;
+import org.gwtbootstrap5.client.ui.constants.Styles;
+
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.InputElement;
+import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.i18n.client.HasDirection.Direction;
+import com.google.gwt.i18n.shared.DirectionEstimator;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.user.client.DOM;
 
 /**
- * A checkbox rendered using Bootstrap 5's native {@code .btn-check + label.btn}
- * pattern. The real checkbox remains the source of truth for touch, keyboard,
- * form and accessibility behaviour.
+ * Button representing a checkbox used within a {@link ButtonGroup} that has
+ * toggle set to {@code Toogle.BUTTONS}.
+ * <p/>
+ * If you are looking for a classic checkbox see {@link CheckBox}.
+ *
+ * @author Sven Jacobs
  */
 public class CheckBoxButton extends CheckBox implements HasActive,
         HasType<ButtonType>, HasSize<ButtonSize>, HasIcon, HasIconPosition {
 
-    private Icon icon;
+    private final LabelElement buttonLabel = Document.get().createLabelElement();
     private IconPosition iconPosition = IconPosition.LEFT;
+    private Icon icon;
     private ButtonType type;
     private boolean outline;
 
-    public CheckBoxButton() {
-        this("");
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     */
+    public CheckBoxButton(SafeHtml label) {
+        this(label.asString(), true);
     }
 
-    public CheckBoxButton(String text) {
-        super(text);
-        initialiseButtonControl();
-    }
-
-    public CheckBoxButton(String text, boolean asHtml) {
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     * @param dir
+     *            the text's direction. Note that {@code DEFAULT} means
+     *            direction should be inherited from the widget's parent
+     *            element.
+     */
+    public CheckBoxButton(SafeHtml label, Direction dir) {
         this();
-        if (asHtml) {
-            setHTML(text);
+        setHTML(label, dir);
+    }
+
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     * @param directionEstimator
+     *            A DirectionEstimator object used for automatic direction
+     *            adjustment. For convenience,
+     *            {@link #DEFAULT_DIRECTION_ESTIMATOR} can be used.
+     */
+    public CheckBoxButton(SafeHtml label, DirectionEstimator directionEstimator) {
+        this();
+        setDirectionEstimator(directionEstimator);
+        setHTML(label.asString());
+    }
+
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     */
+    public CheckBoxButton(String label) {
+        this();
+        setText(label);
+    }
+
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     * @param dir
+     *            the text's direction. Note that {@code DEFAULT} means
+     *            direction should be inherited from the widget's parent
+     *            element.
+     */
+    public CheckBoxButton(String label, Direction dir) {
+        this();
+        setText(label, dir);
+    }
+
+    /**
+     * Creates a label with the specified text and a default direction
+     * estimator.
+     *
+     * @param label
+     *            the check box's label
+     * @param directionEstimator
+     *            A DirectionEstimator object used for automatic direction
+     *            adjustment. For convenience,
+     *            {@link #DEFAULT_DIRECTION_ESTIMATOR} can be used.
+     */
+    public CheckBoxButton(String label, DirectionEstimator directionEstimator) {
+        this();
+        setDirectionEstimator(directionEstimator);
+        setText(label);
+    }
+
+    /**
+     * Creates a check box button with the specified text label.
+     *
+     * @param label
+     *            the check box's label
+     * @param asHTML
+     *            <code>true</code> to treat the specified label as html
+     */
+    public CheckBoxButton(String label, boolean asHTML) {
+        this();
+        if (asHTML) {
+            setHTML(label);
         } else {
-            setText(text);
+            setText(label);
         }
     }
 
-    public CheckBoxButton(SafeHtml html) {
-        this(html == null ? "" : html.asString(), true);
+    public CheckBoxButton() {
+        this(Document.get().createCheckInputElement());
     }
 
-    private void initialiseButtonControl() {
-        removeStyleName("form-check");
-        addStyleName("d-inline-block");
+    protected CheckBoxButton(InputElement element) {
+        super(DOM.createSpan(), element);
 
-        getInput().removeStyleName("form-check-input");
-        getInput().addStyleName("btn-check");
-        getInput().getElement().setAttribute("autocomplete", "off");
-
-        String inputId = Document.get().createUniqueId();
-        getInput().getElement().setId(inputId);
-        getLabel().setFor(inputId);
-        getLabel().removeStyleName("form-check-label");
-        getLabel().addStyleName("btn");
+        setStyleName("d-inline-block");
+        inputElem.setClassName("btn-check");
+        inputElem.setAttribute("autocomplete", "off");
+        inputElem.setId(Document.get().createUniqueId());
+        buttonLabel.setClassName(Styles.BTN);
+        buttonLabel.setHtmlFor(inputElem.getId());
         setType(ButtonType.DEFAULT);
-        updateButtonState(false);
-        addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+
+        getElement().appendChild(inputElem);
+        buttonLabel.appendChild(labelElem);
+        getElement().appendChild(buttonLabel);
+        addChangeHandler(new ChangeHandler() {
             @Override
-            public void onValueChange(ValueChangeEvent<Boolean> event) {
-                updateButtonState(Boolean.TRUE.equals(event.getValue()));
+            public void onChange(ChangeEvent event) {
+                updatePressedState();
             }
         });
     }
 
-    public void setText(String text) {
-        getLabel().setText(text == null ? "" : text);
-        renderIcon();
-    }
-
-    public String getText() {
-        return getLabel().getText();
-    }
-
-    public void setHTML(String html) {
-        getLabel().setHTML(html == null ? "" : html);
-        renderIcon();
-    }
-
-    public String getHTML() {
-        return getLabel().getHTML();
+    @Override
+    protected void ensureDomEventHandlers() {
+        super.ensureDomEventHandlers();
     }
 
     @Override
-    public void setValue(Boolean value, boolean fireEvents) {
-        boolean oldValue = Boolean.TRUE.equals(getValue());
-        boolean effectiveValue = Boolean.TRUE.equals(value);
-        super.setValue(effectiveValue, false);
-        updateButtonState(effectiveValue);
-        if (fireEvents && oldValue != effectiveValue) {
-            ValueChangeEvent.fire(this, effectiveValue);
+    public void setSize(ButtonSize size) {
+        for (ButtonSize candidate : ButtonSize.values()) {
+            if (!candidate.getCssName().isEmpty()) {
+                buttonLabel.removeClassName(candidate.getCssName());
+            }
         }
+        if (size != null && !size.getCssName().isEmpty()) {
+            buttonLabel.addClassName(size.getCssName());
+        }
+    }
+
+    @Override
+    public ButtonSize getSize() {
+        return ButtonSize.fromStyleName(buttonLabel.getClassName());
+    }
+
+    @Override
+    public void setType(ButtonType type) {
+        if (this.type != null) {
+            buttonLabel.removeClassName(buttonStyle(this.type, outline));
+        }
+        this.type = type == null ? ButtonType.DEFAULT : type;
+        buttonLabel.addClassName(buttonStyle(this.type, outline));
+    }
+
+    @Override
+    public ButtonType getType() {
+        return type == null ? ButtonType.DEFAULT : type;
+    }
+
+    public void setOutline(boolean outline) {
+        ButtonType currentType = getType();
+        buttonLabel.removeClassName(buttonStyle(currentType, this.outline));
+        this.outline = outline;
+        buttonLabel.addClassName(buttonStyle(currentType, this.outline));
+    }
+
+    public boolean isOutline() {
+        return outline;
     }
 
     @Override
@@ -135,59 +242,30 @@ public class CheckBoxButton extends CheckBox implements HasActive,
 
     @Override
     public boolean isActive() {
-        return Boolean.TRUE.equals(getValue());
+        return getValue();
     }
 
     @Override
-    public void setType(ButtonType type) {
-        if (this.type != null) {
-            getLabel().removeStyleName(buttonStyle(this.type, outline));
-        }
-        this.type = type == null ? ButtonType.DEFAULT : type;
-        getLabel().addStyleName(buttonStyle(this.type, outline));
-    }
-
-    @Override
-    public ButtonType getType() {
-        return type == null ? ButtonType.DEFAULT : type;
-    }
-
-    public void setOutline(boolean outline) {
-        if (this.outline == outline) {
-            return;
-        }
-        ButtonType currentType = getType();
-        getLabel().removeStyleName(buttonStyle(currentType, this.outline));
-        this.outline = outline;
-        getLabel().addStyleName(buttonStyle(currentType, this.outline));
-    }
-
-    public boolean isOutline() {
-        return outline;
-    }
-
-    @Override
-    public void setSize(ButtonSize size) {
-        StyleHelper.addUniqueEnumStyleName(getLabel(), ButtonSize.class,
-                size == null ? ButtonSize.DEFAULT : size);
-    }
-
-    @Override
-    public ButtonSize getSize() {
-        return ButtonSize.fromStyleName(getLabel().getStyleName());
+    public void setValue(Boolean value, boolean fireEvents) {
+        super.setValue(value, fireEvents);
+        updatePressedState();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        getLabel().setStyleName("disabled", !enabled);
-        getLabel().getElement().setAttribute("aria-disabled", Boolean.toString(!enabled));
+        if (enabled) {
+            buttonLabel.removeClassName("disabled");
+        } else {
+            buttonLabel.addClassName("disabled");
+        }
+        buttonLabel.setAttribute("aria-disabled", Boolean.toString(!enabled));
     }
 
     @Override
     public void setIconPosition(IconPosition iconPosition) {
-        this.iconPosition = iconPosition == null ? IconPosition.LEFT : iconPosition;
-        renderIcon();
+        this.iconPosition = iconPosition;
+        render();
     }
 
     @Override
@@ -198,143 +276,123 @@ public class CheckBoxButton extends CheckBox implements HasActive,
     @Override
     public void setIcon(IconType iconType) {
         getActualIcon().setType(iconType);
-        renderIcon();
     }
 
     @Override
     public IconType getIcon() {
-        return icon == null ? null : icon.getType();
+        return getActualIcon().getType();
     }
 
     @Override
     public void setIconSize(IconSize iconSize) {
         getActualIcon().setSize(iconSize);
-        renderIcon();
     }
 
     @Override
     public IconSize getIconSize() {
-        return icon == null ? IconSize.NONE : icon.getSize();
+        return getActualIcon().getSize();
     }
 
     @Override
     public void setIconFlip(IconFlip iconFlip) {
         getActualIcon().setFlip(iconFlip);
-        renderIcon();
     }
 
     @Override
     public IconFlip getIconFlip() {
-        return icon == null ? IconFlip.NONE : icon.getFlip();
+        return getActualIcon().getFlip();
     }
 
     @Override
     public void setIconRotate(IconRotate iconRotate) {
         getActualIcon().setRotate(iconRotate);
-        renderIcon();
     }
 
     @Override
     public IconRotate getIconRotate() {
-        return icon == null ? IconRotate.NONE : icon.getRotate();
+        return getActualIcon().getRotate();
     }
 
     @Override
     public void setIconBordered(boolean iconBordered) {
         getActualIcon().setBorder(iconBordered);
-        renderIcon();
     }
 
     @Override
     public boolean isIconBordered() {
-        return icon != null && icon.isBorder();
+        return getActualIcon().isBorder();
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void setIconInverse(boolean iconInverse) {
+    public void setIconInverse(final boolean iconInverse) {
         getActualIcon().setInverse(iconInverse);
-        renderIcon();
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isIconInverse() {
-        return icon != null && icon.isInverse();
+        return getActualIcon().isInverse();
     }
 
     @Override
     public void setIconSpin(boolean iconSpin) {
         getActualIcon().setSpin(iconSpin);
-        renderIcon();
     }
 
     @Override
     public boolean isIconSpin() {
-        return icon != null && icon.isSpin();
+        return getActualIcon().isSpin();
     }
 
     @Override
     public void setIconPulse(boolean iconPulse) {
         getActualIcon().setPulse(iconPulse);
-        renderIcon();
     }
 
     @Override
     public boolean isIconPulse() {
-        return icon != null && icon.isPulse();
+        return getActualIcon().isPulse();
     }
 
     @Override
     public void setIconFixedWidth(boolean iconFixedWidth) {
         getActualIcon().setFixedWidth(iconFixedWidth);
-        renderIcon();
     }
 
     @Override
     public boolean isIconFixedWidth() {
-        return icon != null && icon.isFixedWidth();
-    }
-
-    @Override
-    public void setIconColor(String iconColor) {
-        getActualIcon().setColor(iconColor);
-        renderIcon();
+        return getActualIcon().isFixedWidth();
     }
 
     private Icon getActualIcon() {
         if (icon == null) {
             icon = new Icon();
+            render();
         }
         return icon;
     }
 
-    private void updateButtonState(boolean active) {
-        getLabel().setStyleName("active", active);
-        getLabel().getElement().setAttribute("aria-pressed", Boolean.toString(active));
-    }
-
-    private String buttonStyle(ButtonType type, boolean outline) {
-        String cssName = type.getCssName();
-        if (!outline || type == ButtonType.LINK) {
-            return cssName;
-        }
-        return "btn-outline-" + cssName.substring("btn-".length());
-    }
-
-    private void renderIcon() {
-        if (icon == null) {
-            return;
-        }
-        if (icon.getElement().hasParentElement()) {
-            icon.getElement().removeFromParent();
-        }
+    private void render() {
         if (iconPosition == IconPosition.LEFT) {
-            getLabel().getElement().insertFirst(icon.getElement());
-            icon.removeStyleName("ms-1");
-            icon.addStyleName("me-1");
+            buttonLabel.insertBefore(icon.getElement(), labelElem);
         } else {
-            getLabel().getElement().appendChild(icon.getElement());
-            icon.removeStyleName("me-1");
-            icon.addStyleName("ms-1");
+            buttonLabel.appendChild(icon.getElement());
         }
+    }
+
+    @Override
+    public void setIconColor(String iconColor) {
+        getActualIcon().setColor(iconColor);
+    }
+
+    private static String buttonStyle(ButtonType type, boolean outline) {
+        String cssName = type.getCssName();
+        return outline && type != ButtonType.LINK
+                ? "btn-outline-" + cssName.substring("btn-".length()) : cssName;
+    }
+
+    private void updatePressedState() {
+        buttonLabel.setAttribute("aria-pressed", Boolean.toString(getValue()));
     }
 }

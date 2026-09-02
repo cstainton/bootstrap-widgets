@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.UIObject;
@@ -57,15 +59,15 @@ public class ScrollSpy {
         this.spyOn.setAttribute("data-bs-spy", "scroll");
         this.spyOn.setAttribute("data-bs-target", selector == null ? "" : selector);
         this.spyOn.setAttribute("tabindex", "0");
-        init(this.spyOn);
+        BootstrapComponent.create(this.spyOn, "ScrollSpy");
     }
 
     public void refresh() {
-        refresh(spyOn);
+        BootstrapComponent.call(spyOn, "ScrollSpy", "refresh");
     }
 
     public void dispose() {
-        dispose(spyOn);
+        BootstrapComponent.dispose(spyOn, "ScrollSpy");
     }
 
     private static String targetSelector(HasId target) {
@@ -76,27 +78,6 @@ public class ScrollSpy {
         return "#" + id;
     }
 
-    private static native void init(Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.ScrollSpy) {
-            $wnd.bootstrap.ScrollSpy.getOrCreateInstance(element);
-        }
-    }-*/;
 
-    private static native void refresh(Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.ScrollSpy) {
-            var instance = $wnd.bootstrap.ScrollSpy.getOrCreateInstance(element);
-            if (instance && instance.refresh) {
-                instance.refresh();
-            }
-        }
-    }-*/;
 
-    private static native void dispose(Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.ScrollSpy) {
-            var instance = $wnd.bootstrap.ScrollSpy.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }

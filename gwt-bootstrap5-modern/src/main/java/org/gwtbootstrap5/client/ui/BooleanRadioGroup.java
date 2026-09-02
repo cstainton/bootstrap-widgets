@@ -29,7 +29,7 @@ public class BooleanRadioGroup extends StringRadioGroup {
         super(name);
     }
 
-    public RadioButton addRadio(Boolean value, String label) {
+    public Radio addRadio(Boolean value, String label) {
         return super.addRadio(value == null ? null : value.toString(), label);
     }
 

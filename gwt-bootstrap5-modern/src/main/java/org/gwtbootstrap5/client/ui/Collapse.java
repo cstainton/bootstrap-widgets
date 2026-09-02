@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import org.gwtbootstrap5.client.shared.event.HiddenEvent;
@@ -80,7 +82,7 @@ public class Collapse extends ElementPanel {
     @Override
     protected void onUnload() {
         BootstrapEventBridge.unbindAll(getElement());
-        dispose(getElement());
+        BootstrapComponent.dispose(getElement(), "Collapse");
         super.onUnload();
     }
 
@@ -125,41 +127,18 @@ public class Collapse extends ElementPanel {
     }
 
     public void show() {
-        show(getElement());
+        BootstrapComponent.callCollapse(getElement(), "show");
     }
 
     public void hide() {
-        hide(getElement());
+        BootstrapComponent.callCollapse(getElement(), "hide");
     }
 
     public void toggle() {
-        toggle(getElement());
+        BootstrapComponent.callCollapse(getElement(), "toggle");
     }
 
-    private static native void show(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
-            $wnd.bootstrap.Collapse.getOrCreateInstance(element, {toggle: false}).show();
-        }
-    }-*/;
 
-    private static native void hide(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
-            $wnd.bootstrap.Collapse.getOrCreateInstance(element, {toggle: false}).hide();
-        }
-    }-*/;
 
-    private static native void toggle(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
-            $wnd.bootstrap.Collapse.getOrCreateInstance(element, {toggle: false}).toggle();
-        }
-    }-*/;
 
-    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
-            var instance = $wnd.bootstrap.Collapse.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }

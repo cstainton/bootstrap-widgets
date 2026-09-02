@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
@@ -78,23 +80,23 @@ public class Carousel extends ElementPanel {
     }
 
     public void cycleCarousel() {
-        call(getElement(), "cycle");
+        BootstrapComponent.call(getElement(), "Carousel", "cycle");
     }
 
     public void pauseCarousel() {
-        call(getElement(), "pause");
+        BootstrapComponent.call(getElement(), "Carousel", "pause");
     }
 
     public void goToPrev() {
-        call(getElement(), "prev");
+        BootstrapComponent.call(getElement(), "Carousel", "prev");
     }
 
     public void goToNext() {
-        call(getElement(), "next");
+        BootstrapComponent.call(getElement(), "Carousel", "next");
     }
 
     public void jumpToSlide(int index) {
-        to(getElement(), index);
+        BootstrapComponent.call(getElement(), "Carousel", "to", index);
     }
 
     public HandlerRegistration addSlideHandler(CarouselSlideHandler handler) {
@@ -120,57 +122,21 @@ public class Carousel extends ElementPanel {
                 fireEvent(new CarouselSlidEvent(Carousel.this, Event.as(event)));
             }
         });
-        init(getElement(), interval, pause, wrap);
+        BootstrapComponent.createCarousel(getElement(), interval, pause, wrap);
     }
 
     @Override
     protected void onUnload() {
         BootstrapEventBridge.unbindAll(getElement());
-        dispose(getElement());
+        BootstrapComponent.dispose(getElement(), "Carousel");
         super.onUnload();
     }
 
     private void reconfigureIfAttached() {
         if (isAttached()) {
-            init(getElement(), interval, pause, wrap);
+            BootstrapComponent.createCarousel(getElement(), interval, pause, wrap);
         }
     }
 
-    private static native void init(com.google.gwt.dom.client.Element element, int interval,
-                                    String pause, boolean wrap) /*-{
-        if (!$wnd.bootstrap || !$wnd.bootstrap.Carousel) {
-            return;
-        }
-        var existing = $wnd.bootstrap.Carousel.getInstance(element);
-        if (existing) {
-            existing.dispose();
-        }
-        new $wnd.bootstrap.Carousel(element, {
-            interval: interval,
-            pause: pause || false,
-            wrap: wrap
-        });
-    }-*/;
-
-    private static native void call(com.google.gwt.dom.client.Element element, String method) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
-            var carousel = $wnd.bootstrap.Carousel.getOrCreateInstance(element);
-            carousel[method]();
-        }
-    }-*/;
-
-    private static native void to(com.google.gwt.dom.client.Element element, int index) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
-            $wnd.bootstrap.Carousel.getOrCreateInstance(element).to(index);
-        }
-    }-*/;
-
-    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Carousel) {
-            var instance = $wnd.bootstrap.Carousel.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
+    /** Bootstrap's Carousel options, as a JavaScript object. */
 }

@@ -29,7 +29,7 @@ public class DoubleRadioGroup extends StringRadioGroup {
         super(name);
     }
 
-    public RadioButton addRadio(Double value, String label) {
+    public Radio addRadio(Double value, String label) {
         return super.addRadio(value == null ? null : value.toString(), label);
     }
 

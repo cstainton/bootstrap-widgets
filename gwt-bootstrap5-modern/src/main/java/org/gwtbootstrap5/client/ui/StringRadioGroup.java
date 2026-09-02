@@ -1,19 +1,17 @@
+package org.gwtbootstrap5.client.ui;
+
 /*
  * #%L
  * GwtBootstrap3
  * %%
- * Copyright (C) 2013 - 2018 GwtBootstrap3
- * %%
- * Modified from the GwtBootstrap3 original for the Bootstrap 5 track of
- * GWT Bootstrap Modern: moved to the org.gwtbootstrap5 namespace and re-targeted
- * at Bootstrap 5 markup, class names and JavaScript APIs.
+ * Copyright (C) 2015 GwtBootstrap3
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,42 +19,34 @@
  * limitations under the License.
  * #L%
  */
-package org.gwtbootstrap5.client.ui;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import org.gwtbootstrap5.client.ui.base.RadioGroupBase;
 
-public class StringRadioGroup extends ElementPanel {
+import com.google.gwt.text.shared.testing.PassthroughParser;
+import com.google.gwt.uibinder.client.UiConstructor;
 
-    private final String name;
-    private final Map<RadioButton, String> values = new LinkedHashMap<RadioButton, String>();
+/**
+ * A radio group that returns a string value.
+ * 
+ * @author Steven Jardine
+ */
+public class StringRadioGroup extends RadioGroupBase<String> {
 
-    public StringRadioGroup(String name) {
-        super("div");
-        this.name = name;
-        addStyleName("vstack gap-2");
+    /**
+     * Constructor.
+     * 
+     * @param name the name.
+     */
+    @UiConstructor
+    public StringRadioGroup(final String name) {
+        super(name, PassthroughParser.instance());
     }
 
-    public RadioButton addRadio(String value, String label) {
-        RadioButton radio = new RadioButton(label);
-        radio.getInput().getElement().setAttribute("name", name);
-        values.put(radio, value);
+    public Radio addRadio(String value, String label) {
+        Radio radio = new Radio(getName(), label);
+        radio.setFormValue(value);
         add(radio);
         return radio;
     }
 
-    public String getValue() {
-        for (Map.Entry<RadioButton, String> entry : values.entrySet()) {
-            if (entry.getKey().getValue()) {
-                return entry.getValue();
-            }
-        }
-        return null;
-    }
-
-    public void setValue(String value) {
-        for (Map.Entry<RadioButton, String> entry : values.entrySet()) {
-            entry.getKey().setValue(value == null ? entry.getValue() == null : value.equals(entry.getValue()));
-        }
-    }
 }

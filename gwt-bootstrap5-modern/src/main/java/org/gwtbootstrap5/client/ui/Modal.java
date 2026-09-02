@@ -23,6 +23,8 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.BootstrapComponent;
+
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -94,7 +96,7 @@ public class Modal extends ElementPanel implements IsClosable {
     @Override
     protected void onUnload() {
         BootstrapEventBridge.unbindAll(getElement());
-        dispose(getElement());
+        BootstrapComponent.dispose(getElement(), "Modal");
         super.onUnload();
     }
 
@@ -188,15 +190,15 @@ public class Modal extends ElementPanel implements IsClosable {
         if (!isAttached()) {
             RootPanel.get().add(this);
         }
-        show(getElement());
+        BootstrapComponent.call(getElement(), "Modal", "show");
     }
 
     public void hide() {
-        hide(getElement());
+        BootstrapComponent.call(getElement(), "Modal", "hide");
     }
 
     public void toggle() {
-        toggle(getElement());
+        BootstrapComponent.call(getElement(), "Modal", "toggle");
     }
 
     public HandlerRegistration addShowHandler(ModalShowHandler handler) {
@@ -217,7 +219,7 @@ public class Modal extends ElementPanel implements IsClosable {
 
     protected void onShow(Event event) {
         if (hideOtherModals) {
-            hideOtherModals(getElement());
+            BootstrapComponent.hideOtherModals(getElement());
         }
         fireEvent(new ModalShowEvent(this, event));
     }
@@ -237,42 +239,8 @@ public class Modal extends ElementPanel implements IsClosable {
         }
     }
 
-    private static native void show(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Modal) {
-            $wnd.bootstrap.Modal.getOrCreateInstance(element).show();
-        }
-    }-*/;
 
-    private static native void hide(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Modal) {
-            $wnd.bootstrap.Modal.getOrCreateInstance(element).hide();
-        }
-    }-*/;
 
-    private static native void toggle(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Modal) {
-            $wnd.bootstrap.Modal.getOrCreateInstance(element).toggle();
-        }
-    }-*/;
 
-    private static native void hideOtherModals(com.google.gwt.dom.client.Element current) /*-{
-        if (!$wnd.bootstrap || !$wnd.bootstrap.Modal) {
-            return;
-        }
-        var modals = $doc.querySelectorAll(".modal.show");
-        for (var i = 0; i < modals.length; i++) {
-            if (modals[i] !== current) {
-                $wnd.bootstrap.Modal.getOrCreateInstance(modals[i]).hide();
-            }
-        }
-    }-*/;
 
-    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
-        if ($wnd.bootstrap && $wnd.bootstrap.Modal) {
-            var instance = $wnd.bootstrap.Modal.getInstance(element);
-            if (instance) {
-                instance.dispose();
-            }
-        }
-    }-*/;
 }
