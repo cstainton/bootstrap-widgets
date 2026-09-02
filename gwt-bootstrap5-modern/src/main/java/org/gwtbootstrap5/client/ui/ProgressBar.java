@@ -24,6 +24,22 @@ public class ProgressBar extends ElementPanel {
         setText(clamped + "%");
     }
 
+    public void setPercent(double percent) {
+        double clamped = Math.max(0, Math.min(100, percent));
+        getElement().getStyle().setProperty("width", clamped + "%");
+        getElement().setAttribute("aria-valuenow", String.valueOf(clamped));
+        getElement().setAttribute("aria-valuemin", "0");
+        getElement().setAttribute("aria-valuemax", "100");
+    }
+
+    public double getPercent() {
+        String width = getElement().getStyle().getWidth();
+        if (width == null || !width.endsWith("%")) {
+            return 0;
+        }
+        return Double.valueOf(width.substring(0, width.length() - 1));
+    }
+
     public void setVariant(Variant variant) {
         if (this.variant != null) {
             removeStyleName("bg-" + this.variant.cssName());

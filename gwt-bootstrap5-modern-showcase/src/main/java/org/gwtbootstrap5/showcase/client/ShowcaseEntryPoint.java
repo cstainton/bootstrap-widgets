@@ -3,32 +3,32 @@ package org.gwtbootstrap5.showcase.client;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import java.util.Arrays;
 import org.gwtbootstrap5.client.ui.Abbreviation;
-import org.gwtbootstrap5.client.ui.Affix;
 import org.gwtbootstrap5.client.ui.Alert;
 import org.gwtbootstrap5.client.ui.Anchor;
-import org.gwtbootstrap5.client.ui.AnchorListItem;
 import org.gwtbootstrap5.client.ui.AnchorButton;
+import org.gwtbootstrap5.client.ui.AnchorListItem;
 import org.gwtbootstrap5.client.ui.Badge;
-import org.gwtbootstrap5.client.ui.Button;
-import org.gwtbootstrap5.client.ui.ButtonGroup;
-import org.gwtbootstrap5.client.ui.BooleanRadioGroup;
 import org.gwtbootstrap5.client.ui.BlockQuote;
 import org.gwtbootstrap5.client.ui.Breadcrumbs;
+import org.gwtbootstrap5.client.ui.Button;
+import org.gwtbootstrap5.client.ui.ButtonGroup;
 import org.gwtbootstrap5.client.ui.ButtonToolBar;
 import org.gwtbootstrap5.client.ui.Caption;
-import org.gwtbootstrap5.client.ui.Card;
 import org.gwtbootstrap5.client.ui.Carousel;
 import org.gwtbootstrap5.client.ui.CarouselCaption;
 import org.gwtbootstrap5.client.ui.CarouselControl;
 import org.gwtbootstrap5.client.ui.CarouselIndicator;
 import org.gwtbootstrap5.client.ui.CarouselIndicators;
 import org.gwtbootstrap5.client.ui.CarouselSlide;
-import org.gwtbootstrap5.client.ui.Code;
 import org.gwtbootstrap5.client.ui.CheckBox;
 import org.gwtbootstrap5.client.ui.CheckBoxButton;
+import org.gwtbootstrap5.client.ui.Code;
 import org.gwtbootstrap5.client.ui.Collapse;
 import org.gwtbootstrap5.client.ui.Column;
 import org.gwtbootstrap5.client.ui.Container;
@@ -37,15 +37,14 @@ import org.gwtbootstrap5.client.ui.DescriptionData;
 import org.gwtbootstrap5.client.ui.DescriptionTitle;
 import org.gwtbootstrap5.client.ui.Divider;
 import org.gwtbootstrap5.client.ui.DoubleBox;
-import org.gwtbootstrap5.client.ui.DoubleRadioGroup;
 import org.gwtbootstrap5.client.ui.DropDown;
 import org.gwtbootstrap5.client.ui.DropDownHeader;
 import org.gwtbootstrap5.client.ui.DropDownItem;
 import org.gwtbootstrap5.client.ui.FieldSet;
 import org.gwtbootstrap5.client.ui.Form;
+import org.gwtbootstrap5.client.ui.FormControlStatic;
 import org.gwtbootstrap5.client.ui.FormGroup;
 import org.gwtbootstrap5.client.ui.FormLabel;
-import org.gwtbootstrap5.client.ui.FormControlStatic;
 import org.gwtbootstrap5.client.ui.HelpBlock;
 import org.gwtbootstrap5.client.ui.Heading;
 import org.gwtbootstrap5.client.ui.Icon;
@@ -54,27 +53,26 @@ import org.gwtbootstrap5.client.ui.ImageAnchor;
 import org.gwtbootstrap5.client.ui.InlineCheckBox;
 import org.gwtbootstrap5.client.ui.InlineHelpBlock;
 import org.gwtbootstrap5.client.ui.InlineRadio;
-import org.gwtbootstrap5.client.ui.IntegerBox;
-import org.gwtbootstrap5.client.ui.IntegerRadioGroup;
 import org.gwtbootstrap5.client.ui.Input;
 import org.gwtbootstrap5.client.ui.InputGroup;
 import org.gwtbootstrap5.client.ui.InputGroupAddon;
 import org.gwtbootstrap5.client.ui.InputGroupButton;
+import org.gwtbootstrap5.client.ui.IntegerBox;
 import org.gwtbootstrap5.client.ui.Jumbotron;
+import org.gwtbootstrap5.client.ui.Label;
+import org.gwtbootstrap5.client.ui.Lead;
 import org.gwtbootstrap5.client.ui.Legend;
 import org.gwtbootstrap5.client.ui.LinkedGroup;
 import org.gwtbootstrap5.client.ui.LinkedGroupItem;
 import org.gwtbootstrap5.client.ui.LinkedGroupItemText;
-import org.gwtbootstrap5.client.ui.Label;
-import org.gwtbootstrap5.client.ui.Lead;
-import org.gwtbootstrap5.client.ui.ListDropDown;
 import org.gwtbootstrap5.client.ui.ListBox;
-import org.gwtbootstrap5.client.ui.ListItem;
+import org.gwtbootstrap5.client.ui.ListDropDown;
 import org.gwtbootstrap5.client.ui.ListGroup;
+import org.gwtbootstrap5.client.ui.ListGroupItem;
+import org.gwtbootstrap5.client.ui.ListItem;
 import org.gwtbootstrap5.client.ui.LongBox;
 import org.gwtbootstrap5.client.ui.MediaBody;
 import org.gwtbootstrap5.client.ui.MediaList;
-import org.gwtbootstrap5.client.ui.ListGroupItem;
 import org.gwtbootstrap5.client.ui.Modal;
 import org.gwtbootstrap5.client.ui.ModalFooter;
 import org.gwtbootstrap5.client.ui.NavPills;
@@ -82,27 +80,28 @@ import org.gwtbootstrap5.client.ui.NavTabs;
 import org.gwtbootstrap5.client.ui.Navbar;
 import org.gwtbootstrap5.client.ui.NavbarBrand;
 import org.gwtbootstrap5.client.ui.NavbarButton;
-import org.gwtbootstrap5.client.ui.NavbarForm;
-import org.gwtbootstrap5.client.ui.NavbarHeader;
 import org.gwtbootstrap5.client.ui.NavbarCollapse;
 import org.gwtbootstrap5.client.ui.NavbarCollapseButton;
+import org.gwtbootstrap5.client.ui.NavbarForm;
+import org.gwtbootstrap5.client.ui.NavbarHeader;
 import org.gwtbootstrap5.client.ui.NavbarLink;
+import org.gwtbootstrap5.client.ui.PageHeader;
 import org.gwtbootstrap5.client.ui.PageItem;
 import org.gwtbootstrap5.client.ui.Pager;
 import org.gwtbootstrap5.client.ui.Pagination;
 import org.gwtbootstrap5.client.ui.Panel;
 import org.gwtbootstrap5.client.ui.PanelBody;
 import org.gwtbootstrap5.client.ui.PanelCollapse;
-import org.gwtbootstrap5.client.ui.PanelGroup;
 import org.gwtbootstrap5.client.ui.PanelFooter;
-import org.gwtbootstrap5.client.ui.PageHeader;
+import org.gwtbootstrap5.client.ui.PanelGroup;
 import org.gwtbootstrap5.client.ui.PanelHeader;
-import org.gwtbootstrap5.client.ui.Pre;
 import org.gwtbootstrap5.client.ui.Paragraph;
+import org.gwtbootstrap5.client.ui.Popover;
+import org.gwtbootstrap5.client.ui.Pre;
 import org.gwtbootstrap5.client.ui.Progress;
 import org.gwtbootstrap5.client.ui.ProgressBar;
-import org.gwtbootstrap5.client.ui.RadioButton;
 import org.gwtbootstrap5.client.ui.Radio;
+import org.gwtbootstrap5.client.ui.RadioButton;
 import org.gwtbootstrap5.client.ui.Row;
 import org.gwtbootstrap5.client.ui.SimpleCheckBox;
 import org.gwtbootstrap5.client.ui.SimpleRadioButton;
@@ -114,21 +113,28 @@ import org.gwtbootstrap5.client.ui.TabListItem;
 import org.gwtbootstrap5.client.ui.TabPane;
 import org.gwtbootstrap5.client.ui.TabPanel;
 import org.gwtbootstrap5.client.ui.TextArea;
+import org.gwtbootstrap5.client.ui.TextBox;
 import org.gwtbootstrap5.client.ui.ThumbnailLink;
 import org.gwtbootstrap5.client.ui.ThumbnailPanel;
 import org.gwtbootstrap5.client.ui.Tooltip;
 import org.gwtbootstrap5.client.ui.TooltipHelpBlock;
 import org.gwtbootstrap5.client.ui.ValueListBox;
-import org.gwtbootstrap5.client.ui.VerticalButtonGroup;
 import org.gwtbootstrap5.client.ui.Variant;
+import org.gwtbootstrap5.client.ui.VerticalButtonGroup;
 import org.gwtbootstrap5.client.ui.Well;
-import org.gwtbootstrap5.client.ui.Popover;
 
 public class ShowcaseEntryPoint implements EntryPoint {
 
-    private static final String IMAGE_320_120 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='120'%3E%3Crect width='100%25' height='100%25' fill='rgb(25,135,84)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='20'%3EBootstrap 5%3C/text%3E%3C/svg%3E";
-    private static final String IMAGE_320_80 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='80'%3E%3Crect width='100%25' height='100%25' fill='rgb(13,110,253)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='18'%3EThumbnail link%3C/text%3E%3C/svg%3E";
-    private static final String IMAGE_160_60 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='60'%3E%3Crect width='100%25' height='100%25' fill='rgb(108,117,125)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='14'%3EImage anchor%3C/text%3E%3C/svg%3E";
+    private static final String IMG_WIDE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='240'%3E%3Crect width='100%25' height='100%25' fill='rgb(13,110,253)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='32'%3EBootstrap 5%3C/text%3E%3C/svg%3E";
+    private static final String IMG_THUMB = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='rgb(25,135,84)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='24'%3EThumbnail%3C/text%3E%3C/svg%3E";
+    private static final String[] CSS_SECTIONS = {"buttons", "code", "forms", "gridSystem", "images", "responsiveUtilities", "tables", "typography"};
+    private static final String[] CSS_LABELS = {"Buttons", "Code", "Forms", "Grid System", "Images", "Responsive Utilities", "Tables", "Typography"};
+    private static final String[] COMPONENT_SECTIONS = {"alerts", "badges", "breadcrumbs", "buttonDropdowns", "buttonGroups", "dropdowns", "icons", "inputGroups", "jumbotron", "labels", "listGroup", "mediaObjects", "navbar", "navs", "pageHeader", "pagination", "panels", "progressBars", "suggestBox", "thumbnails", "wells"};
+    private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
+    private static final String[] JS_SECTIONS = {"carousel", "collapse", "modals", "popover", "tabs", "tooltips"};
+    private static final String[] JS_LABELS = {"Carousel", "Collapse", "Modals", "Popover", "Tabs", "Tooltips"};
+    private static final String[] EXTRA_SECTIONS = {"cards", "unsupportedExtras"};
+    private static final String[] EXTRA_LABELS = {"Cards", "Unsupported Extras"};
 
     @Override
     public void onModuleLoad() {
@@ -137,322 +143,508 @@ public class ShowcaseEntryPoint implements EntryPoint {
             root = RootPanel.get();
         }
 
+        root.add(createNavbar());
+
+        Container container = new Container();
+        container.addStyleName("gbm-showcase");
+        container.add(createHome());
+        container.add(createSetup());
+        container.add(createCssSections());
+        container.add(createComponentSections());
+        container.add(createJavaScriptSections(root));
+        container.add(createExtraSections());
+        root.add(container);
+    }
+
+    private Navbar createNavbar() {
         Navbar navbar = new Navbar();
-        NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("showcaseNavbar");
+        navbar.addStyleName("fixed-top");
+        NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("navbar-collapse");
         NavbarCollapse navbarCollapse = new NavbarCollapse();
-        navbarCollapse.getElement().setId("showcaseNavbar");
-        navbar.getContainer().add(new NavbarBrand("GWT Bootstrap 5 Modern", "#"));
+        navbarCollapse.getElement().setId("navbar-collapse");
+        navbar.getContainer().add(new NavbarBrand("GWT Bootstrap Modern", "#home"));
         navbar.getContainer().add(navbarCollapseButton);
         navbarCollapse.add(navbar.getNav());
         navbar.getContainer().add(navbarCollapse);
-        navbar.getNav().setEndAligned(true);
-        NavbarLink components = new NavbarLink("Components", "#components");
-        components.setActive(true);
-        navbar.getNav().add(components);
-        navbar.getNav().add(new NavbarLink("Bootstrap 3 showcase", "../"));
-        root.add(navbar);
+        navbar.getNav().add(new NavbarLink("Setup", "#setup"));
+        navbar.getNav().add(dropdown("CSS", CSS_LABELS, CSS_SECTIONS));
+        navbar.getNav().add(dropdown("Components", COMPONENT_LABELS, COMPONENT_SECTIONS));
+        navbar.getNav().add(dropdown("JavaScript", JS_LABELS, JS_SECTIONS));
+        navbar.getNav().add(dropdown("Extras", EXTRA_LABELS, EXTRA_SECTIONS));
+        navbar.getNav().add(dropdown("View Javadoc", new String[] {"GWT Bootstrap 5"}, new String[] {"apidocs/index.html"}));
+        navbar.getNav().add(new NavbarLink("Bootstrap 3 Showcase", "../"));
+        navbar.getNav().add(new NavbarLink("Fork on GitHub", "https://github.com/cstainton/gwtbootstrap-modern"));
+        return navbar;
+    }
 
-        Container container = new Container();
-        container.addStyleName("py-5");
-        container.add(new HTML("<section class=\"p-5 mb-4 rounded-3 bg-light\"><h1 class=\"display-5 fw-bold\">Bootstrap 5-native GWT widgets</h1><p class=\"lead\">This module is intentionally separate from the GwtBootstrap3 compatibility API. It uses Bootstrap 5 classes, data attributes, and templates directly.</p></section>"));
+    private ListDropDown dropdown(String text, String[] labels, String[] hrefs) {
+        ListDropDown dropDown = new ListDropDown(text);
+        for (int i = 0; i < labels.length; i++) {
+            String href = hrefs[i].startsWith("http") || hrefs[i].contains("/") ? hrefs[i] : "#" + hrefs[i];
+            dropDown.addItem(new DropDownItem(labels[i], href));
+        }
+        return dropDown;
+    }
 
+    private Widget createHome() {
+        Row row = row();
+        Column column = fullColumn();
         Jumbotron jumbotron = new Jumbotron();
-        jumbotron.add(new Heading(2, "Jumbotron concept"));
-        jumbotron.add(new Paragraph("Bootstrap 5 removed jumbotron, so this maps to spacing, background and rounded utilities."));
-        container.add(jumbotron);
+        jumbotron.getElement().setId("home");
+        jumbotron.add(new Heading(1, "GWT Bootstrap Modern Showcase"));
+        jumbotron.add(new Paragraph("A GWT widget library migration fork backed by Bootstrap 5."));
+        jumbotron.add(new Paragraph("This page mirrors the Bootstrap 3 showcase structure so migration differences are visible rather than hidden. The Java-facing composition and event model should remain familiar; the rendering uses Bootstrap 5 classes and data-bs attributes."));
+        column.add(jumbotron);
+        row.add(column);
+        return row;
+    }
 
-        Row row = new Row();
-        Column first = new Column(12);
-        first.setMediumSpan(6);
-        Card buttons = new Card();
-        buttons.setTitle("Buttons");
-        buttons.addBody(new HTML("<p class=\"card-text\">Buttons expose Bootstrap 5 variants rather than Bootstrap 3 button state APIs.</p>"));
-        buttons.addBody(new Button("Primary", Variant.PRIMARY));
-        Button outline = new Button("Outline success", Variant.SUCCESS);
-        outline.setOutline(true);
-        outline.addStyleName("ms-2");
-        buttons.addBody(outline);
-        first.add(buttons);
+    private Widget createSetup() {
+        Row row = section("setup", "Setup", "Bootstrap 5-native module setup");
+        Column column = fullColumn(row);
+        column.add(panel("Maven", new HTML("<p>Use the Bootstrap 5 module when migrating code/templates to Bootstrap 5 idioms.</p>"), "<dependency>\n  <groupId>org.gwtbootstrap3</groupId>\n  <artifactId>gwt-bootstrap5-modern</artifactId>\n  <version>1.0-SNAPSHOT</version>\n</dependency>"));
+        column.add(panel("GWT Module", new HTML("<p>Inherit the Bootstrap 5 GWT module.</p>"), "<inherits name=\"org.gwtbootstrap5.GwtBootstrap5\"/>"));
+        return row;
+    }
 
-        Column second = new Column(12);
-        second.setMediumSpan(6);
-        Card markup = new Card();
-        markup.setTitle("Bootstrap 5 markup");
-        markup.addBody(new HTML("<p class=\"card-text\">Components use Bootstrap 5 names such as <code>data-bs-toggle</code>, <code>card</code>, <code>ms-auto</code>, and <code>bg-body-tertiary</code>.</p><span class=\"badge text-bg-primary\"><i class=\"bi bi-check2-circle\"></i> Separate API</span>"));
-        second.add(markup);
+    private Widget createCssSections() {
+        Row row = row();
+        Column column = fullColumn(row);
+        addPageHeader(column, "buttons", "Buttons", "styled, states, icons...");
+        column.add(buttonsBasicPanel());
+        column.add(buttonSizesPanel());
+        column.add(buttonStatesPanel());
+        column.add(buttonCompositionPanel());
 
-        row.add(first);
-        row.add(second);
-        container.add(row);
+        addPageHeader(column, "code", "Code", null);
+        column.add(panel("Inline and block code", inline(new Code("Code"), new Pre("Preformatted text")), "new Code(\"Code\");\nnew Pre(\"Preformatted text\");"));
 
-        Row parity = new Row();
-        parity.setStyleName("row g-4 mt-1");
+        addPageHeader(column, "forms", "Forms", null);
+        column.add(formsPanel());
+        column.add(formAdaptersPanel());
 
-        Column feedbackColumn = new Column(12);
-        feedbackColumn.setMediumSpan(6);
-        Card feedback = new Card();
-        feedback.setTitle("Feedback and status");
-        Alert alert = new Alert("Dismissible alerts use Bootstrap 5 alert markup and data-bs-dismiss.", Variant.INFO);
+        addPageHeader(column, "gridSystem", "Grid System", null);
+        column.add(gridPanel());
+
+        addPageHeader(column, "images", "Images", null);
+        column.add(panel("Responsive images", inline(new Image(IMG_WIDE), new ImageAnchor("#", IMG_THUMB)), "new Image(url);\nnew ImageAnchor(\"#\", url);"));
+
+        addPageHeader(column, "responsiveUtilities", "Responsive Utilities", null);
+        column.add(panel("Bootstrap 5 utilities", new HTML("<p class='d-none d-md-block'>Visible on medium screens and wider.</p><p class='d-md-none'>Visible below medium screens.</p>"), "Bootstrap 5 responsive display utilities: d-none, d-md-block, d-md-none."));
+
+        addPageHeader(column, "tables", "Tables", null);
+        column.add(panel("Basic", new HTML("<table class='table table-striped'><caption>Table caption</caption><thead><tr><th>#</th><th>Name</th></tr></thead><tbody><tr><td>1</td><td>Bootstrap 5</td></tr></tbody></table>"), "<table class=\"table table-striped\">...</table>"));
+
+        addPageHeader(column, "typography", "Typography", null);
+        column.add(typographyPanel());
+        return row;
+    }
+
+    private Widget createComponentSections() {
+        Row row = row();
+        Column column = fullColumn(row);
+        addPageHeader(column, "alerts", "Alerts", null);
+        Alert alert = new Alert("Dismissible alert", Variant.INFO);
         alert.setDismissible(true);
-        feedback.addBody(alert);
-        Badge badge = new Badge("text-bg-success badge", Variant.SUCCESS);
-        badge.setPill(true);
-        feedback.addBody(badge);
-        feedback.addBody(new HTML(" "));
-        feedback.addBody(new Label("label concept as badge", Variant.SECONDARY));
-        feedback.addBody(new HTML("<div class=\"mt-3\"></div>"));
-        Anchor anchor = new Anchor("Button-styled anchor", "https://getbootstrap.com/docs/5.3/components/buttons/");
-        anchor.setButtonVariant(Variant.PRIMARY);
-        anchor.setOutline(true);
-        feedback.addBody(anchor);
-        feedbackColumn.add(feedback);
+        column.add(panel("Basic", alert, "Alert alert = new Alert(\"Dismissible alert\", Variant.INFO);\nalert.setDismissible(true);"));
 
-        Column listColumn = new Column(12);
-        listColumn.setMediumSpan(6);
-        Card lists = new Card();
-        lists.setTitle("List groups");
+        addPageHeader(column, "badges", "Badges", null);
+        Badge badge = new Badge("Badge", Variant.SUCCESS);
+        badge.setPill(true);
+        column.add(panel("Basic", inline(badge, new Label("Label concept", Variant.SECONDARY)), "new Badge(\"Badge\", Variant.SUCCESS);\nnew Label(\"Label concept\", Variant.SECONDARY);"));
+
+        addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
+        column.add(panel("Basic", new Breadcrumbs(new AnchorListItem("Home", "#home"), new ListItem("Current")), "new Breadcrumbs(new AnchorListItem(\"Home\", \"#home\"), new ListItem(\"Current\"));"));
+
+        addPageHeader(column, "buttonDropdowns", "Button Dropdowns", null);
+        column.add(panel("Basic", dropdown("Action", new String[] {"First", "Second"}, new String[] {"#", "#"}), "ListDropDown dropDown = new ListDropDown(\"Action\");"));
+
+        addPageHeader(column, "buttonGroups", "Button Groups", null);
+        column.add(buttonGroupsPanel());
+
+        addPageHeader(column, "dropdowns", "Dropdowns", null);
+        column.add(dropdownsPanel());
+
+        addPageHeader(column, "icons", "Icons", null);
+        column.add(panel("Bootstrap Icons", inline(new Icon("camera"), new Icon("credit-card"), new Icon("check2-circle")), "new Icon(\"camera\");"));
+
+        addPageHeader(column, "inputGroups", "Input Groups", null);
+        column.add(inputGroupsPanel());
+
+        addPageHeader(column, "jumbotron", "Jumbotron", null);
+        column.add(panel("Bootstrap 5 mapping", new Jumbotron(), "Bootstrap 5 removed jumbotron; this wrapper maps to spacing/background/rounded utilities."));
+
+        addPageHeader(column, "labels", "Labels", null);
+        column.add(panel("Basic", inline(new Label("Default", Variant.SECONDARY), new Label("Primary", Variant.PRIMARY), new Label("Danger", Variant.DANGER)), "new Label(\"Primary\", Variant.PRIMARY);"));
+
+        addPageHeader(column, "listGroup", "List Group", null);
+        column.add(listGroupPanel());
+
+        addPageHeader(column, "mediaObjects", "Media Objects", null);
+        column.add(mediaPanel());
+
+        addPageHeader(column, "navbar", "Navbar", null);
+        column.add(navbarPanel());
+
+        addPageHeader(column, "navs", "Navs", null);
+        column.add(navsPanel());
+
+        addPageHeader(column, "pageHeader", "Page Header", null);
+        PageHeader pageHeader = new PageHeader();
+        pageHeader.add(new Heading(2, "Page Header"));
+        column.add(panel("Basic", pageHeader, "PageHeader pageHeader = new PageHeader();"));
+
+        addPageHeader(column, "pagination", "Pagination", null);
+        column.add(paginationPanel());
+
+        addPageHeader(column, "panels", "Panels", null);
+        column.add(panel("Bootstrap 5 mapping", samplePanel(), "Panel maps to Bootstrap 5 card markup."));
+
+        addPageHeader(column, "progressBars", "Progress Bars", null);
+        column.add(progressPanel());
+
+        addPageHeader(column, "suggestBox", "SuggestBox", null);
+        column.add(panel("Basic", new SuggestBox(), "new SuggestBox();"));
+
+        addPageHeader(column, "thumbnails", "Thumbnails", null);
+        column.add(thumbnailsPanel());
+
+        addPageHeader(column, "wells", "Wells", null);
+        Well well = new Well();
+        well.add(new Paragraph("Bootstrap 5 has no well component; this maps to utility classes."));
+        column.add(panel("Bootstrap 5 mapping", well, "new Well();"));
+        return row;
+    }
+
+    private Widget createJavaScriptSections(RootPanel root) {
+        Row row = row();
+        Column column = fullColumn(row);
+        addPageHeader(column, "carousel", "Carousel", null);
+        column.add(panel("Basic", carousel(), "Carousel carousel = new Carousel();\ncarousel.addSlide(...);"));
+
+        addPageHeader(column, "collapse", "Collapse", null);
+        column.add(collapsePanel());
+
+        addPageHeader(column, "modals", "Modals", null);
+        column.add(modalPanel(root));
+
+        addPageHeader(column, "popover", "Popover", null);
+        Popover popover = new Popover(new Button("Popover", Variant.SECONDARY), "Popover", "Popover content");
+        popover.init();
+        column.add(panel("Basic", popover, "new Popover(widget, \"Popover\", \"Popover content\");"));
+
+        addPageHeader(column, "tabs", "Tabs", null);
+        column.add(tabsPanel());
+
+        addPageHeader(column, "tooltips", "Tooltips", null);
+        Tooltip tooltip = new Tooltip(new Button("Tooltip", Variant.SECONDARY), "Tooltip text");
+        tooltip.init();
+        column.add(panel("Basic", inline(tooltip, new TooltipHelpBlock("TooltipHelpBlock")), "new Tooltip(widget, \"Tooltip text\");"));
+        return row;
+    }
+
+    private Widget createExtraSections() {
+        Row row = row();
+        Column column = fullColumn(row);
+        addPageHeader(column, "cards", "Cards", null);
+        column.add(panel("Bootstrap 5 native", sampleCard(), "Card is Bootstrap 5-native and replaces many Bootstrap 3 panel/card-extra use cases."));
+        addPageHeader(column, "unsupportedExtras", "Unsupported Extras", null);
+        column.add(panel("Not part of core Bootstrap 5", new HTML("<p>Bootstrap Select, Bootbox, DatePicker, DateTimePicker, FullCalendar, Gallery, Notify, Slider, Summernote, TagsInput, ToggleSwitch, Typeahead and Offline are extras with separate third-party dependencies. They are intentionally not represented as Bootstrap 5 core widgets yet.</p>"), "These require separate migration decisions, not silent Bootstrap 5 shims."));
+        return row;
+    }
+
+    private Widget buttonsBasicPanel() {
+        return panel("Basic", inline(new Button("Default", Variant.SECONDARY), new Button("Primary", Variant.PRIMARY), new Button("Success", Variant.SUCCESS), new Button("Info", Variant.INFO), new Button("Warning", Variant.WARNING), new Button("Danger", Variant.DANGER), linkButton("Link")), "new Button(\"Primary\", Variant.PRIMARY);" );
+    }
+
+    private Widget buttonSizesPanel() {
+        Button small = new Button("Small", Variant.PRIMARY);
+        small.setSmall(true);
+        Button large = new Button("Large", Variant.PRIMARY);
+        large.setLarge(true);
+        return panel("Sizes", inline(small, large, note("Bootstrap 5 has small and large button sizes; extra-small is not a Bootstrap 5 button size.")), "button.setSmall(true);\nbutton.setLarge(true);" );
+    }
+
+    private Widget buttonStatesPanel() {
+        Button enabled = new Button("Enabled", Variant.PRIMARY);
+        Button disabled = new Button("Disabled", Variant.PRIMARY);
+        disabled.setEnabled(false);
+        Button toggle = new Button("Toggle button", Variant.SECONDARY);
+        toggle.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                toggle.setActive(!toggle.isActive());
+            }
+        });
+        Button loading = new Button("Click me", Variant.PRIMARY);
+        loading.setLoadingText("Loading...");
+        loading.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                loading.setLoading(true);
+                new Timer() {
+                    @Override
+                    public void run() {
+                        loading.setLoading(false);
+                    }
+                }.schedule(1200);
+            }
+        });
+        Button block = new Button("Block level button", Variant.PRIMARY);
+        block.setBlock(true);
+        return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.setBlock(true);" );
+    }
+
+    private Widget buttonCompositionPanel() {
+        Button button = new Button("With icon and badge", Variant.PRIMARY);
+        button.setHTML("<i class='bi bi-star'></i> With icon <span class='badge text-bg-light'>1</span>");
+        CheckBoxButton checkBoxButton = new CheckBoxButton("CheckBoxButton");
+        return panel("Composition", inline(button, checkBoxButton), "button.setHTML(\"<i class='bi bi-star'></i> With icon ...\");\nnew CheckBoxButton(\"CheckBoxButton\");" );
+    }
+
+    private Widget formsPanel() {
+        Form form = new Form();
+        FormGroup nameGroup = new FormGroup();
+        nameGroup.add(new FormLabel("TextBox"));
+        nameGroup.add(new TextBox());
+        FormGroup textAreaGroup = new FormGroup();
+        textAreaGroup.add(new FormLabel("TextArea"));
+        textAreaGroup.add(new TextArea());
+        form.add(nameGroup);
+        form.add(textAreaGroup);
+        form.add(new CheckBox("CheckBox"));
+        form.add(new Radio("form-radio", "Radio"));
+        form.add(new InlineCheckBox("InlineCheckBox"));
+        form.add(new InlineRadio("InlineRadio"));
+        form.add(new SimpleCheckBox("SimpleCheckBox"));
+        form.add(new SimpleRadioButton("SimpleRadioButton"));
+        form.add(new HelpBlock("HelpBlock"));
+        form.add(new InlineHelpBlock("InlineHelpBlock"));
+        form.add(new SubmitButton("SubmitButton"));
+        return panel("Basic", form, "new Form();\nnew TextBox();\nnew CheckBox(\"CheckBox\");\nnew Radio(\"group\", \"Radio\");");
+    }
+
+    private Widget formAdaptersPanel() {
+        IntegerBox integerBox = new IntegerBox();
+        integerBox.getElement().setAttribute("placeholder", "IntegerBox");
+        DoubleBox doubleBox = new DoubleBox();
+        doubleBox.getElement().setAttribute("placeholder", "DoubleBox");
+        LongBox longBox = new LongBox();
+        longBox.getElement().setAttribute("placeholder", "LongBox");
+        ListBox listBox = new ListBox();
+        listBox.addItem("ListBox");
+        ValueListBox<String> valueListBox = new ValueListBox<String>();
+        valueListBox.setAcceptableValues(Arrays.asList("ValueListBox A", "ValueListBox B"));
+        StringRadioGroup radioGroup = new StringRadioGroup("string-radio-group");
+        radioGroup.addRadio("a", "StringRadioGroup A");
+        radioGroup.addRadio("b", "StringRadioGroup B");
+        return panel("Value adapters", inline(integerBox, doubleBox, longBox, listBox, valueListBox, radioGroup), "new IntegerBox();\nnew DoubleBox();\nnew LongBox();\nnew ValueListBox<String>();\nnew StringRadioGroup(\"group\");");
+    }
+
+    private Widget gridPanel() {
+        Row grid = row();
+        Column left = new Column(12);
+        left.setMediumSpan(6);
+        left.add(new HTML("<div class='p-3 text-bg-primary rounded'>.col-md-6</div>"));
+        Column right = new Column(12);
+        right.setMediumSpan(6);
+        right.add(new HTML("<div class='p-3 text-bg-secondary rounded'>.col-md-6</div>"));
+        grid.add(left);
+        grid.add(right);
+        return panel("Basic", grid, "Column column = new Column(12);\ncolumn.setMediumSpan(6);");
+    }
+
+    private Widget typographyPanel() {
+        Description description = new Description();
+        description.add(new DescriptionTitle("DescriptionTitle"));
+        description.add(new DescriptionData("DescriptionData"));
+        FieldSet fieldSet = new FieldSet();
+        fieldSet.add(new Legend("Legend"));
+        fieldSet.add(new FormControlStatic("FormControlStatic"));
+        BlockQuote quote = new BlockQuote();
+        quote.add(new Paragraph("BlockQuote maps to Bootstrap 5 blockquote styling."));
+        Abbreviation abbreviation = new Abbreviation("GWT");
+        abbreviation.setTitle("Google Web Toolkit");
+        return panel("Basic", inline(new Heading(2, "Heading"), new Lead("Lead text"), new Paragraph("Paragraph text"), abbreviation, quote, description, fieldSet, new Caption("Caption helper")), "new Heading(2, \"Heading\");\nnew Lead(\"Lead text\");\nnew BlockQuote();");
+    }
+
+    private Widget buttonGroupsPanel() {
+        ButtonGroup group = new ButtonGroup();
+        group.addButton(new Button("Left", Variant.SECONDARY));
+        group.addButton(new Button("Middle", Variant.SECONDARY));
+        group.addButton(new Button("Right", Variant.SECONDARY));
+        VerticalButtonGroup vertical = new VerticalButtonGroup();
+        vertical.addButton(new Button("Top", Variant.SECONDARY));
+        vertical.addButton(new Button("Bottom", Variant.SECONDARY));
+        ButtonToolBar toolbar = new ButtonToolBar();
+        toolbar.addGroup(group);
+        return panel("Basic", inline(toolbar, vertical), "ButtonGroup group = new ButtonGroup();\ngroup.addButton(new Button(\"Left\"));\nButtonToolBar toolbar = new ButtonToolBar();");
+    }
+
+    private Widget dropdownsPanel() {
+        DropDown dropDown = new DropDown("Click to toggle dropdown");
+        dropDown.addMenuWidget(new DropDownHeader("Header 1"));
+        DropDownItem first = new DropDownItem("Action 1", "#");
+        first.add(new Icon("camera"));
+        dropDown.addItem(first);
+        dropDown.addMenuWidget(new Divider());
+        DropDownItem disabled = new DropDownItem("Action 2 (disabled)", "#");
+        disabled.setDisabled(true);
+        dropDown.addItem(disabled);
+        return panel("Basic", dropDown, "DropDown dropDown = new DropDown(\"Click to toggle dropdown\");\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));");
+    }
+
+    private Widget inputGroupsPanel() {
+        InputGroup inputGroup = new InputGroup();
+        inputGroup.add(new InputGroupAddon("@"));
+        Input input = new Input("text");
+        input.setPlaceholder("Username");
+        inputGroup.add(input);
+        inputGroup.add(new InputGroupButton(new Button("Go", Variant.PRIMARY)));
+        return panel("Basic", inputGroup, "InputGroup inputGroup = new InputGroup();\ninputGroup.add(new InputGroupAddon(\"@\"));");
+    }
+
+    private Widget listGroupPanel() {
         ListGroup group = new ListGroup();
-        group.add(new ListGroupItem("Plain Bootstrap 5 list-group-item"));
+        group.add(new ListGroupItem("Plain list-group-item"));
         ListGroupItem active = new ListGroupItem("Active item");
         active.setActive(true);
         group.add(active);
-        ListGroupItem warning = new ListGroupItem("Contextual warning item");
-        warning.setVariant(Variant.WARNING);
-        group.add(warning);
-        lists.addBody(group);
-        listColumn.add(lists);
+        LinkedGroup linked = new LinkedGroup();
+        LinkedGroupItem linkedItem = new LinkedGroupItem("LinkedGroupItem", "#");
+        linkedItem.add(new LinkedGroupItemText("Linked item body text"));
+        linked.add(linkedItem);
+        return panel("Basic", inline(group, linked), "new ListGroup();\nnew LinkedGroup();");
+    }
 
-        Column contentColumn = new Column(12);
-        contentColumn.setMediumSpan(6);
-        Panel panel = new Panel(Variant.PRIMARY);
-        panel.add(new PanelHeader("Panel concept mapped to Bootstrap 5 card"));
-        PanelBody body = new PanelBody();
-        body.add(new Heading(3, "Card-backed panel"));
-        body.add(new Lead("Bootstrap 5 removed panels and wells, so these compatibility surfaces use cards and utility classes."));
-        body.add(new Paragraph("The compatibility names are available, but the generated DOM is Bootstrap 5-native."));
-        panel.add(body);
-        panel.add(new PanelFooter("card-footer"));
-        contentColumn.add(panel);
+    private Widget mediaPanel() {
+        MediaList mediaList = new MediaList();
+        MediaBody mediaBody = new MediaBody();
+        mediaBody.add(new Heading(4, "Media heading"));
+        mediaBody.add(new Paragraph("Bootstrap 5 uses flex utilities for the old media object pattern."));
+        mediaList.add(new Image(IMG_THUMB));
+        mediaList.add(mediaBody);
+        return panel("Basic", mediaList, "MediaList mediaList = new MediaList();\nmediaList.add(new MediaBody());");
+    }
 
-        Column wellColumn = new Column(12);
-        wellColumn.setMediumSpan(6);
-        Well well = new Well();
-        well.add(new Heading(3, "Well concept"));
-        well.add(new Paragraph("Rendered as p-3 rounded bg-body-tertiary border."));
-        wellColumn.add(well);
+    private Widget navbarPanel() {
+        Navbar navbar = new Navbar();
+        navbar.getContainer().add(new NavbarBrand("Brand", "#"));
+        navbar.getNav().add(new NavbarLink("Link", "#"));
+        NavbarHeader header = new NavbarHeader();
+        header.add(new NavbarButton("NavbarButton"));
+        NavbarForm form = new NavbarForm();
+        Input input = new Input("search");
+        input.setPlaceholder("NavbarForm");
+        form.add(input);
+        navbar.getContainer().add(header);
+        navbar.getContainer().add(form);
+        return panel("Basic", navbar, "Navbar navbar = new Navbar();\nnavbar.getContainer().add(new NavbarBrand(...));");
+    }
 
-        parity.add(feedbackColumn);
-        parity.add(listColumn);
-        parity.add(contentColumn);
-        parity.add(wellColumn);
-        container.add(parity);
+    private Widget navsPanel() {
+        NavTabs tabs = new NavTabs();
+        tabs.addLink("Home", "#").addStyleName("active");
+        tabs.addLink("Profile", "#");
+        NavPills pills = new NavPills();
+        pills.addLink("Home", "#").addStyleName("active");
+        pills.addLink("Profile", "#");
+        return panel("Tabs and pills", inline(tabs, pills), "new NavTabs();\nnew NavPills();");
+    }
 
-        Row interactive = new Row();
-        interactive.setStyleName("row g-4 mt-1");
-
-        Column modalColumn = new Column(12);
-        modalColumn.setMediumSpan(4);
-        Card modalCard = new Card();
-        modalCard.setTitle("Modal");
-        modalCard.addBody(new Paragraph("Modal show/hide uses Bootstrap 5's JavaScript API, not jQuery."));
-        Button showModal = new Button("Open modal", Variant.PRIMARY);
-        modalCard.addBody(showModal);
-        Modal modal = new Modal();
-        modal.setTitle("Bootstrap 5 modal");
-        modal.addToBody(new Paragraph("This modal is built from GWT widgets and shown through bootstrap.Modal."));
-        ModalFooter modalFooter = new ModalFooter();
-        Button closeModal = new Button("Close", Variant.SECONDARY);
-        closeModal.getElement().setAttribute("data-bs-dismiss", "modal");
-        modalFooter.add(closeModal);
-        modal.addFooter(modalFooter);
-        showModal.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                modal.show();
-            }
-        });
-        modalColumn.add(modalCard);
-        modalColumn.add(modal);
-
-        Column dropdownColumn = new Column(12);
-        dropdownColumn.setMediumSpan(4);
-        Card dropdownCard = new Card();
-        dropdownCard.setTitle("Dropdown");
-        DropDown dropDown = new DropDown("Actions");
-        dropDown.addItem(new DropDownItem("Primary action", "#"));
-        DropDownItem disabled = new DropDownItem("Disabled action", "#");
-        disabled.setDisabled(true);
-        dropDown.addItem(disabled);
-        dropDown.addMenuWidget(new Divider());
-        dropDown.addItem(new DropDownItem("Separated action", "#"));
-        dropdownCard.addBody(dropDown);
-        dropdownColumn.add(dropdownCard);
-
-        Column paginationColumn = new Column(12);
-        paginationColumn.setMediumSpan(4);
-        Card paginationCard = new Card();
-        paginationCard.setTitle("Pagination");
+    private Widget paginationPanel() {
         Pagination pagination = new Pagination();
-        PageItem previous = new PageItem("Previous", "#");
-        previous.setDisabled(true);
-        pagination.add(previous);
-        pagination.add(new PageItem("1", "#"));
-        PageItem current = new PageItem("2", "#");
-        current.setActive(true);
-        pagination.add(current);
-        pagination.add(new PageItem("3", "#"));
+        pagination.add(new PageItem("Previous", "#"));
+        PageItem active = new PageItem("1", "#");
+        active.setActive(true);
+        pagination.add(active);
+        pagination.add(new PageItem("2", "#"));
         pagination.add(new PageItem("Next", "#"));
-        paginationCard.addBody(pagination);
         Pager pager = new Pager();
         pager.setAlignToSides(true);
-        pager.setPreviousEnabled(false);
-        pager.addStyleName("mt-3");
-        paginationCard.addBody(pager);
-        paginationColumn.add(paginationCard);
+        return panel("Basic", inline(pagination, pager), "Pagination pagination = new Pagination();\npagination.add(new PageItem(\"1\", \"#\"));");
+    }
 
-        interactive.add(modalColumn);
-        interactive.add(dropdownColumn);
-        interactive.add(paginationColumn);
-        container.add(interactive);
-
-        Row controls = new Row();
-        controls.setStyleName("row g-4 mt-1");
-
-        Column buttonGroupsColumn = new Column(12);
-        buttonGroupsColumn.setMediumSpan(4);
-        Card groupedButtons = new Card();
-        groupedButtons.setTitle("Button groups");
-        ButtonToolBar toolbar = new ButtonToolBar();
-        ButtonGroup primaryGroup = new ButtonGroup();
-        primaryGroup.addButton(new Button("Left", Variant.PRIMARY));
-        primaryGroup.addButton(new Button("Middle", Variant.PRIMARY));
-        primaryGroup.addButton(new Button("Right", Variant.PRIMARY));
-        toolbar.addGroup(primaryGroup);
-        ButtonGroup secondaryGroup = new ButtonGroup();
-        secondaryGroup.addStyleName("ms-2");
-        secondaryGroup.addButton(new AnchorButton("Link", "#", Variant.SECONDARY));
-        secondaryGroup.addButton(new Button("Action", Variant.SECONDARY));
-        toolbar.addGroup(secondaryGroup);
-        groupedButtons.addBody(toolbar);
-        buttonGroupsColumn.add(groupedButtons);
-
-        Column navColumn = new Column(12);
-        navColumn.setMediumSpan(4);
-        Card navCard = new Card();
-        navCard.setTitle("Navigation");
-        NavTabs tabs = new NavTabs();
-        tabs.addLink("Active", "#").addStyleName("active");
-        tabs.addLink("Profile", "#");
-        tabs.addLink("Disabled", "#").addStyleName("disabled");
-        navCard.addBody(tabs);
-        NavPills pills = new NavPills();
-        pills.addStyleName("mt-3");
-        pills.addLink("Build", "#").addStyleName("active");
-        pills.addLink("Release", "#");
-        navCard.addBody(pills);
-        navColumn.add(navCard);
-
-        Column progressColumn = new Column(12);
-        progressColumn.setMediumSpan(4);
-        Card progressCard = new Card();
-        progressCard.setTitle("Progress");
+    private Widget progressPanel() {
         Progress progress = new Progress();
-        ProgressBar bar = new ProgressBar(65);
+        ProgressBar bar = new ProgressBar();
+        bar.setPercent(60);
         bar.setVariant(Variant.SUCCESS);
-        bar.setStriped(true);
-        progress.addBar(bar);
-        progressCard.addBody(progress);
-        progressColumn.add(progressCard);
+        progress.add(bar);
+        return panel("Basic", progress, "ProgressBar bar = new ProgressBar();\nbar.setPercent(60);");
+    }
 
-        controls.add(buttonGroupsColumn);
-        controls.add(navColumn);
-        controls.add(progressColumn);
-        container.add(controls);
+    private Widget thumbnailsPanel() {
+        ThumbnailPanel panel = new ThumbnailPanel();
+        panel.addBody(new Image(IMG_THUMB));
+        panel.addBody(new Paragraph("ThumbnailPanel maps to Card."));
+        ThumbnailLink link = new ThumbnailLink("#");
+        link.add(new Image(IMG_THUMB));
+        return panel("Basic", inline(panel, link), "new ThumbnailPanel();\nnew ThumbnailLink(\"#\");");
+    }
 
-        Row forms = new Row();
-        forms.setStyleName("row g-4 mt-1");
-        Column formColumn = new Column(12);
-        formColumn.setMediumSpan(8);
-        Card formCard = new Card();
-        formCard.setTitle("Forms");
-        Form form = new Form();
-        FormGroup nameGroup = new FormGroup();
-        nameGroup.add(new FormLabel("Name"));
-        Input name = new Input("text");
-        name.setPlaceholder("Bootstrap 5 input");
-        nameGroup.add(name);
-        nameGroup.add(new HelpBlock("HelpBlock maps to Bootstrap 5 form-text."));
-        form.add(nameGroup);
-        FormGroup notesGroup = new FormGroup();
-        notesGroup.add(new FormLabel("Notes"));
-        TextArea notes = new TextArea();
-        notes.setVisibleLines(3);
-        notesGroup.add(notes);
-        form.add(notesGroup);
-        CheckBox enabled = new CheckBox("Enable option");
-        enabled.setValue(true);
-        form.add(enabled);
-        form.add(new Radio("Radio option"));
-        FormGroup choiceGroup = new FormGroup();
-        choiceGroup.add(new FormLabel("ListBox"));
-        ListBox listBox = new ListBox();
-        listBox.addItem("Alpha", "alpha");
-        listBox.addItem("Bravo", "bravo");
-        choiceGroup.add(listBox);
-        form.add(choiceGroup);
-        InputGroup inputGroup = new InputGroup();
-        inputGroup.add(new InputGroupAddon("@"));
-        Input groupedInput = new Input("text");
-        groupedInput.setPlaceholder("Input group");
-        inputGroup.add(groupedInput);
-        InputGroupButton inputGroupButton = new InputGroupButton();
-        inputGroupButton.add(new Button("Go", Variant.PRIMARY));
-        inputGroup.add(inputGroupButton);
-        form.add(inputGroup);
-        formCard.addBody(form);
-        formColumn.add(formCard);
-        forms.add(formColumn);
-        container.add(forms);
-
-        Row scripted = new Row();
-        scripted.setStyleName("row g-4 mt-1");
-        Column collapseColumn = new Column(12);
-        collapseColumn.setMediumSpan(4);
-        Card collapseCard = new Card();
-        collapseCard.setTitle("Collapse");
-        Button toggleCollapse = new Button("Toggle collapse", Variant.PRIMARY);
+    private Widget collapsePanel() {
         Collapse collapse = new Collapse();
-        collapse.addStyleName("mt-3");
-        Well collapseContent = new Well();
-        collapseContent.add(new Paragraph("Collapse uses Bootstrap 5 JavaScript APIs."));
-        collapse.add(collapseContent);
-        toggleCollapse.addClickHandler(new ClickHandler() {
+        collapse.getElement().setId("collapseExample");
+        collapse.add(new Well());
+        Button button = new Button("Toggle collapse", Variant.PRIMARY);
+        button.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
                 collapse.toggle();
             }
         });
-        collapseCard.addBody(toggleCollapse);
-        collapseCard.addBody(collapse);
-        collapseColumn.add(collapseCard);
+        return panel("Basic", inline(button, collapse), "Collapse collapse = new Collapse();\ncollapse.toggle();");
+    }
 
-        Column tooltipColumn = new Column(12);
-        tooltipColumn.setMediumSpan(4);
-        Card tooltipCard = new Card();
-        tooltipCard.setTitle("Tooltip and popover");
-        Tooltip tooltip = new Tooltip(new Button("Tooltip", Variant.SECONDARY), "Bootstrap 5 tooltip");
-        tooltip.init();
-        Popover popover = new Popover(new Button("Popover", Variant.SECONDARY), "Popover title", "Bootstrap 5 popover content");
-        popover.addStyleName("ms-2");
-        popover.init();
-        tooltipCard.addBody(tooltip);
-        tooltipCard.addBody(popover);
-        tooltipColumn.add(tooltipCard);
+    private Widget modalPanel(RootPanel root) {
+        Modal modal = new Modal();
+        modal.getElement().setId("exampleModal");
+        modal.setTitle("Cupcake ipsum");
+        modal.addToBody(new Paragraph("Modal body..."));
+        ModalFooter footer = new ModalFooter();
+        footer.add(new Button("Do something", Variant.PRIMARY));
+        Button close = new Button("Close", Variant.SECONDARY);
+        close.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                modal.hide();
+            }
+        });
+        footer.add(close);
+        modal.addFooter(footer);
+        root.add(modal);
+        Button show = new Button("Click to show modal", Variant.PRIMARY);
+        show.setLarge(true);
+        show.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                modal.show();
+            }
+        });
+        return panel("Basic", show, "Modal modal = new Modal();\nmodal.show();\nmodal.hide();");
+    }
 
-        Column carouselColumn = new Column(12);
-        carouselColumn.setMediumSpan(4);
-        Card carouselCard = new Card();
-        carouselCard.setTitle("Carousel");
+    private Widget tabsPanel() {
+        TabPanel tabPanel = new TabPanel();
+        TabListItem firstTab = new TabListItem("First", "firstPane");
+        firstTab.setActive(true);
+        tabPanel.getTabs().add(firstTab);
+        tabPanel.getTabs().add(new TabListItem("Second", "secondPane"));
+        TabPane firstPane = new TabPane();
+        firstPane.getElement().setId("firstPane");
+        firstPane.setActive(true);
+        firstPane.add(new Paragraph("First tab content"));
+        TabPane secondPane = new TabPane();
+        secondPane.getElement().setId("secondPane");
+        secondPane.add(new Paragraph("Second tab content"));
+        TabContent content = tabPanel.getContent();
+        content.add(firstPane);
+        content.add(secondPane);
+        return panel("Basic", tabPanel, "TabPanel tabPanel = new TabPanel();\ntabPanel.getTabs().add(new TabListItem(...));");
+    }
+
+    private Widget carousel() {
         String carouselId = "showcaseCarousel";
         Carousel carousel = new Carousel();
         carousel.getElement().setId(carouselId);
@@ -462,193 +654,110 @@ public class ShowcaseEntryPoint implements EntryPoint {
         indicators.addIndicator(firstIndicator);
         indicators.addIndicator(new CarouselIndicator(carouselId, 1));
         carousel.insert(indicators, 0);
-        CarouselSlide firstSlide = new CarouselSlide(new HTML("<div class=\"d-flex align-items-center justify-content-center text-bg-primary rounded\" style=\"height: 9rem;\">First slide</div>"));
+        CarouselSlide firstSlide = new CarouselSlide(new HTML("<div class='d-flex align-items-center justify-content-center text-bg-primary rounded' style='height: 12rem;'>First slide</div>"));
         firstSlide.setActive(true);
         CarouselCaption caption = new CarouselCaption();
         caption.add(new Heading(5, "First slide"));
         firstSlide.add(caption);
         carousel.addSlide(firstSlide);
-        carousel.addSlide(new CarouselSlide(new HTML("<div class=\"d-flex align-items-center justify-content-center text-bg-success rounded\" style=\"height: 9rem;\">Second slide</div>")));
+        carousel.addSlide(new CarouselSlide(new HTML("<div class='d-flex align-items-center justify-content-center text-bg-success rounded' style='height: 12rem;'>Second slide</div>")));
         carousel.add(new CarouselControl(carouselId, true));
         carousel.add(new CarouselControl(carouselId, false));
-        carouselCard.addBody(carousel);
-        carouselColumn.add(carouselCard);
+        return carousel;
+    }
 
-        scripted.add(collapseColumn);
-        scripted.add(tooltipColumn);
-        scripted.add(carouselColumn);
-        container.add(scripted);
+    private Widget samplePanel() {
+        Panel panel = new Panel(Variant.PRIMARY);
+        panel.add(new PanelHeader("Panel heading"));
+        PanelBody body = new PanelBody();
+        body.add(new Paragraph("Panel body"));
+        panel.add(body);
+        panel.add(new PanelFooter("Panel footer"));
+        PanelGroup group = new PanelGroup();
+        PanelCollapse collapse = new PanelCollapse();
+        collapse.add(new Paragraph("PanelCollapse wrapper"));
+        group.add(collapse);
+        panel.add(group);
+        return panel;
+    }
 
-        Row additional = new Row();
-        additional.setStyleName("row g-4 mt-1");
+    private Widget sampleCard() {
+        org.gwtbootstrap5.client.ui.Card card = new org.gwtbootstrap5.client.ui.Card();
+        card.setTitle("Card title");
+        card.addBody(new Paragraph("Bootstrap 5 card content."));
+        card.addBody(new AnchorButton("Card action", "#", Variant.PRIMARY));
+        return card;
+    }
 
-        Column helpersColumn = new Column(12);
-        helpersColumn.setMediumSpan(4);
-        Card helpersCard = new Card();
-        helpersCard.setTitle("Content helpers");
-        PageHeader pageHeader = new PageHeader();
-        pageHeader.add(new Heading(3, "Page header"));
-        helpersCard.addBody(pageHeader);
-        Abbreviation abbreviation = new Abbreviation("GWT");
-        abbreviation.setTitle("Google Web Toolkit");
-        helpersCard.addBody(abbreviation);
-        helpersCard.addBody(new HTML(" "));
-        helpersCard.addBody(new Code("Code"));
-        helpersCard.addBody(new Pre("Preformatted text"));
-        BlockQuote blockQuote = new BlockQuote();
-        blockQuote.add(new Paragraph("BlockQuote maps to Bootstrap 5 blockquote styling."));
-        helpersCard.addBody(blockQuote);
-        Description description = new Description();
-        description.add(new DescriptionTitle("DescriptionTitle"));
-        description.add(new DescriptionData("DescriptionData"));
-        helpersCard.addBody(description);
-        FieldSet fieldSet = new FieldSet();
-        fieldSet.add(new Legend("FieldSet and Legend"));
-        fieldSet.add(new FormControlStatic("FormControlStatic uses form-control-plaintext."));
-        helpersCard.addBody(fieldSet);
-        helpersCard.addBody(new Caption("Caption"));
-        helpersCard.addBody(new HTML("<table class=\"table table-sm\"><caption>Native table caption</caption><tbody><tr><td>Caption in table markup</td></tr></tbody></table>"));
-        helpersColumn.add(helpersCard);
+    private Widget linkButton(String text) {
+        Anchor link = new Anchor(text, "#");
+        link.addStyleName("btn btn-link");
+        return link;
+    }
 
-        Column linkedColumn = new Column(12);
-        linkedColumn.setMediumSpan(4);
-        Card linkedCard = new Card();
-        linkedCard.setTitle("Linked and media helpers");
-        LinkedGroup linkedGroup = new LinkedGroup();
-        LinkedGroupItem linkedItem = new LinkedGroupItem("LinkedGroupItem", "#");
-        linkedItem.add(new LinkedGroupItemText("LinkedGroupItemText inside a Bootstrap 5 list group action."));
-        linkedGroup.add(linkedItem);
-        linkedCard.addBody(linkedGroup);
-        MediaList mediaList = new MediaList();
-        MediaBody mediaBody = new MediaBody();
-        mediaBody.add(new Heading(5, "MediaBody"));
-        mediaBody.add(new Paragraph("Bootstrap 5 uses flex utilities for the old media object pattern."));
-        mediaList.add(mediaBody);
-        linkedCard.addBody(mediaList);
-        ThumbnailPanel thumbnailPanel = new ThumbnailPanel();
-        thumbnailPanel.addBody(new Image(IMAGE_320_120));
-        thumbnailPanel.addBody(new Paragraph("ThumbnailPanel maps to Card."));
-        linkedCard.addBody(thumbnailPanel);
-        ThumbnailLink thumbnailLink = new ThumbnailLink("#");
-        thumbnailLink.add(new Image(IMAGE_320_80));
-        linkedCard.addBody(thumbnailLink);
-        ImageAnchor imageAnchor = new ImageAnchor("#", IMAGE_160_60);
-        linkedCard.addBody(imageAnchor);
-        linkedColumn.add(linkedCard);
+    private Row section(String id, String title, String subText) {
+        Row row = row();
+        Column column = fullColumn(row);
+        addPageHeader(column, id, title, subText);
+        return row;
+    }
 
-        Column variantsColumn = new Column(12);
-        variantsColumn.setMediumSpan(4);
-        Card variantsCard = new Card();
-        variantsCard.setTitle("Convenience wrappers");
-        DropDown listDropDown = new ListDropDown("ListDropDown");
-        listDropDown.addMenuWidget(new DropDownHeader("DropDownHeader"));
-        listDropDown.addItem(new DropDownItem("Entry", "#"));
-        variantsCard.addBody(listDropDown);
-        VerticalButtonGroup verticalGroup = new VerticalButtonGroup();
-        verticalGroup.addButton(new Button("One", Variant.SECONDARY));
-        verticalGroup.addButton(new Button("Two", Variant.SECONDARY));
-        verticalGroup.addStyleName("mt-3");
-        variantsCard.addBody(verticalGroup);
-        variantsCard.addBody(new InlineCheckBox("InlineCheckBox"));
-        variantsCard.addBody(new InlineRadio("InlineRadio"));
-        variantsCard.addBody(new RadioButton("RadioButton"));
-        variantsCard.addBody(new SimpleCheckBox("SimpleCheckBox"));
-        variantsCard.addBody(new SimpleRadioButton("SimpleRadioButton"));
-        variantsCard.addBody(new SubmitButton("SubmitButton"));
-        variantsCard.addBody(new TooltipHelpBlock("TooltipHelpBlock"));
-        variantsCard.addBody(new InlineHelpBlock("InlineHelpBlock"));
-        variantsCard.addBody(new Icon("check2-circle"));
-        variantsCard.addBody(new HTML(" Bootstrap Icons"));
-        TabPanel tabPanel = new TabPanel();
-        TabListItem firstTab = new TabListItem("First", "firstPane");
-        firstTab.setActive(true);
-        tabPanel.getTabs().add(firstTab);
-        tabPanel.getTabs().add(new TabListItem("Second", "secondPane"));
-        TabPane firstPane = new TabPane();
-        firstPane.getElement().setId("firstPane");
-        firstPane.setActive(true);
-        firstPane.add(new Paragraph("TabPane one"));
-        TabPane secondPane = new TabPane();
-        secondPane.getElement().setId("secondPane");
-        secondPane.add(new Paragraph("TabPane two"));
-        TabContent tabContent = tabPanel.getContent();
-        tabContent.add(firstPane);
-        tabContent.add(secondPane);
-        variantsCard.addBody(tabPanel);
-        NavbarHeader navbarHeader = new NavbarHeader();
-        navbarHeader.add(new NavbarButton("NavbarButton"));
-        NavbarForm navbarForm = new NavbarForm();
-        Input navbarInput = new Input("search");
-        navbarInput.setPlaceholder("NavbarForm");
-        navbarForm.add(navbarInput);
-        variantsCard.addBody(navbarHeader);
-        variantsCard.addBody(navbarForm);
-        PanelGroup panelGroup = new PanelGroup();
-        PanelCollapse panelCollapse = new PanelCollapse();
-        panelCollapse.add(new Paragraph("PanelCollapse wrapper"));
-        panelGroup.add(panelCollapse);
-        variantsCard.addBody(panelGroup);
-        variantsColumn.add(variantsCard);
+    private Row row() {
+        Row row = new Row();
+        row.setStyleName("row");
+        return row;
+    }
 
-        additional.add(helpersColumn);
-        additional.add(linkedColumn);
-        additional.add(variantsColumn);
-        container.add(additional);
+    private Column fullColumn() {
+        Column column = new Column(12);
+        return column;
+    }
 
-        Row adapters = new Row();
-        adapters.setStyleName("row g-4 mt-1");
+    private Column fullColumn(Row row) {
+        Column column = fullColumn();
+        row.add(column);
+        return column;
+    }
 
-        Column formAdaptersColumn = new Column(12);
-        formAdaptersColumn.setMediumSpan(6);
-        Card formAdaptersCard = new Card();
-        formAdaptersCard.setTitle("Form and value adapters");
-        IntegerBox integerBox = new IntegerBox();
-        integerBox.getElement().setAttribute("placeholder", "IntegerBox");
-        DoubleBox doubleBox = new DoubleBox();
-        doubleBox.getElement().setAttribute("placeholder", "DoubleBox");
-        LongBox longBox = new LongBox();
-        longBox.getElement().setAttribute("placeholder", "LongBox");
-        SuggestBox suggestBox = new SuggestBox();
-        suggestBox.getElement().addClassName("mb-2");
-        ValueListBox<String> valueListBox = new ValueListBox<String>();
-        formAdaptersCard.addBody(integerBox);
-        formAdaptersCard.addBody(doubleBox);
-        formAdaptersCard.addBody(longBox);
-        formAdaptersCard.addBody(suggestBox);
-        formAdaptersCard.addBody(valueListBox);
-        formAdaptersCard.addBody(new CheckBoxButton("CheckBoxButton"));
-        formAdaptersColumn.add(formAdaptersCard);
+    private void addPageHeader(Column column, String id, String title, String subText) {
+        PageHeader header = new PageHeader();
+        header.getElement().setId(id);
+        Heading heading = new Heading(2, title);
+        if (subText != null && !subText.isEmpty()) {
+            heading.add(new HTML(" <small class='text-body-secondary'>" + subText + "</small>"));
+        }
+        header.add(heading);
+        column.add(header);
+    }
 
-        Column navigationAdaptersColumn = new Column(12);
-        navigationAdaptersColumn.setMediumSpan(6);
-        Card navigationAdaptersCard = new Card();
-        navigationAdaptersCard.setTitle("Navigation and radio adapters");
-        Breadcrumbs breadcrumbs = new Breadcrumbs(new AnchorListItem("Home", "#"), new ListItem("Current"));
-        navigationAdaptersCard.addBody(breadcrumbs);
-        StringRadioGroup stringRadioGroup = new StringRadioGroup("string-radio-group");
-        stringRadioGroup.addRadio("alpha", "StringRadioGroup alpha");
-        stringRadioGroup.addRadio("beta", "StringRadioGroup beta");
-        navigationAdaptersCard.addBody(stringRadioGroup);
-        IntegerRadioGroup integerRadioGroup = new IntegerRadioGroup("integer-radio-group");
-        integerRadioGroup.addRadio(1, "IntegerRadioGroup one");
-        integerRadioGroup.addRadio(2, "IntegerRadioGroup two");
-        navigationAdaptersCard.addBody(integerRadioGroup);
-        DoubleRadioGroup doubleRadioGroup = new DoubleRadioGroup("double-radio-group");
-        doubleRadioGroup.addRadio(1.5, "DoubleRadioGroup 1.5");
-        doubleRadioGroup.addRadio(2.5, "DoubleRadioGroup 2.5");
-        navigationAdaptersCard.addBody(doubleRadioGroup);
-        BooleanRadioGroup booleanRadioGroup = new BooleanRadioGroup("boolean-radio-group");
-        booleanRadioGroup.addRadio(Boolean.TRUE, "BooleanRadioGroup true");
-        booleanRadioGroup.addRadio(Boolean.FALSE, "BooleanRadioGroup false");
-        navigationAdaptersCard.addBody(booleanRadioGroup);
-        navigationAdaptersCard.addBody(new Paragraph("Affix maps to sticky-top and ScrollSpy maps to Bootstrap 5 data attributes."));
-        Affix.affix(navigationAdaptersCard, 0);
-        navigationAdaptersColumn.add(navigationAdaptersCard);
+    private Panel panel(String title, Widget bodyWidget, String code) {
+        Panel panel = new Panel();
+        panel.addStyleName("mb-4");
+        PanelHeader header = new PanelHeader();
+        header.add(new Heading(3, title));
+        PanelBody body = new PanelBody();
+        body.addStyleName("gbm-example-body");
+        body.add(bodyWidget);
+        PanelFooter footer = new PanelFooter();
+        Pre pre = new Pre(code);
+        pre.addStyleName("mb-0 small");
+        footer.add(pre);
+        panel.add(header);
+        panel.add(body);
+        panel.add(footer);
+        return panel;
+    }
 
-        adapters.add(formAdaptersColumn);
-        adapters.add(navigationAdaptersColumn);
-        container.add(adapters);
+    private Widget inline(Widget... widgets) {
+        PanelBody wrapper = new PanelBody();
+        wrapper.setStyleName("gbm-inline-demo");
+        for (Widget widget : widgets) {
+            wrapper.add(widget);
+        }
+        return wrapper;
+    }
 
-        root.add(container);
+    private Widget note(String text) {
+        return new HTML("<span class='text-body-secondary'>" + text + "</span>");
     }
 }
