@@ -59,55 +59,55 @@ public interface ValidationMessages extends ConstantsWithLookup {
      */
     @Key(Keys.BLANK)
     @DefaultStringValue("Field cannot be blank")
-    String org_gwtbootstrap3_validation_Blank_message();
+    String org_gwtbootstrap5_validation_Blank_message();
 
     /**
      * @return the decimal max validation message.
      */
     @Key(Keys.DECIMAL_MAX)
     @DefaultStringValue("Value must be less than or equal to {1}")
-    String org_gwtbootstrap3_validation_DecimalMax_message();
+    String org_gwtbootstrap5_validation_DecimalMax_message();
 
     /**
      * @return the decimal min validation message.
      */
     @Key(Keys.DECIMAL_MIN)
     @DefaultStringValue("Value must be greater than or equal to {1}")
-    String org_gwtbootstrap3_validation_DecimalMin_message();
+    String org_gwtbootstrap5_validation_DecimalMin_message();
 
     /**
      * @return the field match validation message.
      */
     @Key(Keys.FIELD_MATCH)
     @DefaultStringValue("{1} do not match")
-    String org_gwtbootstrap3_validation_FieldMatch_message();
+    String org_gwtbootstrap5_validation_FieldMatch_message();
 
     /**
      * @return the future validation message.
      */
     @Key(Keys.FUTURE)
     @DefaultStringValue("Value must be in the future")
-    String org_gwtbootstrap3_validation_Future_message();
+    String org_gwtbootstrap5_validation_Future_message();
 
     /**
      * @return the past validation message.
      */
     @Key(Keys.PAST)
     @DefaultStringValue("Value must be in the past")
-    String org_gwtbootstrap3_validation_Past_message();
+    String org_gwtbootstrap5_validation_Past_message();
 
     /**
      * @return the regular expression validation message.
      */
     @Key(Keys.REGEX)
     @DefaultStringValue("Must match regex")
-    String org_gwtbootstrap3_validation_RegEx_message();
+    String org_gwtbootstrap5_validation_RegEx_message();
 
     /**
      * @return the size validation message.
      */
     @Key(Keys.SIZE)
     @DefaultStringValue("Size must be between {1} and {2}")
-    String org_gwtbootstrap3_validation_Size_message();
+    String org_gwtbootstrap5_validation_Size_message();
 
 }
