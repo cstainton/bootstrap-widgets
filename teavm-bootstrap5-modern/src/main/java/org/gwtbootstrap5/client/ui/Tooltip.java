@@ -1,8 +1,15 @@
 /*
  * #%L
- * GWT Bootstrap Modern
+ * GwtBootstrap3
  * %%
- * Copyright (C) 2026 Carl Stainton
+ * Copyright (C) 2013 - 2018 GwtBootstrap3
+ * %%
+ * Modified from the GwtBootstrap3 original for the TeaVM track of GWT Bootstrap
+ * Modern. Identical to the Bootstrap 5 widget of the same name in package, API
+ * and behaviour; it exists separately only because that widget reaches
+ * Bootstrap's JavaScript through JSNI, which TeaVM cannot compile. The calls go
+ * through BootstrapJs instead. If the JSNI moves behind a shared interface, this
+ * file collapses back into the one definition.
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
