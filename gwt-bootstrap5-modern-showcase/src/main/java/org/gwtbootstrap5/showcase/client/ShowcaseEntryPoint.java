@@ -1,6 +1,8 @@
 package org.gwtbootstrap5.showcase.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.RootPanel;
 import org.gwtbootstrap5.client.ui.Alert;
@@ -10,11 +12,21 @@ import org.gwtbootstrap5.client.ui.Button;
 import org.gwtbootstrap5.client.ui.Card;
 import org.gwtbootstrap5.client.ui.Column;
 import org.gwtbootstrap5.client.ui.Container;
+import org.gwtbootstrap5.client.ui.Divider;
+import org.gwtbootstrap5.client.ui.DropDown;
+import org.gwtbootstrap5.client.ui.DropDownItem;
 import org.gwtbootstrap5.client.ui.Heading;
 import org.gwtbootstrap5.client.ui.Label;
 import org.gwtbootstrap5.client.ui.Lead;
 import org.gwtbootstrap5.client.ui.ListGroup;
 import org.gwtbootstrap5.client.ui.ListGroupItem;
+import org.gwtbootstrap5.client.ui.Modal;
+import org.gwtbootstrap5.client.ui.ModalFooter;
+import org.gwtbootstrap5.client.ui.Navbar;
+import org.gwtbootstrap5.client.ui.NavbarBrand;
+import org.gwtbootstrap5.client.ui.NavbarLink;
+import org.gwtbootstrap5.client.ui.PageItem;
+import org.gwtbootstrap5.client.ui.Pagination;
 import org.gwtbootstrap5.client.ui.Panel;
 import org.gwtbootstrap5.client.ui.PanelBody;
 import org.gwtbootstrap5.client.ui.PanelFooter;
@@ -33,11 +45,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
             root = RootPanel.get();
         }
 
-        root.add(new HTML("<nav class=\"navbar navbar-expand-lg bg-body-tertiary border-bottom\">"
-                + "<div class=\"container\"><a class=\"navbar-brand fw-semibold\" href=\"#\">GWT Bootstrap 5 Modern</a>"
-                + "<button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#mainNav\" aria-controls=\"mainNav\" aria-expanded=\"false\" aria-label=\"Toggle navigation\"><span class=\"navbar-toggler-icon\"></span></button>"
-                + "<div class=\"collapse navbar-collapse\" id=\"mainNav\"><ul class=\"navbar-nav ms-auto\"><li class=\"nav-item\"><a class=\"nav-link active\" href=\"#components\">Components</a></li><li class=\"nav-item\"><a class=\"nav-link\" href=\"../\">Bootstrap 3 showcase</a></li></ul></div>"
-                + "</div></nav>"));
+        Navbar navbar = new Navbar();
+        navbar.getContainer().add(new NavbarBrand("GWT Bootstrap 5 Modern", "#"));
+        navbar.getNav().setEndAligned(true);
+        NavbarLink components = new NavbarLink("Components", "#components");
+        components.setActive(true);
+        navbar.getNav().add(components);
+        navbar.getNav().add(new NavbarLink("Bootstrap 3 showcase", "../"));
+        root.add(navbar);
 
         Container container = new Container();
         container.addStyleName("py-5");
@@ -128,6 +143,69 @@ public class ShowcaseEntryPoint implements EntryPoint {
         parity.add(contentColumn);
         parity.add(wellColumn);
         container.add(parity);
+
+        Row interactive = new Row();
+        interactive.setStyleName("row g-4 mt-1");
+
+        Column modalColumn = new Column(12);
+        modalColumn.setMediumSpan(4);
+        Card modalCard = new Card();
+        modalCard.setTitle("Modal");
+        modalCard.addBody(new Paragraph("Modal show/hide uses Bootstrap 5's JavaScript API, not jQuery."));
+        Button showModal = new Button("Open modal", Variant.PRIMARY);
+        modalCard.addBody(showModal);
+        Modal modal = new Modal();
+        modal.setTitle("Bootstrap 5 modal");
+        modal.addToBody(new Paragraph("This modal is built from GWT widgets and shown through bootstrap.Modal."));
+        ModalFooter modalFooter = new ModalFooter();
+        Button closeModal = new Button("Close", Variant.SECONDARY);
+        closeModal.getElement().setAttribute("data-bs-dismiss", "modal");
+        modalFooter.add(closeModal);
+        modal.addFooter(modalFooter);
+        showModal.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                modal.show();
+            }
+        });
+        modalColumn.add(modalCard);
+        modalColumn.add(modal);
+
+        Column dropdownColumn = new Column(12);
+        dropdownColumn.setMediumSpan(4);
+        Card dropdownCard = new Card();
+        dropdownCard.setTitle("Dropdown");
+        DropDown dropDown = new DropDown("Actions");
+        dropDown.addItem(new DropDownItem("Primary action", "#"));
+        DropDownItem disabled = new DropDownItem("Disabled action", "#");
+        disabled.setDisabled(true);
+        dropDown.addItem(disabled);
+        dropDown.addMenuWidget(new Divider());
+        dropDown.addItem(new DropDownItem("Separated action", "#"));
+        dropdownCard.addBody(dropDown);
+        dropdownColumn.add(dropdownCard);
+
+        Column paginationColumn = new Column(12);
+        paginationColumn.setMediumSpan(4);
+        Card paginationCard = new Card();
+        paginationCard.setTitle("Pagination");
+        Pagination pagination = new Pagination();
+        PageItem previous = new PageItem("Previous", "#");
+        previous.setDisabled(true);
+        pagination.add(previous);
+        pagination.add(new PageItem("1", "#"));
+        PageItem current = new PageItem("2", "#");
+        current.setActive(true);
+        pagination.add(current);
+        pagination.add(new PageItem("3", "#"));
+        pagination.add(new PageItem("Next", "#"));
+        paginationCard.addBody(pagination);
+        paginationColumn.add(paginationCard);
+
+        interactive.add(modalColumn);
+        interactive.add(dropdownColumn);
+        interactive.add(paginationColumn);
+        container.add(interactive);
         root.add(container);
     }
 }

@@ -25,6 +25,16 @@ public class Modal extends Panel {
         return this;
     }
 
+    public Modal addHeader(final Widget child) {
+        content.getElement().insertBefore(child.getElement(), body.getElement());
+        return this;
+    }
+
+    public Modal addFooter(final Widget child) {
+        content.add(child);
+        return this;
+    }
+
     public void show() {
         TeaVmBootstrap.showModal(unwrap());
     }

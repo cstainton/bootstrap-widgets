@@ -16,6 +16,10 @@ class ElementPanel extends ComplexPanel implements HasText {
         add(child, getElement());
     }
 
+    public void insert(Widget child, int beforeIndex) {
+        insert(child, getElement(), beforeIndex, true);
+    }
+
     @Override
     public String getText() {
         return getElement().getInnerText();

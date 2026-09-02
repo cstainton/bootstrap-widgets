@@ -5,7 +5,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 ## Current Scope
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
-- Bootstrap 5 top-level widget classes currently present: `19` plus small enum/helper classes.
+- Bootstrap 5 top-level UI Java classes currently present: `37`, including small enum/helper classes.
 - Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
 
@@ -19,29 +19,29 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `AnchorButton`
 - [ ] `ButtonGroup`
 - [ ] `ButtonToolBar`
-- [ ] `DropDown`
-- [ ] `DropDownMenu`
-- [ ] `Divider`
-- [ ] `Navbar`
-- [ ] `NavbarBrand`
+- [x] `DropDown`
+- [x] `DropDownMenu`
+- [x] `Divider`
+- [x] `Navbar`
+- [x] `NavbarBrand`
 - [ ] `NavbarCollapse`
 - [ ] `NavbarCollapseButton`
-- [ ] `NavbarNav`
-- [ ] `NavbarLink`
-- [ ] `NavbarText`
+- [x] `NavbarNav`
+- [x] `NavbarLink`
+- [x] `NavbarText`
 - [ ] `Nav`
 - [ ] `NavTabs`
 - [ ] `NavPills`
-- [ ] `Modal`
-- [ ] `ModalHeader`
-- [ ] `ModalBody`
-- [ ] `ModalFooter`
+- [x] `Modal`
+- [x] `ModalHeader`
+- [x] `ModalBody`
+- [x] `ModalFooter`
 - [x] `Alert`
 - [x] `Badge`
 - [x] `Label`
 - [ ] `Progress`
 - [ ] `ProgressBar`
-- [ ] `Pagination`
+- [x] `Pagination`
 - [ ] `Pager`
 - [ ] `Form`
 - [ ] `FormGroup`
@@ -99,12 +99,12 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `Description`
 - [ ] `DescriptionData`
 - [ ] `DescriptionTitle`
-- [ ] `Divider`
+- [x] `Divider`
 - [ ] `DoubleBox`
 - [ ] `DoubleRadioGroup`
-- [ ] `DropDown`
+- [x] `DropDown`
 - [ ] `DropDownHeader`
-- [ ] `DropDownMenu`
+- [x] `DropDownMenu`
 - [ ] `FieldSet`
 - [ ] `Form`
 - [ ] `FormControlStatic`
@@ -141,28 +141,28 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - [ ] `LongBox`
 - [ ] `MediaBody`
 - [ ] `MediaList`
-- [ ] `Modal`
-- [ ] `ModalBody`
+- [x] `Modal`
+- [x] `ModalBody`
 - [ ] `ModalComponent`
-- [ ] `ModalFooter`
-- [ ] `ModalHeader`
+- [x] `ModalFooter`
+- [x] `ModalHeader`
 - [ ] `ModalSize`
 - [ ] `Nav`
 - [ ] `NavPills`
 - [ ] `NavTabs`
-- [ ] `Navbar`
-- [ ] `NavbarBrand`
+- [x] `Navbar`
+- [x] `NavbarBrand`
 - [ ] `NavbarButton`
 - [ ] `NavbarCollapse`
 - [ ] `NavbarCollapseButton`
 - [ ] `NavbarForm`
 - [ ] `NavbarHeader`
-- [ ] `NavbarLink`
-- [ ] `NavbarNav`
-- [ ] `NavbarText`
+- [x] `NavbarLink`
+- [x] `NavbarNav`
+- [x] `NavbarText`
 - [ ] `PageHeader`
 - [ ] `Pager`
-- [ ] `Pagination`
+- [x] `Pagination`
 - [x] `Panel`
 - [x] `PanelBody`
 - [ ] `PanelCollapse`
