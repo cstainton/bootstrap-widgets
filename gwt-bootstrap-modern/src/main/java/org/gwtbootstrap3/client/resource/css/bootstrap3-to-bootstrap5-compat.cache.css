@@ -76,6 +76,7 @@ pre { white-space: pre-wrap; word-break: break-word; }
 .btn-default { --bs-btn-color: #333; --bs-btn-bg: #fff; --bs-btn-border-color: #ccc; --bs-btn-hover-bg: #e6e6e6; --bs-btn-hover-border-color: #adadad; }
 .btn-group-justified { display: table; width: 100%; table-layout: fixed; border-collapse: separate; }
 .btn-group-justified > .btn, .btn-group-justified > .btn-group { display: table-cell; float: none; width: 1%; }
+.dropdown-toggle::after { display: none !important; }
 .caret { display: inline-block; width: 0; height: 0; margin-left: 2px; vertical-align: middle; border-top: 4px dashed; border-right: 4px solid transparent; border-left: 4px solid transparent; }
 .dropup .caret { content: ""; border-top: 0; border-bottom: 4px dashed; }
 .dropdown-menu-right { right: 0; left: auto; }
