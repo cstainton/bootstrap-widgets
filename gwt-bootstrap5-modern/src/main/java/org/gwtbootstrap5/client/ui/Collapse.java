@@ -23,11 +23,60 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import org.gwtbootstrap5.client.shared.event.HiddenEvent;
+import org.gwtbootstrap5.client.shared.event.HiddenHandler;
+import org.gwtbootstrap5.client.shared.event.HideEvent;
+import org.gwtbootstrap5.client.shared.event.HideHandler;
+import org.gwtbootstrap5.client.shared.event.ShowEvent;
+import org.gwtbootstrap5.client.shared.event.ShowHandler;
+import org.gwtbootstrap5.client.shared.event.ShownEvent;
+import org.gwtbootstrap5.client.shared.event.ShownHandler;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventBridge;
+import org.gwtbootstrap5.client.ui.base.BootstrapEventHandler;
+
 public class Collapse extends ElementPanel {
 
     public Collapse() {
         super("div");
         addStyleName("collapse");
+    }
+
+    @Override
+    protected void onLoad() {
+        super.onLoad();
+        BootstrapEventBridge.bind(getElement(), "show.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new ShowEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "shown.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new ShownEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "hide.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new HideEvent(event));
+            }
+        });
+        BootstrapEventBridge.bind(getElement(), "hidden.bs.collapse", new BootstrapEventHandler() {
+            @Override
+            public void onEvent(NativeEvent event) {
+                fireEvent(new HiddenEvent(event));
+            }
+        });
+    }
+
+    @Override
+    protected void onUnload() {
+        BootstrapEventBridge.unbindAll(getElement());
+        dispose(getElement());
+        super.onUnload();
     }
 
     public void setShown(boolean shown) {
@@ -48,6 +97,22 @@ public class Collapse extends ElementPanel {
 
     public boolean isCollapsing() {
         return getStyleName().contains("collapsing");
+    }
+
+    public HandlerRegistration addShowHandler(ShowHandler handler) {
+        return addHandler(handler, ShowEvent.getType());
+    }
+
+    public HandlerRegistration addShownHandler(ShownHandler handler) {
+        return addHandler(handler, ShownEvent.getType());
+    }
+
+    public HandlerRegistration addHideHandler(HideHandler handler) {
+        return addHandler(handler, HideEvent.getType());
+    }
+
+    public HandlerRegistration addHiddenHandler(HiddenHandler handler) {
+        return addHandler(handler, HiddenEvent.getType());
     }
 
     public void show() {
@@ -77,6 +142,15 @@ public class Collapse extends ElementPanel {
     private static native void toggle(com.google.gwt.dom.client.Element element) /*-{
         if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
             $wnd.bootstrap.Collapse.getOrCreateInstance(element, {toggle: false}).toggle();
+        }
+    }-*/;
+
+    private static native void dispose(com.google.gwt.dom.client.Element element) /*-{
+        if ($wnd.bootstrap && $wnd.bootstrap.Collapse) {
+            var instance = $wnd.bootstrap.Collapse.getInstance(element);
+            if (instance) {
+                instance.dispose();
+            }
         }
     }-*/;
 }

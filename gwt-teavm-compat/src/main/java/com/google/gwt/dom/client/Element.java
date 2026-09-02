@@ -267,4 +267,54 @@ public class Element {
     public String getAccessKey() {
         return getAttribute("accesskey");
     }
+
+    /** Inserts {@code child} directly after {@code after}, or first when it is null. */
+    public void insertAfter(final Element child, final Element after) {
+        if (after == null) {
+            insertFirst(child);
+            return;
+        }
+        final org.teavm.jso.dom.html.HTMLElement next = nextElementSibling(after.unwrap());
+        if (next == null) {
+            appendChild(child);
+        } else {
+            element.insertBefore((org.teavm.jso.dom.xml.Node) child.unwrap(), next);
+        }
+    }
+
+    public int getAbsoluteLeft() {
+        return boundingLeft(element);
+    }
+
+    public int getAbsoluteTop() {
+        return boundingTop(element);
+    }
+
+    public int getOffsetWidth() {
+        return offsetWidth(element);
+    }
+
+    public int getOffsetHeight() {
+        return offsetHeight(element);
+    }
+
+    @JSBody(params = {"el"}, script = "return el.nextElementSibling;")
+    private static native HTMLElement nextElementSibling(HTMLElement el);
+
+    @JSBody(params = {"el"}, script = "return Math.round(el.getBoundingClientRect().left + window.pageXOffset);")
+    private static native int boundingLeft(HTMLElement el);
+
+    @JSBody(params = {"el"}, script = "return Math.round(el.getBoundingClientRect().top + window.pageYOffset);")
+    private static native int boundingTop(HTMLElement el);
+
+    @JSBody(params = {"el"}, script = "return el.offsetWidth | 0;")
+    private static native int offsetWidth(HTMLElement el);
+
+    @JSBody(params = {"el"}, script = "return el.offsetHeight | 0;")
+    private static native int offsetHeight(HTMLElement el);
+
+    public Element getNextSiblingElement() {
+        final HTMLElement next = nextElementSibling(element);
+        return next == null ? null : new Element(next);
+    }
 }

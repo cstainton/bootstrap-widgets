@@ -187,4 +187,33 @@ public final class Document {
                     + " altKey: altKey, shiftKey: shiftKey, metaKey: metaKey});")
     private static native org.teavm.jso.dom.events.Event newMouseEvent(String type, int clientX,
             int clientY, boolean ctrlKey, boolean altKey, boolean shiftKey, boolean metaKey);
+
+    public Element createLabel() {
+        return createElement("label");
+    }
+
+    public Element createDiv() {
+        return createDivElement();
+    }
+
+    public Element createSpan() {
+        return createSpanElement();
+    }
+
+    /** A synthetic {@code change} event, for programmatically driving a control. */
+    public NativeEvent createChangeEvent() {
+        return new NativeEvent(newEvent("change"));
+    }
+
+    public NativeEvent createBlurEvent() {
+        return new NativeEvent(newEvent("blur"));
+    }
+
+    public NativeEvent createFocusEvent() {
+        return new NativeEvent(newEvent("focus"));
+    }
+
+    @org.teavm.jso.JSBody(params = {"type"},
+            script = "return new Event(type, {bubbles: true, cancelable: true});")
+    private static native org.teavm.jso.dom.events.Event newEvent(String type);
 }

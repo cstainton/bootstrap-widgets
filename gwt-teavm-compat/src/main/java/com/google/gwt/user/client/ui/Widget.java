@@ -87,8 +87,28 @@ public class Widget extends UIObject implements IsWidget, HasHandlers, HasClickH
         return attached;
     }
 
+    /** True once this widget has been attached, whether or not it still is. */
+    protected boolean isOrWasAttached() {
+        return attached || everAttached;
+    }
+
+    private boolean everAttached;
+
+    /**
+     * Receives a browser event routed to this widget. Handlers here bind real DOM
+     * listeners on registration, so nothing routes through a central dispatcher; the
+     * hook exists so widgets that override it keep compiling.
+     */
+    public void onBrowserEvent(final com.google.gwt.user.client.Event event) {
+    }
+
+    protected void onEnsureDebugId(final String baseId) {
+        getElement().setId(baseId);
+    }
+
     protected void onAttach() {
         attached = true;
+        everAttached = true;
         onLoad();
         com.google.gwt.event.logical.shared.AttachEvent.fire(this, true);
     }

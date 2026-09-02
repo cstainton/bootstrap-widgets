@@ -69,4 +69,59 @@ public class FocusWidget extends Widget implements HasEnabled, Focusable {
             getElement().blur();
         }
     }
+
+    public com.google.gwt.event.shared.HandlerRegistration addBlurHandler(
+            final com.google.gwt.event.dom.client.BlurHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.BlurEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addFocusHandler(
+            final com.google.gwt.event.dom.client.FocusHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.FocusEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addKeyDownHandler(
+            final com.google.gwt.event.dom.client.KeyDownHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.KeyDownEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addKeyUpHandler(
+            final com.google.gwt.event.dom.client.KeyUpHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.KeyUpEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addKeyPressHandler(
+            final com.google.gwt.event.dom.client.KeyPressHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.KeyPressEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseDownHandler(
+            final com.google.gwt.event.dom.client.MouseDownHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseDownEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseUpHandler(
+            final com.google.gwt.event.dom.client.MouseUpHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseUpEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseOverHandler(
+            final com.google.gwt.event.dom.client.MouseOverHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseOverEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseOutHandler(
+            final com.google.gwt.event.dom.client.MouseOutHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseOutEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseMoveHandler(
+            final com.google.gwt.event.dom.client.MouseMoveHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseMoveEvent.getType());
+    }
+
+    public com.google.gwt.event.shared.HandlerRegistration addMouseWheelHandler(
+            final com.google.gwt.event.dom.client.MouseWheelHandler handler) {
+        return addDomHandler(handler, com.google.gwt.event.dom.client.MouseWheelEvent.getType());
+    }
 }

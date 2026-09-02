@@ -189,4 +189,28 @@ public final class Style {
     public String getLeft() {
         return getProperty("left");
     }
+
+    public String getZIndex() {
+        return getProperty("z-index");
+    }
+
+    public void setWhiteSpace(final WhiteSpace whiteSpace) {
+        setProperty("white-space", whiteSpace == null ? "" : whiteSpace.getCssName());
+    }
+
+    /** CSS {@code white-space} keywords. */
+    public enum WhiteSpace implements HasCssName {
+        NORMAL("normal"), NOWRAP("nowrap"), PRE("pre"), PRE_LINE("pre-line"), PRE_WRAP("pre-wrap");
+
+        private final String cssName;
+
+        WhiteSpace(final String cssName) {
+            this.cssName = cssName;
+        }
+
+        @Override
+        public String getCssName() {
+            return cssName;
+        }
+    }
 }

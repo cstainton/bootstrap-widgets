@@ -24,13 +24,110 @@
  */
 package com.google.gwt.user.client;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 
+/** Element creation and low-level DOM helpers. */
 public final class DOM {
+
     private DOM() {
     }
 
     public static void appendChild(final Element parent, final Element child) {
         parent.appendChild(child);
+    }
+
+    public static void insertChild(final Element parent, final Element child, final int index) {
+        parent.insertBefore(child, childAt(parent, index));
+    }
+
+    public static void removeChild(final Element parent, final Element child) {
+        parent.removeChild(child);
+    }
+
+    public static Element createLabel() {
+        return Document.get().createElement("label");
+    }
+
+    public static Element createDiv() {
+        return Document.get().createDivElement();
+    }
+
+    public static Element createSpan() {
+        return Document.get().createSpanElement();
+    }
+
+    public static Element createAnchor() {
+        return Document.get().createAnchorElement();
+    }
+
+    public static Element createInputCheck() {
+        return Document.get().createCheckInputElement();
+    }
+
+    public static Element createInputRadio(final String name) {
+        return Document.get().createRadioInputElement(name);
+    }
+
+    public static Element createButton() {
+        return Document.get().createPushButtonElement();
+    }
+
+    public static Element createTable() {
+        return Document.get().createTableElement();
+    }
+
+    public static Element getElementById(final String id) {
+        return Document.get().getElementById(id);
+    }
+
+    public static String createUniqueId() {
+        return Document.get().createUniqueId();
+    }
+
+    /**
+     * The event mask for a native event. GWT uses these bits to route events through a
+     * central dispatcher; handlers here bind DOM listeners directly, so this reports the
+     * event only by name and returns {@code UNDEFINED} for anything unmapped.
+     */
+    public static int eventGetType(final Event event) {
+        if (event == null) {
+            return Event.UNDEFINED;
+        }
+        switch (event.getType()) {
+            case "click": return Event.ONCLICK;
+            case "dblclick": return Event.ONDBLCLICK;
+            case "change": return Event.ONCHANGE;
+            case "focus": return Event.ONFOCUS;
+            case "blur": return Event.ONBLUR;
+            case "keydown": return Event.ONKEYDOWN;
+            case "keypress": return Event.ONKEYPRESS;
+            case "keyup": return Event.ONKEYUP;
+            case "mousedown": return Event.ONMOUSEDOWN;
+            case "mouseup": return Event.ONMOUSEUP;
+            case "mousemove": return Event.ONMOUSEMOVE;
+            case "mouseover": return Event.ONMOUSEOVER;
+            case "mouseout": return Event.ONMOUSEOUT;
+            default: return Event.UNDEFINED;
+        }
+    }
+
+    /**
+     * No-op. GWT registers an element with its central event dispatcher here; this
+     * layer binds listeners when a handler is added instead.
+     */
+    public static void setEventListener(final Element element, final Object listener) {
+    }
+
+    public static void sinkEvents(final Element element, final int eventBits) {
+    }
+
+    private static Element childAt(final Element parent, final int index) {
+        Element child = parent.getFirstChildElement();
+        for (int i = 0; i < index && child != null; i++) {
+            child = child.getNextSiblingElement();
+        }
+        return child;
     }
 }
