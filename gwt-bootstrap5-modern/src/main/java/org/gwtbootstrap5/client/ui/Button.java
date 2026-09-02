@@ -176,9 +176,13 @@ public class Button extends com.google.gwt.user.client.ui.Button implements HasT
     public void setDataToggle(String toggle) {
         if (toggle == null || toggle.isEmpty()) {
             getElement().removeAttribute(Attributes.DATA_TOGGLE);
+            getElement().removeAttribute("aria-pressed");
             removeStyleName("dropdown-toggle");
         } else {
             getElement().setAttribute(Attributes.DATA_TOGGLE, toggle);
+            if ("button".equals(toggle)) {
+                getElement().setAttribute("aria-pressed", Boolean.toString(isActive()));
+            }
             if ("dropdown".equals(toggle)) {
                 addStyleName("dropdown-toggle");
             }

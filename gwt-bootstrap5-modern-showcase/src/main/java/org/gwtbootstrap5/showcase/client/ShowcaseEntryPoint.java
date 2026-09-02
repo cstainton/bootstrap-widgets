@@ -123,6 +123,7 @@ import org.gwtbootstrap5.client.ui.ThumbnailPanel;
 import org.gwtbootstrap5.client.ui.Tooltip;
 import org.gwtbootstrap5.client.ui.TooltipHelpBlock;
 import org.gwtbootstrap5.client.ui.ValueListBox;
+import org.gwtbootstrap5.client.ui.Variant;
 import org.gwtbootstrap5.client.ui.constants.AlertType;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
 import org.gwtbootstrap5.client.ui.constants.ColumnOffset;
@@ -136,6 +137,7 @@ import org.gwtbootstrap5.client.ui.constants.PaginationSize;
 import org.gwtbootstrap5.client.ui.constants.PanelType;
 import org.gwtbootstrap5.client.ui.constants.ProgressBarType;
 import org.gwtbootstrap5.client.ui.constants.ProgressType;
+import org.gwtbootstrap5.client.ui.constants.Toggle;
 import org.gwtbootstrap5.client.ui.VerticalButtonGroup;
 import org.gwtbootstrap5.client.ui.Well;
 
@@ -464,13 +466,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Button enabled = new Button("Enabled", ButtonType.PRIMARY);
         Button disabled = new Button("Disabled", ButtonType.PRIMARY);
         disabled.setEnabled(false);
-        Button toggle = new Button("Toggle button", ButtonType.DEFAULT);
-        toggle.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                toggle.toggle();
-            }
-        });
+        Button toggle = new Button("Toggle button", Variant.PRIMARY);
+        toggle.setOutline(true);
+        toggle.setDataToggle(Toggle.BUTTON);
         Button loading = new Button("Click me", ButtonType.PRIMARY);
         loading.setLoadingText("Loading...");
         loading.addClickHandler(new ClickHandler() {
@@ -487,7 +485,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         });
         Button block = new Button("Block level button", ButtonType.PRIMARY);
         block.setBlock(true);
-        return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.state().loading();\nbutton.state().reset();\nbutton.toggle();\nbutton.setBlock(true);" );
+        return panel("States", inline(enabled, disabled, toggle, loading, block), "button.setDataToggle(Toggle.BUTTON);\nbutton.setActive(true);\nbutton.setLoadingText(\"Loading...\");\nbutton.state().loading();\nbutton.state().reset();\nbutton.toggle();\nbutton.setBlock(true);" );
     }
 
     private Widget buttonCompositionPanel() {
