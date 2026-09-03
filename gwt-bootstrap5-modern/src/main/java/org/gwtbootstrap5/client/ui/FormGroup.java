@@ -101,9 +101,10 @@ public class FormGroup extends ElementPanel implements HasSize<FormGroupSize>, H
     private ValidationState validationState = ValidationState.NONE;
 
     private Element formControlElement(Widget child) {
-        if (child instanceof SuggestBox) {
-            return ((SuggestBox) child).getTextBox().getElement();
-        }
+        // No widget needs special-casing here. A SuggestBox is a Composite built
+        // with initWidget(box), so its own element already is the <input>; the
+        // tag check below picks it up like any other control. Reaching inside it
+        // was what made this cast to a type the Bootstrap TextBox never extended.
         Element element = child.getElement();
         String tagName = element.getTagName();
         if ("input".equalsIgnoreCase(tagName)

@@ -32,6 +32,7 @@ import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
 import org.gwtbootstrap5.client.ui.base.HasSize;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
 import org.gwtbootstrap5.client.ui.base.mixin.BlankValidatorMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.EnabledMixin;
 import org.gwtbootstrap5.client.ui.base.mixin.ErrorHandlerMixin;
 import org.gwtbootstrap5.client.ui.base.mixin.IdMixin;
 import org.gwtbootstrap5.client.ui.constants.DeviceSize;
@@ -47,8 +48,6 @@ import org.gwtbootstrap5.client.ui.form.validator.Validator;
 
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.HasEditorErrors;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SuggestOracle;
 import com.google.gwt.user.client.ui.ValueBoxBase;
@@ -59,6 +58,15 @@ import com.google.gwt.user.client.ui.ValueBoxBase;
  * <p>The text box carries {@code form-control} and the suggestion popup is
  * rendered as a Bootstrap 5 {@code dropdown-menu} of {@code dropdown-item}
  * entries, rather than the Bootstrap 3 markup GwtBootstrap3 produced.</p>
+ *
+ * <p>Every accessor here works on the widget itself rather than on the box it
+ * wraps. GWT's SuggestBox is a Composite built with {@code initWidget(box)}, so
+ * its element <em>is</em> the {@code <input>}; styling or configuring the
+ * composite configures the input. That is how GwtBootstrap3 does it, and it
+ * sidesteps {@code getTextBox()}, which casts to
+ * {@code com.google.gwt.user.client.ui.TextBoxBase} -- a type this library's
+ * {@link TextBox} does not extend, since it descends from the Bootstrap
+ * {@link org.gwtbootstrap5.client.ui.base.ValueBoxBase} instead.</p>
  *
  * <p>Validation follows Bootstrap 5 as well: an invalid box gets
  * {@code is-invalid} and the message is shown in a sibling
@@ -105,6 +113,8 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
 
     private final IdMixin<SuggestBox> idMixin = new IdMixin<SuggestBox>(this);
 
+    private final EnabledMixin<SuggestBox> enabledMixin = new EnabledMixin<SuggestBox>(this);
+
     private final BlankValidatorMixin<SuggestBox, String> validatorMixin =
             new BlankValidatorMixin<SuggestBox, String>(this, errorHandlerMixin.getErrorHandler());
 
@@ -112,14 +122,8 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
         this(new com.google.gwt.user.client.ui.MultiWordSuggestOracle());
     }
 
-    /**
-     * GWT's SuggestBox reaches for its box through getTextBox(), which casts to
-     * com.google.gwt.user.client.ui.TextBoxBase. This library's TextBox descends
-     * from the Bootstrap ValueBoxBase instead and would fail that cast, so the
-     * default box is GWT's own, styled here with form-control.
-     */
     public SuggestBox(final SuggestOracle oracle) {
-        this(oracle, new com.google.gwt.user.client.ui.TextBox());
+        this(oracle, new TextBox());
     }
 
     public SuggestBox(final SuggestOracle oracle, final ValueBoxBase<String> box) {
@@ -129,22 +133,7 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
     public SuggestBox(final SuggestOracle oracle, final ValueBoxBase<String> box,
             final SuggestionDisplay suggestDisplay) {
         super(oracle, box, suggestDisplay);
-        // getTextBox() casts to com.google.gwt.user.client.ui.TextBoxBase, which
-        // this library's TextBox does not extend -- it descends from the
-        // Bootstrap ValueBoxBase instead. getValueBox() is the uncast accessor.
-        getValueBox().addStyleName(Styles.FORM_CONTROL);
-        addBlurHandler();
-    }
-
-    private void addBlurHandler() {
-        getValueBox().addBlurHandler(new BlurHandler() {
-            @Override
-            public void onBlur(final BlurEvent event) {
-                if (validatorMixin.getValidateOnBlur()) {
-                    validate(true);
-                }
-            }
-        });
+        addStyleName(Styles.FORM_CONTROL);
     }
 
     // ---- identity, sizing, placeholder ------------------------------------
@@ -161,32 +150,32 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
 
     @Override
     public void setPlaceholder(final String placeholder) {
-        getValueBox().getElement().setAttribute("placeholder", placeholder == null ? "" : placeholder);
+        getElement().setAttribute("placeholder", placeholder == null ? "" : placeholder);
     }
 
     @Override
     public String getPlaceholder() {
-        return getValueBox().getElement().getAttribute("placeholder");
+        return getElement().getAttribute("placeholder");
     }
 
     @Override
     public void setAutoComplete(final boolean autoComplete) {
-        getValueBox().getElement().setAttribute("autocomplete", autoComplete ? "on" : "off");
+        getElement().setAttribute("autocomplete", autoComplete ? "on" : "off");
     }
 
     @Override
     public String getAutoComplete() {
-        return getValueBox().getElement().getAttribute("autocomplete");
+        return getElement().getAttribute("autocomplete");
     }
 
     @Override
     public void setSize(final InputSize size) {
-        StyleHelper.addUniqueEnumStyleName(getValueBox(), InputSize.class, size == null ? InputSize.DEFAULT : size);
+        StyleHelper.addUniqueEnumStyleName(this, InputSize.class, size == null ? InputSize.DEFAULT : size);
     }
 
     @Override
     public InputSize getSize() {
-        return InputSize.fromStyleName(getValueBox().getStyleName());
+        return InputSize.fromStyleName(getStyleName());
     }
 
     @Override
@@ -199,13 +188,12 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
         StyleHelper.setHiddenOn(this, deviceSize);
     }
 
-    /** Disables the underlying value box, as Bootstrap 5 expects on a form-control. */
     public void setEnabled(final boolean enabled) {
-        getValueBox().setEnabled(enabled);
+        enabledMixin.setEnabled(enabled);
     }
 
     public boolean isEnabled() {
-        return getValueBox().isEnabled();
+        return enabledMixin.isEnabled();
     }
 
     // ---- validation --------------------------------------------------------
