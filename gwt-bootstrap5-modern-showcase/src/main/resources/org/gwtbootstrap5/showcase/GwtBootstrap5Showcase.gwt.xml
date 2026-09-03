@@ -2,6 +2,6 @@
 <module rename-to="GwtBootstrap5Showcase">
     <inherits name="org.gwtbootstrap5.GwtBootstrap5NoTheme"/>
     <inherits name="org.gwtbootstrap5.themes.GwtBootstrap5Themes"/>
-    <inherits name="org.gwtbootstrap5.extras.bootbox.Bootbox"/>
+    <inherits name="org.gwtbootstrap5.extras.datepicker.DatePicker"/>
     <entry-point class="org.gwtbootstrap5.showcase.client.ShowcaseEntryPoint"/>
 </module>

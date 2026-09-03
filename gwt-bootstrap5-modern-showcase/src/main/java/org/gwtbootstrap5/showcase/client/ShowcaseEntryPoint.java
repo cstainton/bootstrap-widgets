@@ -32,9 +32,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
-import org.gwtbootstrap5.extras.bootbox.client.Bootbox;
-import org.gwtbootstrap5.extras.bootbox.client.callback.ConfirmCallback;
-import org.gwtbootstrap5.extras.bootbox.client.callback.PromptCallback;
+import org.gwtbootstrap5.client.ui.Dialogs;
+import org.gwtbootstrap5.extras.datepicker.client.ui.DatePicker;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import org.gwtbootstrap5.client.ui.Affix;
 import org.gwtbootstrap5.client.ui.ScrollSpy;
 import com.google.gwt.core.client.GWT;
@@ -212,8 +212,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
     private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
     private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] EXTRA_SECTIONS = {"cards", "bootbox", "unsupportedExtras"};
-    private static final String[] EXTRA_LABELS = {"Cards", "Bootbox", "Remaining Extras"};
+    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "unsupportedExtras"};
+    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Remaining Extras"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -248,7 +248,18 @@ public class ShowcaseEntryPoint implements EntryPoint {
         renderToken(content, modalRoot, History.getToken());
     }
 
+    /**
+     * Demo modals have to live outside the content container, so clearing the
+     * container does not remove them. Without this they accumulate: every visit
+     * to the JavaScript section left another set behind.
+     */
+    private final List<Modal> pageModals = new ArrayList<Modal>();
+
     private void renderToken(Container content, RootPanel root, String token) {
+        for (Modal modal : pageModals) {
+            modal.removeFromParent();
+        }
+        pageModals.clear();
         content.clear();
         content.add(createPage(root, normalizeToken(token)));
     }
@@ -576,27 +587,36 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(cardHeaderFooterPanel());
         column.add(cardVariantsPanel());
         column.add(panel("Bootstrap 5 native", sampleCard(), "Card is Bootstrap 5-native and replaces many Bootstrap 3 panel/card-extra use cases."));
-        addPageHeader(column, "bootbox", "Bootbox", "programmatic dialogs");
-        column.add(bootboxPanel());
+        addPageHeader(column, "dialogs", "Dialogs", "alert, confirm and prompt");
+        column.add(dialogsPanel());
+
+        addPageHeader(column, "datePicker", "DatePicker", "Tempus Dominus 6");
+        column.add(datePickerPanel());
 
         addPageHeader(column, "unsupportedExtras", "Remaining Extras", null);
         column.add(panel("Still to migrate", new HTML(
-                "<p>Bootbox is done and has its own page. The rest of the Bootstrap 3 extras module is not"
-                + " migrated yet, and each needs its own decision rather than a blanket port:</p>"
+                "<p>Two are done and have their own pages: the dialogs that Bootstrap 3 got from Bootbox, and the"
+                + " date picker. Neither brought jQuery with it. That turns out to be the pattern for the rest:</p>"
                 + "<div class='table-responsive'><table class='table table-sm'>"
                 + "<thead><tr><th scope='col'>Extra</th><th scope='col'>Standing</th></tr></thead><tbody>"
-                + "<tr><td>Card</td><td>The flip-card library. Bootstrap 5 cards are native and already covered by"
-                + " the <code>Card</code> widget on the Cards page &mdash; this is a different component.</td></tr>"
+                + "<tr><td>Bootbox</td><td>Replaced. <code>Dialogs</code> draws alert, confirm and prompt with the"
+                + " <code>Modal</code> widget, so no plugin and no jQuery.</td></tr>"
+                + "<tr><td>DatePicker, DateTimePicker</td><td>Replaced by Tempus Dominus 6, which targets"
+                + " Bootstrap 5 and needs no jQuery.</td></tr>"
+                + "<tr><td>Notify</td><td>Bootstrap 5 has toasts natively; no third-party library needed.</td></tr>"
+                + "<tr><td>Card</td><td>The flip-card library. Bootstrap 5 cards are native and covered by the"
+                + " <code>Card</code> widget on the Cards page &mdash; a different component.</td></tr>"
                 + "<tr><td>Respond, CacheManifest</td><td>Obsolete. An IE8 media-query shim and a dead HTML5 API.</td></tr>"
-                + "<tr><td>PositionedTabs</td><td>Bootstrap 5 utilities cover it; the Tabs page shows the same"
-                + " layouts through <code>TabPosition</code>.</td></tr>"
-                + "<tr><td>DatePicker, DateTimePicker</td><td>The Bootstrap 3 builds are tied to Bootstrap 3 markup."
-                + " Tempus Dominus 6 is the Bootstrap 5-native successor and needs no jQuery.</td></tr>"
-                + "<tr><td>Select, Slider, Summernote, TagsInput, ToggleSwitch, Typeahead, Notify, Gallery,"
-                + " FullCalendar, Animate</td><td>jQuery plugins. Portable the same way Bootbox was, each against a"
-                + " build that targets Bootstrap 5.</td></tr>"
+                + "<tr><td>PositionedTabs</td><td>Covered by <code>TabPosition</code> on the Tabs page.</td></tr>"
+                + "<tr><td>Select, TagsInput, Typeahead</td><td>All three are one problem. Tom Select or Choices.js"
+                + " covers them without jQuery.</td></tr>"
+                + "<tr><td>Slider</td><td>noUiSlider, or the native <code>&lt;input type=\"range\"&gt;</code>.</td></tr>"
+                + "<tr><td>FullCalendar</td><td>FullCalendar 6 dropped jQuery.</td></tr>"
+                + "<tr><td>Gallery, Animate</td><td>Utility CSS and a lightbox; neither needs a jQuery plugin.</td></tr>"
+                + "<tr><td>Summernote</td><td>The one genuine holdout: still jQuery. Quill or TipTap if that"
+                + " matters more than matching the old API.</td></tr>"
                 + "</tbody></table></div>"),
-                "// Bootbox showed the shape:\n//   a gwt.xml inheriting the jQuery extra,\n//   a ClientBundle holding the plugin,\n//   an EntryPoint injecting it,\n//   and a thin JSNI facade."));
+                "// The extras module carries no jQuery. Every extra so far has\n// either a jQuery-free replacement or a native Bootstrap 5\n// equivalent, so nothing pulls it back in."));
         return row;
     }
 
@@ -1214,6 +1234,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         footer.add(close);
         modal.addFooter(footer);
         root.add(modal);
+        pageModals.add(modal);
         Button show = new Button("Click to show modal", ButtonType.PRIMARY);
         show.setLarge(true);
         show.addClickHandler(new ClickHandler() {
@@ -2039,6 +2060,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
             footer.add(closeButton(modal));
             modal.addFooter(footer);
             root.add(modal);
+        pageModals.add(modal);
             Button open = new Button(labels[i], ButtonType.PRIMARY);
             open.addClickHandler(new ClickHandler() {
                 @Override
@@ -2079,6 +2101,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
         second.addFooter(secondFooter);
         root.add(first);
         root.add(second);
+        pageModals.add(first);
+        pageModals.add(second);
 
         Button open = new Button("Open the first modal", ButtonType.PRIMARY);
         open.addClickHandler(new ClickHandler() {
@@ -2099,6 +2123,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         footer.add(closeButton(modal));
         modal.addFooter(footer);
         root.add(modal);
+        pageModals.add(modal);
 
         final ListGroup log = new ListGroup();
         final HTML empty = new HTML("<p class='text-body-secondary mb-0'>No events yet.</p>");
@@ -2745,14 +2770,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 "NavPills nav = new NavPills();\nnav.getElement().setId(\"spy-nav\");\n\nScrollSpy.scrollSpy(scrollingBody, \"#spy-nav\");\n\n// Bootstrap 5 spells the attributes data-bs-spy and\n// data-bs-target, which is what the widget writes.");
     }
 
-    private Widget bootboxPanel() {
+    private Widget dialogsPanel() {
         final HTML echo = new HTML("<p class='text-body-secondary mb-0'>No dialog answered yet.</p>");
 
         Button alert = new Button("Alert", ButtonType.PRIMARY);
         alert.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Bootbox.alert("Bootbox 6 renders this with the Bootstrap 5 modal.");
+                Dialogs.alert("Drawn with the Modal widget. No jQuery, no third-party script.");
             }
         });
 
@@ -2760,10 +2785,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         confirm.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Bootbox.confirm("Are you sure?", new ConfirmCallback() {
+                Dialogs.confirm("Are you sure?", new Dialogs.ConfirmCallback() {
                     @Override
-                    public void callback(boolean result) {
-                        echo.setHTML("<p class='mb-0'>Confirm answered <strong>" + result + "</strong></p>");
+                    public void callback(boolean confirmed) {
+                        echo.setHTML("<p class='mb-0'>Confirm answered <strong>" + confirmed + "</strong></p>");
                     }
                 });
             }
@@ -2773,12 +2798,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         prompt.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Bootbox.prompt("What is your name?", new PromptCallback() {
+                Dialogs.prompt("What is your name?", new Dialogs.PromptCallback() {
                     @Override
-                    public void callback(String result) {
-                        echo.setHTML(result == null
+                    public void callback(String value) {
+                        echo.setHTML(value == null
                                 ? "<p class='mb-0'>Prompt cancelled.</p>"
-                                : "<p class='mb-0'>Prompt answered <strong>" + escapeHtml(result) + "</strong></p>");
+                                : "<p class='mb-0'>Prompt answered <strong>" + escapeHtml(value) + "</strong></p>");
                     }
                 });
             }
@@ -2788,11 +2813,44 @@ public class ShowcaseEntryPoint implements EntryPoint {
         body.add(inline(alert, confirm, prompt));
         body.add(echo);
         return panel("Alert, confirm and prompt", body,
-                "Bootbox.alert(\"...\");\nBootbox.confirm(\"Are you sure?\", result -> { ... });\nBootbox.prompt(\"What is your name?\", value -> { ... });\n\n// Bootbox 6 targets Bootstrap 5, but it is a jQuery plugin.\n// The core widget library ships no jQuery; inheriting\n// org.gwtbootstrap5.extras.bootbox.Bootbox pulls in the\n// jQuery extra along with it.");
+                "Dialogs.alert(\"...\");\nDialogs.confirm(\"Are you sure?\", confirmed -> { ... });\nDialogs.prompt(\"What is your name?\", value -> { ... });\n\n// Bootstrap 3 got these from Bootbox, a jQuery plugin.\n// Modal already draws them, so they are built on it and\n// the library needs no jQuery at all.");
     }
 
     private static String escapeHtml(String value) {
         return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    }
+
+    private Widget datePickerPanel() {
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>Nothing picked yet.</p>");
+
+        FormGroup dateGroup = new FormGroup();
+        dateGroup.add(new FormLabel("Date"));
+        final DatePicker date = new DatePicker("Pick a date");
+        date.setFormat("yyyy-MM-dd");
+        date.addValueChangeHandler(new ValueChangeHandler<java.util.Date>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<java.util.Date> event) {
+                echo.setHTML(event.getValue() == null
+                        ? "<p class='mb-0'>Cleared.</p>"
+                        : "<p class='mb-0'>Picked <strong>" + DateTimeFormat.getFormat("yyyy-MM-dd")
+                                .format(event.getValue()) + "</strong></p>");
+            }
+        });
+        dateGroup.add(date);
+
+        FormGroup dateTimeGroup = new FormGroup();
+        dateTimeGroup.add(new FormLabel("Date and time, side by side"));
+        DatePicker dateTime = new DatePicker("Pick a moment");
+        dateTime.setFormat("yyyy-MM-dd HH:mm");
+        dateTime.setSideBySide(true);
+        dateTimeGroup.add(dateTime);
+
+        PanelBody body = new PanelBody();
+        body.add(dateGroup);
+        body.add(dateTimeGroup);
+        body.add(echo);
+        return panel("Basic", body,
+                "DatePicker date = new DatePicker(\"Pick a date\");\ndate.setFormat(\"yyyy-MM-dd\");\ndate.addValueChangeHandler(event -> { ... });\n\nDatePicker dateTime = new DatePicker();\ndateTime.setFormat(\"yyyy-MM-dd HH:mm\");\ndateTime.setSideBySide(true);\n\n// Tempus Dominus 6 replaces the two Bootstrap 3 pickers.\n// It targets Bootstrap 5 and needs no jQuery.");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {

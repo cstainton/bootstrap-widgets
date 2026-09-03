@@ -21,40 +21,41 @@
  * limitations under the License.
  * #L%
  */
-package org.gwtbootstrap5.extras.jquery.client;
+package org.gwtbootstrap5.extras.datepicker.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.ScriptInjector;
-import com.google.gwt.core.client.Scheduler;
 
 /**
- * Injects jQuery, then bridges Bootstrap 5's components onto it.
+ * Injects Popper, then Tempus Dominus, in that order.
  *
- * <p>An application that loads jQuery from its host page or a CDN keeps the one
- * it has: injecting a second copy would replace the first and detach any plugins
- * already registered against it.</p>
- *
- * <p>The bridge is installed from a deferred command so that the core module's
- * own entry point, which injects Bootstrap's JavaScript, has run first.</p>
+ * <p>Tempus Dominus reads {@code window.Popper} when it opens its popup and only
+ * falls back to a dynamic import if the global is missing, which a compiled GWT
+ * application cannot resolve. Bootstrap 5's bundle keeps its own Popper private,
+ * so the global is supplied here. Both injections leave an existing copy
+ * alone.</p>
  */
-public class JQueryEntryPoint implements EntryPoint {
+public class DatePickerEntryPoint implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
-        if (!alreadyLoaded()) {
-            ScriptInjector.fromString(JQueryClientBundle.INSTANCE.jquery().getText())
+        if (!isPopperLoaded()) {
+            ScriptInjector.fromString(DatePickerClientBundle.INSTANCE.popper().getText())
                     .setWindow(ScriptInjector.TOP_WINDOW)
                     .inject();
         }
-        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-            @Override
-            public void execute() {
-                BootstrapJQueryBridge.install();
-            }
-        });
+        if (!isTempusDominusLoaded()) {
+            ScriptInjector.fromString(DatePickerClientBundle.INSTANCE.tempusDominus().getText())
+                    .setWindow(ScriptInjector.TOP_WINDOW)
+                    .inject();
+        }
     }
 
-    private static native boolean alreadyLoaded() /*-{
-        return typeof $wnd.jQuery === "function";
+    private static native boolean isPopperLoaded() /*-{
+        return typeof $wnd.Popper !== "undefined";
+    }-*/;
+
+    private static native boolean isTempusDominusLoaded() /*-{
+        return typeof $wnd.tempusDominus !== "undefined";
     }-*/;
 }

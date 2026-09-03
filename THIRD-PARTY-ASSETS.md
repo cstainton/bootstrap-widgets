@@ -43,7 +43,6 @@ totals about 1.9 MB. Bootstrap 3 has no dark mode of its own; these supply one.
 | Asset | Version | Source package | Licence | Notes |
 | --- | --- | --- | --- | --- |
 | Bootswatch | 3.4.1 | `bootswatch` | MIT | 16 complete Bootstrap 3.4.1 stylesheets. Four are dark: Cyborg, Darkly, Slate, Superhero. Licence text is kept at `gwt-bootstrap3-modern-themes/BOOTSWATCH-LICENSE`. |
-| Bootswatch | 5.3.8 | `bootswatch` | MIT | 26 complete Bootstrap 5.3.8 stylesheets. Seven are dark: Cyborg, Darkly, Quartz, Slate, Solar, Superhero, Vapor, classified from each stylesheet's own `--bs-body-bg` and `--bs-body-color`. Licence text is kept at `gwt-bootstrap5-modern-themes/BOOTSWATCH-LICENSE`. |
 
 Each theme replaces `bootstrap.css` rather than layering over it, so switching swaps one
 stylesheet link. Fourteen of the sixteen `@import` their webfonts from Google Fonts, as
@@ -53,11 +52,41 @@ the only dark theme of the set that is self-contained.
 
 ## Bootstrap 5 Native Assets
 
-| Asset | Version | Source package | Notes |
-| --- | --- | --- | --- |
-| Bootstrap | 5.3.8 | `bootstrap` | Core CSS and bundled JavaScript for `gwt-bootstrap5-modern`. |
-| Bootstrap Icons | 1.13.1 | `bootstrap-icons` | Icon font and CSS for the Bootstrap 5-native module. |
+The core Bootstrap 5 artifact is deliberately independent of Bootstrap 3 and jQuery.
 
-Bootstrap 5 assets must stay in the Bootstrap 5-native resource tree. They should not be loaded by `gwt-bootstrap3-modern` or used as an implicit compatibility shim.
-| Bootbox | 6.0.4 | `bootbox` | MIT | Programmatic dialogs. Version 6 targets Bootstrap 5 but is a jQuery plugin, so `gwt-bootstrap5-modern-extras` supplies jQuery and a bridge registering Bootstrap 5's components as jQuery plugins. Vendored at `gwt-bootstrap5-modern-extras/.../bootbox/client/resource/js`. |
-| jQuery | 3.7.1 | `jquery` | MIT | Not used by the Bootstrap 5 widget library, which has none. Declared by `org.gwtbootstrap5.extras.jquery.JQuery` so only an extra that needs it pulls it in. |
+| Asset | Version | Source package | Licence | Loaded by |
+| --- | --- | --- | --- | --- |
+| Bootstrap | 5.3.8 | `bootstrap` | MIT | `org.gwtbootstrap5.GwtBootstrap5` loads the CSS and bundled JavaScript. `org.gwtbootstrap5.GwtBootstrap5NoTheme` omits only the CSS so an application can supply or switch the stylesheet itself. |
+| Bootstrap Icons | 1.13.1 | `bootstrap-icons` | MIT | Both Bootstrap 5 GWT modules load the icon CSS and local font files. |
+
+These files live under `gwt-bootstrap5-modern/src/main/java/org/gwtbootstrap5/client/resource`.
+They must not be loaded by `gwt-bootstrap3-modern` or used as a hidden compatibility
+layer for the Bootstrap 3 widgets.
+
+### Bootstrap 5 Theme Assets
+
+Themes are kept in the separate `gwt-bootstrap5-modern-themes` artifact. An application
+inherits `org.gwtbootstrap5.GwtBootstrap5NoTheme` and
+`org.gwtbootstrap5.themes.GwtBootstrap5Themes`, then selects Bootstrap or a Bootswatch
+theme through the theme API. A selected theme replaces `bootstrap.css`; it is not added
+on top of it.
+
+| Asset | Version | Source package | Licence | Notes |
+| --- | --- | --- | --- | --- |
+| Bootswatch | 5.3.8 | `bootswatch` | MIT | 26 complete Bootstrap 5.3.8 stylesheets. Seven are dark: Cyborg, Darkly, Quartz, Slate, Solar, Superhero and Vapor. Licence text is kept at `gwt-bootstrap5-modern-themes/BOOTSWATCH-LICENSE`. |
+
+Twenty of the Bootswatch 5 stylesheets import webfonts from Google Fonts and therefore
+make a network request when used. The remaining six use no remote font import.
+
+### Optional Bootstrap 5 Extras
+
+The Bootstrap 5 extras artifact contains third-party components that are not required by
+the core widgets. Inheriting an extra's GWT module loads only that extra's resources.
+
+| Asset | Version | Source package | Licence | Used by |
+| --- | --- | --- | --- | --- |
+| Tempus Dominus | 6.10.4 | `@eonasdan/tempus-dominus` | MIT | `org.gwtbootstrap5.extras.datepicker.DatePicker`; replaces the Bootstrap 3 date and date-time picker plugins without requiring jQuery. |
+| Popper | 2.11.8 | `@popperjs/core` | MIT | The DatePicker module exposes the global Popper API required by Tempus Dominus. Bootstrap's bundled private copy cannot satisfy that dependency. |
+
+Programmatic alert, confirm and prompt dialogs use the core `Dialogs` and `Modal`
+widgets. They do not vendor Bootbox or add jQuery to the Bootstrap 5 track.
