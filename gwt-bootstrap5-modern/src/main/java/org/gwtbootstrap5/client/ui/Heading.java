@@ -23,7 +23,10 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class Heading extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasSubText;
+import org.gwtbootstrap5.client.ui.html.Small;
+
+public class Heading extends ElementPanel implements HasSubText {
 
     public Heading(int size) {
         super("h" + clamp(size));
@@ -46,4 +49,24 @@ public class Heading extends ElementPanel {
     private static int clamp(int size) {
         return Math.max(1, Math.min(6, size));
     }
+
+    private final Small subText = new Small();
+
+    /**
+     * Bootstrap 3 styled heading subtext with .small; Bootstrap 5 needs the
+     * muted colour spelled out, so the element also carries
+     * .text-body-secondary.
+     */
+    @Override
+    public void setSubText(final String subText) {
+        this.subText.setText(" " + (subText == null ? "" : subText));
+        this.subText.addStyleName("text-body-secondary");
+        add(this.subText);
+    }
+
+    @Override
+    public String getSubText() {
+        return subText.getText();
+    }
+
 }

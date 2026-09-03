@@ -25,12 +25,17 @@ import org.gwtbootstrap5.client.ui.base.helper.EnumHelper;
 import com.google.gwt.dom.client.Style;
 
 /**
- * @author Joshua Godi
+ * Icon mirroring.
+ *
+ * <p>Declared by this library in {@code css/gwt-bootstrap5-modern.cache.css};
+ * see {@link IconRotate} for why the classes are namespaced {@code gbm-icon-*}
+ * rather than {@code bi-*}.</p>
  */
 public enum IconFlip implements Style.HasCssName {
+
     NONE(""),
-    HORIZONTAL("fa-flip-horizontal"),
-    VERTICAL("fa-flip-vertical");
+    HORIZONTAL("gbm-icon-flip-horizontal"),
+    VERTICAL("gbm-icon-flip-vertical");
 
     private final String cssClass;
 

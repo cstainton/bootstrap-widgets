@@ -25,15 +25,24 @@ import org.gwtbootstrap5.client.ui.base.helper.EnumHelper;
 import com.google.gwt.dom.client.Style;
 
 /**
- * @author Joshua Godi
+ * Icon sizes, expressed with the stock Bootstrap 5 font-size utilities.
+ *
+ * <p>Bootstrap 3 sized icons with the Font Awesome step classes
+ * ({@code fa-lg}, {@code fa-2x} … {@code fa-5x}). Bootstrap Icons ships no size
+ * classes of its own — its documentation sizes icons with {@code font-size} —
+ * so these constants map onto Bootstrap's own {@code fs-*} scale and need no
+ * stylesheet from this library. The scale runs 1rem to 2.5rem; for anything
+ * larger, set {@code font-size} directly.</p>
  */
 public enum IconSize implements Size, Style.HasCssName {
+
     NONE(""),
-    LARGE("fa-lg"),
-    TIMES2("fa-2x"),
-    TIMES3("fa-3x"),
-    TIMES4("fa-4x"),
-    TIMES5("fa-5x");
+    SMALL("fs-6"),
+    MEDIUM("fs-5"),
+    LARGE("fs-4"),
+    X_LARGE("fs-3"),
+    XX_LARGE("fs-2"),
+    XXX_LARGE("fs-1");
 
     private final String cssClass;
 

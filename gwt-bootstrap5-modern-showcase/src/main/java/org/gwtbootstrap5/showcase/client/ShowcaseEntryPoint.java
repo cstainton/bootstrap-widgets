@@ -434,8 +434,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(iconBasicPanel());
         column.add(iconSizesPanel());
         column.add(iconEmphasisPanel());
+        column.add(iconAnimationPanel());
+        column.add(iconRotateFlipPanel());
         column.add(iconStackPanel());
-        column.add(iconAlignmentPanel());
+        column.add(iconFixedWidthPanel());
         column.add(iconGalleryPanel());
 
         addPageHeader(column, "inputGroups", "Input Groups", null);
@@ -788,7 +790,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         dropDown.setMenuMatchToggleWidth(true);
         dropDown.addMenuWidget(new DropDownHeader("Header 1"));
         DropDownItem first = new DropDownItem("Action 1", "#");
-        first.add(new Icon("camera"));
+        first.add(new Icon(IconType.CAMERA));
         dropDown.addItem(first);
         dropDown.addMenuWidget(new Divider());
         DropDownItem disabled = new DropDownItem("Action 2 (disabled)", "#");
@@ -894,11 +896,11 @@ public class ShowcaseEntryPoint implements EntryPoint {
         aligned.setNextText("Newer");
         aligned.setAlignToSides(true);
         Pager iconPager = new Pager();
-        iconPager.setPreviousIcon(IconType.ANGLE_LEFT);
-        iconPager.setNextIcon(IconType.ANGLE_RIGHT);
+        iconPager.setPreviousIcon(IconType.CHEVRON_LEFT);
+        iconPager.setNextIcon(IconType.CHEVRON_RIGHT);
         iconPager.setPreviousIconSize(IconSize.LARGE);
         iconPager.setNextIconSize(IconSize.LARGE);
-        return panel("Pager", stacked(pager, custom, aligned, iconPager), "new Pager();\npager.setPreviousText(\"Older\");\npager.setNextText(\"Newer\");\npager.setAlignToSides(true);\npager.setPreviousIcon(IconType.ANGLE_LEFT);\npager.setNextIcon(IconType.ANGLE_RIGHT);");
+        return panel("Pager", stacked(pager, custom, aligned, iconPager), "new Pager();\npager.setPreviousText(\"Older\");\npager.setNextText(\"Newer\");\npager.setAlignToSides(true);\npager.setPreviousIcon(IconType.CHEVRON_LEFT);\npager.setNextIcon(IconType.CHEVRON_RIGHT);");
     }
 
     private Pagination pagination(PaginationSize size) {
@@ -1197,62 +1199,105 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(header);
     }
 
-    private static final String[] ICON_GALLERY = {"archive", "arrow-down", "arrow-left", "arrow-right", "arrow-up",
-            "battery", "bell", "bookmark", "bug", "calendar", "camera", "check2-circle", "cloud", "code",
-            "compass", "credit-card", "database", "download", "envelope", "eye", "file-earmark", "filter", "flag",
-            "folder", "gear", "gift", "globe", "heart", "house", "image", "inbox", "info-circle", "key", "link-45deg",
-            "list", "lock", "map", "paperclip", "pencil", "person", "telephone", "play", "plus", "question-circle",
-            "search", "send", "share", "shield", "sliders", "star", "table", "tag", "terminal", "trash", "trophy",
-            "truck", "umbrella", "upload", "wifi", "wrench"};
+    private static final IconType[] ICON_GALLERY = {IconType.ARCHIVE, IconType.ARROW_DOWN, IconType.ARROW_LEFT,
+            IconType.ARROW_RIGHT, IconType.ARROW_UP, IconType.BATTERY, IconType.BELL, IconType.BOOKMARK,
+            IconType.BUG, IconType.CALENDAR, IconType.CAMERA, IconType.CHECK2_CIRCLE, IconType.CLOUD, IconType.CODE,
+            IconType.COMPASS, IconType.CREDIT_CARD, IconType.DATABASE, IconType.DOWNLOAD, IconType.ENVELOPE,
+            IconType.EYE, IconType.FILE_EARMARK, IconType.FUNNEL, IconType.FLAG, IconType.FOLDER, IconType.GEAR,
+            IconType.GIFT, IconType.GLOBE, IconType.HEART, IconType.HOUSE, IconType.IMAGE, IconType.INBOX,
+            IconType.INFO_CIRCLE, IconType.KEY, IconType.LINK_45DEG, IconType.LIST, IconType.LOCK, IconType.MAP,
+            IconType.PAPERCLIP, IconType.PENCIL, IconType.PERSON, IconType.PLAY, IconType.PLUS,
+            IconType.QUESTION_CIRCLE, IconType.SEARCH, IconType.SEND, IconType.SHARE, IconType.SHIELD,
+            IconType.SLIDERS, IconType.STAR, IconType.TABLE, IconType.TAG, IconType.TELEPHONE, IconType.TERMINAL,
+            IconType.TRASH, IconType.TROPHY, IconType.TRUCK, IconType.UMBRELLA, IconType.UPLOAD, IconType.WIFI,
+            IconType.WRENCH};
 
     private Widget iconBasicPanel() {
-        return panel("Basic Use", inline(new Icon("star"), new Icon("heart"), new Icon("envelope"), new Icon("gear"),
-                new Icon("cloud"), new Icon("camera"), new Icon("credit-card"), new Icon("check2-circle")),
-                "new Icon(\"star\"); // any name from the Bootstrap Icons set\nnew Icon(\"credit-card\");");
+        return panel("Basic Use", inline(new Icon(IconType.STAR), new Icon(IconType.HEART),
+                new Icon(IconType.ENVELOPE), new Icon(IconType.GEAR), new Icon(IconType.CLOUD),
+                new Icon(IconType.CAMERA), new Icon(IconType.CREDIT_CARD), new Icon("check2-circle")),
+                "new Icon(IconType.STAR);\nnew Icon(\"check2-circle\"); // or name it directly");
     }
 
     private Widget iconSizesPanel() {
-        String[] utilities = {"fs-6", "fs-5", "fs-4", "fs-3", "fs-2", "fs-1"};
-        Widget[] icons = new Widget[utilities.length];
-        for (int i = 0; i < utilities.length; i++) {
-            Icon icon = new Icon("star");
-            icon.addStyleName(utilities[i]);
+        IconSize[] sizes = {IconSize.SMALL, IconSize.MEDIUM, IconSize.LARGE, IconSize.X_LARGE, IconSize.XX_LARGE,
+                IconSize.XXX_LARGE};
+        Widget[] icons = new Widget[sizes.length];
+        for (int i = 0; i < sizes.length; i++) {
+            Icon icon = new Icon(IconType.STAR);
+            icon.setSize(sizes[i]);
             icons[i] = icon;
         }
         return panel("Sizes", inline(icons),
-                "// IconSize still emits the Font Awesome fa-lg / fa-2x names,\n// which Bootstrap 5 does not define. Size icons with the\n// font-size utilities instead:\nIcon icon = new Icon(\"star\");\nicon.addStyleName(\"fs-1\");");
+                "Icon icon = new Icon(IconType.STAR);\nicon.setSize(IconSize.XX_LARGE);\n\n// IconSize maps onto Bootstrap's own fs-* utilities, so it\n// needs no stylesheet from this library. Bootstrap 3 used the\n// Font Awesome steps fa-lg and fa-2x .. fa-5x.");
+    }
+
+    private Widget iconAnimationPanel() {
+        Icon spin = new Icon(IconType.GEAR);
+        spin.setSize(IconSize.X_LARGE);
+        spin.setSpin(true);
+        Icon pulse = new Icon(IconType.GEAR);
+        pulse.setSize(IconSize.X_LARGE);
+        pulse.setPulse(true);
+        Button saving = new Button("Saving", ButtonType.PRIMARY);
+        saving.setIcon(IconType.ARROW_REPEAT);
+        saving.setIconSpin(true);
+        return panel("Animation", inline(spin, pulse, saving),
+                "icon.setSpin(true);\nicon.setPulse(true);\n\nbutton.setIcon(IconType.ARROW_REPEAT);\nbutton.setIconSpin(true);\n\n// Bootstrap Icons ships glyphs only, so gwt-bootstrap5-modern.css\n// declares the animation. It honours prefers-reduced-motion.");
+    }
+
+    private Widget iconRotateFlipPanel() {
+        IconRotate[] rotations = {IconRotate.NONE, IconRotate.ROTATE_90, IconRotate.ROTATE_180, IconRotate.ROTATE_270};
+        IconFlip[] flips = {IconFlip.HORIZONTAL, IconFlip.VERTICAL};
+        Widget[] icons = new Widget[rotations.length + flips.length];
+        for (int i = 0; i < rotations.length; i++) {
+            Icon icon = new Icon(IconType.SIGNPOST_2);
+            icon.setSize(IconSize.X_LARGE);
+            icon.setRotate(rotations[i]);
+            icons[i] = icon;
+        }
+        for (int i = 0; i < flips.length; i++) {
+            Icon icon = new Icon(IconType.SIGNPOST_2);
+            icon.setSize(IconSize.X_LARGE);
+            icon.setFlip(flips[i]);
+            icons[rotations.length + i] = icon;
+        }
+        return panel("Rotated & Flipped", inline(icons),
+                "icon.setRotate(IconRotate.ROTATE_90);\nicon.setFlip(IconFlip.HORIZONTAL);");
     }
 
     private Widget iconStackPanel() {
         IconStack stack = new IconStack();
-        Icon background = new Icon("circle-fill");
-        background.addStyleName("fs-1 text-primary");
-        Icon foreground = new Icon("terminal");
-        foreground.addStyleName("position-absolute top-50 start-50 translate-middle text-white");
-        stack.add(background);
-        stack.add(foreground);
+        stack.add(new Icon(IconType.CIRCLE_FILL), true);
+        Icon glyph = new Icon(IconType.TERMINAL);
+        glyph.setInverse(true);
+        stack.add(glyph, false);
 
-        Icon bordered = new Icon("star");
-        bordered.addStyleName("fs-3 border rounded p-2");
-        return panel("Stacked & Bordered Icons", inline(stack, bordered),
-                "IconStack stack = new IconStack();\nstack.add(background);\nstack.add(foreground);\n\n// setBorder(true) emits fa-border; use the border utilities:\nbordered.addStyleName(\"border rounded p-2\");");
+        IconStack flagged = new IconStack();
+        flagged.add(new Icon(IconType.SQUARE), true);
+        flagged.add(new Icon(IconType.CHECK), false);
+
+        Icon bordered = new Icon(IconType.STAR);
+        bordered.setSize(IconSize.LARGE);
+        bordered.setBorder(true);
+        return panel("Stacked & Bordered Icons", inline(stack, flagged, bordered),
+                "IconStack stack = new IconStack();\nstack.add(new Icon(IconType.CIRCLE_FILL), true);  // background\nstack.add(new Icon(IconType.TERMINAL), false);    // foreground\n\nicon.setBorder(true);");
     }
 
-    private Widget iconAlignmentPanel() {
-        String[] names = {"envelope", "calendar", "trash", "gear"};
+    private Widget iconFixedWidthPanel() {
+        IconType[] types = {IconType.ENVELOPE, IconType.CALENDAR, IconType.TRASH, IconType.GEAR};
         String[] labels = {"Inbox", "Calendar", "Trash", "Settings"};
         ListGroup list = new ListGroup();
-        for (int i = 0; i < names.length; i++) {
-            Icon icon = new Icon(names[i]);
-            icon.addStyleName("d-inline-block text-center");
-            icon.getElement().getStyle().setProperty("width", "1.25em");
+        for (int i = 0; i < types.length; i++) {
+            Icon icon = new Icon(types[i]);
+            icon.setFixedWidth(true);
             ListGroupItem item = new ListGroupItem();
             item.add(icon);
             item.add(new InlineHTML(" " + labels[i]));
             list.add(item);
         }
-        return panel("Aligned in a List", list,
-                "// setFixedWidth(true) emits fa-fw, which Bootstrap 5 does not define.\nicon.addStyleName(\"d-inline-block text-center\");\nicon.getElement().getStyle().setProperty(\"width\", \"1.25em\");");
+        return panel("Fixed Width Icons", list,
+                "Icon icon = new Icon(IconType.ENVELOPE);\nicon.setFixedWidth(true); // aligns icons down a list");
     }
 
     private Widget iconEmphasisPanel() {
@@ -1260,62 +1305,66 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 Emphasis.WARNING, Emphasis.DANGER};
         Widget[] icons = new Widget[emphases.length];
         for (int i = 0; i < emphases.length; i++) {
-            Icon icon = new Icon("info-circle");
-            icon.setSize(IconSize.TIMES2);
+            Icon icon = new Icon(IconType.INFO_CIRCLE);
+            icon.setSize(IconSize.X_LARGE);
             icon.setEmphasis(emphases[i]);
             icons[i] = icon;
         }
         return panel("Contextual Colours", inline(icons),
-                "icon.setEmphasis(Emphasis.DANGER); // maps to the Bootstrap 5 text-* utilities");
+                "icon.setEmphasis(Emphasis.DANGER); // maps onto the Bootstrap 5 text-* utilities");
     }
 
     private Widget iconTypePanel() {
         return panel("Migrating icons from Bootstrap 3", new HTML(
-                "<p>Bootstrap&nbsp;3 code names icons through the <code>IconType</code> enum, whose 786 constants are"
-                + " Font&nbsp;Awesome&nbsp;4 class names such as <code>fa-star</code>. Bootstrap&nbsp;5 ships"
-                + " <a href='https://icons.getbootstrap.com/'>Bootstrap&nbsp;Icons</a> instead, whose markup is"
-                + " <code>&lt;i class=\"bi bi-star\"&gt;</code>.</p>"
-                + "<p>Only <strong>200 of the 786</strong> Font&nbsp;Awesome names have a same-named counterpart in"
-                + " Bootstrap&nbsp;Icons&nbsp;1.13.1, so the enum cannot be translated by find-and-replace. Until it"
-                + " is re-based on the Bootstrap&nbsp;Icons vocabulary, name icons as strings —"
-                + " <code>new Icon(\"star\")</code> renders, <code>new Icon(IconType.STAR)</code> does not, and neither"
-                + " does <code>button.setIcon(IconType.STAR)</code>.</p>"
-                + "<p>The modifier API has the same gap. These setters still emit Font&nbsp;Awesome class names that"
-                + " no Bootstrap&nbsp;5 stylesheet defines, so they currently have no visual effect:</p>"
+                "<p>Bootstrap&nbsp;3 shipped Font&nbsp;Awesome; Bootstrap&nbsp;5 ships"
+                + " <a href='https://icons.getbootstrap.com/'>Bootstrap&nbsp;Icons</a>. The two name their icons"
+                + " differently, so <code>IconType</code> has been re-based on the Bootstrap&nbsp;Icons vocabulary:"
+                + " 2078 constants, each emitting its own <code>bi-*</code> class.</p>"
+                + "<p>Around 200 Font&nbsp;Awesome&nbsp;4 names coincide with a Bootstrap&nbsp;Icons name and survive"
+                + " unchanged — <code>STAR</code>, <code>HEART</code>, <code>ENVELOPE</code>, <code>GEAR</code>,"
+                + " <code>CALENDAR</code>. The rest are gone, and code using one will not compile. That is on"
+                + " purpose: a missing constant is a compile error a developer can act on, where keeping it would"
+                + " render nothing or an approximation of the icon they asked for. Common renames:</p>"
                 + "<div class='table-responsive'><table class='table table-sm'>"
-                + "<thead><tr><th scope='col'>API</th><th scope='col'>Emits</th>"
-                + "<th scope='col'>Bootstrap 5 equivalent</th></tr></thead><tbody>"
-                + "<tr><td><code>setSize(IconSize.LARGE)</code></td><td><code>fa-lg</code></td><td><code>fs-5</code> … <code>fs-1</code></td></tr>"
-                + "<tr><td><code>setSize(IconSize.TIMES2)</code></td><td><code>fa-2x</code></td><td><code>fs-2</code></td></tr>"
-                + "<tr><td><code>setSpin(true)</code></td><td><code>fa-spin</code></td><td><code>spinner-border</code>, or a custom keyframe</td></tr>"
-                + "<tr><td><code>setPulse(true)</code></td><td><code>fa-pulse</code></td><td><code>spinner-grow</code>, or a custom keyframe</td></tr>"
-                + "<tr><td><code>setFixedWidth(true)</code></td><td><code>fa-fw</code></td><td>an explicit <code>width</code></td></tr>"
-                + "<tr><td><code>setBorder(true)</code></td><td><code>fa-border</code></td><td><code>border rounded p-2</code></td></tr>"
-                + "<tr><td><code>setInverse(true)</code></td><td><code>fa-inverse</code></td><td><code>text-white</code></td></tr>"
-                + "<tr><td><code>setRotate(ROTATE_90)</code></td><td><code>fa-rotate-90</code></td><td>a <code>transform: rotate()</code> rule</td></tr>"
-                + "<tr><td><code>setFlip(HORIZONTAL)</code></td><td><code>fa-flip-horizontal</code></td><td>a <code>transform: scaleX(-1)</code> rule</td></tr>"
-                + "<tr><td><code>setEmphasis(DANGER)</code></td><td><code>text-danger</code></td><td>works as-is</td></tr>"
-                + "</tbody></table></div>"),
-                "// Works today\nnew Icon(\"star\");\nicon.setEmphasis(Emphasis.DANGER);\n\n// Renders nothing today\nnew Icon(IconType.STAR);\nicon.setSize(IconSize.TIMES2);\nicon.setSpin(true);");
+                + "<thead><tr><th scope='col'>Bootstrap 3</th><th scope='col'>Bootstrap 5</th></tr></thead><tbody>"
+                + "<tr><td><code>IconType.HOME</code></td><td><code>IconType.HOUSE</code></td></tr>"
+                + "<tr><td><code>IconType.USER</code></td><td><code>IconType.PERSON</code></td></tr>"
+                + "<tr><td><code>IconType.COG</code>, <code>COGS</code></td><td><code>IconType.GEAR</code>, <code>GEAR_WIDE_CONNECTED</code></td></tr>"
+                + "<tr><td><code>IconType.TIMES</code>, <code>REMOVE</code></td><td><code>IconType.X</code></td></tr>"
+                + "<tr><td><code>IconType.ANGLE_LEFT</code></td><td><code>IconType.CHEVRON_LEFT</code></td></tr>"
+                + "<tr><td><code>IconType.REFRESH</code></td><td><code>IconType.ARROW_CLOCKWISE</code></td></tr>"
+                + "<tr><td><code>IconType.WARNING</code></td><td><code>IconType.EXCLAMATION_TRIANGLE</code></td></tr>"
+                + "<tr><td><code>IconType.PICTURE_O</code></td><td><code>IconType.IMAGE</code></td></tr>"
+                + "<tr><td><code>IconType.SHOPPING_CART</code></td><td><code>IconType.CART</code></td></tr>"
+                + "<tr><td><code>IconType.BARS</code>, <code>NAVICON</code></td><td><code>IconType.LIST</code></td></tr>"
+                + "</tbody></table></div>"
+                + "<p class='mb-0'>The modifier vocabulary moved with it. <code>IconSize</code> now names"
+                + " Bootstrap's own <code>fs-*</code> utilities and <code>Emphasis</code> its <code>text-*</code>"
+                + " utilities, so neither needs a stylesheet from this library. Spin, pulse, rotate, flip, fixed"
+                + " width, border and stacking have no Bootstrap&nbsp;5 equivalent, so"
+                + " <code>gwt-bootstrap5-modern.css</code> declares them under a <code>gbm-icon-*</code>"
+                + " namespace — deliberately not <code>bi-*</code>, since <code>bi-border</code> is a real"
+                + " Bootstrap icon.</p>"),
+                "// Bootstrap 3\nnew Icon(IconType.STAR);          // fa-star\nicon.setSize(IconSize.TIMES2);    // fa-2x\n\n// Bootstrap 5\nnew Icon(IconType.STAR);          // bi bi-star\nicon.setSize(IconSize.XX_LARGE);  // fs-2");
     }
 
     private Widget iconGalleryPanel() {
         Row grid = new Row();
         grid.setStyleName("row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 text-center");
-        for (String name : ICON_GALLERY) {
+        for (IconType type : ICON_GALLERY) {
             Column cell = new Column(2);
             cell.setStyleName("col");
             Div box = new Div();
             box.addStyleName("border rounded py-2 h-100");
-            Icon icon = new Icon(name);
+            Icon icon = new Icon(type);
             icon.setSize(IconSize.LARGE);
             box.add(icon);
-            box.add(new HTML("<small class='text-body-secondary d-block text-truncate'>" + name + "</small>"));
+            box.add(new HTML("<small class='text-body-secondary d-block text-truncate'>" + type.name() + "</small>"));
             cell.add(box);
             grid.add(cell);
         }
         return panel("Available Icons (" + ICON_GALLERY.length + " of 2078)", grid,
-                "for (String name : names) {\n    add(new Icon(name));\n}");
+                "for (IconType type : IconType.values()) {\n    add(new Icon(type));\n}");
     }
 
     private Widget navStackedPanel() {
@@ -1367,23 +1416,18 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
     private Widget navIconsPanel() {
         NavPills pills = new NavPills();
-        String[] names = {"house", "person", "envelope"};
+        IconType[] types = {IconType.HOUSE, IconType.PERSON, IconType.ENVELOPE};
         String[] labels = {"Home", "Profile", "Messages"};
-        for (int i = 0; i < names.length; i++) {
-            Anchor link = new Anchor("", "#navs");
-            link.addStyleName("nav-link");
+        for (int i = 0; i < types.length; i++) {
+            Anchor link = pills.addLink(labels[i], "#navs");
+            link.setIcon(types[i]);
+            link.setIconFixedWidth(true);
             if (i == 0) {
                 link.addStyleName("active");
             }
-            Icon icon = new Icon(names[i]);
-            icon.addStyleName("d-inline-block text-center");
-            icon.getElement().getStyle().setProperty("width", "1.25em");
-            link.add(icon);
-            link.add(new InlineHTML(" " + labels[i]));
-            pills.addItem(link);
         }
-        return panel("Navs With Icons", pills,
-                "Anchor link = new Anchor(\"\", \"#\");\nlink.addStyleName(\"nav-link\");\nlink.add(new Icon(\"house\"));\nlink.add(new InlineHTML(\" Home\"));");
+        return panel("Navs With Icons And Fixed Width", pills,
+                "Anchor link = pills.addLink(\"Home\", \"#\");\nlink.setIcon(IconType.HOUSE);\nlink.setIconFixedWidth(true);");
     }
 
     private Widget buttonDropdownBasicPanel() {

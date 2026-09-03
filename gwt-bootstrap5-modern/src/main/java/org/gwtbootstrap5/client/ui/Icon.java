@@ -40,7 +40,7 @@ import org.gwtbootstrap5.client.ui.constants.Styles;
 
 public class Icon extends ElementPanel implements HasType<IconType>, HasSize<IconSize>, HasEmphasis, HasClickHandlers {
 
-    private String iconName;
+    private String iconName = "";
 
     public Icon() {
         this("");
@@ -48,44 +48,69 @@ public class Icon extends ElementPanel implements HasType<IconType>, HasSize<Ico
 
     public Icon(String iconName) {
         super("i");
-        addStyleName("bi");
+        addStyleName(Styles.ICON);
         setIconName(iconName);
     }
 
     public Icon(IconType type) {
-        this();
+        super("i");
+        addStyleName(Styles.ICON);
         setType(type);
     }
 
+    /**
+     * Names the icon, with or without the {@code bi-} prefix. This and
+     * {@link #setType(IconType)} are the same setting; whichever is called last
+     * wins, and the previous icon class is removed.
+     */
     public void setIconName(String iconName) {
-        if (this.iconName != null && !this.iconName.isEmpty()) {
-            removeStyleName("bi-" + this.iconName);
+        String next = normalize(iconName);
+        if (this.iconName.equals(next)) {
+            return;
         }
-        this.iconName = normalize(iconName);
         if (!this.iconName.isEmpty()) {
-            addStyleName("bi-" + this.iconName);
+            removeStyleName(Styles.ICON_PREFIX + this.iconName);
         }
+        this.iconName = next;
+        if (!this.iconName.isEmpty()) {
+            addStyleName(Styles.ICON_PREFIX + this.iconName);
+        }
+    }
+
+    /** The icon name without the {@code bi-} prefix, or "" when none is set. */
+    public String getIconName() {
+        return iconName;
     }
 
     private String normalize(String iconName) {
         if (iconName == null) {
             return "";
         }
-        return iconName.startsWith("bi-") ? iconName.substring(3) : iconName;
+        String trimmed = iconName.trim();
+        return trimmed.startsWith(Styles.ICON_PREFIX) ? trimmed.substring(Styles.ICON_PREFIX.length()) : trimmed;
     }
 
     @Override
     public void setType(IconType type) {
-        if (type == null) {
-            StyleHelper.removeEnumStyleNames(this, IconType.class);
-            return;
-        }
-        StyleHelper.addUniqueEnumStyleName(this, IconType.class, type);
+        setIconName(type == null ? "" : type.getIconName());
     }
 
     @Override
     public IconType getType() {
-        return IconType.fromStyleName(getStyleName());
+        return iconName.isEmpty() ? null : IconType.fromStyleName(Styles.ICON_PREFIX + iconName);
+    }
+
+    /**
+     * Marks this icon as the larger background icon of an {@link IconStack}
+     * when true, or the smaller foreground icon when false.
+     */
+    public void setStackBase(boolean base) {
+        StyleHelper.toggleStyleName(this, base, Styles.ICON_STACK_BASE);
+        StyleHelper.toggleStyleName(this, !base, Styles.ICON_STACK_TOP);
+    }
+
+    public boolean isStackBase() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.ICON_STACK_BASE);
     }
 
     public void setBorder(boolean border) {
@@ -168,4 +193,14 @@ public class Icon extends ElementPanel implements HasType<IconType>, HasSize<Ico
     public HandlerRegistration addClickHandler(ClickHandler handler) {
         return addDomHandler(handler, ClickEvent.getType());
     }
+
+    /** The smaller foreground icon of an {@link IconStack}. */
+    public void setStackTop(boolean top) {
+        setStackBase(!top);
+    }
+
+    public boolean isStackTop() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.ICON_STACK_TOP);
+    }
+
 }

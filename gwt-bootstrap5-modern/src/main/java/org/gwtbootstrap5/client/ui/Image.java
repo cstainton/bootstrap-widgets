@@ -26,8 +26,13 @@ package org.gwtbootstrap5.client.ui;
 import org.gwtbootstrap5.client.ui.base.HasType;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
 import org.gwtbootstrap5.client.ui.constants.ImageType;
+import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
+import org.gwtbootstrap5.client.ui.base.HasPull;
+import org.gwtbootstrap5.client.ui.constants.DeviceSize;
+import org.gwtbootstrap5.client.ui.constants.Pull;
+import org.gwtbootstrap5.client.ui.constants.Styles;
 
-public class Image extends com.google.gwt.user.client.ui.Image implements HasType<ImageType> {
+public class Image extends com.google.gwt.user.client.ui.Image implements HasType<ImageType>, HasResponsiveness, HasPull {
 
     public Image() {
         addStyleName("img-fluid");
@@ -59,4 +64,34 @@ public class Image extends com.google.gwt.user.client.ui.Image implements HasTyp
     public ImageType getType() {
         return ImageType.fromStyleName(getStyleName());
     }
+
+    /** Bootstrap 3 used .img-responsive; Bootstrap 5 renames it .img-fluid. */
+    public void setResponsive(final boolean responsive) {
+        setStyleName(Styles.IMG_RESPONSIVE, responsive);
+    }
+
+    public boolean isResponsive() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.IMG_RESPONSIVE);
+    }
+
+    @Override
+    public void setPull(final Pull pull) {
+        StyleHelper.addUniqueEnumStyleName(this, Pull.class, pull);
+    }
+
+    @Override
+    public Pull getPull() {
+        return Pull.fromStyleName(getStyleName());
+    }
+
+    @Override
+    public void setVisibleOn(final DeviceSize deviceSize) {
+        StyleHelper.setVisibleOn(this, deviceSize);
+    }
+
+    @Override
+    public void setHiddenOn(final DeviceSize deviceSize) {
+        StyleHelper.setHiddenOn(this, deviceSize);
+    }
+
 }

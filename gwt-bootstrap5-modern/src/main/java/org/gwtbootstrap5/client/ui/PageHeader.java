@@ -23,10 +23,33 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class PageHeader extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasSubText;
+import org.gwtbootstrap5.client.ui.html.Small;
+
+public class PageHeader extends ElementPanel implements HasSubText {
 
     public PageHeader() {
         super("div");
         setStyleName("pb-2 mt-4 mb-4 border-bottom");
     }
+
+    private final Small subText = new Small();
+
+    /**
+     * Bootstrap 3 styled heading subtext with .small; Bootstrap 5 needs the
+     * muted colour spelled out, so the element also carries
+     * .text-body-secondary.
+     */
+    @Override
+    public void setSubText(final String subText) {
+        this.subText.setText(" " + (subText == null ? "" : subText));
+        this.subText.addStyleName("text-body-secondary");
+        add(this.subText);
+    }
+
+    @Override
+    public String getSubText() {
+        return subText.getText();
+    }
+
 }

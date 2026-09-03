@@ -23,10 +23,63 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class IconStack extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
+import org.gwtbootstrap5.client.ui.base.HasSize;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.DeviceSize;
+import org.gwtbootstrap5.client.ui.constants.IconSize;
+import org.gwtbootstrap5.client.ui.constants.Styles;
+
+import com.google.gwt.user.client.ui.Widget;
+
+/**
+ * Two icons drawn on top of one another.
+ *
+ * <p>Font Awesome provided {@code fa-stack} for this; Bootstrap Icons does not,
+ * so the {@code gbm-icon-stack} classes are declared by this library in
+ * {@code css/gwt-bootstrap5-modern.cache.css} using position utilities.</p>
+ */
+public class IconStack extends ElementPanel implements HasSize<IconSize>, HasResponsiveness {
 
     public IconStack() {
         super("span");
-        setStyleName("position-relative d-inline-block");
+        setStyleName(Styles.ICON_STACK);
+    }
+
+    /**
+     * Adds {@code icon} to the stack, as the larger background icon when
+     * {@code base} is true and as the smaller foreground icon otherwise.
+     */
+    public void add(final Icon icon, final boolean base) {
+        icon.setStackBase(base);
+        add(icon);
+    }
+
+    @Override
+    public void add(final Widget child) {
+        if (!(child instanceof Icon)) {
+            throw new IllegalArgumentException("An IconStack can only have children that are of type Icon.");
+        }
+        super.add(child);
+    }
+
+    @Override
+    public void setVisibleOn(final DeviceSize deviceSize) {
+        StyleHelper.setVisibleOn(this, deviceSize);
+    }
+
+    @Override
+    public void setHiddenOn(final DeviceSize deviceSize) {
+        StyleHelper.setHiddenOn(this, deviceSize);
+    }
+
+    @Override
+    public void setSize(final IconSize size) {
+        StyleHelper.addUniqueEnumStyleName(this, IconSize.class, size == null ? IconSize.NONE : size);
+    }
+
+    @Override
+    public IconSize getSize() {
+        return IconSize.fromStyleName(getStyleName());
     }
 }

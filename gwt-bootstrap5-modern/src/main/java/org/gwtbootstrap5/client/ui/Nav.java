@@ -24,8 +24,12 @@
 package org.gwtbootstrap5.client.ui;
 
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.base.HasJustified;
+import org.gwtbootstrap5.client.ui.base.HasStacked;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.Styles;
 
-public class Nav extends ElementPanel {
+public class Nav extends ElementPanel implements HasJustified, HasStacked {
 
     public Nav() {
         super("ul");
@@ -45,4 +49,42 @@ public class Nav extends ElementPanel {
         addItem(link);
         return link;
     }
+
+    @Override
+    public void setJustified(final boolean justified) {
+        setStyleName(Styles.NAV_JUSTIFIED, justified);
+    }
+
+    @Override
+    public boolean isJustified() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.NAV_JUSTIFIED);
+    }
+
+    /** Bootstrap 5 has no .nav-stacked; a stacked nav is a flex column. */
+    @Override
+    public void setStacked(final boolean stacked) {
+        setStyleName(Styles.NAV_STACKED, stacked);
+    }
+
+    @Override
+    public boolean isStacked() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.NAV_STACKED);
+    }
+
+    public void setInline(final boolean inline) {
+        setStyleName(Styles.LIST_INLINE, inline);
+    }
+
+    public boolean isInline() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.LIST_INLINE);
+    }
+
+    public void setUnstyled(final boolean unstyled) {
+        setStyleName(Styles.LIST_UNSTYLED, unstyled);
+    }
+
+    public boolean isUnstyled() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.LIST_UNSTYLED);
+    }
+
 }

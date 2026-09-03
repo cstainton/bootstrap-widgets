@@ -92,14 +92,16 @@ public final class Styles {
 
     public static final String ITEM = "item";
 
-    public static final String ICON_BORDER = "fa-border";
-    public static final String ICON_STACK = "fa-stack";
-    public static final String ICON_SPIN = "fa-spin";
-    public static final String ICON_PULSE = "fa-pulse";
-    public static final String ICON_FIXED_WIDTH = "fa-fw";
-    public static final String ICON_STACK_BASE = "fa-stack-2x";
-    public static final String ICON_STACK_TOP = "fa-stack-1x";
-    public static final String ICON_INVERSE = "fa-inverse";
+    public static final String ICON = "bi";
+    public static final String ICON_PREFIX = "bi-";
+    public static final String ICON_BORDER = "gbm-icon-border";
+    public static final String ICON_STACK = "gbm-icon-stack";
+    public static final String ICON_SPIN = "gbm-icon-spin";
+    public static final String ICON_PULSE = "gbm-icon-pulse";
+    public static final String ICON_FIXED_WIDTH = "gbm-icon-fw";
+    public static final String ICON_STACK_BASE = "gbm-icon-stack-base";
+    public static final String ICON_STACK_TOP = "gbm-icon-stack-top";
+    public static final String ICON_INVERSE = "gbm-icon-inverse";
 
     public static final String ICON_BAR = "icon-bar";
 
@@ -123,6 +125,8 @@ public final class Styles {
     public static final String LEFT = "left";
 
     public static final String LIST_INLINE = "list-inline";
+    public static final String LIST_INLINE_ITEM = "list-inline-item";
+    public static final String LIST_UNSTYLED = "list-unstyled";
     public static final String LIST_GROUP = "list-group";
     public static final String LIST_GROUP_ITEM = "list-group-item";
     public static final String LIST_GROUP_ITEM_HEADING = "list-group-item-heading";
@@ -145,7 +149,7 @@ public final class Styles {
     public static final String NAV = "nav";
     public static final String NAV_JUSTIFIED = "nav-justified";
     public static final String NAV_PILLS = "nav-pills";
-    public static final String NAV_STACKED = "nav-stacked";
+    public static final String NAV_STACKED = "flex-column";
     public static final String NAV_TABS = "nav-tabs";
 
     public static final String NAVBAR = "navbar";

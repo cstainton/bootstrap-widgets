@@ -25,13 +25,20 @@ import org.gwtbootstrap5.client.ui.base.helper.EnumHelper;
 import com.google.gwt.dom.client.Style;
 
 /**
- * @author Joshua Godi
+ * Icon rotation.
+ *
+ * <p>Neither Bootstrap 5 nor Bootstrap Icons defines rotation utilities, so
+ * these classes are declared by this library in
+ * {@code css/gwt-bootstrap5-modern.cache.css}. They are namespaced
+ * {@code gbm-icon-*} rather than {@code bi-*} so that they cannot collide with
+ * an icon name — {@code bi-border}, for one, is a real Bootstrap icon.</p>
  */
 public enum IconRotate implements Style.HasCssName {
+
     NONE(""),
-    ROTATE_90("fa-rotate-90"),
-    ROTATE_180("fa-rotate-180"),
-    ROTATE_270("fa-rotate-270");
+    ROTATE_90("gbm-icon-rotate-90"),
+    ROTATE_180("gbm-icon-rotate-180"),
+    ROTATE_270("gbm-icon-rotate-270");
 
     private final String cssClass;
 
