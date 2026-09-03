@@ -54,6 +54,7 @@ import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.LabelType;
 import org.gwtbootstrap3.client.ui.constants.ProgressBarType;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
+import org.gwtbootstrap3.client.ui.theme.StandardThemes;
 import org.gwtbootstrap3.client.ui.theme.Themes;
 import org.gwtbootstrap3.themes.client.BootswatchThemes;
 import org.gwtbootstrap3.client.ui.html.Text;
@@ -69,8 +70,9 @@ public final class Bootstrap3ShowcaseApp {
 
     public static void main(final String[] args) {
         // the host page serves the theme stylesheets from themes/
+        Themes.register(StandardThemes.all("bootstrap/"));
         Themes.register(BootswatchThemes.all("themes/"));
-        Themes.restore(BootswatchThemes.byName("flatly", "themes/"));
+        Themes.restore(StandardThemes.bootstrap("bootstrap/"));
 
         final Container container = new Container();
         container.add(page());

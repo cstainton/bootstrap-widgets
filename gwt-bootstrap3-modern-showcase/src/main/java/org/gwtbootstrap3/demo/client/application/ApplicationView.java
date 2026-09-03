@@ -37,11 +37,14 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     static {
         // the switcher owns the Bootstrap stylesheet: the module inherits NoTheme so
         // nothing else declares one, and these are the sheets it chooses between
+        // stock Bootstrap first, so there is always a way back to the familiar look
+        org.gwtbootstrap3.client.ui.theme.Themes.register(
+                org.gwtbootstrap3.client.ui.theme.StandardThemes.all());
         org.gwtbootstrap3.client.ui.theme.Themes.register(
                 org.gwtbootstrap3.themes.client.BootswatchThemes.all());
         org.gwtbootstrap3.client.ui.theme.Themes.restore(
-                org.gwtbootstrap3.themes.client.BootswatchThemes.byName(
-                        "flatly", com.google.gwt.core.client.GWT.getModuleBaseURL() + "css/"));
+                org.gwtbootstrap3.client.ui.theme.StandardThemes.bootstrap(
+                        com.google.gwt.core.client.GWT.getModuleBaseURL() + "css/"));
     }
 
 

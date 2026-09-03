@@ -53,6 +53,9 @@ public final class Themes {
     /** The id of the stylesheet link this class owns. */
     public static final String LINK_ID = "gwtbootstrap3-theme";
 
+    /** The id of the overlay link, used only by themes that have one. */
+    public static final String OVERLAY_LINK_ID = "gwtbootstrap3-theme-overlay";
+
     private static final String STORAGE_KEY = "gwtbootstrap3.theme";
     private static final Map<String, Theme> REGISTRY = new LinkedHashMap<>();
     private static final List<ThemeChangeHandler> HANDLERS = new ArrayList<>();
@@ -106,7 +109,8 @@ public final class Themes {
         if (theme == null || theme.equals(current)) {
             return;
         }
-        linkElement().setAttribute("href", theme.getUrl());
+        linkElement(LINK_ID, null).setAttribute("href", theme.getUrl());
+        applyOverlay(theme.getOverlayUrl());
         current = theme;
         store(theme.getName());
         for (final ThemeChangeHandler handler : new ArrayList<>(HANDLERS)) {
@@ -142,12 +146,28 @@ public final class Themes {
         HANDLERS.remove(handler);
     }
 
-    /** The link this class owns, adopting one already on the page or creating it. */
-    private static Element linkElement() {
-        Element link = Document.get().getElementById(LINK_ID);
+    /**
+     * Sets or removes the overlay stylesheet. It is created after the main link so it
+     * always wins the cascade, and removed outright when a theme has no overlay -- an
+     * empty href would otherwise make the browser re-request the page.
+     */
+    private static void applyOverlay(final String overlayUrl) {
+        final Element existing = Document.get().getElementById(OVERLAY_LINK_ID);
+        if (overlayUrl == null || overlayUrl.isEmpty()) {
+            if (existing != null) {
+                existing.removeFromParent();
+            }
+            return;
+        }
+        linkElement(OVERLAY_LINK_ID, existing).setAttribute("href", overlayUrl);
+    }
+
+    /** The link with this id, adopting one already on the page or creating it. */
+    private static Element linkElement(final String id, final Element known) {
+        Element link = known == null ? Document.get().getElementById(id) : known;
         if (link == null) {
             link = Document.get().createElement("link");
-            link.setId(LINK_ID);
+            link.setId(id);
             link.setAttribute("rel", "stylesheet");
             Document.get().getHead().appendChild(link);
         }

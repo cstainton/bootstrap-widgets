@@ -32,10 +32,21 @@ public class Theme {
     private final String name;
     private final String displayName;
     private final String url;
+    private final String overlayUrl;
     private final boolean dark;
 
     public Theme(final String name, final String displayName, final String url,
             final boolean dark) {
+        this(name, displayName, url, null, dark);
+    }
+
+    /**
+     * @param overlayUrl a second stylesheet layered over {@code url}, or null. Stock
+     *                   Bootstrap needs this: its optional theme is an overlay on
+     *                   bootstrap.css rather than a replacement for it.
+     */
+    public Theme(final String name, final String displayName, final String url,
+            final String overlayUrl, final boolean dark) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("name must not be empty");
         }
@@ -45,6 +56,7 @@ public class Theme {
         this.name = name;
         this.displayName = displayName == null ? name : displayName;
         this.url = url;
+        this.overlayUrl = overlayUrl;
         this.dark = dark;
     }
 
@@ -60,6 +72,11 @@ public class Theme {
 
     public String getUrl() {
         return url;
+    }
+
+    /** A stylesheet layered over {@link #getUrl()}, or null when there is none. */
+    public String getOverlayUrl() {
+        return overlayUrl;
     }
 
     /** True when this theme has a dark background. */
