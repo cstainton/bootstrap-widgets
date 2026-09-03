@@ -13,7 +13,7 @@ Upstream still declares old `com.google.gwt` GWT `2.8.0`. This fork deliberately
 ## Compatibility Rules
 
 - Keep public package names and GWT module names stable for drop-in GwtBootstrap3 consumers.
-- Preserve Bootstrap 3 widget semantics in `gwt-bootstrap3-modern` and `gwt-bootstrap3-modern-extras`.
+- Preserve Bootstrap 3 widget semantics in `gwt-bootstrap3` and `gwt-bootstrap3-extras`.
 - Prefer resource and dependency maintenance over Java API churn in the Bootstrap 3 compatibility modules.
 - Do not leak Bootstrap 5, Domino, Elemental2, or TeaVM types into the existing `org.gwtbootstrap3` API.
 - Use separate modules for Bootstrap 5-native widgets and for TeaVM experiments.
@@ -30,8 +30,8 @@ Bootstrap 5 is implemented as a separate migration track, not as a hidden replac
 
 The current shape is:
 
-1. `gwt-bootstrap5-modern`: Bootstrap 5-native GWT widgets under `io.instanto.bootstrap5.*`.
-2. `gwt-bootstrap5-modern-showcase`: a Bootstrap 5-native showcase that exercises Bootstrap 5 markup, class names, data attributes, and interaction patterns.
+1. `gwt-bootstrap5`: Bootstrap 5-native GWT widgets under `io.instanto.bootstrap5.*`.
+2. `gwt-bootstrap5-showcase`: a Bootstrap 5-native showcase that exercises Bootstrap 5 markup, class names, data attributes, and interaction patterns.
 3. `BOOTSTRAP5-PORTING.md`: an inventory tracking Bootstrap 5 coverage against the existing GwtBootstrap3 widget catalogue.
 
 Planned follow-up work:
@@ -41,8 +41,8 @@ Planned follow-up work:
 3. Replace jQuery plugin calls with Bootstrap 5 JavaScript APIs or plain DOM behaviour in the Bootstrap 5 modules.
 4. Allow breaking API changes where Bootstrap 5 removed or redesigned Bootstrap 3 behaviour.
 5. Add explicit migration helpers only where they clarify the move from Bootstrap 3 to Bootstrap 5.
-6. Grow `teavm-bootstrap5-modern` alongside the Bootstrap 5 GWT surface.
-7. Add `teavm-bootstrap5-modern-showcase` once the Bootstrap 5 TeaVM surface is less skeletal.
+6. Grow `teavm-bootstrap5` alongside the Bootstrap 5 GWT surface.
+7. Add `teavm-bootstrap5-showcase` once the Bootstrap 5 TeaVM surface is less skeletal.
 
 The Bootstrap 5 track should not carry Bootstrap 3 CSS compatibility classes or jQuery as a long-term runtime requirement. During porting, a widget is considered Bootstrap 5-native only when its generated classes, data attributes, and interactive behaviour match Bootstrap 5 expectations.
 
@@ -50,11 +50,11 @@ The Bootstrap 5 track should not carry Bootstrap 3 CSS compatibility classes or 
 
 This repository keeps separate buildable outputs:
 
-1. Bootstrap 3 GWT compatibility: `gwt-bootstrap3-modern`, `gwt-bootstrap3-modern-extras`, and `gwt-bootstrap3-modern-showcase`.
-2. Bootstrap 5 GWT native: `gwt-bootstrap5-modern` and `gwt-bootstrap5-modern-showcase`.
+1. Bootstrap 3 GWT compatibility: `gwt-bootstrap3`, `gwt-bootstrap3-extras`, and `gwt-bootstrap3-showcase`.
+2. Bootstrap 5 GWT native: `gwt-bootstrap5` and `gwt-bootstrap5-showcase`.
 3. Shared TeaVM compatibility: `teavm-gwt-compat`, a small GWT client API subset used by both TeaVM tracks.
-4. Bootstrap 3 TeaVM experiment: `teavm-bootstrap3-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
-5. Bootstrap 5 TeaVM experiment: `teavm-bootstrap5-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
+4. Bootstrap 3 TeaVM experiment: `teavm-bootstrap3`, compiled by TeaVM to JavaScript as part of its Maven build.
+5. Bootstrap 5 TeaVM experiment: `teavm-bootstrap5`, compiled by TeaVM to JavaScript as part of its Maven build.
 
 ## TeaVM Direction
 

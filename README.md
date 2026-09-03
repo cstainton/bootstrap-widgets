@@ -1,6 +1,6 @@
-# GWT Bootstrap Modern
+# GWT Bootstrap
 
-GWT Bootstrap Modern is a maintained fork of GwtBootstrap3 with two deliberately separate tracks.
+GWT Bootstrap is a maintained fork of GwtBootstrap3 with two deliberately separate tracks.
 
 1. The Bootstrap 3 track is the drop-in maintenance build for existing GwtBootstrap3 applications. It keeps `org.gwtbootstrap3.*`, the original GWT module names, Bootstrap 3 markup, and Bootstrap 3 widget behaviour, while updating the build to GWT 2.13.1, Bootstrap 3.4.1, and jQuery 3.7.1.
 2. The Bootstrap 5 track is a native migration build. It uses `io.instanto.bootstrap5.*`, Bootstrap 5 resources, Bootstrap 5 class names, Bootstrap 5 data attributes, and breaking API changes where Bootstrap 5 changed or removed Bootstrap 3 concepts.
@@ -25,8 +25,8 @@ Artifacts are named `<backend>-<library>`, so the backend is the first thing you
 
 | | Bootstrap 3 | Bootstrap 5 |
 |---|---|---|
-| GWT | `gwt-bootstrap3-modern` (`-extras`, `-themes`) | `gwt-bootstrap5-modern` (`-extras`, `-themes`) |
-| TeaVM | `teavm-bootstrap3-modern` | `teavm-bootstrap5-modern` |
+| GWT | `gwt-bootstrap3` (`-extras`, `-themes`) | `gwt-bootstrap5` (`-extras`, `-themes`) |
+| TeaVM | `teavm-bootstrap3` | `teavm-bootstrap5` |
 
 `teavm-gwt-compat` carries the two backends' shared seam: a minimal `com.google.gwt.*` client API backed by TeaVM DOM calls, so the widget sources compile unchanged on both.
 
@@ -34,10 +34,10 @@ The TeaVM builds are **separate artifactIds, not a `teavm` classifier**, because
 
 ## Showcases
 
-- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/gwtbootstrap-modern/)
-- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/)
-- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/gwtbootstrap-modern/teavm.html)
-- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html)
+- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/gwtbootstrap/)
+- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/gwtbootstrap/bootstrap5/)
+- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/gwtbootstrap/teavm.html)
+- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html)
 
 ## Status
 
@@ -52,13 +52,13 @@ Use the Bootstrap 3 artifacts when you want the safest replacement for an existi
 ```xml
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap3-modern</artifactId>
+  <artifactId>gwt-bootstrap3</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap3-modern-extras</artifactId>
+  <artifactId>gwt-bootstrap3-extras</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -68,7 +68,7 @@ Use the Bootstrap 5 artifact when you are ready to migrate templates and code to
 ```xml
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap5-modern</artifactId>
+  <artifactId>gwt-bootstrap5</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -78,7 +78,7 @@ TeaVM Bootstrap 3 experiment:
 ```xml
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>teavm-bootstrap3-modern</artifactId>
+  <artifactId>teavm-bootstrap3</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
@@ -88,25 +88,25 @@ TeaVM Bootstrap 5 experiment:
 ```xml
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>teavm-bootstrap5-modern</artifactId>
+  <artifactId>teavm-bootstrap5</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ## Modules
 
-- `gwt-bootstrap3-modern`: GwtBootstrap3-compatible core widgets backed by Bootstrap 3.4.1 and jQuery 3.7.1.
-- `gwt-bootstrap3-modern-extras`: GwtBootstrap3-compatible extras widgets and third-party integrations.
-- `gwt-bootstrap3-modern-showcase`: original GWT showcase used for visual and compile testing of the Bootstrap 3 compatibility modules.
-- `gwt-bootstrap5-modern`: Bootstrap 5-native GWT widgets and resources under `io.instanto.bootstrap5.*`.
-- `gwt-bootstrap5-modern-showcase`: Bootstrap 5-native GWT showcase.
+- `gwt-bootstrap3`: GwtBootstrap3-compatible core widgets backed by Bootstrap 3.4.1 and jQuery 3.7.1.
+- `gwt-bootstrap3-extras`: GwtBootstrap3-compatible extras widgets and third-party integrations.
+- `gwt-bootstrap3-showcase`: original GWT showcase used for visual and compile testing of the Bootstrap 3 compatibility modules.
+- `gwt-bootstrap5`: Bootstrap 5-native GWT widgets and resources under `io.instanto.bootstrap5.*`.
+- `gwt-bootstrap5-showcase`: Bootstrap 5-native GWT showcase.
 - `teavm-gwt-compat`: shared minimal GWT client API subset backed by TeaVM DOM APIs.
-- `teavm-bootstrap3-modern`: experimental Bootstrap 3-compatible TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
-- `teavm-bootstrap5-modern`: experimental Bootstrap 5-native TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
+- `teavm-bootstrap3`: experimental Bootstrap 3-compatible TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
+- `teavm-bootstrap5`: experimental Bootstrap 5-native TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
 
 Planned module:
 
-- `teavm-bootstrap5-modern-showcase`: fuller TeaVM showcase for the Bootstrap 5-native widget set.
+- `teavm-bootstrap5-showcase`: fuller TeaVM showcase for the Bootstrap 5-native widget set.
 
 ## Bootstrap 5 Coverage
 
@@ -125,44 +125,44 @@ mvn -f pom.xml -DskipTests install
 Compile the Bootstrap 3 compatibility showcase:
 
 ```bash
-mvn -f gwt-bootstrap3-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+mvn -f gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 ```
 
 Compile the Bootstrap 5-native showcase:
 
 ```bash
-mvn -f gwt-bootstrap5-modern-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+mvn -f gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 ```
 
 Compile the TeaVM Bootstrap 3 smoke target:
 
 ```bash
-mvn -f teavm-bootstrap3-modern/pom.xml -DskipTests package
+mvn -f teavm-bootstrap3/pom.xml -DskipTests package
 ```
 
 Compile the TeaVM Bootstrap 5 smoke target:
 
 ```bash
-mvn -f teavm-bootstrap5-modern/pom.xml -DskipTests package
+mvn -f teavm-bootstrap5/pom.xml -DskipTests package
 ```
 
 ## Showcase Details
 
 GitHub Pages serves the Bootstrap 3-compatible showcase:
 
-[https://cstainton.github.io/gwtbootstrap-modern/](https://cstainton.github.io/gwtbootstrap-modern/)
+[https://cstainton.github.io/gwtbootstrap/](https://cstainton.github.io/gwtbootstrap/)
 
 The Bootstrap 5-native GWT showcase is published at:
 
-[https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/](https://cstainton.github.io/gwtbootstrap-modern/bootstrap5/)
+[https://cstainton.github.io/gwtbootstrap/bootstrap5/](https://cstainton.github.io/gwtbootstrap/bootstrap5/)
 
 The TeaVM Bootstrap 3 smoke page is published at:
 
-[https://cstainton.github.io/gwtbootstrap-modern/teavm.html](https://cstainton.github.io/gwtbootstrap-modern/teavm.html)
+[https://cstainton.github.io/gwtbootstrap/teavm.html](https://cstainton.github.io/gwtbootstrap/teavm.html)
 
 The TeaVM Bootstrap 5 smoke page is published at:
 
-[https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html](https://cstainton.github.io/gwtbootstrap-modern/teavm-bootstrap5.html)
+[https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html](https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html)
 
 ## Notes
 

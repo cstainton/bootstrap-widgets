@@ -26,23 +26,30 @@ Forked from the following upstream commits:
 Modifications by module
 --------------------------------------------------------------------------------
 
-gwt-bootstrap3-modern
-gwt-bootstrap3-modern-extras
-gwt-bootstrap3-modern-showcase
+gwt-bootstrap3
+gwt-bootstrap3-extras
+gwt-bootstrap3-showcase
     Dependency and toolchain maintenance of the upstream sources. The Java API,
     package names, GWT module names and Bootstrap 3 markup are preserved; the
     build targets org.gwtproject GWT 2.13.1, Bootstrap 3.4.1 and jQuery 3.7.1.
 
-gwt-bootstrap5-modern
-gwt-bootstrap5-modern-showcase
+gwt-bootstrap5
+gwt-bootstrap5-extras
+gwt-bootstrap5-themes
+gwt-bootstrap5-showcase
     Derived from the GwtBootstrap3 sources and substantially modified: moved to
-    the org.gwtbootstrap5 package namespace, re-targeted at Bootstrap 5 markup,
+    the io.instanto.bootstrap5 package namespace, re-targeted at Bootstrap 5 markup,
     class names and data-bs-* attributes, with jQuery plugin calls replaced by
     Bootstrap 5 JavaScript APIs. Widget semantics differ from the originals
     wherever Bootstrap 5 removed or redesigned a Bootstrap 3 concept.
 
-teavm-bootstrap3-modern
-teavm-bootstrap5-modern
+teavm-gwt-compat
+    Not derived from GwtBootstrap3. A minimal reimplementation of the
+    com.google.gwt.* client API surface the widget sources use, backed by TeaVM
+    DOM calls, so those sources compile on both backends.
+
+teavm-bootstrap3
+teavm-bootstrap5
     TeaVM backends for the widget sets above. These compile the corresponding
     GWT module's sources, and add TeaVM-specific implementations for the parts
     that depend on GWT compiler features (JSNI bridges to Bootstrap's

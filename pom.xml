@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap-modern</artifactId>
+  <artifactId>gwtbootstrap-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>GWT Bootstrap Modern</name>
+  <name>GWT Bootstrap</name>
   <description>Maintained GwtBootstrap3-compatible fork with a separate Bootstrap 5 migration track.</description>
 
   <licenses>
@@ -19,28 +19,28 @@
   </licenses>
 
   <organization>
-    <name>GWT Bootstrap Modern</name>
-    <url>https://github.com/cstainton/gwtbootstrap-modern</url>
+    <name>GWT Bootstrap</name>
+    <url>https://github.com/cstainton/gwtbootstrap</url>
   </organization>
 
   <scm>
-    <connection>scm:git:https://github.com/cstainton/gwtbootstrap-modern.git</connection>
-    <developerConnection>scm:git:git@github.com:cstainton/gwtbootstrap-modern.git</developerConnection>
-    <url>https://github.com/cstainton/gwtbootstrap-modern</url>
+    <connection>scm:git:https://github.com/cstainton/gwtbootstrap.git</connection>
+    <developerConnection>scm:git:git@github.com:cstainton/gwtbootstrap.git</developerConnection>
+    <url>https://github.com/cstainton/gwtbootstrap</url>
   </scm>
 
   <modules>
-    <module>gwt-bootstrap3-modern</module>
-    <module>gwt-bootstrap3-modern-extras</module>
-    <module>gwt-bootstrap3-modern-themes</module>
-    <module>gwt-bootstrap3-modern-showcase</module>
-    <module>gwt-bootstrap5-modern</module>
-    <module>gwt-bootstrap5-modern-themes</module>
-    <module>gwt-bootstrap5-modern-extras</module>
-    <module>gwt-bootstrap5-modern-showcase</module>
+    <module>gwt-bootstrap3</module>
+    <module>gwt-bootstrap3-extras</module>
+    <module>gwt-bootstrap3-themes</module>
+    <module>gwt-bootstrap3-showcase</module>
+    <module>gwt-bootstrap5</module>
+    <module>gwt-bootstrap5-themes</module>
+    <module>gwt-bootstrap5-extras</module>
+    <module>gwt-bootstrap5-showcase</module>
     <module>teavm-gwt-compat</module>
-    <module>teavm-bootstrap3-modern</module>
-    <module>teavm-bootstrap5-modern</module>
+    <module>teavm-bootstrap3</module>
+    <module>teavm-bootstrap5</module>
   </modules>
 
   <properties>

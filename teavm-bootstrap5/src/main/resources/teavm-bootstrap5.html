@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TeaVM Bootstrap 5</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand navbar-light bg-light border-bottom">
+    <div class="container">
+      <span class="navbar-brand">Bootstrap 5 &middot; TeaVM</span>
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="./">Bootstrap 3 Showcase (GWT)</a></li>
+        <li class="nav-item"><a class="nav-link" href="bootstrap5/">Bootstrap 5 Showcase (GWT)</a></li>
+        <li class="nav-item"><a class="nav-link" href="teavm.html">Bootstrap 3 Showcase (TeaVM)</a></li>
+        <li class="nav-item"><a class="nav-link" href="https://github.com/cstainton/gwtbootstrap">Fork on GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>window.exports = window;</script>
+  <script src="teavm5/teavm-bootstrap5-smoke.js"></script>
+  <script>
+    const teavmMain = window.main || (window.exports && window.exports.main);
+    if (typeof teavmMain === 'function') {
+      teavmMain([]);
+    } else {
+      document.body.innerHTML = '<main class="container py-4"><div class="alert alert-danger">TeaVM Bootstrap 5 entry point was not exported.</div></main>';
+    }
+  </script>
+</body>
+</html>

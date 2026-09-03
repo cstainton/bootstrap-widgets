@@ -1,6 +1,6 @@
 /*
  * #%L
- * GWT Bootstrap Modern
+ * GWT Bootstrap
  * %%
  * Copyright (C) 2026 Carl Stainton
  * %%

@@ -4,7 +4,7 @@ Original reference: https://gwtbootstrap3.github.io/gwtbootstrap3-demo/
 
 ## Current Target
 
-The `gwt-bootstrap3-modern-showcase` module is the GwtBootstrap3 compatibility showcase. It should render and behave like the original Bootstrap 3 showcase while running on GWT 2.13.1, Bootstrap 3.4.1, and jQuery 3.7.1.
+The `gwt-bootstrap3-showcase` module is the GwtBootstrap3 compatibility showcase. It should render and behave like the original Bootstrap 3 showcase while running on GWT 2.13.1, Bootstrap 3.4.1, and jQuery 3.7.1.
 
 ## Architecture Decision
 

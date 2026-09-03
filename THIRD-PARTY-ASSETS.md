@@ -37,12 +37,12 @@ This fork vendors browser JS/CSS resources inside the GWT modules so downstream 
 
 ## Bootstrap 3 Theme Assets
 
-Vendored in `gwt-bootstrap3-modern-themes`, which is a separate artifact because the set
+Vendored in `gwt-bootstrap3-themes`, which is a separate artifact because the set
 totals about 1.9 MB. Bootstrap 3 has no dark mode of its own; these supply one.
 
 | Asset | Version | Source package | Licence | Notes |
 | --- | --- | --- | --- | --- |
-| Bootswatch | 3.4.1 | `bootswatch` | MIT | 16 complete Bootstrap 3.4.1 stylesheets. Four are dark: Cyborg, Darkly, Slate, Superhero. Licence text is kept at `gwt-bootstrap3-modern-themes/BOOTSWATCH-LICENSE`. |
+| Bootswatch | 3.4.1 | `bootswatch` | MIT | 16 complete Bootstrap 3.4.1 stylesheets. Four are dark: Cyborg, Darkly, Slate, Superhero. Licence text is kept at `gwt-bootstrap3-themes/BOOTSWATCH-LICENSE`. |
 
 Each theme replaces `bootstrap.css` rather than layering over it, so switching swaps one
 stylesheet link. Fourteen of the sixteen `@import` their webfonts from Google Fonts, as
@@ -59,13 +59,13 @@ The core Bootstrap 5 artifact is deliberately independent of Bootstrap 3 and jQu
 | Bootstrap | 5.3.8 | `bootstrap` | MIT | `io.instanto.bootstrap5.GwtBootstrap5` loads the CSS and bundled JavaScript. `io.instanto.bootstrap5.GwtBootstrap5NoTheme` omits only the CSS so an application can supply or switch the stylesheet itself. |
 | Bootstrap Icons | 1.13.1 | `bootstrap-icons` | MIT | Both Bootstrap 5 GWT modules load the icon CSS and local font files. |
 
-These files live under `gwt-bootstrap5-modern/src/main/java/io/instanto/bootstrap5/client/resource`.
-They must not be loaded by `gwt-bootstrap3-modern` or used as a hidden compatibility
+These files live under `gwt-bootstrap5/src/main/java/io/instanto/bootstrap5/client/resource`.
+They must not be loaded by `gwt-bootstrap3` or used as a hidden compatibility
 layer for the Bootstrap 3 widgets.
 
 ### Bootstrap 5 Theme Assets
 
-Themes are kept in the separate `gwt-bootstrap5-modern-themes` artifact. An application
+Themes are kept in the separate `gwt-bootstrap5-themes` artifact. An application
 inherits `io.instanto.bootstrap5.GwtBootstrap5NoTheme` and
 `io.instanto.bootstrap5.themes.GwtBootstrap5Themes`, then selects Bootstrap or a Bootswatch
 theme through the theme API. A selected theme replaces `bootstrap.css`; it is not added
@@ -73,7 +73,7 @@ on top of it.
 
 | Asset | Version | Source package | Licence | Notes |
 | --- | --- | --- | --- | --- |
-| Bootswatch | 5.3.8 | `bootswatch` | MIT | 26 complete Bootstrap 5.3.8 stylesheets. Seven are dark: Cyborg, Darkly, Quartz, Slate, Solar, Superhero and Vapor. Licence text is kept at `gwt-bootstrap5-modern-themes/BOOTSWATCH-LICENSE`. |
+| Bootswatch | 5.3.8 | `bootswatch` | MIT | 26 complete Bootstrap 5.3.8 stylesheets. Seven are dark: Cyborg, Darkly, Quartz, Slate, Solar, Superhero and Vapor. Licence text is kept at `gwt-bootstrap5-themes/BOOTSWATCH-LICENSE`. |
 
 Twenty of the Bootswatch 5 stylesheets import webfonts from Google Fonts and therefore
 make a network request when used. The remaining six use no remote font import.
@@ -87,8 +87,8 @@ the core widgets. Inheriting an extra's GWT module loads only that extra's resou
 | --- | --- | --- | --- | --- |
 | Tempus Dominus | 6.10.4 | `@eonasdan/tempus-dominus` | MIT | `io.instanto.bootstrap5.extras.datepicker.DatePicker`; replaces the Bootstrap 3 date and date-time picker plugins without requiring jQuery. |
 | Popper | 2.11.8 | `@popperjs/core` | MIT | The DatePicker module exposes the global Popper API required by Tempus Dominus. Bootstrap's bundled private copy cannot satisfy that dependency. |
-| Quill | 2.0.3 | `quill` | BSD-3-Clause | Rich text editor, replacing the Summernote extra. No jQuery, ships its own toolbar. Licence text at `gwt-bootstrap5-modern-extras/QUILL-LICENSE`. |
-| noUiSlider | 15.8.1 | `nouislider` | MIT | Slider for what a native range input cannot do: two handles, non-linear scales, tooltips, pips. No dependencies. Licence text at `gwt-bootstrap5-modern-extras/NOUISLIDER-LICENSE`. |
+| Quill | 2.0.3 | `quill` | BSD-3-Clause | Rich text editor, replacing the Summernote extra. No jQuery, ships its own toolbar. Licence text at `gwt-bootstrap5-extras/QUILL-LICENSE`. |
+| noUiSlider | 15.8.1 | `nouislider` | MIT | Slider for what a native range input cannot do: two handles, non-linear scales, tooltips, pips. No dependencies. Licence text at `gwt-bootstrap5-extras/NOUISLIDER-LICENSE`. |
 | marked | 18.0.11 | `marked` | MIT | Markdown parser, configured for GitHub Flavoured Markdown so a client-side preview matches what flexmark-java renders with its tables, strikethrough and task list extensions. No dependencies. |
 | DOMPurify | 3.4.14 | `dompurify` | MPL-2.0 OR Apache-2.0 | Sanitises rendered Markdown before it reaches the DOM. marked does not sanitise, by design, and Markdown permits raw HTML. |
 
