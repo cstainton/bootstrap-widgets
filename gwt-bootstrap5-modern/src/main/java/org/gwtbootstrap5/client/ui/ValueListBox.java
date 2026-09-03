@@ -26,6 +26,7 @@ package org.gwtbootstrap5.client.ui;
 import java.util.List;
 
 import org.gwtbootstrap5.client.ui.base.HasId;
+import org.gwtbootstrap5.client.ui.base.HasPlaceholder;
 import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
 import org.gwtbootstrap5.client.ui.base.HasSize;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
@@ -60,8 +61,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @param <T> the value type
  */
 public class ValueListBox<T> extends com.google.gwt.user.client.ui.ValueListBox<T> implements HasName, HasId,
-        HasResponsiveness, HasSize<InputSize>, HasEditorErrors<T>, HasErrorHandler, HasValidators<T>,
-        HasBlankValidator<T> {
+        HasPlaceholder, HasResponsiveness, HasSize<InputSize>, HasEditorErrors<T>, HasErrorHandler,
+        HasValidators<T>, HasBlankValidator<T> {
 
     private final ErrorHandlerMixin<T> errorHandlerMixin = new ErrorHandlerMixin<T>(this);
 
@@ -96,6 +97,21 @@ public class ValueListBox<T> extends com.google.gwt.user.client.ui.ValueListBox<
     @Override
     public String getName() {
         return getElement().getAttribute("name");
+    }
+
+    /**
+     * Kept for parity with the Bootstrap 3 widget. A select has no placeholder
+     * attribute in HTML, so this sets it without visible effect; Bootstrap 5
+     * spells the same intent as a disabled, selected first option.
+     */
+    @Override
+    public void setPlaceholder(final String placeholder) {
+        getElement().setAttribute("placeholder", placeholder == null ? "" : placeholder);
+    }
+
+    @Override
+    public String getPlaceholder() {
+        return getElement().getAttribute("placeholder");
     }
 
     @Override
