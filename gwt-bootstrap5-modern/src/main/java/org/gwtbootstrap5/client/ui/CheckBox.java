@@ -187,12 +187,20 @@ public class CheckBox extends ButtonBase implements HasName, HasValue<Boolean>, 
         this(DOM.createDiv(), Document.get().createCheckInputElement());
         setStyleName("form-check");
 
-        LabelElement label = Document.get().createLabelElement();
-        label.setClassName("form-check-label");
+        // Bootstrap 5 wants the input and the label as siblings inside the
+        // .form-check, not the input nested inside the label as Bootstrap 3 had
+        // it. The sibling combinator is what drives :checked, :disabled and
+        // .is-invalid ~ .invalid-feedback, none of which fire through nesting.
+        final String controlId = Document.get().createUniqueId();
         inputElem.setClassName("form-check-input");
-        label.appendChild(inputElem);
+        inputElem.setId(controlId);
+
+        final LabelElement label = Document.get().createLabelElement();
+        label.setClassName("form-check-label");
+        label.setHtmlFor(controlId);
         label.appendChild(labelElem);
 
+        getElement().appendChild(inputElem);
         getElement().appendChild(label);
     }
 

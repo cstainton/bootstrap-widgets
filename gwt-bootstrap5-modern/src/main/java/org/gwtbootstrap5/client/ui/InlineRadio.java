@@ -29,8 +29,20 @@ public class InlineRadio extends Radio {
         this("");
     }
 
-    public InlineRadio(String text) {
-        super(text);
+    /**
+     * Creates an inline radio in the group {@code name}, with no label.
+     *
+     * <p>Note this mirrors {@link Radio}: the single argument is the group
+     * name, not the label. Use {@link #InlineRadio(String, String)} to set
+     * both.</p>
+     */
+    public InlineRadio(final String name) {
+        super(name);
         addStyleName("form-check-inline");
+    }
+
+    public InlineRadio(final String name, final String label) {
+        this(name);
+        setText(label);
     }
 }

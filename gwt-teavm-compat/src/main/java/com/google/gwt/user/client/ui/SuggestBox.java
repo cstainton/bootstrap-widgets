@@ -174,6 +174,17 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
         display.hideSuggestions();
     }
 
+    /**
+     * The value box this SuggestBox wraps.
+     *
+     * <p>Real GWT declares both this and {@code getTextBox()}; the latter casts
+     * to {@code TextBoxBase}, which the Bootstrap TextBox does not extend, so
+     * this is the accessor the widget library uses.</p>
+     */
+    public ValueBoxBase<String> getValueBox() {
+        return box;
+    }
+
     public ValueBoxBase<String> getTextBox() {
         return box;
     }

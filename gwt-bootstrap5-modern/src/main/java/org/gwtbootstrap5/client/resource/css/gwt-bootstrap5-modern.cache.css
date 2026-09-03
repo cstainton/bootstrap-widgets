@@ -248,3 +248,35 @@
     border-color: var(--bs-btn-border-color);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Validation warning state.
+
+   Bootstrap 3 had three contextual states on the form group -- .has-error,
+   .has-warning and .has-success. Bootstrap 5 keeps only invalid and valid, on
+   the control itself. ValidationState.WARNING names the class below, which
+   mirrors Bootstrap's own .is-invalid rules in amber so the third state still
+   renders rather than silently doing nothing.
+   --------------------------------------------------------------------------- */
+
+.gbm-is-warning {
+  border-color: var(--bs-warning-border-subtle, #ffcd39);
+}
+
+.gbm-is-warning:focus {
+  border-color: var(--bs-warning-border-subtle, #ffcd39);
+  box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
+
+.gbm-is-warning ~ .warning-feedback,
+.gbm-is-warning ~ .invalid-feedback.gbm-warning {
+  display: block;
+}
+
+.warning-feedback {
+  display: none;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--bs-warning-text-emphasis, #997404);
+}

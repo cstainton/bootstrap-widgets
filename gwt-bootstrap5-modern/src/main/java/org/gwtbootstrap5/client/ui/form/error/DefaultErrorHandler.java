@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.gwtbootstrap5.client.ui.HelpBlock;
 import org.gwtbootstrap5.client.ui.base.HasValidationState;
-import org.gwtbootstrap5.client.ui.base.ValueBoxBase;
 import org.gwtbootstrap5.client.ui.constants.ValidationState;
 
 import com.google.gwt.editor.client.EditorError;
@@ -56,72 +55,88 @@ public class DefaultErrorHandler implements ErrorHandler {
 
     private final Widget inputWidget;
 
-    private HelpBlock validationStateHelpBlock = null;
+    private HelpBlock feedback = null;
+
+    private boolean feedbackIsOurs = false;
 
     private HasValidationState validationStateParent = null;
 
-    /**
-     * Default error handler.
-     *
-     * @param parent the parent of this error handler.
-     */
-    public DefaultErrorHandler(Widget widget) {
+    public DefaultErrorHandler(final Widget widget) {
         super();
         assert widget != null;
         this.inputWidget = widget;
         this.inputWidget.addAttachHandler(new Handler() {
             @Override
-            public void onAttachOrDetach(AttachEvent event) {
+            public void onAttachOrDetach(final AttachEvent event) {
                 init();
             }
         });
     }
 
-    /** {@inheritDoc} */
     @Override
     public void cleanup() {
+        if (feedbackIsOurs && feedback != null) {
+            feedback.removeFromParent();
+            feedback = null;
+            feedbackIsOurs = false;
+        }
     }
 
-    /** {@inheritDoc} */
     @Override
     public void clearErrors() {
-        if (validationStateParent == null) { return; }
-        validationStateParent.setValidationState(ValidationState.NONE);
-        if (validationStateHelpBlock != null) { validationStateHelpBlock.clearError(); }
+        if (validationStateParent != null) {
+            validationStateParent.setValidationState(ValidationState.NONE);
+        }
+        if (feedback != null) {
+            feedback.clearError();
+        }
     }
 
-    /**
-     * Find the sibling {@link HelpBlock}.
-     *
-     * @param widget the {@link Widget} to search.
-     * @return the found {@link HelpBlock} of null if not found.
-     */
-    private HelpBlock findHelpBlock(Widget widget) {
-        if (widget instanceof HelpBlock) { return (HelpBlock) widget; }
-        // Try and find the HelpBlock in the children of the given widget.
-        if (widget instanceof HasWidgets) {
-            for (Widget w : (HasWidgets) widget) {
-                if (w instanceof HelpBlock) { return (HelpBlock) w; }
+    @Override
+    public void showErrors(final List<EditorError> errors) {
+        init();
+        final boolean hasErrors = errors != null && !errors.isEmpty();
+
+        if (validationStateParent != null) {
+            validationStateParent.setValidationState(hasErrors ? ValidationState.ERROR : ValidationState.NONE);
+        }
+
+        if (!hasErrors) {
+            if (feedback != null) {
+                feedback.clearError();
             }
+            return;
         }
-        if (!(widget instanceof HasValidationState)) {
-            // Try and find the HelpBlock in the parent of widget.
-            return findHelpBlock(widget.getParent());
+
+        final StringBuilder message = new StringBuilder();
+        for (int i = 0; i < errors.size(); i++) {
+            if (i > 0) {
+                message.append("; ");
+            }
+            message.append(errors.get(i).getMessage());
         }
-        return null;
+
+        ensureFeedback();
+        if (feedback != null) {
+            feedback.setError(message.toString());
+        }
     }
 
     /**
-     * Initialize the instance. We find the parent {@link HasValidationState} and sibling {@link HelpBlock}
-     * only 1 time on initialization.
+     * Walks up to the nearest {@link HasValidationState} -- in practice the
+     * {@link FormGroup} -- and remembers any {@link HelpBlock} already inside
+     * it to carry the message.
      */
     public void init() {
-        if (initialized) { return; }
+        if (initialized) {
+            return;
+        }
         Widget parent = inputWidget.getParent();
-        while (parent != null && !parent.getClass().getName().equals("com.google.gwt.user.client.ui.Widget")) {
+        while (parent != null) {
             if (parent instanceof HasValidationState) {
                 validationStateParent = (HasValidationState) parent;
-                validationStateHelpBlock = findHelpBlock(inputWidget);
+                feedback = findHelpBlock(parent);
+                feedbackIsOurs = false;
                 break;
             }
             parent = parent.getParent();
@@ -131,22 +146,36 @@ public class DefaultErrorHandler implements ErrorHandler {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void showErrors(List<EditorError> errors) {
-        init();
-        // clearErrors();
-        String errorMsg = "";
-        if (validationStateParent != null) {
-            validationStateParent.setValidationState(errors.size() <= 0 ? ValidationState.NONE : ValidationState.ERROR);
-            for (int index = 0; index < errors.size(); index++) {
-                errorMsg = errors.get(0).getMessage();
-                if (index + 1 < errors.size()) { errorMsg += "; "; }
-            }
+    /**
+     * Bootstrap 5 shows a validation message from a .invalid-feedback element
+     * next to the control. Bootstrap 3 code was not obliged to declare one --
+     * without a HelpBlock the message simply went nowhere -- so one is created
+     * on demand here and removed again on cleanup.
+     */
+    private void ensureFeedback() {
+        if (feedback != null || validationStateParent == null) {
+            return;
         }
-        if (validationStateHelpBlock != null) {
-            validationStateHelpBlock.setError(errorMsg);
+        if (!(validationStateParent instanceof HasWidgets)) {
+            return;
         }
+        feedback = new HelpBlock();
+        feedbackIsOurs = true;
+        ((HasWidgets) validationStateParent).add(feedback);
     }
 
+    private HelpBlock findHelpBlock(final Widget widget) {
+        if (widget instanceof HelpBlock) {
+            return (HelpBlock) widget;
+        }
+        if (widget instanceof HasWidgets) {
+            for (final Widget child : (HasWidgets) widget) {
+                final HelpBlock found = findHelpBlock(child);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
 }

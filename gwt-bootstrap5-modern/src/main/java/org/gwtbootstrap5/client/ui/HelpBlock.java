@@ -44,15 +44,36 @@ public class HelpBlock extends ElementPanel implements IsEditor<LeafValueEditor<
         setText(text);
     }
 
+    /**
+     * Shows {@code message} as a Bootstrap 5 validation message.
+     *
+     * <p>Bootstrap 3 styled these with .help-block inside a .has-error group.
+     * Bootstrap 5 uses .invalid-feedback, which is hidden unless it follows a
+     * sibling carrying .is-invalid; .d-block is Bootstrap's own escape hatch for
+     * showing it when the control is not a direct sibling, which is the case
+     * whenever the control is wrapped, as it is in a SuggestBox.</p>
+     */
     public void setError(String message) {
-        setText(message);
-        setStyleName("invalid-feedback", message != null && !message.isEmpty());
-        setStyleName("d-block", message != null && !message.isEmpty());
+        boolean hasError = message != null && !message.isEmpty();
+        if (hasError && !erroring) {
+            helpText = getText();
+        }
+        erroring = hasError;
+        setText(hasError ? message : helpText);
+        setStyleName("form-text", !hasError);
+        setStyleName("invalid-feedback", hasError);
+        setStyleName("d-block", hasError);
     }
 
+    /** Restores the help text this block carried before the error. */
     public void clearError() {
         setError("");
     }
+
+    private String helpText = "";
+
+    private boolean erroring;
+
 
     private LeafValueEditor<String> editor;
 

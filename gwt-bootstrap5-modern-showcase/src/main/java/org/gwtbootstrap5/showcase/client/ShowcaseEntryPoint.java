@@ -360,6 +360,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "forms", "Forms", null);
         column.add(formsPanel());
+        column.add(formValidationPanel());
         column.add(formAdaptersPanel());
 
         addPageHeader(column, "gridSystem", "Grid System", null);
@@ -623,6 +624,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         FormGroup nameGroup = new FormGroup();
         nameGroup.add(new FormLabel("TextBox"));
         nameGroup.add(new TextBox());
+        nameGroup.add(new HelpBlock("A HelpBlock renders as Bootstrap 5 form-text."));
         FormGroup textAreaGroup = new FormGroup();
         textAreaGroup.add(new FormLabel("TextArea"));
         textAreaGroup.add(new TextArea());
@@ -630,22 +632,106 @@ public class ShowcaseEntryPoint implements EntryPoint {
         listBoxGroup.add(new FormLabel("ListBox"));
         ListBox labelledListBox = new ListBox();
         labelledListBox.addItem("Choose an option");
+        labelledListBox.addItem("Another option");
         listBoxGroup.add(labelledListBox);
         form.add(nameGroup);
         form.add(textAreaGroup);
         form.add(listBoxGroup);
-        form.add(new CheckBox("CheckBox"));
-        form.add(new Radio("form-radio", "Radio"));
-        form.add(new InlineCheckBox("InlineCheckBox"));
-        form.add(new InlineRadio("InlineRadio"));
+
+        Div checks = new Div();
+        checks.addStyleName("mb-3");
+        checks.add(new CheckBox("CheckBox"));
+        checks.add(new Radio("form-radio", "Radio"));
+        form.add(checks);
+
+        Div inlineChecks = new Div();
+        inlineChecks.addStyleName("mb-3");
+        inlineChecks.add(new InlineCheckBox("InlineCheckBox"));
+        inlineChecks.add(new InlineRadio("form-inline-radio", "InlineRadio"));
+        form.add(inlineChecks);
+
+        form.add(simpleControlsGroup());
+        form.add(new SubmitButton("SubmitButton"));
+        return panel("Basic", form,
+                "new Form();\nnew TextBox();\nnew CheckBox(\"CheckBox\");\nnew Radio(\"group\", \"Radio\");\nnew InlineRadio(\"group\", \"InlineRadio\");\n\n// Bootstrap 5 renders the input and the label as siblings\n// inside .form-check, not the input nested in the label.");
+    }
+
+    private Widget simpleControlsGroup() {
+        Div group = new Div();
+        group.addStyleName("mb-3");
+        group.add(new HTML("<div class='form-label'>SimpleCheckBox and SimpleRadioButton</div>"));
+
+        Div row = new Div();
+        row.addStyleName("d-flex flex-wrap align-items-center gap-2 column-gap-3");
         SimpleCheckBox simpleCheckBox = new SimpleCheckBox();
         simpleCheckBox.getElement().setAttribute("aria-label", "SimpleCheckBox");
-        form.add(simpleCheckBox);
-        form.add(new SimpleRadioButton("SimpleRadioButton"));
-        form.add(new HelpBlock("HelpBlock"));
-        form.add(new InlineHelpBlock("InlineHelpBlock"));
-        form.add(new SubmitButton("SubmitButton"));
-        return panel("Basic", form, "new Form();\nnew TextBox();\nnew CheckBox(\"CheckBox\");\nnew Radio(\"group\", \"Radio\");");
+        SimpleRadioButton simpleRadio = new SimpleRadioButton("simple-radio-group");
+        simpleRadio.getElement().setAttribute("aria-label", "SimpleRadioButton");
+        row.add(simpleCheckBox);
+        row.add(new InlineHTML("SimpleCheckBox"));
+        row.add(simpleRadio);
+        row.add(new InlineHTML("SimpleRadioButton"));
+        group.add(row);
+
+        group.add(new HelpBlock("These are the bare inputs, with no form-check wrapper or label of their own."));
+
+        Div inlineHelpRow = new Div();
+        inlineHelpRow.add(new InlineHTML("<span class='form-text'>An InlineHelpBlock follows text on the same line:</span>"));
+        inlineHelpRow.add(new InlineHelpBlock("and here it is."));
+        group.add(inlineHelpRow);
+        return group;
+    }
+
+    private Widget formValidationPanel() {
+        final Form form = new Form();
+
+        final FormGroup emailGroup = new FormGroup();
+        emailGroup.add(new FormLabel("Email address"));
+        final TextBox email = new TextBox();
+        email.setPlaceholder("you@example.com");
+        email.setAllowBlank(false);
+        emailGroup.add(email);
+        emailGroup.add(new HelpBlock("Required. The message replaces this text while the field is invalid."));
+        form.add(emailGroup);
+
+        final FormGroup countryGroup = new FormGroup();
+        countryGroup.add(new FormLabel("Country"));
+        final ValueListBox<String> country = new ValueListBox<String>();
+        country.setValue("");
+        country.setAcceptableValues(Arrays.asList("", "United Kingdom", "Ireland", "France"));
+        country.setAllowBlank(false);
+        countryGroup.add(country);
+        form.add(countryGroup);
+
+        final FormGroup cityGroup = new FormGroup();
+        cityGroup.add(new FormLabel("City"));
+        MultiWordSuggestOracle cities = new MultiWordSuggestOracle();
+        cities.addAll(Arrays.asList("Aberdeen", "Belfast", "Bristol", "Cardiff", "Dublin", "Edinburgh", "Glasgow",
+                "Leeds", "Liverpool", "London", "Manchester", "Newcastle", "Norwich", "Oxford", "Sheffield", "York"));
+        final SuggestBox city = new SuggestBox(cities);
+        city.setPlaceholder("Start typing");
+        city.setAllowBlank(false);
+        cityGroup.add(city);
+        form.add(cityGroup);
+
+        Button validate = new Button("Validate", ButtonType.PRIMARY);
+        validate.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                form.validate(true);
+            }
+        });
+        Button reset = new Button("Reset", ButtonType.DEFAULT);
+        reset.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                form.reset();
+            }
+        });
+        form.add(inline(validate, reset));
+
+        return panel("Validation", form,
+                "TextBox email = new TextBox();\nemail.setAllowBlank(false);\n\nSuggestBox city = new SuggestBox(oracle);\ncity.setAllowBlank(false);\n\nform.validate(true);\nform.reset();\n\n// Bootstrap 5 puts is-invalid on the control and shows the\n// message from a sibling invalid-feedback element. The error\n// handler creates one if the FormGroup has no HelpBlock.");
     }
 
     private Widget formAdaptersPanel() {

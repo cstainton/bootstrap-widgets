@@ -23,23 +23,193 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-import com.google.gwt.text.shared.Renderer;
-import com.google.gwt.view.client.ProvidesKey;
+import java.util.List;
 
-public class ValueListBox<T> extends com.google.gwt.user.client.ui.ValueListBox<T> {
+import org.gwtbootstrap5.client.ui.base.HasId;
+import org.gwtbootstrap5.client.ui.base.HasResponsiveness;
+import org.gwtbootstrap5.client.ui.base.HasSize;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.base.mixin.BlankValidatorMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.ErrorHandlerMixin;
+import org.gwtbootstrap5.client.ui.base.mixin.IdMixin;
+import org.gwtbootstrap5.client.ui.constants.DeviceSize;
+import org.gwtbootstrap5.client.ui.constants.InputSize;
+import org.gwtbootstrap5.client.ui.form.error.ErrorHandler;
+import org.gwtbootstrap5.client.ui.form.error.ErrorHandlerType;
+import org.gwtbootstrap5.client.ui.form.error.HasErrorHandler;
+import org.gwtbootstrap5.client.ui.form.validator.HasBlankValidator;
+import org.gwtbootstrap5.client.ui.form.validator.HasValidators;
+import org.gwtbootstrap5.client.ui.form.validator.ValidationChangedEvent.ValidationChangedHandler;
+import org.gwtbootstrap5.client.ui.form.validator.Validator;
+
+import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.editor.client.HasEditorErrors;
+import com.google.gwt.text.shared.Renderer;
+import com.google.gwt.user.client.ui.HasName;
+import com.google.gwt.view.client.ProvidesKey;
+import com.google.web.bindery.event.shared.HandlerRegistration;
+
+/**
+ * A {@link com.google.gwt.user.client.ui.ValueListBox} styled for Bootstrap 5.
+ *
+ * <p>Bootstrap 3 styled a select with {@code form-control}; Bootstrap 5 gives
+ * selects their own {@code form-select} class, which is what the underlying
+ * {@link ListBox} applies. Validation puts {@code is-invalid} on the select and
+ * shows the message from a sibling {@code invalid-feedback} element.</p>
+ *
+ * @param <T> the value type
+ */
+public class ValueListBox<T> extends com.google.gwt.user.client.ui.ValueListBox<T> implements HasName, HasId,
+        HasResponsiveness, HasSize<InputSize>, HasEditorErrors<T>, HasErrorHandler, HasValidators<T>,
+        HasBlankValidator<T> {
+
+    private final ErrorHandlerMixin<T> errorHandlerMixin = new ErrorHandlerMixin<T>(this);
+
+    private final IdMixin<ValueListBox<T>> idMixin = new IdMixin<ValueListBox<T>>(this);
+
+    private final BlankValidatorMixin<ValueListBox<T>, T> validatorMixin =
+            new BlankValidatorMixin<ValueListBox<T>, T>(this, errorHandlerMixin.getErrorHandler());
 
     public ValueListBox() {
         super();
-        addStyleName("form-select");
     }
 
-    public ValueListBox(Renderer<? super T> renderer) {
+    public ValueListBox(final Renderer<? super T> renderer) {
         super(renderer);
-        addStyleName("form-select");
     }
 
-    public ValueListBox(Renderer<? super T> renderer, ProvidesKey<T> keyProvider) {
+    public ValueListBox(final Renderer<? super T> renderer, final ProvidesKey<T> keyProvider) {
         super(renderer, keyProvider);
-        addStyleName("form-select");
+    }
+
+    /** Renders through {@link ListBox}, so the select carries form-select. */
+    @Override
+    protected void initWidget(final com.google.gwt.user.client.ui.Widget widget) {
+        super.initWidget(new ListBox());
+    }
+
+    @Override
+    public void setName(final String name) {
+        getElement().setAttribute("name", name == null ? "" : name);
+    }
+
+    @Override
+    public String getName() {
+        return getElement().getAttribute("name");
+    }
+
+    @Override
+    public void setId(final String id) {
+        idMixin.setId(id);
+    }
+
+    @Override
+    public String getId() {
+        return idMixin.getId();
+    }
+
+    @Override
+    public void setSize(final InputSize size) {
+        StyleHelper.addUniqueEnumStyleName(this, InputSize.class, size == null ? InputSize.DEFAULT : size);
+    }
+
+    @Override
+    public InputSize getSize() {
+        return InputSize.fromStyleName(getStyleName());
+    }
+
+    @Override
+    public void setVisibleOn(final DeviceSize deviceSize) {
+        StyleHelper.setVisibleOn(this, deviceSize);
+    }
+
+    @Override
+    public void setHiddenOn(final DeviceSize deviceSize) {
+        StyleHelper.setHiddenOn(this, deviceSize);
+    }
+
+    // ---- validation --------------------------------------------------------
+
+    @Override
+    public void setErrorHandler(final ErrorHandler handler) {
+        validatorMixin.setErrorHandler(handler);
+        errorHandlerMixin.setErrorHandler(handler);
+    }
+
+    @Override
+    public ErrorHandler getErrorHandler() {
+        return errorHandlerMixin.getErrorHandler();
+    }
+
+    @Override
+    public void setErrorHandlerType(final ErrorHandlerType type) {
+        validatorMixin.setErrorHandler(errorHandlerMixin.getErrorHandler());
+        errorHandlerMixin.setErrorHandlerType(type);
+    }
+
+    @Override
+    public ErrorHandlerType getErrorHandlerType() {
+        return errorHandlerMixin.getErrorHandlerType();
+    }
+
+    @Override
+    public void showErrors(final List<EditorError> errors) {
+        errorHandlerMixin.showErrors(errors);
+    }
+
+    @Override
+    public HandlerRegistration addValidationChangedHandler(final ValidationChangedHandler handler) {
+        return validatorMixin.addValidationChangedHandler(handler);
+    }
+
+    @Override
+    public void addValidator(final Validator<T> validator) {
+        validatorMixin.addValidator(validator);
+    }
+
+    @Override
+    public boolean removeValidator(final Validator<T> validator) {
+        return validatorMixin.removeValidator(validator);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void setValidators(final Validator<T>... validators) {
+        validatorMixin.setValidators(validators);
+    }
+
+    @Override
+    public boolean getValidateOnBlur() {
+        return validatorMixin.getValidateOnBlur();
+    }
+
+    @Override
+    public void setValidateOnBlur(final boolean validateOnBlur) {
+        validatorMixin.setValidateOnBlur(validateOnBlur);
+    }
+
+    @Override
+    public boolean getAllowBlank() {
+        return validatorMixin.getAllowBlank();
+    }
+
+    @Override
+    public void setAllowBlank(final boolean allowBlank) {
+        validatorMixin.setAllowBlank(allowBlank);
+    }
+
+    @Override
+    public void reset() {
+        validatorMixin.reset();
+    }
+
+    @Override
+    public boolean validate() {
+        return validatorMixin.validate();
+    }
+
+    @Override
+    public boolean validate(final boolean show) {
+        return validatorMixin.validate(show);
     }
 }

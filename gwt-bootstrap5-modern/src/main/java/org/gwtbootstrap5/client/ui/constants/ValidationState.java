@@ -28,11 +28,22 @@ import com.google.gwt.dom.client.Style;
  * @author Sven Jacobs
  * @author Joshua Godi
  */
+/*
+ * Bootstrap 3 put .has-error / .has-success / .has-warning on the form group
+ * and let descendant selectors colour the control, the label and the help
+ * block. Bootstrap 5 dropped that entirely: the state lives on the control
+ * itself as .is-invalid / .is-valid, and the message is a sibling
+ * .invalid-feedback / .valid-feedback element.
+ *
+ * These constants name the Bootstrap 5 classes, and FormGroup applies them to
+ * the control rather than to itself. Bootstrap 5 has no warning state, so
+ * WARNING names a library class that mirrors the invalid styling in amber.
+ */
 public enum ValidationState implements Style.HasCssName {
     NONE(""),
-    WARNING("has-warning"),
-    ERROR("has-error"),
-    SUCCESS("has-success");
+    WARNING("gbm-is-warning"),
+    ERROR("is-invalid"),
+    SUCCESS("is-valid");
 
     private final String cssClass;
 

@@ -66,15 +66,39 @@ public class FormGroup extends ElementPanel implements HasSize<FormGroupSize>, H
         return FormGroupSize.fromStyleName(getStyleName());
     }
 
+    /**
+     * Bootstrap 3 put .has-error on the group and let descendant selectors
+     * colour everything inside it. Bootstrap 5 puts .is-invalid on the control
+     * itself, so that is where the state goes; the group keeps the property so
+     * calling code and the error handler do not have to know the difference.
+     */
     @Override
     public void setValidationState(ValidationState state) {
-        StyleHelper.addUniqueEnumStyleName(this, ValidationState.class, state);
+        this.validationState = state == null ? ValidationState.NONE : state;
+        if (controlElement == null) {
+            return;
+        }
+        for (ValidationState candidate : ValidationState.values()) {
+            if (!candidate.getCssName().isEmpty()) {
+                controlElement.removeClassName(candidate.getCssName());
+            }
+        }
+        if (!this.validationState.getCssName().isEmpty()) {
+            controlElement.addClassName(this.validationState.getCssName());
+        }
     }
 
     @Override
     public ValidationState getValidationState() {
-        return ValidationState.fromStyleName(getStyleName());
+        return validationState;
     }
+
+    /** The input, textarea or select this group labels, or null if it has none. */
+    public Element getControlElement() {
+        return controlElement;
+    }
+
+    private ValidationState validationState = ValidationState.NONE;
 
     private Element formControlElement(Widget child) {
         if (child instanceof SuggestBox) {

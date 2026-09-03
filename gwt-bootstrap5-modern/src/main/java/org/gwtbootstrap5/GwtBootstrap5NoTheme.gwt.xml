@@ -6,5 +6,6 @@
 -->
 <module rename-to="GwtBootstrap5NoTheme">
     <inherits name="com.google.gwt.user.User"/>
+    <inherits name="org.gwtbootstrap5.GwtBootstrap5Base"/>
     <inherits name="org.gwtbootstrap5.client.NoThemeResources"/>
 </module>

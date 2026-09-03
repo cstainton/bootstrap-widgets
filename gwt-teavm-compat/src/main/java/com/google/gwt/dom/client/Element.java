@@ -25,6 +25,7 @@
 package com.google.gwt.dom.client;
 
 import org.teavm.jso.JSBody;
+import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.xml.Node;
 
@@ -343,4 +344,29 @@ public class Element {
             element.insertBefore(text.unwrap(), (org.teavm.jso.dom.xml.Node) before.unwrap());
         }
     }
+
+    /** The descendants of this element with the given tag name, in document order. */
+    public NodeList<Element> getElementsByTagName(final String tagName) {
+        return new NodeList<Element>(rawElementsByTagName(element, tagName));
+    }
+
+    /** The first descendant matching {@code selectors}, or null. */
+    public Element querySelector(final String selectors) {
+        final HTMLElement found = rawQuerySelector(element, selectors);
+        return found == null ? null : new Element(found);
+    }
+
+    /** Every descendant matching {@code selectors}, in document order. */
+    public NodeList<Element> querySelectorAll(final String selectors) {
+        return new NodeList<Element>(rawQuerySelectorAll(element, selectors));
+    }
+
+    @JSBody(params = {"el", "tagName"}, script = "return el.getElementsByTagName(tagName);")
+    private static native JSObject rawElementsByTagName(HTMLElement el, String tagName);
+
+    @JSBody(params = {"el", "selectors"}, script = "return el.querySelector(selectors);")
+    private static native HTMLElement rawQuerySelector(HTMLElement el, String selectors);
+
+    @JSBody(params = {"el", "selectors"}, script = "return el.querySelectorAll(selectors);")
+    private static native JSObject rawQuerySelectorAll(HTMLElement el, String selectors);
 }
