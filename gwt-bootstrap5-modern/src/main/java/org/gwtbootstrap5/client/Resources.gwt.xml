@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module>
-    <inherits name="org.gwtbootstrap5.client.NoThemeResources"/>
-    <stylesheet src="css/bootstrap-5.3.8.min.cache.css"/>
-</module>

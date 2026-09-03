@@ -6,7 +6,7 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 
 - GwtBootstrap3 top-level widget classes inventoried: `126`.
 - Bootstrap 5 top-level UI Java classes currently present: `134`, including small enum/helper classes.
-- Bootstrap 5 widgets live under `org.gwtbootstrap5.*`, not `org.gwtbootstrap3.*`.
+- Bootstrap 5 widgets live under `io.instanto.bootstrap5.*`, not `org.gwtbootstrap3.*`.
 - The Bootstrap 5 showcase must remain separate from the GwtBootstrap3 compatibility showcase.
 
 ## Compatibility Notes

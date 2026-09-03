@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to="GwtBootstrap5Showcase">
+    <inherits name="io.instanto.bootstrap5.GwtBootstrap5NoTheme"/>
+    <inherits name="io.instanto.bootstrap5.themes.GwtBootstrap5Themes"/>
+    <inherits name="io.instanto.bootstrap5.extras.datepicker.DatePicker"/>
+    <inherits name="io.instanto.bootstrap5.extras.richtext.RichText"/>
+    <inherits name="io.instanto.bootstrap5.extras.slider.Slider"/>
+    <inherits name="io.instanto.bootstrap5.extras.markdown.Markdown"/>
+    <entry-point class="io.instanto.bootstrap5.showcase.client.ShowcaseEntryPoint"/>
+</module>

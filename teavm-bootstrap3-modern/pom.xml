@@ -10,14 +10,14 @@
   </parent>
 
   <artifactId>teavm-bootstrap3-modern</artifactId>
-  <name>GWT Bootstrap 3 Modern TeaVM Widget Backend</name>
+  <name>TeaVM Bootstrap 3 Modern</name>
   <packaging>jar</packaging>
   <description>TeaVM-backed Bootstrap widget API exploration for the separate modern migration track.</description>
 
   <dependencies>
     <dependency>
       <groupId>io.instanto</groupId>
-      <artifactId>gwt-teavm-compat</artifactId>
+      <artifactId>teavm-gwt-compat</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- theme catalogue only; the stylesheets are served by the host page -->

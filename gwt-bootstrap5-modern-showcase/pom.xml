@@ -57,7 +57,7 @@
         <version>1.1.0</version>
         <extensions>true</extensions>
         <configuration>
-          <moduleName>org.gwtbootstrap5.showcase.GwtBootstrap5Showcase</moduleName>
+          <moduleName>io.instanto.bootstrap5.showcase.GwtBootstrap5Showcase</moduleName>
           <launcherDir>${webappDirectory}</launcherDir>
           <jvmArgs>
             <jvmArg>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmArg>

@@ -56,18 +56,18 @@ The core Bootstrap 5 artifact is deliberately independent of Bootstrap 3 and jQu
 
 | Asset | Version | Source package | Licence | Loaded by |
 | --- | --- | --- | --- | --- |
-| Bootstrap | 5.3.8 | `bootstrap` | MIT | `org.gwtbootstrap5.GwtBootstrap5` loads the CSS and bundled JavaScript. `org.gwtbootstrap5.GwtBootstrap5NoTheme` omits only the CSS so an application can supply or switch the stylesheet itself. |
+| Bootstrap | 5.3.8 | `bootstrap` | MIT | `io.instanto.bootstrap5.GwtBootstrap5` loads the CSS and bundled JavaScript. `io.instanto.bootstrap5.GwtBootstrap5NoTheme` omits only the CSS so an application can supply or switch the stylesheet itself. |
 | Bootstrap Icons | 1.13.1 | `bootstrap-icons` | MIT | Both Bootstrap 5 GWT modules load the icon CSS and local font files. |
 
-These files live under `gwt-bootstrap5-modern/src/main/java/org/gwtbootstrap5/client/resource`.
+These files live under `gwt-bootstrap5-modern/src/main/java/io/instanto/bootstrap5/client/resource`.
 They must not be loaded by `gwt-bootstrap3-modern` or used as a hidden compatibility
 layer for the Bootstrap 3 widgets.
 
 ### Bootstrap 5 Theme Assets
 
 Themes are kept in the separate `gwt-bootstrap5-modern-themes` artifact. An application
-inherits `org.gwtbootstrap5.GwtBootstrap5NoTheme` and
-`org.gwtbootstrap5.themes.GwtBootstrap5Themes`, then selects Bootstrap or a Bootswatch
+inherits `io.instanto.bootstrap5.GwtBootstrap5NoTheme` and
+`io.instanto.bootstrap5.themes.GwtBootstrap5Themes`, then selects Bootstrap or a Bootswatch
 theme through the theme API. A selected theme replaces `bootstrap.css`; it is not added
 on top of it.
 
@@ -85,7 +85,7 @@ the core widgets. Inheriting an extra's GWT module loads only that extra's resou
 
 | Asset | Version | Source package | Licence | Used by |
 | --- | --- | --- | --- | --- |
-| Tempus Dominus | 6.10.4 | `@eonasdan/tempus-dominus` | MIT | `org.gwtbootstrap5.extras.datepicker.DatePicker`; replaces the Bootstrap 3 date and date-time picker plugins without requiring jQuery. |
+| Tempus Dominus | 6.10.4 | `@eonasdan/tempus-dominus` | MIT | `io.instanto.bootstrap5.extras.datepicker.DatePicker`; replaces the Bootstrap 3 date and date-time picker plugins without requiring jQuery. |
 | Popper | 2.11.8 | `@popperjs/core` | MIT | The DatePicker module exposes the global Popper API required by Tempus Dominus. Bootstrap's bundled private copy cannot satisfy that dependency. |
 | Quill | 2.0.3 | `quill` | BSD-3-Clause | Rich text editor, replacing the Summernote extra. No jQuery, ships its own toolbar. Licence text at `gwt-bootstrap5-modern-extras/QUILL-LICENSE`. |
 | noUiSlider | 15.8.1 | `nouislider` | MIT | Slider for what a native range input cannot do: two handles, non-linear scales, tooltips, pips. No dependencies. Licence text at `gwt-bootstrap5-modern-extras/NOUISLIDER-LICENSE`. |

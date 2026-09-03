@@ -38,7 +38,7 @@
     <module>gwt-bootstrap5-modern-themes</module>
     <module>gwt-bootstrap5-modern-extras</module>
     <module>gwt-bootstrap5-modern-showcase</module>
-    <module>gwt-teavm-compat</module>
+    <module>teavm-gwt-compat</module>
     <module>teavm-bootstrap3-modern</module>
     <module>teavm-bootstrap5-modern</module>
   </modules>

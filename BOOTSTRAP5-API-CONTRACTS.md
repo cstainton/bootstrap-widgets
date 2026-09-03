@@ -1,6 +1,6 @@
 # Bootstrap 5 API Contract Audit
 
-Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3 package names are normalized to `org.gwtbootstrap5` before comparison.
+Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3 package names are normalized to `io.instanto.bootstrap5` before comparison.
 
 - Shared inventory: `126/126`
 - Full normalized public contract: `58/126`

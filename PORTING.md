@@ -30,7 +30,7 @@ Bootstrap 5 is implemented as a separate migration track, not as a hidden replac
 
 The current shape is:
 
-1. `gwt-bootstrap5-modern`: Bootstrap 5-native GWT widgets under `org.gwtbootstrap5.*`.
+1. `gwt-bootstrap5-modern`: Bootstrap 5-native GWT widgets under `io.instanto.bootstrap5.*`.
 2. `gwt-bootstrap5-modern-showcase`: a Bootstrap 5-native showcase that exercises Bootstrap 5 markup, class names, data attributes, and interaction patterns.
 3. `BOOTSTRAP5-PORTING.md`: an inventory tracking Bootstrap 5 coverage against the existing GwtBootstrap3 widget catalogue.
 
@@ -52,13 +52,13 @@ This repository keeps separate buildable outputs:
 
 1. Bootstrap 3 GWT compatibility: `gwt-bootstrap3-modern`, `gwt-bootstrap3-modern-extras`, and `gwt-bootstrap3-modern-showcase`.
 2. Bootstrap 5 GWT native: `gwt-bootstrap5-modern` and `gwt-bootstrap5-modern-showcase`.
-3. Shared TeaVM compatibility: `gwt-teavm-compat`, a small GWT client API subset used by both TeaVM tracks.
+3. Shared TeaVM compatibility: `teavm-gwt-compat`, a small GWT client API subset used by both TeaVM tracks.
 4. Bootstrap 3 TeaVM experiment: `teavm-bootstrap3-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
 5. Bootstrap 5 TeaVM experiment: `teavm-bootstrap5-modern`, compiled by TeaVM to JavaScript as part of its Maven build.
 
 ## TeaVM Direction
 
-The TeaVM modules are currently widget backend prototypes, not complete replacements for the GWT implementation. They share `gwt-teavm-compat` for a small GWT client surface, but do not depend on UiBinder; TeaVM widgets are constructed directly through Java APIs and lightweight DOM adapters. The intended route is:
+The TeaVM modules are currently widget backend prototypes, not complete replacements for the GWT implementation. They share `teavm-gwt-compat` for a small GWT client surface, but do not depend on UiBinder; TeaVM widgets are constructed directly through Java APIs and lightweight DOM adapters. The intended route is:
 
 1. Keep stabilising the internal DOM/plugin abstraction.
 2. Move direct JSNI/jQuery calls behind small interfaces.
