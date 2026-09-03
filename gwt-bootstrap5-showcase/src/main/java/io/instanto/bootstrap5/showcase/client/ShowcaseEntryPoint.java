@@ -443,12 +443,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "alerts", "Alerts", null);
-        column.add(alertsBasicPanel());
+        column.add(new AlertsBasicView());
         column.add(alertDismissiblePanel());
         column.add(alertLinksPanel());
 
         addPageHeader(column, "badges", "Badges", null);
-        column.add(badgesPanel());
+        column.add(new BadgesView());
         column.add(labelBadgeMigrationPanel());
 
         addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
