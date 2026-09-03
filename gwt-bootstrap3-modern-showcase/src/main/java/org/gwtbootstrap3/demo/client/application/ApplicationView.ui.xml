@@ -176,6 +176,14 @@
                                     <b:AnchorListItem text="GwtBootstrap3-Extras" href="extras-apidocs/index.html"/>
                                 </b:DropDownMenu>
                             </b:ListDropDown>
+                            <b:ListDropDown>
+                                <b:AnchorButton dataToggle="DROPDOWN">Other Builds</b:AnchorButton>
+                                <b:DropDownMenu>
+                                    <b:AnchorListItem text="Bootstrap 5 Showcase (GWT)" href="bootstrap5/"/>
+                                    <b:AnchorListItem text="Bootstrap 3 Showcase (TeaVM)" href="teavm.html"/>
+                                    <b:AnchorListItem text="Bootstrap 5 Showcase (TeaVM)" href="teavm-bootstrap5.html"/>
+                                </b:DropDownMenu>
+                            </b:ListDropDown>
                             <b:AnchorListItem text="Fork on GitHub" href="https://github.com/cstainton/gwtbootstrap-modern"/>
                             <theme:ThemeSwitcher ui:field="themeSwitcher"/>
                         </b:NavbarNav>

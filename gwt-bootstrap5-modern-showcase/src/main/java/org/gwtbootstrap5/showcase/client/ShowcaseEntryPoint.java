@@ -32,6 +32,38 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import org.gwtbootstrap5.client.ui.NavbarText;
+import org.gwtbootstrap5.client.ui.constants.ListGroupItemType;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import com.google.gwt.user.cellview.client.CellTable;
+import com.google.gwt.user.cellview.client.ColumnSortEvent;
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.view.client.ListDataProvider;
+import com.google.gwt.view.client.SelectionChangeEvent;
+import com.google.gwt.view.client.SingleSelectionModel;
+import org.gwtbootstrap5.client.shared.event.ModalHiddenEvent;
+import org.gwtbootstrap5.client.shared.event.ModalHiddenHandler;
+import org.gwtbootstrap5.client.shared.event.ModalHideEvent;
+import org.gwtbootstrap5.client.shared.event.ModalHideHandler;
+import org.gwtbootstrap5.client.shared.event.ModalShowEvent;
+import org.gwtbootstrap5.client.shared.event.ModalShowHandler;
+import org.gwtbootstrap5.client.shared.event.ModalShownEvent;
+import org.gwtbootstrap5.client.shared.event.ModalShownHandler;
+import org.gwtbootstrap5.client.shared.event.TabShowEvent;
+import org.gwtbootstrap5.client.shared.event.TabShowHandler;
+import org.gwtbootstrap5.client.shared.event.TabShownEvent;
+import org.gwtbootstrap5.client.shared.event.TabShownHandler;
+import org.gwtbootstrap5.client.ui.ModalSize;
+import org.gwtbootstrap5.client.ui.IconStack;
+import org.gwtbootstrap5.client.ui.html.Div;
+import org.gwtbootstrap5.client.ui.constants.Emphasis;
+import org.gwtbootstrap5.client.ui.constants.IconFlip;
+import org.gwtbootstrap5.client.ui.constants.IconRotate;
+import org.gwtbootstrap5.client.ui.constants.Placement;
+import org.gwtbootstrap5.client.ui.constants.Trigger;
 import org.gwtbootstrap5.client.ui.Abbreviation;
 import org.gwtbootstrap5.client.ui.Alert;
 import org.gwtbootstrap5.client.ui.Anchor;
@@ -276,7 +308,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbar.getNav().add(dropdown("JavaScript", JS_LABELS, JS_SECTIONS));
         navbar.getNav().add(dropdown("Extras", EXTRA_LABELS, EXTRA_SECTIONS));
         navbar.getNav().add(dropdown("View Javadoc", new String[] {"GWT Bootstrap 5"}, new String[] {"apidocs/index.html"}));
-        navbar.getNav().add(new NavbarLink("Bootstrap 3 Showcase", "../"));
+        navbar.getNav().add(dropdown("Other Builds",
+                new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
+                new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
         navbar.getNav().add(new NavbarLink("Fork on GitHub", "https://github.com/cstainton/gwtbootstrap-modern"));
         return navbar;
     }
@@ -321,6 +355,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(buttonCompositionPanel());
 
         addPageHeader(column, "code", "Code", null);
+        column.add(codeVariantsPanel());
         column.add(panel("Inline and block code", inline(new Code("Code"), new Pre("Preformatted text")), "new Code(\"Code\");\nnew Pre(\"Preformatted text\");"));
 
         addPageHeader(column, "forms", "Forms", null);
@@ -329,6 +364,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "gridSystem", "Grid System", null);
         column.add(gridPanel());
+        column.add(gridNestingPanel());
+        column.add(gridBreakpointsPanel());
 
         addPageHeader(column, "images", "Images", null);
         Image rounded = new Image(IMG_THUMB);
@@ -338,14 +375,27 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Image thumbnail = new Image(IMG_THUMB);
         thumbnail.setType(ImageType.THUMBNAIL);
         column.add(panel("Basic", inline(rounded, circle, thumbnail, new ImageAnchor("#", IMG_THUMB)), "Image rounded = new Image(url);\nrounded.setType(ImageType.ROUNDED);\nimage.setType(ImageType.CIRCLE);\nimage.setType(ImageType.THUMBNAIL);"));
+        column.add(imagesResponsivePanel());
+        column.add(imagesFigurePanel());
 
         addPageHeader(column, "responsiveUtilities", "Responsive Utilities", null);
+        column.add(responsiveUtilitiesTablePanel());
         column.add(panel("Bootstrap 5 utilities", new HTML("<p class='d-none d-md-block'>Visible on medium screens and wider.</p><p class='d-md-none'>Visible below medium screens.</p>"), "Bootstrap 5 responsive display utilities: d-none, d-md-block, d-md-none."));
 
-        addPageHeader(column, "tables", "Tables", null);
-        column.add(panel("Basic", new HTML("<table class='table table-striped'><caption>Table caption</caption><thead><tr><th>#</th><th>Name</th></tr></thead><tbody><tr><td>1</td><td>Bootstrap 5</td></tr></tbody></table>"), "<table class=\"table table-striped\">...</table>"));
+        addPageHeader(column, "tables", "Tables", "plain markup and GWT cell widgets");
+        column.add(tableBasicPanel());
+        column.add(tableVariantsPanel());
+        column.add(tableContextualPanel());
+        column.add(tableResponsivePanel());
+        column.add(cellTablePanel());
 
         addPageHeader(column, "typography", "Typography", null);
+        column.add(typographyHeadingsPanel());
+        column.add(typographyBodyCopyPanel());
+        column.add(typographyInlineElementsPanel());
+        column.add(typographyAlignmentPanel());
+        column.add(typographyBlockQuotePanel());
+        column.add(typographyListsPanel());
         column.add(typographyPanel());
         return row;
     }
@@ -360,47 +410,71 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "badges", "Badges", null);
         column.add(badgesPanel());
+        column.add(labelBadgeMigrationPanel());
 
         addPageHeader(column, "breadcrumbs", "Breadcrumbs", null);
         column.add(breadcrumbsPanel());
 
         addPageHeader(column, "buttonDropdowns", "Button Dropdowns", null);
-        column.add(panel("Basic", dropdown("Action", new String[] {"First", "Second"}, new String[] {"#", "#"}), "ListDropDown dropDown = new ListDropDown(\"Action\");"));
+        column.add(buttonDropdownBasicPanel());
+        column.add(buttonDropdownSplitPanel());
+        column.add(buttonDropdownDirectionsPanel());
+        column.add(buttonDropdownSizesPanel());
+        column.add(buttonDropdownMenuContentPanel());
 
         addPageHeader(column, "buttonGroups", "Button Groups", null);
         column.add(buttonGroupsPanel());
+        column.add(buttonGroupToolbarPanel());
 
         addPageHeader(column, "dropdowns", "Dropdowns", null);
         column.add(dropdownsPanel());
 
-        addPageHeader(column, "icons", "Icons", null);
-        column.add(panel("Bootstrap Icons", inline(new Icon("camera"), new Icon("credit-card"), new Icon("check2-circle")), "new Icon(\"camera\");"));
+        addPageHeader(column, "icons", "Icons", "Bootstrap Icons replace Font Awesome");
+        column.add(iconTypePanel());
+        column.add(iconBasicPanel());
+        column.add(iconSizesPanel());
+        column.add(iconEmphasisPanel());
+        column.add(iconStackPanel());
+        column.add(iconAlignmentPanel());
+        column.add(iconGalleryPanel());
 
         addPageHeader(column, "inputGroups", "Input Groups", null);
         column.add(inputGroupsPanel());
+        column.add(inputGroupVariantsPanel());
 
         addPageHeader(column, "jumbotron", "Jumbotron", null);
-        column.add(panel("Bootstrap 5 mapping", new Jumbotron(), "Bootstrap 5 removed jumbotron; this wrapper maps to spacing/background/rounded utilities."));
+        column.add(jumbotronPanel());
 
         addPageHeader(column, "labels", "Labels", null);
         column.add(labelsPanel());
+        column.add(labelBadgeMigrationPanel());
 
         addPageHeader(column, "listGroup", "List Group", null);
         column.add(listGroupPanel());
+        column.add(listGroupContextualPanel());
+        column.add(listGroupLinkedPanel());
 
         addPageHeader(column, "mediaObjects", "Media Objects", null);
         column.add(mediaPanel());
+        column.add(mediaFlexPanel());
 
         addPageHeader(column, "navbar", "Navbar", null);
         column.add(navbarPanel());
+        column.add(navbarCollapsePanel());
+        column.add(navbarDarkPanel());
 
         addPageHeader(column, "navs", "Navs", null);
         column.add(navsPanel());
+        column.add(navStackedPanel());
+        column.add(navJustifiedPanel());
+        column.add(navDropdownPanel());
+        column.add(navIconsPanel());
 
         addPageHeader(column, "pageHeader", "Page Header", null);
         PageHeader pageHeader = new PageHeader();
         pageHeader.add(new Heading(2, "Page Header"));
         column.add(panel("Basic", pageHeader, "PageHeader pageHeader = new PageHeader();"));
+        column.add(pageHeaderVariantsPanel());
 
         addPageHeader(column, "pagination", "Pagination", null);
         column.add(paginationPanel());
@@ -417,16 +491,16 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(progressStackedPanel());
 
         addPageHeader(column, "suggestBox", "SuggestBox", null);
-        FormGroup suggestGroup = new FormGroup();
-        suggestGroup.add(new FormLabel("SuggestBox"));
-        suggestGroup.add(new SuggestBox());
-        column.add(panel("Basic", suggestGroup, "FormGroup group = new FormGroup();\ngroup.add(new FormLabel(\"SuggestBox\"));\ngroup.add(new SuggestBox());"));
+        column.add(suggestBoxPanel());
 
         addPageHeader(column, "thumbnails", "Thumbnails", null);
         column.add(thumbnailsPanel());
+        column.add(thumbnailLinksPanel());
+        column.add(thumbnailCustomContentPanel());
 
         addPageHeader(column, "wells", "Wells", null);
         column.add(wellsPanel());
+        column.add(wellMigrationPanel());
         return row;
     }
 
@@ -435,6 +509,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Column column = fullColumn(row);
         addPageHeader(column, "carousel", "Carousel", null);
         column.add(panel("Basic", carousel(), "Carousel carousel = new Carousel();\ncarousel.addSlide(...);"));
+        column.add(carouselCaptionsPanel());
+        column.add(carouselOptionsPanel());
 
         addPageHeader(column, "collapse", "Collapse", null);
         column.add(collapsePanel());
@@ -442,18 +518,25 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "modals", "Modals", null);
         column.add(modalPanel(root));
+        column.add(modalSizesPanel(root));
+        column.add(modalOnlyOnePanel(root));
+        column.add(modalEventsPanel(root));
 
         addPageHeader(column, "popover", "Popover", null);
-        Popover popover = new Popover(new Button("Popover", ButtonType.DEFAULT), "Popover", "Popover content");
-        column.add(panel("Basic", popover.asWidget(), "new Popover(widget, \"Popover\", \"Popover content\");"));
+        column.add(popoverPlacementsPanel());
+        column.add(popoverTriggersPanel());
+        column.add(popoverOptionsPanel());
 
         addPageHeader(column, "tabs", "Tabs", null);
         column.add(tabsPanel());
+        column.add(tabsFadePanel());
+        column.add(tabsPillsPanel());
+        column.add(tabsEventsPanel());
 
         addPageHeader(column, "tooltips", "Tooltips", null);
-        Tooltip tooltip = new Tooltip(new Button("Tooltip", ButtonType.DEFAULT), "Tooltip text");
-        TooltipHelpBlock helpBlock = new TooltipHelpBlock("TooltipHelpBlock");
-        column.add(panel("Basic", inline(tooltip.asWidget(), helpBlock.asWidget()), "new Tooltip(widget, \"Tooltip text\");"));
+        column.add(tooltipPlacementsPanel());
+        column.add(tooltipTriggersPanel());
+        column.add(tooltipOptionsPanel());
         return row;
     }
 
@@ -461,6 +544,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Row row = row();
         Column column = fullColumn(row);
         addPageHeader(column, "cards", "Cards", null);
+        column.add(cardHeaderFooterPanel());
+        column.add(cardVariantsPanel());
         column.add(panel("Bootstrap 5 native", sampleCard(), "Card is Bootstrap 5-native and replaces many Bootstrap 3 panel/card-extra use cases."));
         addPageHeader(column, "unsupportedExtras", "Unsupported Extras", null);
         column.add(panel("Not part of core Bootstrap 5", new HTML("<p>Bootstrap Select, Bootbox, DatePicker, DateTimePicker, FullCalendar, Gallery, Notify, Slider, Summernote, TagsInput, ToggleSwitch, Typeahead and Offline are extras with separate third-party dependencies. They are intentionally not represented as Bootstrap 5 core widgets yet.</p>"), "These require separate migration decisions, not silent Bootstrap 5 shims."));
@@ -521,7 +606,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
         disabled.setType(ButtonType.PRIMARY);
         disabled.setOutline(true);
         disabled.setEnabled(false);
-        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled), "button.setIcon(IconType.STAR);\nbutton.setBadgeText(\"1\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setOutline(true);\ncheckBox.setValue(true);" );
+        RadioButton radioA = new RadioButton("button-choice", "Radio A");
+        radioA.setType(ButtonType.PRIMARY);
+        radioA.setOutline(true);
+        RadioButton radioB = new RadioButton("button-choice", "Radio B");
+        radioB.setType(ButtonType.PRIMARY);
+        radioB.setOutline(true);
+        return panel("Composition and checkbox buttons", inline(button, checkBoxButton, initiallyChecked, disabled,
+                radioA, radioB), "button.setIcon(IconType.STAR);\nbutton.setBadgeText(\"1\");\nCheckBoxButton checkBox = new CheckBoxButton(\"CheckBoxButton\");\ncheckBox.setOutline(true);\ncheckBox.setValue(true);\nRadioButton radio = new RadioButton(\"choice\", \"Radio A\");" );
     }
 
     private Widget formsPanel() {
@@ -544,7 +636,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         form.add(new Radio("form-radio", "Radio"));
         form.add(new InlineCheckBox("InlineCheckBox"));
         form.add(new InlineRadio("InlineRadio"));
-        form.add(new SimpleCheckBox("SimpleCheckBox"));
+        SimpleCheckBox simpleCheckBox = new SimpleCheckBox();
+        simpleCheckBox.getElement().setAttribute("aria-label", "SimpleCheckBox");
+        form.add(simpleCheckBox);
         form.add(new SimpleRadioButton("SimpleRadioButton"));
         form.add(new HelpBlock("HelpBlock"));
         form.add(new InlineHelpBlock("InlineHelpBlock"));
@@ -1101,6 +1195,1319 @@ public class ShowcaseEntryPoint implements EntryPoint {
         }
         header.add(heading);
         column.add(header);
+    }
+
+    private static final String[] ICON_GALLERY = {"archive", "arrow-down", "arrow-left", "arrow-right", "arrow-up",
+            "battery", "bell", "bookmark", "bug", "calendar", "camera", "check2-circle", "cloud", "code",
+            "compass", "credit-card", "database", "download", "envelope", "eye", "file-earmark", "filter", "flag",
+            "folder", "gear", "gift", "globe", "heart", "house", "image", "inbox", "info-circle", "key", "link-45deg",
+            "list", "lock", "map", "paperclip", "pencil", "person", "telephone", "play", "plus", "question-circle",
+            "search", "send", "share", "shield", "sliders", "star", "table", "tag", "terminal", "trash", "trophy",
+            "truck", "umbrella", "upload", "wifi", "wrench"};
+
+    private Widget iconBasicPanel() {
+        return panel("Basic Use", inline(new Icon("star"), new Icon("heart"), new Icon("envelope"), new Icon("gear"),
+                new Icon("cloud"), new Icon("camera"), new Icon("credit-card"), new Icon("check2-circle")),
+                "new Icon(\"star\"); // any name from the Bootstrap Icons set\nnew Icon(\"credit-card\");");
+    }
+
+    private Widget iconSizesPanel() {
+        String[] utilities = {"fs-6", "fs-5", "fs-4", "fs-3", "fs-2", "fs-1"};
+        Widget[] icons = new Widget[utilities.length];
+        for (int i = 0; i < utilities.length; i++) {
+            Icon icon = new Icon("star");
+            icon.addStyleName(utilities[i]);
+            icons[i] = icon;
+        }
+        return panel("Sizes", inline(icons),
+                "// IconSize still emits the Font Awesome fa-lg / fa-2x names,\n// which Bootstrap 5 does not define. Size icons with the\n// font-size utilities instead:\nIcon icon = new Icon(\"star\");\nicon.addStyleName(\"fs-1\");");
+    }
+
+    private Widget iconStackPanel() {
+        IconStack stack = new IconStack();
+        Icon background = new Icon("circle-fill");
+        background.addStyleName("fs-1 text-primary");
+        Icon foreground = new Icon("terminal");
+        foreground.addStyleName("position-absolute top-50 start-50 translate-middle text-white");
+        stack.add(background);
+        stack.add(foreground);
+
+        Icon bordered = new Icon("star");
+        bordered.addStyleName("fs-3 border rounded p-2");
+        return panel("Stacked & Bordered Icons", inline(stack, bordered),
+                "IconStack stack = new IconStack();\nstack.add(background);\nstack.add(foreground);\n\n// setBorder(true) emits fa-border; use the border utilities:\nbordered.addStyleName(\"border rounded p-2\");");
+    }
+
+    private Widget iconAlignmentPanel() {
+        String[] names = {"envelope", "calendar", "trash", "gear"};
+        String[] labels = {"Inbox", "Calendar", "Trash", "Settings"};
+        ListGroup list = new ListGroup();
+        for (int i = 0; i < names.length; i++) {
+            Icon icon = new Icon(names[i]);
+            icon.addStyleName("d-inline-block text-center");
+            icon.getElement().getStyle().setProperty("width", "1.25em");
+            ListGroupItem item = new ListGroupItem();
+            item.add(icon);
+            item.add(new InlineHTML(" " + labels[i]));
+            list.add(item);
+        }
+        return panel("Aligned in a List", list,
+                "// setFixedWidth(true) emits fa-fw, which Bootstrap 5 does not define.\nicon.addStyleName(\"d-inline-block text-center\");\nicon.getElement().getStyle().setProperty(\"width\", \"1.25em\");");
+    }
+
+    private Widget iconEmphasisPanel() {
+        Emphasis[] emphases = {Emphasis.DEFAULT, Emphasis.MUTED, Emphasis.PRIMARY, Emphasis.SUCCESS, Emphasis.INFO,
+                Emphasis.WARNING, Emphasis.DANGER};
+        Widget[] icons = new Widget[emphases.length];
+        for (int i = 0; i < emphases.length; i++) {
+            Icon icon = new Icon("info-circle");
+            icon.setSize(IconSize.TIMES2);
+            icon.setEmphasis(emphases[i]);
+            icons[i] = icon;
+        }
+        return panel("Contextual Colours", inline(icons),
+                "icon.setEmphasis(Emphasis.DANGER); // maps to the Bootstrap 5 text-* utilities");
+    }
+
+    private Widget iconTypePanel() {
+        return panel("Migrating icons from Bootstrap 3", new HTML(
+                "<p>Bootstrap&nbsp;3 code names icons through the <code>IconType</code> enum, whose 786 constants are"
+                + " Font&nbsp;Awesome&nbsp;4 class names such as <code>fa-star</code>. Bootstrap&nbsp;5 ships"
+                + " <a href='https://icons.getbootstrap.com/'>Bootstrap&nbsp;Icons</a> instead, whose markup is"
+                + " <code>&lt;i class=\"bi bi-star\"&gt;</code>.</p>"
+                + "<p>Only <strong>200 of the 786</strong> Font&nbsp;Awesome names have a same-named counterpart in"
+                + " Bootstrap&nbsp;Icons&nbsp;1.13.1, so the enum cannot be translated by find-and-replace. Until it"
+                + " is re-based on the Bootstrap&nbsp;Icons vocabulary, name icons as strings —"
+                + " <code>new Icon(\"star\")</code> renders, <code>new Icon(IconType.STAR)</code> does not, and neither"
+                + " does <code>button.setIcon(IconType.STAR)</code>.</p>"
+                + "<p>The modifier API has the same gap. These setters still emit Font&nbsp;Awesome class names that"
+                + " no Bootstrap&nbsp;5 stylesheet defines, so they currently have no visual effect:</p>"
+                + "<div class='table-responsive'><table class='table table-sm'>"
+                + "<thead><tr><th scope='col'>API</th><th scope='col'>Emits</th>"
+                + "<th scope='col'>Bootstrap 5 equivalent</th></tr></thead><tbody>"
+                + "<tr><td><code>setSize(IconSize.LARGE)</code></td><td><code>fa-lg</code></td><td><code>fs-5</code> … <code>fs-1</code></td></tr>"
+                + "<tr><td><code>setSize(IconSize.TIMES2)</code></td><td><code>fa-2x</code></td><td><code>fs-2</code></td></tr>"
+                + "<tr><td><code>setSpin(true)</code></td><td><code>fa-spin</code></td><td><code>spinner-border</code>, or a custom keyframe</td></tr>"
+                + "<tr><td><code>setPulse(true)</code></td><td><code>fa-pulse</code></td><td><code>spinner-grow</code>, or a custom keyframe</td></tr>"
+                + "<tr><td><code>setFixedWidth(true)</code></td><td><code>fa-fw</code></td><td>an explicit <code>width</code></td></tr>"
+                + "<tr><td><code>setBorder(true)</code></td><td><code>fa-border</code></td><td><code>border rounded p-2</code></td></tr>"
+                + "<tr><td><code>setInverse(true)</code></td><td><code>fa-inverse</code></td><td><code>text-white</code></td></tr>"
+                + "<tr><td><code>setRotate(ROTATE_90)</code></td><td><code>fa-rotate-90</code></td><td>a <code>transform: rotate()</code> rule</td></tr>"
+                + "<tr><td><code>setFlip(HORIZONTAL)</code></td><td><code>fa-flip-horizontal</code></td><td>a <code>transform: scaleX(-1)</code> rule</td></tr>"
+                + "<tr><td><code>setEmphasis(DANGER)</code></td><td><code>text-danger</code></td><td>works as-is</td></tr>"
+                + "</tbody></table></div>"),
+                "// Works today\nnew Icon(\"star\");\nicon.setEmphasis(Emphasis.DANGER);\n\n// Renders nothing today\nnew Icon(IconType.STAR);\nicon.setSize(IconSize.TIMES2);\nicon.setSpin(true);");
+    }
+
+    private Widget iconGalleryPanel() {
+        Row grid = new Row();
+        grid.setStyleName("row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-2 text-center");
+        for (String name : ICON_GALLERY) {
+            Column cell = new Column(2);
+            cell.setStyleName("col");
+            Div box = new Div();
+            box.addStyleName("border rounded py-2 h-100");
+            Icon icon = new Icon(name);
+            icon.setSize(IconSize.LARGE);
+            box.add(icon);
+            box.add(new HTML("<small class='text-body-secondary d-block text-truncate'>" + name + "</small>"));
+            cell.add(box);
+            grid.add(cell);
+        }
+        return panel("Available Icons (" + ICON_GALLERY.length + " of 2078)", grid,
+                "for (String name : names) {\n    add(new Icon(name));\n}");
+    }
+
+    private Widget navStackedPanel() {
+        NavPills stacked = new NavPills();
+        stacked.addStyleName("flex-column");
+        stacked.addLink("Home", "#navs").addStyleName("active");
+        stacked.addLink("Profile", "#navs");
+        stacked.addLink("Messages", "#navs");
+        Column narrow = new Column(4);
+        narrow.add(stacked);
+        Row wrapper = row();
+        wrapper.add(narrow);
+        return panel("Stacked Pills", wrapper,
+                "NavPills pills = new NavPills();\npills.addStyleName(\"flex-column\"); // Bootstrap 5 replaces nav-stacked");
+    }
+
+    private Widget navJustifiedPanel() {
+        NavTabs justified = new NavTabs();
+        justified.addStyleName("nav-justified");
+        justified.addLink("Home", "#navs").addStyleName("active");
+        justified.addLink("Profile", "#navs");
+        justified.addLink("Messages", "#navs");
+        NavPills filled = new NavPills();
+        filled.addStyleName("nav-fill");
+        filled.addLink("Home", "#navs").addStyleName("active");
+        filled.addLink("Profile", "#navs");
+        filled.addLink("Messages", "#navs");
+        PanelBody body = new PanelBody();
+        body.add(justified);
+        body.add(new HTML("<div class='mt-3'></div>"));
+        body.add(filled);
+        return panel("Justified and Filled", body,
+                "tabs.addStyleName(\"nav-justified\"); // equal-width, full-width\npills.addStyleName(\"nav-fill\"); // proportional widths");
+    }
+
+    private Widget navDropdownPanel() {
+        NavTabs tabs = new NavTabs();
+        tabs.addLink("Home", "#navs").addStyleName("active");
+        ListDropDown menu = new ListDropDown("Dropdown");
+        menu.addItem(new DropDownItem("Action", "#navs"));
+        menu.addItem(new DropDownItem("Another action", "#navs"));
+        menu.addMenuWidget(new Divider());
+        menu.addItem(new DropDownItem("Separated link", "#navs"));
+        tabs.add(menu);
+        tabs.addLink("Messages", "#navs");
+        return panel("Using Dropdowns", tabs,
+                "NavTabs tabs = new NavTabs();\nListDropDown menu = new ListDropDown(\"Dropdown\");\nmenu.addItem(new DropDownItem(\"Action\", \"#\"));\ntabs.add(menu);");
+    }
+
+    private Widget navIconsPanel() {
+        NavPills pills = new NavPills();
+        String[] names = {"house", "person", "envelope"};
+        String[] labels = {"Home", "Profile", "Messages"};
+        for (int i = 0; i < names.length; i++) {
+            Anchor link = new Anchor("", "#navs");
+            link.addStyleName("nav-link");
+            if (i == 0) {
+                link.addStyleName("active");
+            }
+            Icon icon = new Icon(names[i]);
+            icon.addStyleName("d-inline-block text-center");
+            icon.getElement().getStyle().setProperty("width", "1.25em");
+            link.add(icon);
+            link.add(new InlineHTML(" " + labels[i]));
+            pills.addItem(link);
+        }
+        return panel("Navs With Icons", pills,
+                "Anchor link = new Anchor(\"\", \"#\");\nlink.addStyleName(\"nav-link\");\nlink.add(new Icon(\"house\"));\nlink.add(new InlineHTML(\" Home\"));");
+    }
+
+    private Widget buttonDropdownBasicPanel() {
+        DropDown primary = menuDropDown("Action", ButtonType.PRIMARY);
+        DropDown secondary = menuDropDown("Another action", ButtonType.DEFAULT);
+        DropDown danger = menuDropDown("Danger", ButtonType.DANGER);
+        return panel("Basic", inline(primary, secondary, danger),
+                "DropDown dropDown = new DropDown(\"Action\");\ndropDown.getToggle().setType(ButtonType.PRIMARY);\ndropDown.addItem(new DropDownItem(\"First\", \"#\"));");
+    }
+
+    private Widget buttonDropdownSplitPanel() {
+        Widget[] groups = new Widget[3];
+        ButtonType[] types = {ButtonType.PRIMARY, ButtonType.SUCCESS, ButtonType.DANGER};
+        String[] labels = {"Primary", "Success", "Danger"};
+        for (int i = 0; i < types.length; i++) {
+            groups[i] = splitDropDown(labels[i], types[i]);
+        }
+        return panel("Split", inline(groups),
+                "ButtonGroup group = new ButtonGroup();\ngroup.add(new Button(\"Primary\", ButtonType.PRIMARY));\nDropDown split = new DropDown(\"\");\nsplit.getToggle().addStyleName(\"dropdown-toggle-split\");\ngroup.add(split);");
+    }
+
+    private Widget buttonDropdownDirectionsPanel() {
+        DropDown up = menuDropDown("Dropup", ButtonType.DEFAULT);
+        up.setDropUp(true);
+        DropDown start = menuDropDown("Dropstart", ButtonType.DEFAULT);
+        start.setDropStart(true);
+        DropDown end = menuDropDown("Dropend", ButtonType.DEFAULT);
+        end.setDropEnd(true);
+        DropDown aligned = menuDropDown("End-aligned menu", ButtonType.DEFAULT);
+        aligned.setMenuEndAligned(true);
+        return panel("Directions and Alignment", inline(up, start, end, aligned),
+                "dropDown.setDropUp(true);\ndropDown.setDropStart(true);\ndropDown.setDropEnd(true);\ndropDown.setMenuEndAligned(true);");
+    }
+
+    private Widget buttonDropdownSizesPanel() {
+        DropDown large = menuDropDown("Large", ButtonType.PRIMARY);
+        large.getToggle().setLarge(true);
+        DropDown normal = menuDropDown("Normal", ButtonType.PRIMARY);
+        DropDown small = menuDropDown("Small", ButtonType.PRIMARY);
+        small.getToggle().setSmall(true);
+        DropDown outline = menuDropDown("Outline", ButtonType.PRIMARY);
+        outline.getToggle().setOutline(true);
+        return panel("Sizes and Outline", inline(large, normal, small, outline),
+                "dropDown.getToggle().setLarge(true);\ndropDown.getToggle().setSmall(true);\ndropDown.getToggle().setOutline(true);");
+    }
+
+    private Widget buttonDropdownMenuContentPanel() {
+        DropDown dropDown = new DropDown("Menu content");
+        dropDown.getToggle().setType(ButtonType.DEFAULT);
+        dropDown.addMenuWidget(new DropDownHeader("Header"));
+        dropDown.addItem(new DropDownItem("Action", "#buttonDropdowns"));
+        DropDownItem disabled = new DropDownItem("Disabled action", "#buttonDropdowns");
+        disabled.addStyleName("disabled");
+        dropDown.addItem(disabled);
+        dropDown.addMenuWidget(new Divider());
+        dropDown.addMenuWidget(new DropDownHeader("Second group"));
+        dropDown.addItem(new DropDownItem("Separated link", "#buttonDropdowns"));
+        return panel("Headers, Dividers and Disabled Items", inline(dropDown),
+                "dropDown.addMenuWidget(new DropDownHeader(\"Header\"));\ndropDown.addItem(new DropDownItem(\"Action\", \"#\"));\ndropDown.addMenuWidget(new Divider());");
+    }
+
+    private DropDown menuDropDown(String text, ButtonType type) {
+        DropDown dropDown = new DropDown(text);
+        dropDown.getToggle().setType(type);
+        dropDown.addItem(new DropDownItem("First", "#buttonDropdowns"));
+        dropDown.addItem(new DropDownItem("Second", "#buttonDropdowns"));
+        dropDown.addMenuWidget(new Divider());
+        dropDown.addItem(new DropDownItem("Third", "#buttonDropdowns"));
+        return dropDown;
+    }
+
+    private Widget splitDropDown(String text, ButtonType type) {
+        ButtonGroup group = new ButtonGroup();
+        Button action = new Button(text, type);
+        group.addButton(action);
+        DropDown split = new DropDown("");
+        split.removeStyleName("dropdown");
+        split.getToggle().setType(type);
+        split.getToggle().addStyleName("dropdown-toggle-split");
+        split.getToggle().getElement().setAttribute("aria-label", text + " menu");
+        split.addItem(new DropDownItem("First", "#buttonDropdowns"));
+        split.addItem(new DropDownItem("Second", "#buttonDropdowns"));
+        group.add(split);
+        return group;
+    }
+
+    private Widget jumbotronPanel() {
+        Jumbotron jumbotron = new Jumbotron();
+        jumbotron.add(new Heading(1, "Hello, world!"));
+        jumbotron.add(new Lead("This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content."));
+        jumbotron.add(new HTML("<hr class='my-4'/>"));
+        jumbotron.add(new Paragraph("It uses utility classes for typography and spacing to space content out within the larger container."));
+        Button learnMore = new Button("Learn more", ButtonType.PRIMARY);
+        learnMore.setLarge(true);
+        jumbotron.add(learnMore);
+        return panel("Basic", jumbotron,
+                "Jumbotron jumbotron = new Jumbotron();\njumbotron.add(new Heading(1, \"Hello, world!\"));\njumbotron.add(new Lead(\"...\"));\n\n// Bootstrap 5 dropped the .jumbotron class; the widget now\n// renders the documented p-5 mb-4 bg-body-tertiary rounded-3 utilities.");
+    }
+
+    private Widget suggestBoxPanel() {
+        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+        oracle.addAll(Arrays.asList("Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado",
+                "Connecticut", "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+                "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+                "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+                "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+                "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
+                "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"));
+        SuggestBox suggestBox = new SuggestBox(oracle);
+        suggestBox.getElement().setAttribute("placeholder", "Start typing a state name");
+        FormGroup group = new FormGroup();
+        FormLabel label = new FormLabel("Where do you live?");
+        group.add(label);
+        group.add(suggestBox);
+        group.add(new HelpBlock("The suggestion popup is styled with the Bootstrap 5 dropdown-menu classes."));
+        return panel("Basic", group,
+                "MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();\noracle.addAll(Arrays.asList(\"Alabama\", \"Alaska\", ...));\nSuggestBox suggestBox = new SuggestBox(oracle);");
+    }
+
+    private Widget thumbnailLinksPanel() {
+        Row grid = row();
+        grid.addStyleName("g-3");
+        for (int i = 0; i < 3; i++) {
+            Column cell = new Column(4);
+            ThumbnailLink link = new ThumbnailLink("#thumbnails");
+            link.add(new Image(IMG_THUMB));
+            cell.add(link);
+            grid.add(cell);
+        }
+        return panel("As Links", grid,
+                "ThumbnailLink link = new ThumbnailLink(\"#\");\nlink.add(new Image(url));");
+    }
+
+    private Widget thumbnailCustomContentPanel() {
+        Row grid = row();
+        grid.addStyleName("g-3");
+        for (int i = 0; i < 3; i++) {
+            Column cell = new Column(4);
+            ThumbnailPanel thumbnail = new ThumbnailPanel();
+            thumbnail.addBody(new Image(IMG_THUMB));
+            thumbnail.addBody(new Heading(4, "Heading"));
+            thumbnail.addBody(new Paragraph("Content here..."));
+            Button primary = new Button("Button", ButtonType.PRIMARY);
+            Button secondary = new Button("Button", ButtonType.DEFAULT);
+            thumbnail.addBody(inline(primary, secondary));
+            cell.add(thumbnail);
+            grid.add(cell);
+        }
+        return panel("Custom Content", grid,
+                "ThumbnailPanel thumbnail = new ThumbnailPanel();\nthumbnail.addBody(new Image(url));\nthumbnail.addBody(new Heading(4, \"Heading\"));\nthumbnail.addBody(new Paragraph(\"Content here...\"));");
+    }
+
+    private Widget tableBasicPanel() {
+        return panel("Basic", new HTML("<table class='table'>"
+                + "<caption>A list of the widget libraries in this repository</caption>"
+                + "<thead><tr><th scope='col'>#</th><th scope='col'>Module</th><th scope='col'>Backing CSS</th></tr></thead>"
+                + "<tbody>"
+                + "<tr><th scope='row'>1</th><td>gwt-bootstrap3-modern</td><td>Bootstrap 3.4.1</td></tr>"
+                + "<tr><th scope='row'>2</th><td>gwt-bootstrap5-modern</td><td>Bootstrap 5.3.8</td></tr>"
+                + "<tr><th scope='row'>3</th><td>teavm-bootstrap3-modern</td><td>Bootstrap 3.4.1</td></tr>"
+                + "</tbody></table>"),
+                "<table class=\"table\">\n  <caption>...</caption>\n  <thead>...</thead>\n  <tbody>...</tbody>\n</table>");
+    }
+
+    private Widget tableVariantsPanel() {
+        String head = "<thead><tr><th scope='col'>#</th><th scope='col'>Module</th></tr></thead>";
+        String body = "<tbody><tr><th scope='row'>1</th><td>gwt-bootstrap3-modern</td></tr>"
+                + "<tr><th scope='row'>2</th><td>gwt-bootstrap5-modern</td></tr></tbody>";
+        String[] classes = {"table table-striped", "table table-bordered", "table table-hover", "table table-sm",
+                "table table-dark", "table table-striped-columns"};
+        String[] labels = {"table-striped", "table-bordered", "table-hover", "table-sm (was table-condensed)",
+                "table-dark", "table-striped-columns (new in 5.3)"};
+        PanelBody wrapper = new PanelBody();
+        for (int i = 0; i < classes.length; i++) {
+            wrapper.add(new HTML("<h3 class='h6 text-body-secondary mt-3'><code>" + labels[i] + "</code></h3>"
+                    + "<table class='" + classes[i] + "'>" + head + body + "</table>"));
+        }
+        return panel("Variants", wrapper,
+                "// TableType.CONDENSED is Bootstrap 3 wording; Bootstrap 5 renames it table-sm.\n<table class=\"table table-striped\">...</table>");
+    }
+
+    private Widget tableContextualPanel() {
+        String[] variants = {"primary", "secondary", "success", "danger", "warning", "info", "light", "dark"};
+        StringBuilder rows = new StringBuilder();
+        rows.append("<tr><td>default</td><td>No contextual class</td></tr>");
+        for (String variant : variants) {
+            rows.append("<tr class='table-").append(variant).append("'><td>table-").append(variant)
+                    .append("</td><td>Contextual row</td></tr>");
+        }
+        return panel("Contextual Classes", new HTML("<table class='table'>"
+                + "<thead><tr><th scope='col'>Class</th><th scope='col'>Meaning</th></tr></thead>"
+                + "<tbody>" + rows + "</tbody></table>"),
+                "// Bootstrap 3 used .active/.success/.info/.warning/.danger on rows.\n// Bootstrap 5 uses .table-* with the full theme palette.\n<tr class=\"table-success\">...</tr>");
+    }
+
+    private Widget tableResponsivePanel() {
+        StringBuilder header = new StringBuilder();
+        StringBuilder cells = new StringBuilder();
+        for (int i = 1; i <= 12; i++) {
+            header.append("<th scope='col'>Heading ").append(i).append("</th>");
+            cells.append("<td>Cell ").append(i).append("</td>");
+        }
+        return panel("Responsive", new HTML("<div class='table-responsive'><table class='table table-bordered'>"
+                + "<thead><tr>" + header + "</tr></thead><tbody><tr>" + cells + "</tr><tr>" + cells
+                + "</tr></tbody></table></div>"),
+                "<div class=\"table-responsive\">\n  <table class=\"table\">...</table>\n</div>");
+    }
+
+    private Widget cellTablePanel() {
+        List<Release> releases = Arrays.asList(
+                new Release("Bootstrap", "3.4.1", "2019-02-13"),
+                new Release("Bootstrap", "5.3.8", "2025-08-19"),
+                new Release("jQuery", "3.7.1", "2023-08-28"),
+                new Release("GWT", "2.13.1", "2025-11-05"),
+                new Release("TeaVM", "0.15.0", "2025-08-13"));
+
+        CellTable<Release> table = new CellTable<Release>();
+        table.addStyleName("table table-striped table-hover align-middle");
+        table.setWidth("100%");
+        table.setEmptyTableWidget(new HTML("<p class='text-body-secondary'>No releases.</p>"));
+
+        TextColumn<Release> project = new TextColumn<Release>() {
+            @Override
+            public String getValue(Release release) {
+                return release.project;
+            }
+        };
+        project.setSortable(true);
+        TextColumn<Release> version = new TextColumn<Release>() {
+            @Override
+            public String getValue(Release release) {
+                return release.version;
+            }
+        };
+        TextColumn<Release> released = new TextColumn<Release>() {
+            @Override
+            public String getValue(Release release) {
+                return release.released;
+            }
+        };
+        released.setSortable(true);
+        table.addColumn(project, "Project");
+        table.addColumn(version, "Version");
+        table.addColumn(released, "Released");
+
+        ListDataProvider<Release> provider = new ListDataProvider<Release>(new ArrayList<Release>(releases));
+        provider.addDataDisplay(table);
+
+        final List<Release> rows = provider.getList();
+        ColumnSortEvent.ListHandler<Release> sortHandler = new ColumnSortEvent.ListHandler<Release>(rows);
+        sortHandler.setComparator(project, new Comparator<Release>() {
+            @Override
+            public int compare(Release left, Release right) {
+                return left.project.compareTo(right.project);
+            }
+        });
+        sortHandler.setComparator(released, new Comparator<Release>() {
+            @Override
+            public int compare(Release left, Release right) {
+                return left.released.compareTo(right.released);
+            }
+        });
+        table.addColumnSortHandler(sortHandler);
+        table.getColumnSortList().push(project);
+
+        SingleSelectionModel<Release> selection = new SingleSelectionModel<Release>();
+        table.setSelectionModel(selection);
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>Click a row to select it.</p>");
+        selection.addSelectionChangeHandler(new SelectionChangeEvent.Handler() {
+            @Override
+            public void onSelectionChange(SelectionChangeEvent event) {
+                Release selected = ((SingleSelectionModel<Release>) event.getSource()).getSelectedObject();
+                echo.setHTML(selected == null ? "<p class='text-body-secondary mb-0'>Nothing selected.</p>"
+                        : "<p class='mb-0'>Selected <strong>" + selected.project + " " + selected.version
+                                + "</strong></p>");
+            }
+        });
+
+        Div responsive = new Div();
+        responsive.addStyleName("table-responsive");
+        responsive.add(table);
+        PanelBody body = new PanelBody();
+        body.add(responsive);
+        body.add(echo);
+        return panel("Cell Table", body,
+                "CellTable<Release> table = new CellTable<Release>();\ntable.addStyleName(\"table table-striped table-hover\");\ntable.addColumn(project, \"Project\");\n\nListDataProvider<Release> provider = new ListDataProvider<Release>(releases);\nprovider.addDataDisplay(table);\ntable.addColumnSortHandler(sortHandler);\ntable.setSelectionModel(new SingleSelectionModel<Release>());");
+    }
+
+    private static class Release {
+        private final String project;
+        private final String version;
+        private final String released;
+
+        Release(String project, String version, String released) {
+            this.project = project;
+            this.version = version;
+            this.released = released;
+        }
+    }
+
+    private Widget typographyHeadingsPanel() {
+        PanelBody body = new PanelBody();
+        for (int level = 1; level <= 6; level++) {
+            body.add(new Heading(level, "h" + level + ". Bootstrap heading"));
+        }
+        Heading withSub = new Heading(2, "h2. Heading ");
+        withSub.add(new InlineHTML("<small class='text-body-secondary'>with muted secondary text</small>"));
+        body.add(withSub);
+        Heading withIcon = new Heading(3, "h3. Heading with icon ");
+        withIcon.add(new Icon(IconType.STAR));
+        body.add(withIcon);
+        body.add(new HTML("<p class='display-4'>Display heading</p>"));
+        return panel("Headings", body,
+                "new Heading(1, \"h1. Bootstrap heading\");\n\nHeading withSub = new Heading(2, \"h2. Heading \");\nwithSub.add(new InlineHTML(\"<small class='text-body-secondary'>...</small>\"));\n\n// Bootstrap 3's .text-muted becomes .text-body-secondary in 5.3.");
+    }
+
+    private Widget typographyBodyCopyPanel() {
+        PanelBody body = new PanelBody();
+        body.add(new Lead("Lead text stands out from the surrounding paragraphs."));
+        body.add(new Paragraph("A standard paragraph. Bootstrap 5 keeps a 1rem base font size and a 1.5 line height, "
+                + "so blocks of running text render at a comfortable measure without further styling."));
+        body.add(new Paragraph("A second paragraph, so the default bottom margin between blocks is visible."));
+        return panel("Body Copy", body, "new Lead(\"Lead text...\");\nnew Paragraph(\"A standard paragraph.\");");
+    }
+
+    private Widget typographyInlineElementsPanel() {
+        Abbreviation abbreviation = new Abbreviation("GWT");
+        abbreviation.setTitle("Google Web Toolkit");
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<p>You can use the mark tag to <mark>highlight</mark> text.</p>"
+                + "<p><del>This line of text is meant to be treated as deleted text.</del></p>"
+                + "<p><s>This line of text is meant to be treated as no longer accurate.</s></p>"
+                + "<p><ins>This line of text is meant to be treated as an addition.</ins></p>"
+                + "<p><u>This line of text will render as underlined.</u></p>"
+                + "<p><small>This line of text is meant to be treated as fine print.</small></p>"
+                + "<p><strong>This line rendered as bold text.</strong></p>"
+                + "<p><em>This line rendered as italicised text.</em></p>"));
+        body.add(new Paragraph("Abbreviations carry a title attribute:"));
+        body.add(inline(abbreviation, new Code("Code"), new Pre("Preformatted text")));
+        return panel("Inline Text Elements", body,
+                "Abbreviation abbreviation = new Abbreviation(\"GWT\");\nabbreviation.setTitle(\"Google Web Toolkit\");\nnew Code(\"Code\");\nnew Pre(\"Preformatted text\");");
+    }
+
+    private Widget typographyAlignmentPanel() {
+        return panel("Alignment and Transform", new HTML(
+                "<p class='text-start'>Start aligned text.</p>"
+                + "<p class='text-center'>Centre aligned text.</p>"
+                + "<p class='text-end'>End aligned text.</p>"
+                + "<p class='text-lowercase'>LOWERCASED TEXT.</p>"
+                + "<p class='text-uppercase'>Uppercased text.</p>"
+                + "<p class='text-capitalize'>capitalised text.</p>"),
+                "// Bootstrap 3 used text-left / text-right.\n// Bootstrap 5 is direction-aware: text-start / text-end.\n<p class=\"text-start\">...</p>");
+    }
+
+    private Widget typographyBlockQuotePanel() {
+        BlockQuote quote = new BlockQuote();
+        quote.add(new Paragraph("A well-known quote, contained in a blockquote element."));
+        quote.add(new HTML("<footer class='blockquote-footer'>Someone famous in <cite title='Source Title'>Source Title</cite></footer>"));
+        BlockQuote reversed = new BlockQuote();
+        reversed.addStyleName("text-end");
+        reversed.add(new Paragraph("A quote aligned to the end of the line."));
+        reversed.add(new HTML("<footer class='blockquote-footer'>Someone famous in <cite title='Source Title'>Source Title</cite></footer>"));
+        PanelBody body = new PanelBody();
+        body.add(quote);
+        body.add(reversed);
+        return panel("Blockquotes", body,
+                "BlockQuote quote = new BlockQuote();\nquote.add(new Paragraph(\"...\"));\n\n// Bootstrap 3's .blockquote-reverse becomes .text-end in Bootstrap 5.\nreversed.addStyleName(\"text-end\");");
+    }
+
+    private Widget typographyListsPanel() {
+        Description description = new Description();
+        description.add(new DescriptionTitle("Description lists"));
+        description.add(new DescriptionData("A description list is perfect for defining terms."));
+        description.add(new DescriptionTitle("Horizontal"));
+        description.add(new DescriptionData("Bootstrap 5 builds horizontal description lists from grid classes rather than .dl-horizontal."));
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<ul><li>Unordered list item</li><li>Another item</li></ul>"
+                + "<ol><li>Ordered list item</li><li>Another item</li></ol>"
+                + "<ul class='list-unstyled'><li>Unstyled list item</li><li>Another item</li></ul>"
+                + "<ul class='list-inline'><li class='list-inline-item'>Inline</li><li class='list-inline-item'>list</li><li class='list-inline-item'>items</li></ul>"));
+        body.add(description);
+        return panel("Lists", body,
+                "Description description = new Description();\ndescription.add(new DescriptionTitle(\"Term\"));\ndescription.add(new DescriptionData(\"Definition\"));\n\n// Bootstrap 5 marks inline list children with .list-inline-item.");
+    }
+
+    private Widget carouselCaptionsPanel() {
+        String carouselId = "showcaseCaptionCarousel";
+        Carousel carousel = new Carousel();
+        carousel.getElement().setId(carouselId);
+        CarouselIndicators indicators = new CarouselIndicators();
+        String[] tones = {"primary", "success", "info"};
+        for (int i = 0; i < tones.length; i++) {
+            CarouselIndicator indicator = new CarouselIndicator(carouselId, i);
+            indicator.setActive(i == 0);
+            indicators.addIndicator(indicator);
+        }
+        carousel.insert(indicators, 0);
+        for (int i = 0; i < tones.length; i++) {
+            CarouselSlide slide = new CarouselSlide(new HTML("<div class='d-flex align-items-center "
+                    + "justify-content-center text-bg-" + tones[i] + " rounded' style='height: 14rem;'>Slide "
+                    + (i + 1) + "</div>"));
+            slide.setActive(i == 0);
+            CarouselCaption caption = new CarouselCaption();
+            caption.add(new Heading(5, "Slide " + (i + 1)));
+            caption.add(new Paragraph("Caption!"));
+            slide.add(caption);
+            carousel.addSlide(slide);
+        }
+        carousel.add(new CarouselControl(carouselId, true));
+        carousel.add(new CarouselControl(carouselId, false));
+        return panel("With Captions", carousel,
+                "CarouselSlide slide = new CarouselSlide(content);\nCarouselCaption caption = new CarouselCaption();\ncaption.add(new Heading(5, \"Slide 1\"));\nslide.add(caption);\ncarousel.addSlide(slide);");
+    }
+
+    private Widget carouselOptionsPanel() {
+        final String carouselId = "showcaseOptionsCarousel";
+        final Carousel carousel = new Carousel();
+        carousel.getElement().setId(carouselId);
+        carousel.setInterval(1500);
+        carousel.setWrap(true);
+        carousel.setPause("hover");
+        String[] tones = {"warning", "danger"};
+        for (int i = 0; i < tones.length; i++) {
+            CarouselSlide slide = new CarouselSlide(new HTML("<div class='d-flex align-items-center "
+                    + "justify-content-center text-bg-" + tones[i] + " rounded' style='height: 10rem;'>Slide "
+                    + (i + 1) + " — 1.5s interval</div>"));
+            slide.setActive(i == 0);
+            carousel.addSlide(slide);
+        }
+        carousel.add(new CarouselControl(carouselId, true));
+        carousel.add(new CarouselControl(carouselId, false));
+
+        Button previous = new Button("Previous", ButtonType.DEFAULT);
+        previous.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                carousel.goToPrev();
+            }
+        });
+        Button next = new Button("Next", ButtonType.DEFAULT);
+        next.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                carousel.goToNext();
+            }
+        });
+        Button pause = new Button("Pause", ButtonType.DEFAULT);
+        pause.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                carousel.pauseCarousel();
+            }
+        });
+        Button cycle = new Button("Cycle", ButtonType.DEFAULT);
+        cycle.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                carousel.cycleCarousel();
+            }
+        });
+        PanelBody body = new PanelBody();
+        body.add(carousel);
+        body.add(inline(previous, next, pause, cycle));
+        return panel("Options and Programmatic Control", body,
+                "carousel.setInterval(1500);\ncarousel.setWrap(true);\ncarousel.setPause(\"hover\");\n\ncarousel.goToPrev();\ncarousel.goToNext();\ncarousel.pauseCarousel();\ncarousel.cycleCarousel();");
+    }
+
+    private Widget modalSizesPanel(RootPanel root) {
+        ModalSize[] sizes = {ModalSize.SMALL, ModalSize.DEFAULT, ModalSize.LARGE};
+        String[] labels = {"Small", "Default", "Large"};
+        Widget[] buttons = new Widget[sizes.length];
+        for (int i = 0; i < sizes.length; i++) {
+            final Modal modal = new Modal();
+            modal.setTitle(labels[i] + " modal");
+            modal.setSize(sizes[i]);
+            modal.addToBody(new Paragraph("This modal was created with ModalSize." + sizes[i].name() + "."));
+            ModalFooter footer = new ModalFooter();
+            footer.add(closeButton(modal));
+            modal.addFooter(footer);
+            root.add(modal);
+            Button open = new Button(labels[i], ButtonType.PRIMARY);
+            open.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                    modal.show();
+                }
+            });
+            buttons[i] = open;
+        }
+        return panel("Sizes", inline(buttons),
+                "Modal modal = new Modal();\nmodal.setSize(ModalSize.LARGE);");
+    }
+
+    private Widget modalOnlyOnePanel(RootPanel root) {
+        final Modal first = new Modal();
+        first.setTitle("First modal");
+        first.setHideOtherModals(true);
+        first.addToBody(new Paragraph("Opening the second modal hides this one, because both set "
+                + "setHideOtherModals(true)."));
+        final Modal second = new Modal();
+        second.setTitle("Second modal");
+        second.setHideOtherModals(true);
+        second.addToBody(new Paragraph("The first modal was hidden when this one opened."));
+
+        Button openSecond = new Button("Open the second modal", ButtonType.PRIMARY);
+        openSecond.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                second.show();
+            }
+        });
+        ModalFooter firstFooter = new ModalFooter();
+        firstFooter.add(openSecond);
+        firstFooter.add(closeButton(first));
+        first.addFooter(firstFooter);
+        ModalFooter secondFooter = new ModalFooter();
+        secondFooter.add(closeButton(second));
+        second.addFooter(secondFooter);
+        root.add(first);
+        root.add(second);
+
+        Button open = new Button("Open the first modal", ButtonType.PRIMARY);
+        open.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                first.show();
+            }
+        });
+        return panel("Only One Modal Active", inline(open),
+                "modal.setHideOtherModals(true);");
+    }
+
+    private Widget modalEventsPanel(RootPanel root) {
+        final Modal modal = new Modal();
+        modal.setTitle("Events");
+        modal.addToBody(new Paragraph("Show, shown, hide and hidden are logged below."));
+        ModalFooter footer = new ModalFooter();
+        footer.add(closeButton(modal));
+        modal.addFooter(footer);
+        root.add(modal);
+
+        final ListGroup log = new ListGroup();
+        final HTML empty = new HTML("<p class='text-body-secondary mb-0'>No events yet.</p>");
+        final PanelBody logBody = new PanelBody();
+        logBody.add(empty);
+        logBody.add(log);
+
+        modal.addShowHandler(new ModalShowHandler() {
+            @Override
+            public void onShow(ModalShowEvent event) {
+                logEvent(log, empty, "show");
+            }
+        });
+        modal.addShownHandler(new ModalShownHandler() {
+            @Override
+            public void onShown(ModalShownEvent event) {
+                logEvent(log, empty, "shown");
+            }
+        });
+        modal.addHideHandler(new ModalHideHandler() {
+            @Override
+            public void onHide(ModalHideEvent event) {
+                logEvent(log, empty, "hide");
+            }
+        });
+        modal.addHiddenHandler(new ModalHiddenHandler() {
+            @Override
+            public void onHidden(ModalHiddenEvent event) {
+                logEvent(log, empty, "hidden");
+            }
+        });
+
+        Button open = new Button("Open and watch the log", ButtonType.PRIMARY);
+        open.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                modal.show();
+            }
+        });
+        Button clear = new Button("Clear Log", ButtonType.DEFAULT);
+        clear.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                log.clear();
+                empty.setVisible(true);
+            }
+        });
+        PanelBody body = new PanelBody();
+        body.add(inline(open, clear));
+        body.add(logBody);
+        return panel("Events", body,
+                "modal.addShowHandler(...);\nmodal.addShownHandler(...);\nmodal.addHideHandler(...);\nmodal.addHiddenHandler(...);");
+    }
+
+    private void logEvent(ListGroup log, HTML empty, String name) {
+        empty.setVisible(false);
+        log.add(new ListGroupItem(name));
+    }
+
+    private Button closeButton(final Modal modal) {
+        Button close = new Button("Close", ButtonType.DEFAULT);
+        close.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                modal.hide();
+            }
+        });
+        return close;
+    }
+
+    private Widget tooltipPlacementsPanel() {
+        Placement[] placements = {Placement.TOP, Placement.LEFT, Placement.BOTTOM, Placement.RIGHT};
+        Widget[] widgets = new Widget[placements.length];
+        for (int i = 0; i < placements.length; i++) {
+            Button button = new Button("I have a Tooltip! (" + placements[i].name().toLowerCase() + ")",
+                    ButtonType.DEFAULT);
+            Tooltip tooltip = new Tooltip(button, "Tooltip on " + placements[i].name().toLowerCase());
+            tooltip.setPlacement(placements[i]);
+            widgets[i] = tooltip.asWidget();
+        }
+        return panel("Basic", inline(widgets),
+                "Tooltip tooltip = new Tooltip(button, \"Tooltip text\");\ntooltip.setPlacement(Placement.TOP);");
+    }
+
+    private Widget tooltipTriggersPanel() {
+        Trigger[] triggers = {Trigger.HOVER, Trigger.CLICK, Trigger.FOCUS};
+        Widget[] widgets = new Widget[triggers.length + 1];
+        for (int i = 0; i < triggers.length; i++) {
+            Button button = new Button("I have a Tooltip! (on " + triggers[i].name().toLowerCase() + ")",
+                    ButtonType.DEFAULT);
+            Tooltip tooltip = new Tooltip(button, "Triggered on " + triggers[i].name().toLowerCase());
+            tooltip.setTrigger(triggers[i]);
+            widgets[i] = tooltip.asWidget();
+        }
+        Button manualTarget = new Button("I have a Tooltip! (on manual)", ButtonType.DEFAULT);
+        final Tooltip manual = new Tooltip(manualTarget, "Shown and hidden from code");
+        manual.setTrigger(Trigger.MANUAL);
+        Button show = new Button("Show", ButtonType.PRIMARY);
+        show.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                manual.show();
+            }
+        });
+        Button hide = new Button("Hide", ButtonType.PRIMARY);
+        hide.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                manual.hide();
+            }
+        });
+        PanelBody manualGroup = new PanelBody();
+        manualGroup.setStyleName("gbm-inline-demo");
+        manualGroup.add(manual.asWidget());
+        manualGroup.add(show);
+        manualGroup.add(hide);
+        widgets[triggers.length] = manualGroup;
+        return panel("Triggers", inline(widgets),
+                "tooltip.setTrigger(Trigger.CLICK);\n\ntooltip.setTrigger(Trigger.MANUAL);\ntooltip.show();\ntooltip.hide();");
+    }
+
+    private Widget tooltipOptionsPanel() {
+        Button delayed = new Button("Delayed 500ms / 250ms", ButtonType.DEFAULT);
+        Tooltip delayedTooltip = new Tooltip(delayed, "Appeared after a delay");
+        delayedTooltip.setShowDelayMs(500);
+        delayedTooltip.setHideDelayMs(250);
+
+        Button htmlTarget = new Button("HTML content", ButtonType.DEFAULT);
+        Tooltip htmlTooltip = new Tooltip(htmlTarget, "<em>Emphasised</em> and <strong>bold</strong>");
+        htmlTooltip.setIsHtml(true);
+
+        Button unanimated = new Button("No fade animation", ButtonType.DEFAULT);
+        Tooltip unanimatedTooltip = new Tooltip(unanimated, "No fade");
+        unanimatedTooltip.setIsAnimated(false);
+
+        TooltipHelpBlock helpBlock = new TooltipHelpBlock("TooltipHelpBlock");
+        return panel("Options", inline(delayedTooltip.asWidget(), htmlTooltip.asWidget(),
+                unanimatedTooltip.asWidget(), helpBlock.asWidget()),
+                "tooltip.setShowDelayMs(500);\ntooltip.setHideDelayMs(250);\ntooltip.setIsHtml(true);\ntooltip.setIsAnimated(false);");
+    }
+
+    private Widget popoverPlacementsPanel() {
+        Placement[] placements = {Placement.TOP, Placement.LEFT, Placement.BOTTOM, Placement.RIGHT};
+        Widget[] widgets = new Widget[placements.length];
+        for (int i = 0; i < placements.length; i++) {
+            Button button = new Button("I have a Popover! (" + placements[i].name().toLowerCase() + ")",
+                    ButtonType.DEFAULT);
+            Popover popover = new Popover(button, "Popover on " + placements[i].name().toLowerCase(),
+                    "And here is some content to go with it.");
+            popover.setPlacement(placements[i]);
+            widgets[i] = popover.asWidget();
+        }
+        return panel("Basic", inline(widgets),
+                "Popover popover = new Popover(button, \"Title\", \"Content\");\npopover.setPlacement(Placement.TOP);");
+    }
+
+    private Widget popoverTriggersPanel() {
+        Trigger[] triggers = {Trigger.HOVER, Trigger.CLICK, Trigger.FOCUS};
+        Widget[] widgets = new Widget[triggers.length + 1];
+        for (int i = 0; i < triggers.length; i++) {
+            Button button = new Button("I have a Popover! (on " + triggers[i].name().toLowerCase() + ")",
+                    ButtonType.DEFAULT);
+            Popover popover = new Popover(button, "Trigger", "Triggered on " + triggers[i].name().toLowerCase());
+            popover.setTrigger(triggers[i]);
+            widgets[i] = popover.asWidget();
+        }
+        Button manualTarget = new Button("I have a Popover! (on manual)", ButtonType.DEFAULT);
+        final Popover manual = new Popover(manualTarget, "Manual", "Shown and hidden from code");
+        manual.setTrigger(Trigger.MANUAL);
+        Button show = new Button("Show", ButtonType.PRIMARY);
+        show.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                manual.show();
+            }
+        });
+        Button hide = new Button("Hide", ButtonType.PRIMARY);
+        hide.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                manual.hide();
+            }
+        });
+        PanelBody manualGroup = new PanelBody();
+        manualGroup.setStyleName("gbm-inline-demo");
+        manualGroup.add(manual.asWidget());
+        manualGroup.add(show);
+        manualGroup.add(hide);
+        widgets[triggers.length] = manualGroup;
+        return panel("Triggers", inline(widgets),
+                "popover.setTrigger(Trigger.CLICK);\n\npopover.setTrigger(Trigger.MANUAL);\npopover.show();\npopover.hide();");
+    }
+
+    private Widget popoverOptionsPanel() {
+        Button htmlTarget = new Button("HTML content", ButtonType.DEFAULT);
+        Popover html = new Popover(htmlTarget, "Rich content",
+                "<p>Popovers accept <strong>markup</strong> when <code>setIsHtml(true)</code>.</p>");
+        html.setIsHtml(true);
+
+        Button delayed = new Button("Delayed 400ms", ButtonType.DEFAULT);
+        Popover delayedPopover = new Popover(delayed, "Delayed", "Appeared after 400ms");
+        delayedPopover.setShowDelayMs(400);
+
+        Button contained = new Button("Attached to body", ButtonType.DEFAULT);
+        Popover containedPopover = new Popover(contained, "Container", "Rendered as a child of document.body");
+        containedPopover.setContainer("body");
+
+        return panel("Options", inline(html.asWidget(), delayedPopover.asWidget(), containedPopover.asWidget()),
+                "popover.setIsHtml(true);\npopover.setShowDelayMs(400);\npopover.setContainer(\"body\");");
+    }
+
+    private Widget tabsFadePanel() {
+        TabPanel tabPanel = new TabPanel();
+        String[] labels = {"Tab 4", "Tab 5", "Tab 6"};
+        for (int i = 0; i < labels.length; i++) {
+            String paneId = "fadePane" + i;
+            TabListItem tab = new TabListItem(labels[i], paneId);
+            tab.setActive(i == 0);
+            tabPanel.getTabs().add(tab);
+            TabPane pane = new TabPane();
+            pane.getElement().setId(paneId);
+            pane.setFade(true);
+            pane.setActive(i == 0);
+            pane.setIn(i == 0);
+            pane.add(new Paragraph("Content of " + labels[i] + ", faded in and out."));
+            tabPanel.getContent().add(pane);
+        }
+        return panel("Fading Content In/Out", tabPanel,
+                "TabPane pane = new TabPane();\npane.setFade(true);\npane.setIn(true); // for the initially active pane");
+    }
+
+    private Widget tabsPillsPanel() {
+        TabPanel tabPanel = new TabPanel();
+        tabPanel.getTabs().removeStyleName("nav-tabs");
+        tabPanel.getTabs().addStyleName("nav-pills");
+        String[] labels = {"Pill 1", "Pill 2", "Pill 3"};
+        for (int i = 0; i < labels.length; i++) {
+            String paneId = "pillPane" + i;
+            TabListItem tab = new TabListItem(labels[i], paneId);
+            tab.setActive(i == 0);
+            tabPanel.getTabs().add(tab);
+            TabPane pane = new TabPane();
+            pane.getElement().setId(paneId);
+            pane.setActive(i == 0);
+            pane.add(new Paragraph("Content of " + labels[i] + "."));
+            tabPanel.getContent().add(pane);
+        }
+        return panel("Pills Instead of Tabs", tabPanel,
+                "tabPanel.getTabs().removeStyleName(\"nav-tabs\");\ntabPanel.getTabs().addStyleName(\"nav-pills\");");
+    }
+
+    private Widget tabsEventsPanel() {
+        TabPanel tabPanel = new TabPanel();
+        final ListGroup log = new ListGroup();
+        final HTML empty = new HTML("<p class='text-body-secondary mb-0'>Switch tabs to see show/shown events.</p>");
+        String[] labels = {"Alpha", "Beta", "Gamma"};
+        for (int i = 0; i < labels.length; i++) {
+            String paneId = "eventPane" + i;
+            TabListItem tab = new TabListItem(labels[i], paneId);
+            tab.setActive(i == 0);
+            final String name = labels[i];
+            tab.addShowHandler(new TabShowHandler() {
+                @Override
+                public void onShow(TabShowEvent event) {
+                    logEvent(log, empty, "show: " + name);
+                }
+            });
+            tab.addShownHandler(new TabShownHandler() {
+                @Override
+                public void onShown(TabShownEvent event) {
+                    logEvent(log, empty, "shown: " + name);
+                }
+            });
+            tabPanel.getTabs().add(tab);
+            TabPane pane = new TabPane();
+            pane.getElement().setId(paneId);
+            pane.setActive(i == 0);
+            pane.add(new Paragraph("Content of " + labels[i] + "."));
+            tabPanel.getContent().add(pane);
+        }
+        Button clear = new Button("Clear Log", ButtonType.DEFAULT);
+        clear.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                log.clear();
+                empty.setVisible(true);
+            }
+        });
+        PanelBody body = new PanelBody();
+        body.add(tabPanel);
+        body.add(inline(clear));
+        body.add(empty);
+        body.add(log);
+        return panel("Events", body,
+                "tab.addShowHandler(...);\ntab.addShownHandler(...);\ntab.showTab(); // switch programmatically");
+    }
+
+    private Widget listGroupContextualPanel() {
+        ListGroup group = new ListGroup();
+        ListGroupItemType[] types = {ListGroupItemType.DEFAULT, ListGroupItemType.SUCCESS, ListGroupItemType.INFO,
+                ListGroupItemType.WARNING, ListGroupItemType.DANGER};
+        for (ListGroupItemType type : types) {
+            ListGroupItem item = new ListGroupItem("ListGroupItemType." + type.name());
+            item.setType(type);
+            group.add(item);
+        }
+        ListGroup withBadges = new ListGroup();
+        String[] labels = {"Inbox", "Drafts", "Sent"};
+        String[] counts = {"14", "2", "108"};
+        for (int i = 0; i < labels.length; i++) {
+            ListGroupItem item = new ListGroupItem();
+            item.addStyleName("d-flex justify-content-between align-items-center");
+            item.add(new InlineHTML(labels[i]));
+            Badge badge = new Badge(counts[i], LabelType.PRIMARY);
+            badge.setPill(true);
+            item.add(badge);
+            withBadges.add(item);
+        }
+        return panel("Contextual Classes and Badges", stacked(group, withBadges),
+                "ListGroupItem item = new ListGroupItem(\"Warning\");\nitem.setType(ListGroupItemType.WARNING);\n\nitem.addStyleName(\"d-flex justify-content-between align-items-center\");\nitem.add(pillBadge);");
+    }
+
+    private Widget listGroupLinkedPanel() {
+        LinkedGroup linked = new LinkedGroup();
+        String[] titles = {"First item", "Second item", "Third item"};
+        for (int i = 0; i < titles.length; i++) {
+            LinkedGroupItem item = new LinkedGroupItem(titles[i], "#listGroup");
+            item.setActive(i == 0);
+            item.add(new LinkedGroupItemText("Supporting body text for " + titles[i].toLowerCase() + "."));
+            linked.add(item);
+        }
+        LinkedGroup disabled = new LinkedGroup();
+        LinkedGroupItem enabledItem = new LinkedGroupItem("Enabled link", "#listGroup");
+        LinkedGroupItem disabledItem = new LinkedGroupItem("Disabled link", "#listGroup");
+        disabledItem.setDisabled(true);
+        disabled.add(enabledItem);
+        disabled.add(disabledItem);
+        return panel("Linked Groups", stacked(linked, disabled),
+                "LinkedGroupItem item = new LinkedGroupItem(\"First item\", \"#\");\nitem.setActive(true);\nitem.add(new LinkedGroupItemText(\"Supporting body text.\"));\nitem.setDisabled(true);");
+    }
+
+    private Widget navbarDarkPanel() {
+        Navbar navbar = new Navbar();
+        navbar.setDark(true);
+        navbar.getContainer().add(new NavbarBrand("Dark brand", "#navbar"));
+        navbar.getNav().add(new NavbarLink("Home", "#navbar"));
+        navbar.getNav().add(new NavbarLink("Profile", "#navbar"));
+        navbar.getContainer().add(new NavbarText("Signed in as Carl"));
+        return panel("Dark Navbar", navbar,
+                "Navbar navbar = new Navbar();\nnavbar.setDark(true); // Bootstrap 5.3 also honours data-bs-theme=\"dark\"\nnavbar.getContainer().add(new NavbarText(\"Signed in as Carl\"));");
+    }
+
+    private Widget navbarCollapsePanel() {
+        Navbar navbar = new Navbar();
+        navbar.getContainer().add(new NavbarBrand("Collapsing", "#navbar"));
+        NavbarCollapseButton toggle = new NavbarCollapseButton("demo-navbar-collapse");
+        navbar.getContainer().add(toggle);
+        NavbarCollapse collapse = new NavbarCollapse();
+        collapse.getElement().setId("demo-navbar-collapse");
+        collapse.add(navbar.getNav());
+        navbar.getNav().add(new NavbarLink("Home", "#navbar"));
+        navbar.getNav().add(new NavbarLink("Link", "#navbar"));
+        ListDropDown menu = new ListDropDown("Dropdown");
+        menu.addItem(new DropDownItem("Action", "#navbar"));
+        menu.addItem(new DropDownItem("Another action", "#navbar"));
+        navbar.getNav().add(menu);
+        NavbarForm form = new NavbarForm();
+        Input search = new Input("search");
+        search.setPlaceholder("Search");
+        form.add(search);
+        form.add(new Button("Go", ButtonType.PRIMARY));
+        collapse.add(form);
+        navbar.getContainer().add(collapse);
+        return panel("Collapsing Navbar", navbar,
+                "NavbarCollapseButton toggle = new NavbarCollapseButton(\"navbar-id\");\nNavbarCollapse collapse = new NavbarCollapse();\ncollapse.getElement().setId(\"navbar-id\");\ncollapse.add(navbar.getNav());");
+    }
+
+    private Widget imagesResponsivePanel() {
+        Image fluid = new Image(IMG_THUMB);
+        fluid.addStyleName("img-fluid");
+        Div box = new Div();
+        box.addStyleName("border rounded p-2");
+        box.add(fluid);
+        return panel("Responsive Images", box,
+                "// Bootstrap 3 used .img-responsive.\nimage.addStyleName(\"img-fluid\");");
+    }
+
+    private Widget imagesFigurePanel() {
+        return panel("Figures", new HTML("<figure class='figure'>"
+                + "<img src='" + IMG_THUMB + "' class='figure-img img-fluid rounded' alt='Placeholder'/>"
+                + "<figcaption class='figure-caption'>A caption for the image above.</figcaption></figure>"),
+                "<figure class=\"figure\">\n  <img class=\"figure-img img-fluid rounded\" .../>\n  <figcaption class=\"figure-caption\">...</figcaption>\n</figure>");
+    }
+
+    private Widget cardVariantsPanel() {
+        Row grid = row();
+        grid.addStyleName("g-3");
+        String[] tones = {"primary", "success", "warning"};
+        for (String tone : tones) {
+            Column cell = new Column(4);
+            org.gwtbootstrap5.client.ui.Card card = new org.gwtbootstrap5.client.ui.Card();
+            card.addStyleName("text-bg-" + tone);
+            card.setTitle("text-bg-" + tone);
+            card.addBody(new Paragraph("Bootstrap 5.3 colour helper applied to the whole card."));
+            cell.add(card);
+            grid.add(cell);
+        }
+        return panel("Contextual Cards", grid,
+                "Card card = new Card();\ncard.addStyleName(\"text-bg-primary\");");
+    }
+
+    private Widget cardHeaderFooterPanel() {
+        org.gwtbootstrap5.client.ui.Card card = new org.gwtbootstrap5.client.ui.Card();
+        card.insert(new HTML("<div class='card-header'>Featured</div>"), 0);
+        card.setTitle("Card with a header and footer");
+        card.addBody(new Paragraph("A card body sits between the header and footer."));
+        card.addBody(new AnchorButton("Go somewhere", "#cards", ButtonType.PRIMARY));
+        card.add(new HTML("<div class='card-footer text-body-secondary'>Two days ago</div>"));
+        return panel("Header and Footer", card,
+                "card.insert(new HTML(\"<div class='card-header'>Featured</div>\"), 0);\ncard.add(new HTML(\"<div class='card-footer'>Two days ago</div>\"));");
+    }
+
+    private Widget inputGroupVariantsPanel() {
+        InputGroup checkbox = new InputGroup();
+        checkbox.add(new HTML("<span class='input-group-text'><input class='form-check-input mt-0' type='checkbox' aria-label='Checkbox for the following text input'/></span>"));
+        Input checkboxInput = new Input("text");
+        checkboxInput.setPlaceholder("Checkbox addon");
+        checkbox.add(checkboxInput);
+
+        InputGroup segments = new InputGroup();
+        segments.add(new InputGroupAddon("$"));
+        Input amount = new Input("text");
+        amount.setPlaceholder("Amount");
+        segments.add(amount);
+        segments.add(new InputGroupAddon(".00"));
+
+        InputGroup withDropDown = new InputGroup();
+        DropDown menu = new DropDown("Currency");
+        menu.getToggle().setType(ButtonType.DEFAULT);
+        menu.addItem(new DropDownItem("GBP", "#inputGroups"));
+        menu.addItem(new DropDownItem("EUR", "#inputGroups"));
+        withDropDown.add(menu);
+        Input amountTwo = new Input("text");
+        amountTwo.setPlaceholder("Amount");
+        withDropDown.add(amountTwo);
+
+        return panel("Checkboxes, Multiple Addons and Dropdowns", stacked(checkbox, segments, withDropDown),
+                "InputGroup group = new InputGroup();\ngroup.add(new InputGroupAddon(\"$\"));\ngroup.add(input);\ngroup.add(new InputGroupAddon(\".00\"));\n\ngroup.add(dropDown); // Bootstrap 5 drops the input-group-btn wrapper");
+    }
+
+    private Widget gridBreakpointsPanel() {
+        return panel("Breakpoints", new HTML("<div class='table-responsive'><table class='table table-sm'>"
+                + "<thead><tr><th scope='col'>Infix</th><th scope='col'>Minimum width</th>"
+                + "<th scope='col'>ColumnSize prefix</th></tr></thead><tbody>"
+                + "<tr><td><em>none</em></td><td>0</td><td><code>XS_*</code></td></tr>"
+                + "<tr><td><code>sm</code></td><td>576px</td><td><code>SM_*</code></td></tr>"
+                + "<tr><td><code>md</code></td><td>768px</td><td><code>MD_*</code></td></tr>"
+                + "<tr><td><code>lg</code></td><td>992px</td><td><code>LG_*</code></td></tr>"
+                + "<tr><td><code>xl</code></td><td>1200px</td><td><code>XL_*</code></td></tr>"
+                + "<tr><td><code>xxl</code></td><td>1400px</td><td>—</td></tr>"
+                + "</tbody></table></div>"
+                + "<p class='mb-0'>Bootstrap 3 stopped at <code>lg</code>. Bootstrap 5 adds <code>xxl</code>, and"
+                + " renames the container query breakpoints; <code>ColumnSize.XS_*</code> still maps to the"
+                + " infix-less <code>.col-*</code> classes.</p>"),
+                "new Column(ColumnSize.XS_12);          // .col-12\ncolumn.addSize(ColumnSize.MD_6);       // .col-md-6");
+    }
+
+    private Widget gridNestingPanel() {
+        Row outer = row();
+        Column left = new Column(12);
+        left.setMediumSpan(8);
+        left.add(new HTML("<div class='p-3 text-bg-primary rounded mb-2'>.col-md-8</div>"));
+        Row inner = row();
+        for (int i = 0; i < 2; i++) {
+            Column nested = new Column(6);
+            nested.add(new HTML("<div class='p-3 text-bg-info rounded'>nested .col-6</div>"));
+            inner.add(nested);
+        }
+        left.add(inner);
+        Column right = new Column(12);
+        right.setMediumSpan(4);
+        right.add(new HTML("<div class='p-3 text-bg-secondary rounded'>.col-md-4</div>"));
+        outer.add(left);
+        outer.add(right);
+        return panel("Nesting", outer,
+                "Column left = new Column(12);\nleft.setMediumSpan(8);\nleft.add(nestedRow);");
+    }
+
+    private Widget buttonGroupToolbarPanel() {
+        ButtonToolBar toolbar = new ButtonToolBar();
+        toolbar.addStyleName("gap-2");
+        for (int g = 0; g < 3; g++) {
+            ButtonGroup group = new ButtonGroup();
+            int buttons = g == 0 ? 4 : (g == 1 ? 2 : 1);
+            for (int i = 1; i <= buttons; i++) {
+                group.addButton(new Button(String.valueOf(g * 4 + i), ButtonType.DEFAULT));
+            }
+            toolbar.addGroup(group);
+        }
+        ButtonGroup checkboxes = new ButtonGroup();
+        String[] labels = {"Left", "Middle", "Right"};
+        for (String label : labels) {
+            CheckBoxButton toggle = new CheckBoxButton(label);
+            toggle.setOutline(true);
+            toggle.setType(ButtonType.PRIMARY);
+            checkboxes.add(toggle);
+        }
+        return panel("Toolbars and Toggle Groups", stacked(toolbar, checkboxes),
+                "ButtonToolBar toolbar = new ButtonToolBar();\ntoolbar.addGroup(group);\n\nCheckBoxButton toggle = new CheckBoxButton(\"Left\");\ntoggle.setOutline(true);");
+    }
+
+    private Widget codeVariantsPanel() {
+        return panel("Variables, User Input and Sample Output", new HTML(
+                "<p>Inline code: <code>&lt;section&gt;</code></p>"
+                + "<p>A variable: <var>y</var> = <var>m</var><var>x</var> + <var>b</var></p>"
+                + "<p>User input: press <kbd><kbd>ctrl</kbd> + <kbd>,</kbd></kbd> to open preferences.</p>"
+                + "<p>Sample output: <samp>This text is meant to be treated as sample output.</samp></p>"
+                + "<pre class='p-3 bg-body-tertiary rounded'><code>Row row = new Row();\nrow.add(new Column(12));</code></pre>"),
+                "new Code(\"Code\");\nnew Pre(\"Preformatted text\");\n\n// var, kbd and samp have no widget; use HTML directly.");
+    }
+
+    private Widget mediaFlexPanel() {
+        Div media = new Div();
+        media.addStyleName("d-flex align-items-start mb-3");
+        Image avatar = new Image(IMG_THUMB);
+        avatar.addStyleName("me-3 rounded");
+        Div body = new Div();
+        body.addStyleName("flex-grow-1");
+        body.add(new Heading(5, "Media heading"));
+        body.add(new Paragraph("Bootstrap 5 removed the .media component. The same layout is now built from the"
+                + " flex utilities, which is what MediaList and MediaBody emit."));
+        media.add(avatar);
+        media.add(body);
+        return panel("Bootstrap 5 Flex Equivalent", media,
+                "// Bootstrap 3\n<div class=\"media\"><div class=\"media-body\">...</div></div>\n\n// Bootstrap 5\n<div class=\"d-flex align-items-start\">\n  <img class=\"me-3\"/>\n  <div class=\"flex-grow-1\">...</div>\n</div>");
+    }
+
+    private Widget pageHeaderVariantsPanel() {
+        PageHeader withSub = new PageHeader();
+        Heading heading = new Heading(2, "Example page header ");
+        heading.add(new InlineHTML("<small class='text-body-secondary'>Subtext for the header</small>"));
+        withSub.add(heading);
+        return panel("With Subtext", withSub,
+                "PageHeader header = new PageHeader();\nHeading heading = new Heading(2, \"Example page header \");\nheading.add(new InlineHTML(\"<small class='text-body-secondary'>Subtext</small>\"));\nheader.add(heading);\n\n// Bootstrap 5 dropped .page-header; the widget emits a\n// bottom-bordered block built from utilities.");
+    }
+
+    private Widget labelBadgeMigrationPanel() {
+        Widget[] pills = new Widget[6];
+        LabelType[] types = {LabelType.DEFAULT, LabelType.PRIMARY, LabelType.SUCCESS, LabelType.INFO,
+                LabelType.WARNING, LabelType.DANGER};
+        for (int i = 0; i < types.length; i++) {
+            Badge badge = new Badge(types[i].name(), types[i]);
+            badge.setPill(true);
+            pills[i] = badge;
+        }
+        return panel("Labels became Badges", stacked(inline(pills), new HTML(
+                "<p class='mb-0'>Bootstrap 3 had two components, <code>.label</code> and <code>.badge</code>."
+                + " Bootstrap 5 keeps only <code>.badge</code>, so the <code>Label</code> widget now renders a badge."
+                + " <code>LabelType</code> is retained for source compatibility and maps onto the"
+                + " <code>text-bg-*</code> helpers.</p>")),
+                "new Label(\"Primary\", LabelType.PRIMARY);  // renders <span class=\"badge text-bg-primary\">\nBadge badge = new Badge(\"Primary\", LabelType.PRIMARY);\nbadge.setPill(true);                    // .rounded-pill");
+    }
+
+    private Widget wellMigrationPanel() {
+        return panel("Bootstrap 5 mapping", new HTML(
+                "<p class='mb-0'>Bootstrap 5 removed <code>.well</code>. The widget renders the documented"
+                + " replacement — a padded, rounded block on the tertiary background — and"
+                + " <code>.well-lg</code> / <code>.well-sm</code> become the padding utilities"
+                + " <code>p-5</code> and <code>p-2</code>.</p>"),
+                "Well well = new Well();\nwell.addStyleName(\"p-5\"); // was .well-lg\nwell.addStyleName(\"p-2\"); // was .well-sm");
+    }
+
+    private Widget responsiveUtilitiesTablePanel() {
+        return panel("Display Utilities", new HTML("<div class='table-responsive'><table class='table table-sm'>"
+                + "<thead><tr><th scope='col'>Bootstrap 3</th><th scope='col'>Bootstrap 5</th></tr></thead><tbody>"
+                + "<tr><td><code>.hidden-xs</code></td><td><code>.d-none .d-sm-block</code></td></tr>"
+                + "<tr><td><code>.visible-xs</code></td><td><code>.d-block .d-sm-none</code></td></tr>"
+                + "<tr><td><code>.hidden-md</code></td><td><code>.d-md-none .d-lg-block</code></td></tr>"
+                + "<tr><td><code>.visible-print-block</code></td><td><code>.d-print-block</code></td></tr>"
+                + "<tr><td><code>.pull-left</code></td><td><code>.float-start</code></td></tr>"
+                + "<tr><td><code>.pull-right</code></td><td><code>.float-end</code></td></tr>"
+                + "<tr><td><code>.center-block</code></td><td><code>.mx-auto .d-block</code></td></tr>"
+                + "</tbody></table></div>"),
+                "// Responsiveness and DeviceSize are kept for source compatibility\n// and emit the Bootstrap 5 d-* utilities.");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {
