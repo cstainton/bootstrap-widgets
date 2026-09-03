@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 import io.instanto.bootstrap5.client.Bootstrap5;
+import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.client.ui.BlockQuote;
 import io.instanto.bootstrap5.client.ui.ButtonToolBar;
 import io.instanto.bootstrap5.client.ui.Card;
@@ -148,6 +149,7 @@ public final class Bootstrap5ShowcaseApp {
     private static final Paragraph THEME_STATUS = new Paragraph();
 
     public static void main(final String[] args) {
+        Bootstrap5Resources.setBase(CSS);
         Themes.register(StandardThemes.all(CSS));
         Themes.register(BootswatchThemes.all(CSS));
         Themes.restore(StandardThemes.bootstrap(CSS));

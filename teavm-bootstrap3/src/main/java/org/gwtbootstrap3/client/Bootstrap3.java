@@ -17,39 +17,27 @@
  * limitations under the License.
  * #L%
  */
-package io.instanto.bootstrap5.client;
+package org.gwtbootstrap3.client;
 
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Attaches Bootstrap 5 widgets to the page.
- *
- * <pre>{@code
- * public final class MyApp {
- *     public static void main(String[] args) {
- *         Container container = new Container();
- *         container.add(new Button("Hello"));
- *         Bootstrap5.mount(container);
- *     }
- * }
- * }</pre>
- *
- * <p>{@link #mount(IsWidget)} attaches to {@code <body>}; {@link #mount(String, IsWidget)}
- * attaches into the element with the given id, which is usually what you want when the
- * widgets are one part of an existing page.</p>
+ * Entry point for a TeaVM application using the Bootstrap 3 widgets, mirroring the
+ * Bootstrap 5 track's {@code Bootstrap5}. Mounting through this class rather than
+ * {@code RootPanel} directly is what injects the library's stylesheets, so a host page
+ * does not have to know which ones the widgets need.
  */
-public final class Bootstrap5 {
+public final class Bootstrap3 {
 
-    private Bootstrap5() {
+    private Bootstrap3() {
     }
 
     /** Attaches {@code widget} to the document body. */
     public static void mount(final IsWidget widget) {
-        Bootstrap5Resources.ensureInjected();
+        Bootstrap3Resources.ensureInjected();
         RootPanel.get().add(asWidget(widget));
     }
 
@@ -59,7 +47,7 @@ public final class Bootstrap5 {
      * @throws IllegalArgumentException if no element with that id exists
      */
     public static void mount(final String elementId, final IsWidget widget) {
-        Bootstrap5Resources.ensureInjected();
+        Bootstrap3Resources.ensureInjected();
         final RootPanel host = RootPanel.get(elementId);
         if (host == null) {
             throw new IllegalArgumentException("No element with id '" + elementId + "' on the page");
@@ -67,19 +55,12 @@ public final class Bootstrap5 {
         host.add(asWidget(widget));
     }
 
-    /** Attaches {@code widget} inside {@code host}, replacing nothing already there. */
+    /** Attaches {@code widget} inside {@code host}. */
     public static void mount(final Element host, final IsWidget widget) {
         if (host == null) {
             throw new IllegalArgumentException("host element must not be null");
         }
-        final String id = host.getId() == null || host.getId().isEmpty()
-                ? assignId(host) : host.getId();
-        mount(id, widget);
-    }
-
-    /** True when Bootstrap's own JavaScript bundle is present on the page. */
-    public static boolean isBootstrapJavaScriptLoaded() {
-        return bootstrapPresent();
+        mount(host.getId(), widget);
     }
 
     private static Widget asWidget(final IsWidget widget) {
@@ -88,13 +69,4 @@ public final class Bootstrap5 {
         }
         return widget.asWidget();
     }
-
-    private static String assignId(final Element host) {
-        final String id = Document.get().createUniqueId();
-        host.setId(id);
-        return id;
-    }
-
-    @org.teavm.jso.JSBody(script = "return !!(window.bootstrap && window.bootstrap.Modal);")
-    private static native boolean bootstrapPresent();
 }

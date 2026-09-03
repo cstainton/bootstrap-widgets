@@ -32,4 +32,11 @@
       belongs here rather than in Resources.
     -->
     <stylesheet src="css/font-awesome-4.7.0.min.cache.css"/>
+
+    <!--
+      The library's own stylesheet, additive to Bootstrap rather than a
+      replacement for it, so it survives a runtime theme switch the same way
+      Font Awesome above does.
+    -->
+    <stylesheet src="css/gwt-bootstrap3.cache.css"/>
 </module>

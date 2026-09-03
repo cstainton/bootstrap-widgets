@@ -25,7 +25,6 @@
 package org.gwtbootstrap3.teavm.demo;
 
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Anchor;
 import org.gwtbootstrap3.client.ui.BlockQuote;
@@ -63,6 +62,7 @@ import org.gwtbootstrap3.client.ui.constants.ButtonGroupSize;
 import org.gwtbootstrap3.client.ui.constants.IconFlip;
 import org.gwtbootstrap3.client.ui.constants.IconRotate;
 import org.gwtbootstrap3.client.ui.constants.ProgressType;
+import org.gwtbootstrap3.client.Bootstrap3;
 import org.gwtbootstrap3.client.ui.Alert;
 import org.gwtbootstrap3.client.ui.AnchorButton;
 import org.gwtbootstrap3.client.ui.AnchorListItem;
@@ -138,7 +138,7 @@ public final class Bootstrap3ShowcaseApp {
 
         final Container container = new Container();
         container.add(page());
-        RootPanel.get().add(container);
+        Bootstrap3.mount(container);
     }
 
     private static Row page() {

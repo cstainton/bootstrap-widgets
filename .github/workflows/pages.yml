@@ -61,6 +61,7 @@ jobs:
           cp "${b3_res}/css/bootstrap-3.4.1.min.cache.css" public/bootstrap/
           cp "${b3_res}/css/bootstrap-theme-3.4.1.min.cache.css" public/bootstrap/
           cp "${b3_res}/css/font-awesome-4.7.0.min.cache.css" public/css/
+          cp "${b3_res}/css/gwt-bootstrap3.cache.css" public/css/
           cp "${b3_res}"/fonts/* public/fonts/
           cp gwt-bootstrap3-themes/src/main/java/org/gwtbootstrap3/themes/client/resource/css/bootswatch-*.css public/themes/
           mkdir -p public/teavm5
