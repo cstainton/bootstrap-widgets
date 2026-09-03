@@ -1222,12 +1222,13 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Anchor anchor = new Anchor(title, "#" + id);
         anchor.setDataToggle("collapse");
         anchor.getElement().setAttribute("data-bs-target", "#" + id);
-        anchor.getElement().setAttribute("data-bs-parent", "#accordion");
         header.add(anchor);
         panel.add(header);
         PanelCollapse collapse = new PanelCollapse();
         collapse.getElement().setId(id);
         collapse.setIn(open);
+        // Bootstrap 5 reads data-bs-parent from the collapsing element, not the toggle.
+        collapse.getElement().setAttribute("data-bs-parent", "#accordion");
         PanelBody body = new PanelBody();
         body.add(new Paragraph("I am the content of " + title + "."));
         collapse.add(body);

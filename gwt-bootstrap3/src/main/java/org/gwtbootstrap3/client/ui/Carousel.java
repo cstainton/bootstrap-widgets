@@ -25,6 +25,7 @@ import org.gwtbootstrap3.client.shared.event.CarouselSlidHandler;
 import org.gwtbootstrap3.client.shared.event.CarouselSlideEvent;
 import org.gwtbootstrap3.client.shared.event.CarouselSlideHandler;
 import org.gwtbootstrap3.client.shared.js.JQuery;
+import org.gwtbootstrap3.client.ui.base.CarouselOptions;
 import org.gwtbootstrap3.client.ui.constants.Attributes;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.html.Div;
@@ -32,7 +33,6 @@ import org.gwtbootstrap3.client.ui.html.Div;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Event;
 
-import jsinterop.annotations.JsMethod;
 
 /**
  * @author Joshua Godi
@@ -67,7 +67,7 @@ public class Carousel extends Div {
         bindJavaScriptEvents(getElement());
 
         // Configure the carousel
-        carousel(getElement(), interval, pause, wrap);
+        CarouselOptions.carousel(getElement(), interval, pause, wrap);
     }
 
     @Override
@@ -168,9 +168,6 @@ public class Carousel extends Div {
         JQuery.jQuery(e).off("slid.bs.carousel");
     }
 
-    @JsMethod
-    private static native void carousel(final com.google.gwt.dom.client.Element e, final int interval, final String pause,
-                                 final boolean wrap);
 
     private void fireMethod(final com.google.gwt.dom.client.Element e, String method) {
         JQuery.jQuery(e).carousel(method);

@@ -25,6 +25,45 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 
 import io.instanto.bootstrap5.client.Bootstrap5;
+import io.instanto.bootstrap5.client.ui.BlockQuote;
+import io.instanto.bootstrap5.client.ui.ButtonToolBar;
+import io.instanto.bootstrap5.client.ui.Card;
+import io.instanto.bootstrap5.client.ui.Code;
+import io.instanto.bootstrap5.client.ui.Description;
+import io.instanto.bootstrap5.client.ui.DescriptionData;
+import io.instanto.bootstrap5.client.ui.DescriptionTitle;
+import io.instanto.bootstrap5.client.ui.IconStack;
+import io.instanto.bootstrap5.client.ui.Image;
+import io.instanto.bootstrap5.client.ui.Jumbotron;
+import io.instanto.bootstrap5.client.ui.Lead;
+import io.instanto.bootstrap5.client.ui.LinkedGroup;
+import io.instanto.bootstrap5.client.ui.LinkedGroupItem;
+import io.instanto.bootstrap5.client.ui.Pager;
+import io.instanto.bootstrap5.client.ui.VerticalButtonGroup;
+import io.instanto.bootstrap5.client.ui.Well;
+import io.instanto.bootstrap5.client.ui.constants.ButtonGroupSize;
+import io.instanto.bootstrap5.client.ui.constants.IconFlip;
+import io.instanto.bootstrap5.client.ui.constants.IconRotate;
+import io.instanto.bootstrap5.client.ui.constants.ProgressType;
+import io.instanto.bootstrap5.client.ui.Anchor;
+import io.instanto.bootstrap5.client.ui.Carousel;
+import io.instanto.bootstrap5.client.ui.CarouselControl;
+import io.instanto.bootstrap5.client.ui.CarouselIndicator;
+import io.instanto.bootstrap5.client.ui.CarouselIndicators;
+import io.instanto.bootstrap5.client.ui.CarouselSlide;
+import io.instanto.bootstrap5.client.ui.Collapse;
+import io.instanto.bootstrap5.client.ui.FieldSet;
+import io.instanto.bootstrap5.client.ui.Form;
+import io.instanto.bootstrap5.client.ui.FormControlStatic;
+import io.instanto.bootstrap5.client.ui.Legend;
+import io.instanto.bootstrap5.client.ui.MediaBody;
+import io.instanto.bootstrap5.client.ui.MediaList;
+import io.instanto.bootstrap5.client.ui.Navbar;
+import io.instanto.bootstrap5.client.ui.NavbarBrand;
+import io.instanto.bootstrap5.client.ui.NavbarLink;
+import io.instanto.bootstrap5.client.ui.NavPills;
+import io.instanto.bootstrap5.client.ui.PanelCollapse;
+import io.instanto.bootstrap5.client.ui.PanelGroup;
 import io.instanto.bootstrap5.client.ui.Alert;
 import io.instanto.bootstrap5.client.ui.AnchorListItem;
 import io.instanto.bootstrap5.client.ui.Badge;
@@ -190,6 +229,66 @@ public final class Bootstrap5ShowcaseApp {
                 "new Tooltip(button, \"Tooltip text\");\n"
                 + "new Popover(button, \"Title\", \"Content\");\n"
                 + "// reaching Bootstrap's JavaScript through @JSBody, not JSNI"));
+        column.add(panel("Grid", grid(),
+                "Row row = new Row();\n"
+                + "Column column = new Column(12);\n"
+                + "column.setMediumSpan(6);   // col-12 col-md-6"));
+        column.add(panel("Typography", typography(),
+                "new Heading(3, \"...\");\nnew Lead(\"...\");\n"
+                + "new BlockQuote();\nnew Description();   // dl/dt/dd"));
+        column.add(panel("Code", code(),
+                "new Code(\"inline\");\nnew Pre(\"a block\");"));
+        column.add(panel("Tables", tables(),
+                "// No Table widget: Bootstrap 5 tables are class-driven,\n"
+                + "// so plain markup with .table is the whole API."));
+        column.add(panel("Cards", cards(),
+                "Card card = new Card();\n"
+                + "card.addStyleName(\"text-bg-primary\");"));
+        column.add(panel("Wells and jumbotron", wells(),
+                "new Well();\n"
+                + "// Bootstrap 5 dropped both classes; the widgets render the\n"
+                + "// documented utility equivalents instead."));
+        column.add(panel("Progress variants", progressVariants(),
+                "Progress progress = new Progress();\n"
+                + "progress.setType(ProgressType.STRIPED);\n"
+                + "progress.setActive(true);   // adds progress-bar-animated\n"
+                + "progress.add(new ProgressBar(40));"));
+        column.add(panel("Button groups", buttonGroups(),
+                "ButtonGroup group = new ButtonGroup();\n"
+                + "group.setSize(ButtonGroupSize.LARGE);\n"
+                + "new ButtonToolBar();\nnew VerticalButtonGroup();"));
+        column.add(panel("Icon variants", iconVariants(),
+                "icon.setRotate(IconRotate.ROTATE_90);\n"
+                + "icon.setFlip(IconFlip.HORIZONTAL);\n"
+                + "IconStack stack = new IconStack();"));
+        column.add(panel("Pager and linked groups", pagerAndLinked(),
+                "Pager pager = new Pager();\npager.setPreviousText(\"Older\");\n"
+                + "LinkedGroup group = new LinkedGroup();"));
+        column.add(panel("Collapse", collapse(),
+                "Collapse collapse = new Collapse();\ncollapse.toggle();"));
+        column.add(panel("Accordion", accordion(),
+                "PanelGroup accordion = new PanelGroup();\n"
+                + "PanelCollapse body = new PanelCollapse();\n"
+                + "// Bootstrap 5 renames the attributes: data-bs-toggle,\n"
+                + "// data-bs-target and data-bs-parent"));
+        column.add(panel("Navs", navs(),
+                "NavPills pills = new NavPills();\n"
+                + "pills.addStyleName(\"flex-column\");   // replaces nav-stacked"));
+        column.add(panel("Navbar", navbar(),
+                "Navbar navbar = new Navbar();\n"
+                + "navbar.getContainer().add(new NavbarBrand(\"Brand\", \"#\"));\n"
+                + "navbar.getNav().add(new NavbarLink(\"Link\", \"#\"));"));
+        column.add(panel("Carousel", carousel(),
+                "Carousel carousel = new Carousel();\n"
+                + "carousel.addSlide(new CarouselSlide(content));\n"
+                + "carousel.add(new CarouselControl(id, true));"));
+        column.add(panel("Media and images", media(),
+                "MediaList list = new MediaList();\nlist.add(new MediaBody());\n"
+                + "// Bootstrap 5 dropped .media for flex utilities"));
+        column.add(panel("Form layout", formLayout(),
+                "Form form = new Form();\nFieldSet fieldSet = new FieldSet();\n"
+                + "fieldSet.add(new Legend(\"...\"));\n"
+                + "new FormControlStatic(\"read-only text\");"));
         column.add(panel("Modals and dialogs", modals(),
                 "Modal modal = new Modal();\nmodal.show();\n\n"
                 + "// native replacements for window.alert/confirm/prompt,\n"
@@ -613,6 +712,390 @@ public final class Bootstrap5ShowcaseApp {
         body.add(answer);
         body.add(modal);
         return body;
+    }
+
+    private static Widget grid() {
+        final PanelBody body = new PanelBody();
+        final Row row = new Row();
+        row.addStyleName("g-2 mb-2");
+        for (int i = 0; i < 3; i++) {
+            final Column cell = new Column(12);
+            cell.setMediumSpan(4);
+            cell.add(new HTML("<div class='p-2 text-center border rounded bg-body-tertiary'>col-12 col-md-4</div>"));
+            row.add(cell);
+        }
+
+        final Row nested = new Row();
+        nested.addStyleName("g-2");
+        final Column outer = new Column(12);
+        outer.setMediumSpan(8);
+        final Row inner = new Row();
+        inner.addStyleName("g-2");
+        for (int i = 0; i < 2; i++) {
+            final Column cell = new Column(6);
+            cell.add(new HTML("<div class='p-2 text-center border rounded bg-body-tertiary'>nested col-6</div>"));
+            inner.add(cell);
+        }
+        outer.add(new HTML("<div class='p-2 border rounded bg-body-tertiary mb-2'>col-12 col-md-8</div>"));
+        outer.add(inner);
+        nested.add(outer);
+
+        body.add(row);
+        body.add(nested);
+        return body;
+    }
+
+    private static Widget typography() {
+        final PanelBody body = new PanelBody();
+        body.add(new Heading(3, "A level three heading"));
+        body.add(new Lead("A lead paragraph, which Bootstrap 5 still styles with .lead."));
+        body.add(new Paragraph("An ordinary paragraph for comparison."));
+        body.add(new HTML("<p><mark>Marked</mark>, <del>deleted</del>, <ins>inserted</ins>, "
+                + "<small>small</small> and <strong>strong</strong> inline elements.</p>"));
+
+        final BlockQuote quote = new BlockQuote();
+        quote.add(new Paragraph("A quotation, contained in a blockquote element."));
+        quote.add(new HTML("<footer class='blockquote-footer'>Someone famous in "
+                + "<cite title='Source Title'>Source Title</cite></footer>"));
+        body.add(quote);
+
+        final Description description = new Description();
+        description.add(new DescriptionTitle("Widgets"));
+        description.add(new DescriptionData("Compiled from the same sources as the GWT build."));
+        description.add(new DescriptionTitle("DOM and events"));
+        description.add(new DescriptionData("TeaVM JSO."));
+        body.add(description);
+        return body;
+    }
+
+    private static Widget code() {
+        final PanelBody body = new PanelBody();
+        body.add(new HTML("<p>An inline reference to "
+                + "<code>Bootstrap5.mount(container)</code> reads like this.</p>"));
+        final Pre block = new Pre("Container container = new Container();\n"
+                + "container.add(new Button(\"Primary\", ButtonType.PRIMARY));\n"
+                + "Bootstrap5.mount(container);");
+        block.addStyleName("mb-0");
+        body.add(block);
+        return body;
+    }
+
+    private static Widget tables() {
+        final PanelBody body = new PanelBody();
+        body.add(new HTML("<table class='table table-striped align-middle'>"
+                + "<caption>The widget modules in this repository</caption>"
+                + "<thead><tr><th scope='col'>#</th><th scope='col'>Module</th>"
+                + "<th scope='col'>Backing CSS</th></tr></thead><tbody>"
+                + "<tr><th scope='row'>1</th><td>gwt-bootstrap3</td><td>Bootstrap 3.4.1</td></tr>"
+                + "<tr><th scope='row'>2</th><td>gwt-bootstrap5</td><td>Bootstrap 5.3.8</td></tr>"
+                + "<tr class='table-success'><th scope='row'>3</th><td>teavm-bootstrap5</td>"
+                + "<td>Bootstrap 5.3.8</td></tr>"
+                + "</tbody></table>"));
+        body.add(new HTML("<div class='table-responsive'><table class='table table-bordered mb-0'>"
+                + "<thead><tr><th>Scrolls</th><th>horizontally</th><th>when</th><th>narrow</th>"
+                + "<th>enough</th><th>to</th><th>need</th><th>it</th></tr></thead>"
+                + "<tbody><tr><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td>"
+                + "<td>7</td><td>8</td></tr></tbody></table></div>"));
+        return body;
+    }
+
+    private static Widget cards() {
+        final PanelBody body = new PanelBody();
+        final Row row = new Row();
+        row.addStyleName("g-3");
+
+        final Column plain = new Column(12);
+        plain.setMediumSpan(6);
+        final Card card = new Card();
+        card.add(new HTML("<div class='card-body'><h5 class='card-title'>Card title</h5>"
+                + "<p class='card-text mb-0'>A card with a body, built from the Card widget.</p></div>"));
+        plain.add(card);
+
+        final Column tinted = new Column(12);
+        tinted.setMediumSpan(6);
+        final Card coloured = new Card();
+        coloured.addStyleName("text-bg-primary");
+        coloured.add(new HTML("<div class='card-header'>Header</div>"
+                + "<div class='card-body'><h5 class='card-title'>Coloured card</h5>"
+                + "<p class='card-text mb-0'>Bootstrap 5 tints cards with text-bg-*.</p></div>"
+                + "<div class='card-footer'>Footer</div>"));
+        tinted.add(coloured);
+
+        row.add(plain);
+        row.add(tinted);
+        body.add(row);
+        return body;
+    }
+
+    private static Widget wells() {
+        final PanelBody body = new PanelBody();
+        final Well well = new Well();
+        well.add(new HTML("<span>A Well. Bootstrap 5 removed the class, so the widget renders "
+                + "the documented card-like utilities instead.</span>"));
+
+        final Jumbotron jumbotron = new Jumbotron();
+        jumbotron.add(new Heading(2, "Jumbotron"));
+        jumbotron.add(new Lead("Also removed in Bootstrap 5, and also mapped onto utilities."));
+        final Button learn = new Button("A call to action", ButtonType.PRIMARY);
+        jumbotron.add(learn);
+
+        body.add(well);
+        body.add(jumbotron);
+        return body;
+    }
+
+    private static Widget progressVariants() {
+        final PanelBody body = new PanelBody();
+        body.add(bar(ProgressType.DEFAULT, 60, ProgressBarType.DEFAULT, false, "plain"));
+        body.add(bar(ProgressType.STRIPED, 40, ProgressBarType.SUCCESS, false, "striped"));
+        body.add(bar(ProgressType.STRIPED, 75, ProgressBarType.INFO, true, "striped and active"));
+
+        final Progress stacked = new Progress();
+        final ProgressBar first = new ProgressBar(35);
+        first.setType(ProgressBarType.SUCCESS);
+        final ProgressBar second = new ProgressBar(25);
+        second.setType(ProgressBarType.WARNING);
+        stacked.add(first);
+        stacked.add(second);
+        body.add(stacked);
+        return body;
+    }
+
+    private static Progress bar(final ProgressType type, final int percent,
+            final ProgressBarType barType, final boolean active, final String label) {
+        final Progress progress = new Progress();
+        progress.setType(type);
+        progress.setActive(active);
+        final ProgressBar bar = new ProgressBar(percent);
+        bar.setType(barType);
+        bar.setText(label);
+        progress.add(bar);
+        return progress;
+    }
+
+    private static Widget buttonGroups() {
+        final PanelBody body = new PanelBody();
+
+        final ButtonGroup large = new ButtonGroup();
+        large.setSize(ButtonGroupSize.LARGE);
+        large.add(new Button("Left"));
+        large.add(new Button("Middle"));
+        large.add(new Button("Right"));
+
+        final ButtonToolBar toolbar = new ButtonToolBar();
+        toolbar.addStyleName("gap-2");
+        final ButtonGroup one = new ButtonGroup();
+        one.add(new Button("1"));
+        one.add(new Button("2"));
+        final ButtonGroup two = new ButtonGroup();
+        two.add(new Button("A"));
+        two.add(new Button("B"));
+        toolbar.add(one);
+        toolbar.add(two);
+
+        final VerticalButtonGroup vertical = new VerticalButtonGroup();
+        vertical.add(new Button("Top"));
+        vertical.add(new Button("Middle"));
+        vertical.add(new Button("Bottom"));
+
+        body.add(large);
+        body.add(toolbar);
+        body.add(vertical);
+        return body;
+    }
+
+    private static Widget iconVariants() {
+        final PanelBody body = new PanelBody();
+        body.addStyleName("d-flex flex-wrap gap-3 align-items-center");
+
+        for (final IconRotate rotate : new IconRotate[] {IconRotate.NONE, IconRotate.ROTATE_90,
+                IconRotate.ROTATE_180, IconRotate.ROTATE_270}) {
+            final Icon icon = new Icon(IconType.SIGNPOST_2);
+            icon.setSize(IconSize.X_LARGE);
+            icon.setRotate(rotate);
+            body.add(icon);
+        }
+        for (final IconFlip flip : new IconFlip[] {IconFlip.HORIZONTAL, IconFlip.VERTICAL}) {
+            final Icon icon = new Icon(IconType.SIGNPOST_2);
+            icon.setSize(IconSize.X_LARGE);
+            icon.setFlip(flip);
+            body.add(icon);
+        }
+
+        final IconStack stack = new IconStack();
+        stack.add(new Icon(IconType.CIRCLE_FILL), true);
+        final Icon glyph = new Icon(IconType.TERMINAL);
+        glyph.setInverse(true);
+        stack.add(glyph, false);
+        body.add(stack);
+        return body;
+    }
+
+    private static Widget pagerAndLinked() {
+        final PanelBody body = new PanelBody();
+
+        final Pager pager = new Pager();
+        pager.setPreviousText("Older");
+        pager.setNextText("Newer");
+
+        final LinkedGroup group = new LinkedGroup();
+        final LinkedGroupItem active = new LinkedGroupItem("An active linked item", "#");
+        active.setActive(true);
+        group.add(active);
+        group.add(new LinkedGroupItem("A second linked item", "#"));
+        group.add(new LinkedGroupItem("A third linked item", "#"));
+
+        body.add(pager);
+        body.add(group);
+        return body;
+    }
+
+    private static Widget collapse() {
+        final PanelBody body = new PanelBody();
+        final Collapse collapse = new Collapse();
+        collapse.getElement().setId("teavmCollapseExample");
+        final Well well = new Well();
+        well.add(new HTML("<span>Collapsed content, shown and hidden by Bootstrap's own "
+                + "JavaScript through TeaVM.</span>"));
+        collapse.add(well);
+
+        final Button toggle = new Button("Toggle collapse", ButtonType.PRIMARY);
+        toggle.addStyleName("mb-2");
+        toggle.addClickHandler(event -> collapse.toggle());
+
+        body.add(toggle);
+        body.add(collapse);
+        return body;
+    }
+
+    private static Widget accordion() {
+        final PanelGroup accordion = new PanelGroup();
+        accordion.getElement().setId("teavmAccordion");
+        accordion.add(accordionItem("teavmCollapseOne", "First section", true));
+        accordion.add(accordionItem("teavmCollapseTwo", "Second section", false));
+        accordion.add(accordionItem("teavmCollapseThree", "Third section", false));
+        return accordion;
+    }
+
+    private static Panel accordionItem(final String id, final String title, final boolean open) {
+        final Panel panel = new Panel();
+        final PanelHeader header = new PanelHeader();
+        final Anchor anchor = new Anchor(title, "#" + id);
+        anchor.setDataToggle("collapse");
+        anchor.getElement().setAttribute("data-bs-target", "#" + id);
+        header.add(anchor);
+        panel.add(header);
+
+        final PanelCollapse collapse = new PanelCollapse();
+        collapse.getElement().setId(id);
+        collapse.setIn(open);
+        // Bootstrap 3 read data-parent from the toggle; Bootstrap 5 reads
+        // data-bs-parent from the collapsing element itself.
+        collapse.getElement().setAttribute("data-bs-parent", "#teavmAccordion");
+        final PanelBody body = new PanelBody();
+        body.add(new Paragraph("The content of " + title + "."));
+        collapse.add(body);
+        panel.add(collapse);
+        return panel;
+    }
+
+    private static Widget navs() {
+        final PanelBody body = new PanelBody();
+
+        final NavPills pills = new NavPills();
+        pills.addLink("Home", "#").addStyleName("active");
+        pills.addLink("Profile", "#");
+        pills.addLink("Messages", "#");
+
+        final NavPills stacked = new NavPills();
+        stacked.addStyleName("flex-column");
+        stacked.addLink("Stacked one", "#").addStyleName("active");
+        stacked.addLink("Stacked two", "#");
+
+        final Column narrow = new Column(12);
+        narrow.setMediumSpan(4);
+        narrow.add(stacked);
+        final Row wrapper = new Row();
+        wrapper.add(narrow);
+
+        body.add(pills);
+        body.add(wrapper);
+        return body;
+    }
+
+    private static Widget navbar() {
+        final Navbar navbar = new Navbar();
+        navbar.getContainer().add(new NavbarBrand("Brand", "#"));
+        navbar.getNav().add(new NavbarLink("Link", "#"));
+        navbar.getNav().add(new NavbarLink("Another", "#"));
+        return navbar;
+    }
+
+    private static Widget carousel() {
+        final String id = "teavmCarousel";
+        final Carousel carousel = new Carousel();
+        carousel.getElement().setId(id);
+
+        final CarouselIndicators indicators = new CarouselIndicators();
+        final CarouselIndicator first = new CarouselIndicator(id, 0);
+        first.setActive(true);
+        indicators.addIndicator(first);
+        indicators.addIndicator(new CarouselIndicator(id, 1));
+        carousel.insert(indicators, 0);
+
+        final CarouselSlide one = new CarouselSlide(new HTML("<div class='d-flex align-items-center"
+                + " justify-content-center text-bg-primary rounded' style='height: 11rem;'>"
+                + "First slide</div>"));
+        one.setActive(true);
+        carousel.addSlide(one);
+        carousel.addSlide(new CarouselSlide(new HTML("<div class='d-flex align-items-center"
+                + " justify-content-center text-bg-success rounded' style='height: 11rem;'>"
+                + "Second slide</div>")));
+
+        carousel.add(new CarouselControl(id, true));
+        carousel.add(new CarouselControl(id, false));
+        return carousel;
+    }
+
+    private static Widget media() {
+        final PanelBody body = new PanelBody();
+        final MediaList list = new MediaList();
+        final MediaBody mediaBody = new MediaBody();
+        mediaBody.add(new Heading(5, "Media heading"));
+        mediaBody.add(new Paragraph("Bootstrap 5 dropped the media object for flex utilities, "
+                + "and the widget renders those instead."));
+        list.add(new HTML("<div class='flex-shrink-0 me-3 d-flex align-items-center"
+                + " justify-content-center bg-body-tertiary border rounded'"
+                + " style='width:64px;height:64px;'>64</div>"));
+        list.add(mediaBody);
+        body.add(list);
+        body.add(new HTML("<img class='img-fluid rounded' alt='A responsive placeholder'"
+                + " src=\"data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg'"
+                + " width='640' height='120'%3E%3Crect fill='%230b6b5e' width='640' height='120'/%3E"
+                + "%3Ctext fill='%23fff' font-family='sans-serif' font-size='20' x='50%25' y='50%25'"
+                + " text-anchor='middle' dominant-baseline='middle'%3Eimg-fluid%3C/text%3E%3C/svg%3E\">"));
+        return body;
+    }
+
+    private static Widget formLayout() {
+        final Form form = new Form();
+        final FieldSet fieldSet = new FieldSet();
+        fieldSet.add(new Legend("A fieldset with a legend"));
+
+        final FormGroup group = new FormGroup();
+        group.add(new FormLabel("Editable"));
+        final TextBox editable = new TextBox();
+        editable.setPlaceholder("An ordinary control");
+        group.add(editable);
+
+        final FormGroup readOnly = new FormGroup();
+        readOnly.add(new FormLabel("Read-only"));
+        readOnly.add(new FormControlStatic("Rendered as static text, not an input"));
+
+        fieldSet.add(group);
+        fieldSet.add(readOnly);
+        form.add(fieldSet);
+        return form;
     }
 
     private static Panel panel(final String title, final Widget example, final String code) {

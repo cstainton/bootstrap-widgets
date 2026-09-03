@@ -91,6 +91,7 @@
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/client/shared/js/JQuery.java</exclude>
             <exclude>org/gwtbootstrap3/client/ui/base/TooltipOptions.java</exclude>
+            <exclude>org/gwtbootstrap3/client/ui/base/CarouselOptions.java</exclude>
           </excludes>
         </configuration>
       </plugin>
