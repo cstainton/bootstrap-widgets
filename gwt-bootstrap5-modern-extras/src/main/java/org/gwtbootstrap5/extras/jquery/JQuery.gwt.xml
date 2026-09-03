@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  jQuery, for the extras that need it.
+
+  Bootstrap 5 has its own JavaScript and the widget library is deliberately free
+  of jQuery. Several of the third-party components wrapped by this extras module
+  are not: Bootbox, for one, is a jQuery plugin. Rather than push jQuery back
+  into the core, it is declared here, so an application only pulls it in by
+  inheriting an extra that actually needs it.
+-->
+<module>
+    <inherits name="com.google.gwt.resources.Resources"/>
+    <source path="client"/>
+    <entry-point class="org.gwtbootstrap5.extras.jquery.client.JQueryEntryPoint"/>
+</module>

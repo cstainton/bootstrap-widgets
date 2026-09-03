@@ -59,3 +59,5 @@ the only dark theme of the set that is self-contained.
 | Bootstrap Icons | 1.13.1 | `bootstrap-icons` | Icon font and CSS for the Bootstrap 5-native module. |
 
 Bootstrap 5 assets must stay in the Bootstrap 5-native resource tree. They should not be loaded by `gwt-bootstrap3-modern` or used as an implicit compatibility shim.
+| Bootbox | 6.0.4 | `bootbox` | MIT | Programmatic dialogs. Version 6 targets Bootstrap 5 but is a jQuery plugin, so `gwt-bootstrap5-modern-extras` supplies jQuery and a bridge registering Bootstrap 5's components as jQuery plugins. Vendored at `gwt-bootstrap5-modern-extras/.../bootbox/client/resource/js`. |
+| jQuery | 3.7.1 | `jquery` | MIT | Not used by the Bootstrap 5 widget library, which has none. Declared by `org.gwtbootstrap5.extras.jquery.JQuery` so only an extra that needs it pulls it in. |

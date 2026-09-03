@@ -3,5 +3,4 @@
     <inherits name="com.google.gwt.user.User"/>
     <inherits name="org.gwtbootstrap5.GwtBootstrap5Base"/>
     <inherits name="org.gwtbootstrap5.client.Resources"/>
-    <entry-point class="org.gwtbootstrap5.client.GwtBootstrap5EntryPoint"/>
 </module>

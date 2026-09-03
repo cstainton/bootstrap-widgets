@@ -11,6 +11,14 @@
 <module>
     <source path="client"/>
 
+    <!--
+      Injects Bootstrap's JavaScript. It lives here rather than in
+      GwtBootstrap5.gwt.xml because it has nothing to do with which stylesheet is
+      in play: GwtBootstrap5NoTheme needs it just as much, and without it every
+      Bootstrap component that needs JavaScript silently stops working.
+    -->
+    <entry-point class="org.gwtbootstrap5.client.GwtBootstrap5EntryPoint"/>
+
     <replace-with class="org.gwtbootstrap5.client.ui.form.validator.DefaultValidatorMessageMixin">
         <when-type-is class="org.gwtbootstrap5.client.ui.form.validator.ValidatorMessageMixin"/>
     </replace-with>

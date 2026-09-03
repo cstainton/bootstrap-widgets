@@ -32,6 +32,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import org.gwtbootstrap5.extras.bootbox.client.Bootbox;
+import org.gwtbootstrap5.extras.bootbox.client.callback.ConfirmCallback;
+import org.gwtbootstrap5.extras.bootbox.client.callback.PromptCallback;
 import org.gwtbootstrap5.client.ui.Affix;
 import org.gwtbootstrap5.client.ui.ScrollSpy;
 import com.google.gwt.core.client.GWT;
@@ -209,8 +212,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
     private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
     private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] EXTRA_SECTIONS = {"cards", "unsupportedExtras"};
-    private static final String[] EXTRA_LABELS = {"Cards", "Unsupported Extras"};
+    private static final String[] EXTRA_SECTIONS = {"cards", "bootbox", "unsupportedExtras"};
+    private static final String[] EXTRA_LABELS = {"Cards", "Bootbox", "Remaining Extras"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -573,8 +576,27 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(cardHeaderFooterPanel());
         column.add(cardVariantsPanel());
         column.add(panel("Bootstrap 5 native", sampleCard(), "Card is Bootstrap 5-native and replaces many Bootstrap 3 panel/card-extra use cases."));
-        addPageHeader(column, "unsupportedExtras", "Unsupported Extras", null);
-        column.add(panel("Not part of core Bootstrap 5", new HTML("<p>Bootstrap Select, Bootbox, DatePicker, DateTimePicker, FullCalendar, Gallery, Notify, Slider, Summernote, TagsInput, ToggleSwitch, Typeahead and Offline are extras with separate third-party dependencies. They are intentionally not represented as Bootstrap 5 core widgets yet.</p>"), "These require separate migration decisions, not silent Bootstrap 5 shims."));
+        addPageHeader(column, "bootbox", "Bootbox", "programmatic dialogs");
+        column.add(bootboxPanel());
+
+        addPageHeader(column, "unsupportedExtras", "Remaining Extras", null);
+        column.add(panel("Still to migrate", new HTML(
+                "<p>Bootbox is done and has its own page. The rest of the Bootstrap 3 extras module is not"
+                + " migrated yet, and each needs its own decision rather than a blanket port:</p>"
+                + "<div class='table-responsive'><table class='table table-sm'>"
+                + "<thead><tr><th scope='col'>Extra</th><th scope='col'>Standing</th></tr></thead><tbody>"
+                + "<tr><td>Card</td><td>The flip-card library. Bootstrap 5 cards are native and already covered by"
+                + " the <code>Card</code> widget on the Cards page &mdash; this is a different component.</td></tr>"
+                + "<tr><td>Respond, CacheManifest</td><td>Obsolete. An IE8 media-query shim and a dead HTML5 API.</td></tr>"
+                + "<tr><td>PositionedTabs</td><td>Bootstrap 5 utilities cover it; the Tabs page shows the same"
+                + " layouts through <code>TabPosition</code>.</td></tr>"
+                + "<tr><td>DatePicker, DateTimePicker</td><td>The Bootstrap 3 builds are tied to Bootstrap 3 markup."
+                + " Tempus Dominus 6 is the Bootstrap 5-native successor and needs no jQuery.</td></tr>"
+                + "<tr><td>Select, Slider, Summernote, TagsInput, ToggleSwitch, Typeahead, Notify, Gallery,"
+                + " FullCalendar, Animate</td><td>jQuery plugins. Portable the same way Bootbox was, each against a"
+                + " build that targets Bootstrap 5.</td></tr>"
+                + "</tbody></table></div>"),
+                "// Bootbox showed the shape:\n//   a gwt.xml inheriting the jQuery extra,\n//   a ClientBundle holding the plugin,\n//   an EntryPoint injecting it,\n//   and a thin JSNI facade."));
         return row;
     }
 
@@ -2721,6 +2743,56 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         return panel("Basic", row,
                 "NavPills nav = new NavPills();\nnav.getElement().setId(\"spy-nav\");\n\nScrollSpy.scrollSpy(scrollingBody, \"#spy-nav\");\n\n// Bootstrap 5 spells the attributes data-bs-spy and\n// data-bs-target, which is what the widget writes.");
+    }
+
+    private Widget bootboxPanel() {
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>No dialog answered yet.</p>");
+
+        Button alert = new Button("Alert", ButtonType.PRIMARY);
+        alert.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Bootbox.alert("Bootbox 6 renders this with the Bootstrap 5 modal.");
+            }
+        });
+
+        Button confirm = new Button("Confirm", ButtonType.DEFAULT);
+        confirm.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Bootbox.confirm("Are you sure?", new ConfirmCallback() {
+                    @Override
+                    public void callback(boolean result) {
+                        echo.setHTML("<p class='mb-0'>Confirm answered <strong>" + result + "</strong></p>");
+                    }
+                });
+            }
+        });
+
+        Button prompt = new Button("Prompt", ButtonType.DEFAULT);
+        prompt.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Bootbox.prompt("What is your name?", new PromptCallback() {
+                    @Override
+                    public void callback(String result) {
+                        echo.setHTML(result == null
+                                ? "<p class='mb-0'>Prompt cancelled.</p>"
+                                : "<p class='mb-0'>Prompt answered <strong>" + escapeHtml(result) + "</strong></p>");
+                    }
+                });
+            }
+        });
+
+        PanelBody body = new PanelBody();
+        body.add(inline(alert, confirm, prompt));
+        body.add(echo);
+        return panel("Alert, confirm and prompt", body,
+                "Bootbox.alert(\"...\");\nBootbox.confirm(\"Are you sure?\", result -> { ... });\nBootbox.prompt(\"What is your name?\", value -> { ... });\n\n// Bootbox 6 targets Bootstrap 5, but it is a jQuery plugin.\n// The core widget library ships no jQuery; inheriting\n// org.gwtbootstrap5.extras.bootbox.Bootbox pulls in the\n// jQuery extra along with it.");
+    }
+
+    private static String escapeHtml(String value) {
+        return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {
