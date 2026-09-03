@@ -32,6 +32,9 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import org.gwtbootstrap5.extras.slider.client.ui.Slider;
+import org.gwtbootstrap5.client.ui.Range;
+import org.gwtbootstrap5.extras.richtext.client.ui.RichTextEditor;
 import org.gwtbootstrap5.client.ui.Dialogs;
 import org.gwtbootstrap5.extras.datepicker.client.ui.DatePicker;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -212,8 +215,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
     private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
     private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "unsupportedExtras"};
-    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Remaining Extras"};
+    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "richText", "slider", "unsupportedExtras"};
+    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Rich Text", "Slider", "Remaining Extras"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -391,6 +394,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "forms", "Forms", null);
         column.add(formsPanel());
+        column.add(rangePanel());
         column.add(formValidationPanel());
         column.add(formAdaptersPanel());
 
@@ -593,10 +597,17 @@ public class ShowcaseEntryPoint implements EntryPoint {
         addPageHeader(column, "datePicker", "DatePicker", "Tempus Dominus 6");
         column.add(datePickerPanel());
 
+        addPageHeader(column, "richText", "Rich Text", "Quill 2");
+        column.add(richTextPanel());
+
+        addPageHeader(column, "slider", "Slider", "noUiSlider 15");
+        column.add(sliderPanel());
+
         addPageHeader(column, "unsupportedExtras", "Remaining Extras", null);
         column.add(panel("Still to migrate", new HTML(
-                "<p>Two are done and have their own pages: the dialogs that Bootstrap 3 got from Bootbox, and the"
-                + " date picker. Neither brought jQuery with it. That turns out to be the pattern for the rest:</p>"
+                "<p>Five are done and have their own pages: dialogs, the date picker, the rich text editor, the"
+                + " native range control and the slider. None of them brought jQuery with it, which turns out to"
+                + " be the pattern for the rest:</p>"
                 + "<div class='table-responsive'><table class='table table-sm'>"
                 + "<thead><tr><th scope='col'>Extra</th><th scope='col'>Standing</th></tr></thead><tbody>"
                 + "<tr><td>Bootbox</td><td>Replaced. <code>Dialogs</code> draws alert, confirm and prompt with the"
@@ -610,11 +621,13 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 + "<tr><td>PositionedTabs</td><td>Covered by <code>TabPosition</code> on the Tabs page.</td></tr>"
                 + "<tr><td>Select, TagsInput, Typeahead</td><td>All three are one problem. Tom Select or Choices.js"
                 + " covers them without jQuery.</td></tr>"
-                + "<tr><td>Slider</td><td>noUiSlider, or the native <code>&lt;input type=\"range\"&gt;</code>.</td></tr>"
+                + "<tr><td>Slider</td><td>Done, both ways. <code>Range</code> on the Forms page is the native control;"
+                + " the Slider page is noUiSlider for two handles, scales and pips.</td></tr>"
                 + "<tr><td>FullCalendar</td><td>FullCalendar 6 dropped jQuery.</td></tr>"
                 + "<tr><td>Gallery, Animate</td><td>Utility CSS and a lightbox; neither needs a jQuery plugin.</td></tr>"
-                + "<tr><td>Summernote</td><td>The one genuine holdout: still jQuery. Quill or TipTap if that"
-                + " matters more than matching the old API.</td></tr>"
+                + "<tr><td>Summernote</td><td>Replaced by Quill on the Rich Text page. Quill ships a UMD build and its"
+                + " own toolbar; TipTap is headless and ESM-first, which would mean writing the toolbar and"
+                + " adding a bundler. Neither does Markdown without a converter.</td></tr>"
                 + "</tbody></table></div>"),
                 "// The extras module carries no jQuery. Every extra so far has\n// either a jQuery-free replacement or a native Bootstrap 5\n// equivalent, so nothing pulls it back in."));
         return row;
@@ -2851,6 +2864,115 @@ public class ShowcaseEntryPoint implements EntryPoint {
         body.add(echo);
         return panel("Basic", body,
                 "DatePicker date = new DatePicker(\"Pick a date\");\ndate.setFormat(\"yyyy-MM-dd\");\ndate.addValueChangeHandler(event -> { ... });\n\nDatePicker dateTime = new DatePicker();\ndateTime.setFormat(\"yyyy-MM-dd HH:mm\");\ndateTime.setSideBySide(true);\n\n// Tempus Dominus 6 replaces the two Bootstrap 3 pickers.\n// It targets Bootstrap 5 and needs no jQuery.");
+    }
+
+    private Widget rangePanel() {
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>Volume: 50</p>");
+
+        FormGroup group = new FormGroup();
+        group.add(new FormLabel("Volume"));
+        final Range volume = new Range(0, 100);
+        volume.setValue(50d);
+        volume.setContinuous(true);
+        volume.addValueChangeHandler(new ValueChangeHandler<Double>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Double> event) {
+                echo.setHTML("<p class='mb-0'>Volume: <strong>"
+                        + (long) event.getValue().doubleValue() + "</strong></p>");
+            }
+        });
+        group.add(volume);
+
+        FormGroup stepped = new FormGroup();
+        stepped.add(new FormLabel("Stepped, 0 to 10 in twos"));
+        Range steps = new Range(0, 10);
+        steps.setStep(2);
+        steps.setValue(4d);
+        stepped.add(steps);
+
+        FormGroup disabled = new FormGroup();
+        disabled.add(new FormLabel("Disabled"));
+        Range off = new Range();
+        off.setValue(30d);
+        off.setEnabled(false);
+        disabled.add(off);
+
+        PanelBody body = new PanelBody();
+        body.add(group);
+        body.add(echo);
+        body.add(stepped);
+        body.add(disabled);
+        return panel("Range", body,
+                "Range volume = new Range(0, 100);\nvolume.setValue(50d);\nvolume.setContinuous(true);   // report while dragging\nvolume.addValueChangeHandler(event -> { ... });\n\nRange steps = new Range(0, 10);\nsteps.setStep(2);\n\n// Bootstrap 3 wrapped bootstrap-slider, a jQuery plugin.\n// Bootstrap 5 styles the native input with .form-range, so\n// for a single value there is nothing to ship.");
+    }
+
+    private Widget richTextPanel() {
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>Nothing typed yet.</p>");
+
+        final RichTextEditor editor = new RichTextEditor(RichTextEditor.Toolbar.FULL);
+        editor.setPlaceholder("Write something...");
+        editor.setHTML("<p>Quill replaces the Summernote extra. "
+                + "<strong>No jQuery</strong>, and it brings its own toolbar.</p>");
+        editor.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                echo.setHTML("<p class='mb-0 text-body-secondary'>"
+                        + event.getValue().length() + " characters of HTML</p>");
+            }
+        });
+
+        Button read = new Button("Read the HTML", ButtonType.PRIMARY);
+        read.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                Dialogs.alert(editor.getHTML());
+            }
+        });
+
+        PanelBody body = new PanelBody();
+        body.add(editor);
+        body.add(inline(read));
+        body.add(echo);
+        return panel("Editor", body,
+                "RichTextEditor editor = new RichTextEditor(Toolbar.FULL);\neditor.setPlaceholder(\"Write something...\");\neditor.setHTML(\"<p>Hello</p>\");\neditor.addValueChangeHandler(event -> { ... });\n\nString html = editor.getHTML();\n\n// Summernote is the one Bootstrap 3 extra with no jQuery-free\n// counterpart, so it is replaced rather than ported. Quill has\n// no dependencies and ships a UMD build ScriptInjector can load.");
+    }
+
+    private Widget sliderPanel() {
+        final HTML echo = new HTML("<p class='text-body-secondary mb-0'>Drag a handle.</p>");
+
+        FormGroup rangeGroup = new FormGroup();
+        rangeGroup.add(new FormLabel("Two handles, with tooltips"));
+        final Slider between = new Slider(0, 1000);
+        between.setRange(true);
+        between.setValues(200, 800);
+        between.setStep(10);
+        between.setTooltips(true);
+        between.addValueChangeHandler(new ValueChangeHandler<Double>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Double> event) {
+                echo.setHTML("<p class='mb-0'>Between <strong>"
+                        + (long) between.getLowerValue() + "</strong> and <strong>"
+                        + (long) between.getUpperValue() + "</strong></p>");
+            }
+        });
+        rangeGroup.add(between);
+
+        FormGroup pipGroup = new FormGroup();
+        pipGroup.add(new FormLabel("One handle, with a scale"));
+        Slider scaled = new Slider(0, 100);
+        scaled.setValue(40);
+        scaled.setPips(true);
+        pipGroup.add(scaled);
+
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<p class='text-body-secondary'>For a plain single value prefer"
+                + " <code>Range</code> on the Forms page &mdash; Bootstrap 5 styles the native control and"
+                + " nothing needs shipping. This is for what that cannot do.</p>"));
+        body.add(rangeGroup);
+        body.add(echo);
+        body.add(pipGroup);
+        return panel("Beyond a native range input", body,
+                "Slider between = new Slider(0, 1000);\nbetween.setRange(true);          // two handles\nbetween.setValues(200, 800);\nbetween.setTooltips(true);\nbetween.addValueChangeHandler(event -> {\n    between.getLowerValue(); between.getUpperValue();\n});\n\nSlider scaled = new Slider(0, 100);\nscaled.setPips(true);            // a scale beneath the track\n\n// Bootstrap 3 wrapped bootstrap-slider, a jQuery plugin.\n// noUiSlider has no dependencies at all.");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {
