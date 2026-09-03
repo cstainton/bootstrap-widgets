@@ -19,9 +19,13 @@
   #L%
   -->
 <module>
+    <!--
+      bootstrap-theme.css is deliberately absent: it is the optional Bootstrap 2.x
+      lookalike, and GwtBootstrap3Theme exists to add it. Loading it here would make
+      that module a no-op and force the gradient theme on every consumer.
+    -->
     <inherits name="org.gwtbootstrap3.client.NoThemeResources"/>
 
     <stylesheet src="css/bootstrap-3.4.1.min.cache.css"/>
-    <stylesheet src="css/bootstrap-theme-3.4.1.min.cache.css"/>
     <stylesheet src="css/font-awesome-4.7.0.min.cache.css"/>
 </module>

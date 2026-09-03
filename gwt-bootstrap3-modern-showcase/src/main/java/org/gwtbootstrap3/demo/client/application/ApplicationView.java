@@ -34,6 +34,17 @@ import org.gwtbootstrap3.client.ui.NavbarCollapse;
  */
 public class ApplicationView extends ViewImpl implements ApplicationPresenter.MyView {
 
+    static {
+        // the switcher owns the Bootstrap stylesheet: the module inherits NoTheme so
+        // nothing else declares one, and these are the sheets it chooses between
+        org.gwtbootstrap3.client.ui.theme.Themes.register(
+                org.gwtbootstrap3.themes.client.BootswatchThemes.all());
+        org.gwtbootstrap3.client.ui.theme.Themes.restore(
+                org.gwtbootstrap3.themes.client.BootswatchThemes.byName(
+                        "flatly", com.google.gwt.core.client.GWT.getModuleBaseURL() + "css/"));
+    }
+
+
     @UiField
     SimplePanel contentContainer;
     @UiField

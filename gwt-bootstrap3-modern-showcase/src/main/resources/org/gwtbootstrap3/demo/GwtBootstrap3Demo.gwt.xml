@@ -35,7 +35,13 @@
         <when-type-is class="javax.validation.ValidatorFactory" />
     </replace-with>
 
-    <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
+    <!--
+      NoTheme rather than GwtBootstrap3: the theme switcher owns the Bootstrap
+      stylesheet, so nothing else may declare one. GwtBootstrap3Themes supplies the
+      Bootswatch stylesheets and the catalogue that names them.
+    -->
+    <inherits name="org.gwtbootstrap3.GwtBootstrap3NoTheme"/>
+    <inherits name="org.gwtbootstrap3.themes.GwtBootstrap3Themes"/>
     <inherits name="org.gwtbootstrap3.extras.datetimepicker.DateTimePicker"/>
     <inherits name="org.gwtbootstrap3.extras.datepicker.DatePicker"/>
     <inherits name="org.gwtbootstrap3.extras.bootbox.Bootbox"/>
