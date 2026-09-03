@@ -159,7 +159,9 @@
                                     </b:AnchorListItem>
                                     <b:AnchorListItem targetHistoryToken="{nameTokens.getSlider}">Slider
                                     </b:AnchorListItem>
-                                    <b:AnchorListItem targetHistoryToken="{nameTokens.getSummernote}">Summernote
+                                    <b:AnchorListItem targetHistoryToken="{nameTokens.getMarkdown}">Markdown
+                                      </b:AnchorListItem>
+                                      <b:AnchorListItem targetHistoryToken="{nameTokens.getSummernote}">Summernote
                                     </b:AnchorListItem>
                                     <b:AnchorListItem targetHistoryToken="{nameTokens.getToggleSwitch}">ToggleSwitch
                                     </b:AnchorListItem>

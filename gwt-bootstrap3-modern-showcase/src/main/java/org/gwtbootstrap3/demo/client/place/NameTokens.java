@@ -78,6 +78,7 @@ public class NameTokens {
     public static final String CARD = "card";
     public static final String SELECT = "select";
     public static final String SLIDER = "slider";
+    public static final String MARKDOWN = "markdown";
     public static final String SUMMERNOTE = "summernote";
     public static final String TOGGLESWITCH = "toggleswitch";
     public static final String TYPEAHEAD = "typeahead";
@@ -264,6 +265,10 @@ public class NameTokens {
 
     public static String getSuggestBox() {
         return SUGGEST_BOX;
+    }
+
+    public static String getMarkdown() {
+        return MARKDOWN;
     }
 
     public static String getSummernote() {
