@@ -25,8 +25,11 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.uibinder.client.UiConstructor;
+
 public class DoubleRadioGroup extends StringRadioGroup {
 
+    @UiConstructor
     public DoubleRadioGroup(String name) {
         super(name);
     }

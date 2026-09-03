@@ -25,6 +25,7 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -54,6 +55,7 @@ public class Icon extends ElementPanel implements HasType<IconType>, HasSize<Ico
         setIconName(iconName);
     }
 
+    @UiConstructor
     public Icon(IconType type) {
         super("i");
         addStyleName(Styles.ICON);

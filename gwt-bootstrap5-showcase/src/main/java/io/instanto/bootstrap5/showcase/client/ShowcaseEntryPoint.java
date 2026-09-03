@@ -378,6 +378,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Column column = fullColumn(row);
         column.add(panel("Maven", new HTML("<p>Use the Bootstrap 5 module when migrating code/templates to Bootstrap 5 idioms.</p>"), "<dependency>\n  <groupId>io.instanto</groupId>\n  <artifactId>gwt-bootstrap5</artifactId>\n  <version>1.0-SNAPSHOT</version>\n</dependency>"));
         column.add(panel("GWT Module", new HTML("<p>Inherit the Bootstrap 5 GWT module.</p>"), "<inherits name=\"io.instanto.bootstrap5.GwtBootstrap5\"/>"));
+        column.add(panel("UiBinder", uiBinderProbe(), uiBinderSource()));
         return row;
     }
 
@@ -3015,6 +3016,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         return panel("Editor and renderer", editorBody,
                 "MarkdownEditor editor = new MarkdownEditor(source);\neditor.setPlaceholder(\"Write Markdown...\");\nString markdown = editor.getValue();   // as typed\nString html = editor.getHTML();        // rendered\n\nMarkdownPanel view = new MarkdownPanel(source);\nview.setMarkdown(updated);\n\n// Separate from the Rich Text extra on purpose. A rich text\n// editor stores HTML, so an application whose format is\n// Markdown would convert on every save and lose exactly the\n// constructs a flexmark server understands: task lists and\n// tables. Rendering is sanitised with DOMPurify, because\n// Markdown permits raw HTML and marked does not sanitise.");
+    }
+
+    /** The template's own text, so what is shown cannot drift from what is rendered. */
+    private String uiBinderSource() {
+        return ProbeSource.INSTANCE.template().getText().trim();
+    }
+
+    private Widget uiBinderProbe() {
+        return new UiBinderProbe();
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {

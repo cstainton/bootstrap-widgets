@@ -128,7 +128,7 @@
                         &lt;b:Alert type="SUCCESS" dismissable="true"&gt;\n
                         \s\s&lt;b.html:Strong text="..."/&gt;\n
                         \s\s&lt;b.html:Text text="..."/&gt;\n
-                        \s\s&lt;b:AlertLink&gt;Link&lt;/AlertLink&gt;\n
+                        \s\s&lt;b:Anchor text="Link"/&gt;\n
                         &lt;/b:Alert&gt;\n
                     </d:PrettyPre>
                 </b:PanelFooter>

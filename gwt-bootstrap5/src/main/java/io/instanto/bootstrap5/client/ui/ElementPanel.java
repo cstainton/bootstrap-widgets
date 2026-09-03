@@ -30,6 +30,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasDoubleClickHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasHTML;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import io.instanto.bootstrap5.client.ui.base.ComplexWidget;
 import io.instanto.bootstrap5.client.ui.base.HasDataParent;
@@ -41,7 +42,7 @@ import io.instanto.bootstrap5.client.ui.base.mixin.DataToggleMixin;
 import io.instanto.bootstrap5.client.ui.constants.Attributes;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
 
-class ElementPanel extends ComplexWidget implements HasHTML, HasClickHandlers, HasDoubleClickHandlers, HasDataParent, HasDataTarget, HasDataToggle {
+class ElementPanel extends ComplexWidget implements HasWidgets, HasHTML, HasClickHandlers, HasDoubleClickHandlers, HasDataParent, HasDataTarget, HasDataToggle {
 
     private final DataParentMixin<ElementPanel> parentMixin = new DataParentMixin<ElementPanel>(this);
     private final DataTargetMixin<ElementPanel> targetMixin = new DataTargetMixin<ElementPanel>(this);

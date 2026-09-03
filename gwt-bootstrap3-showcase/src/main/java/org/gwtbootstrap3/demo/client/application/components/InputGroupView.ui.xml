@@ -120,7 +120,7 @@
                     <d:PrettyPre addStyleNames="lang-xml">
                         &lt;b:InputGroup&gt;\n
                         \s\s&lt;b:InputGroupButton&gt;\n
-                        \s\s\s\s&lt;b:CheckButton&gt;\n
+                        \s\s\s\s&lt;b:CheckBoxButton/&gt;\n
                         \s\s&lt;/b:InputGroupButton&gt;\n
                         \s\s&lt;b:TextBox placeholder="Type here" autoComplete="false"/&gt;\n
                         &lt;/b:InputGroup&gt;\n

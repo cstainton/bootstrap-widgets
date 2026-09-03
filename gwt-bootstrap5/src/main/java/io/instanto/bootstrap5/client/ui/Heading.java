@@ -25,6 +25,7 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.uibinder.client.UiConstructor;
 import io.instanto.bootstrap5.client.ui.base.HasAlignment;
 import io.instanto.bootstrap5.client.ui.base.HasEmphasis;
 import io.instanto.bootstrap5.client.ui.base.helper.StyleHelper;
@@ -46,6 +47,7 @@ public class Heading extends ElementPanel implements HasSubText, HasAlignment, H
         setText(text);
     }
 
+    @UiConstructor
     public Heading(HeadingSize size) {
         this(size == null ? 1 : size.size());
     }

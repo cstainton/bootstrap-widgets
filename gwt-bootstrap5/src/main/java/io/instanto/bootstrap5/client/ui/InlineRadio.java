@@ -25,6 +25,8 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.uibinder.client.UiConstructor;
+
 public class InlineRadio extends Radio {
 
     public InlineRadio() {
@@ -38,6 +40,7 @@ public class InlineRadio extends Radio {
      * name, not the label. Use {@link #InlineRadio(String, String)} to set
      * both.</p>
      */
+    @UiConstructor
     public InlineRadio(final String name) {
         super(name);
         addStyleName("form-check-inline");

@@ -25,6 +25,7 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.LeafValueEditor;
 import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
@@ -36,6 +37,7 @@ public class Abbreviation extends ElementPanel implements IsEditor<LeafValueEdit
         this("");
     }
 
+    @UiConstructor
     public Abbreviation(String text) {
         super("abbr");
         setText(text);
