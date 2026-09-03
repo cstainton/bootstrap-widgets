@@ -22,6 +22,18 @@
                 <b:Badge text="7"/>
                 <b:Icon type="STAR"/>
             </b:Alert>
+            <b:Carousel ui:field="carousel">
+                <b:CarouselInner>
+                    <b:CarouselSlide active="true">
+                        <b:Paragraph text="First slide, declared in markup"/>
+                    </b:CarouselSlide>
+                    <b:CarouselSlide>
+                        <b:Paragraph text="Second slide"/>
+                    </b:CarouselSlide>
+                </b:CarouselInner>
+                <b:CarouselControl targetId="probeCarousel" prev="true"/>
+                <b:CarouselControl targetId="probeCarousel" next="true"/>
+            </b:Carousel>
         </b:PanelBody>
     </b:Panel>
 </ui:UiBinder>

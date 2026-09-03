@@ -22,6 +22,7 @@ public class UiBinderProbe extends Composite {
     @UiField Button counter;
     @UiField TextBox box;
     @UiField CheckBox check;
+    @UiField io.instanto.bootstrap5.client.ui.Carousel carousel;
 
     private int clicks;
 

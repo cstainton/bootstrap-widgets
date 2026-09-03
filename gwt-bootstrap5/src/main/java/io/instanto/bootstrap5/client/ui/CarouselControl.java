@@ -32,6 +32,16 @@ import io.instanto.bootstrap5.client.ui.constants.Styles;
 
 public class CarouselControl extends ElementPanel implements HasHref {
 
+    /**
+     * A control with neither direction nor target set yet, which is what UiBinder needs:
+     * it constructs a widget with no arguments and then applies the attributes. Bootstrap
+     * 3's CarouselControl has the same no-argument constructor, so a template written
+     * against that track carries over.
+     */
+    public CarouselControl() {
+        this("", true);
+    }
+
     public CarouselControl(String targetId, boolean previous) {
         super("button");
         setStyleName(previous ? "carousel-control-prev" : "carousel-control-next");
@@ -45,6 +55,16 @@ public class CarouselControl extends ElementPanel implements HasHref {
     private boolean previous;
 
     private String targetId = "";
+
+    /** The id of the carousel this control drives, without the leading hash. */
+    public void setTargetId(final String targetId) {
+        this.targetId = targetId == null ? "" : targetId;
+        getElement().setAttribute("data-bs-target", "#" + this.targetId);
+    }
+
+    public String getTargetId() {
+        return targetId;
+    }
 
     public void setPrev(final boolean prev) {
         setDirection(prev);
