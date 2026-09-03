@@ -32,6 +32,11 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import com.google.gwt.core.client.GWT;
+import org.gwtbootstrap5.client.ui.theme.StandardThemes;
+import org.gwtbootstrap5.client.ui.theme.ThemeSwitcher;
+import org.gwtbootstrap5.client.ui.theme.Themes;
+import org.gwtbootstrap5.themes.client.BootswatchThemes;
 import org.gwtbootstrap5.client.ui.NavbarText;
 import org.gwtbootstrap5.client.ui.constants.ListGroupItemType;
 import java.util.ArrayList;
@@ -205,6 +210,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] EXTRA_SECTIONS = {"cards", "unsupportedExtras"};
     private static final String[] EXTRA_LABELS = {"Cards", "Unsupported Extras"};
 
+    static {
+        // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
+        // stylesheet: the switcher owns it. Stock Bootstrap first, so it heads the
+        // menu and is what an unrecognised or absent stored choice falls back to.
+        Themes.register(StandardThemes.all());
+        Themes.register(BootswatchThemes.all());
+        Themes.restore(StandardThemes.bootstrap(GWT.getModuleBaseURL() + "css/"));
+    }
+
     @Override
     public void onModuleLoad() {
         RootPanel root = RootPanel.get("showcase");
@@ -312,6 +326,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
                 new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
         navbar.getNav().add(new NavbarLink("Fork on GitHub", "https://github.com/cstainton/gwtbootstrap-modern"));
+        navbar.getNav().add(new ThemeSwitcher());
         return navbar;
     }
 

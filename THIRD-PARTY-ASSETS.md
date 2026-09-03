@@ -43,6 +43,7 @@ totals about 1.9 MB. Bootstrap 3 has no dark mode of its own; these supply one.
 | Asset | Version | Source package | Licence | Notes |
 | --- | --- | --- | --- | --- |
 | Bootswatch | 3.4.1 | `bootswatch` | MIT | 16 complete Bootstrap 3.4.1 stylesheets. Four are dark: Cyborg, Darkly, Slate, Superhero. Licence text is kept at `gwt-bootstrap3-modern-themes/BOOTSWATCH-LICENSE`. |
+| Bootswatch | 5.3.8 | `bootswatch` | MIT | 26 complete Bootstrap 5.3.8 stylesheets. Seven are dark: Cyborg, Darkly, Quartz, Slate, Solar, Superhero, Vapor, classified from each stylesheet's own `--bs-body-bg` and `--bs-body-color`. Licence text is kept at `gwt-bootstrap5-modern-themes/BOOTSWATCH-LICENSE`. |
 
 Each theme replaces `bootstrap.css` rather than layering over it, so switching swaps one
 stylesheet link. Fourteen of the sixteen `@import` their webfonts from Google Fonts, as

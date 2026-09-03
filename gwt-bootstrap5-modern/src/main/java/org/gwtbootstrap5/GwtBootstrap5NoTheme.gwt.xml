@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Inherit this module to supply your own Bootstrap 5 stylesheet, or to let something
-  else own it -- a runtime theme switcher, say. It puts the widget source and the
+  else own it, such as a runtime theme switcher. It puts the widget source and the
   packaged resources on the path but declares no stylesheet of its own.
 -->
 <module rename-to="GwtBootstrap5NoTheme">

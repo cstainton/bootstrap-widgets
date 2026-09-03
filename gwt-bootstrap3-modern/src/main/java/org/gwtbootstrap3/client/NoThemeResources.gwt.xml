@@ -26,4 +26,10 @@
         <include name="js/*.map"/>
         <include name="fonts/*"/>
     </public>
+    <!--
+      Additive, not swappable: the icon font sits on top of whichever Bootstrap
+      stylesheet is active and is not replaced when a theme is switched, so it
+      belongs here rather than in Resources.
+    -->
+    <stylesheet src="css/font-awesome-4.7.0.min.cache.css"/>
 </module>

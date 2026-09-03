@@ -36,6 +36,11 @@
       <artifactId>gwt-bootstrap5-modern</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.gwtbootstrap3</groupId>
+      <artifactId>gwt-bootstrap5-modern-themes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

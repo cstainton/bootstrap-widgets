@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to="GwtBootstrap5Showcase">
-    <inherits name="org.gwtbootstrap5.GwtBootstrap5"/>
+    <inherits name="org.gwtbootstrap5.GwtBootstrap5NoTheme"/>
+    <inherits name="org.gwtbootstrap5.themes.GwtBootstrap5Themes"/>
     <entry-point class="org.gwtbootstrap5.showcase.client.ShowcaseEntryPoint"/>
 </module>
