@@ -47,6 +47,23 @@ The Bootstrap 3 compatibility build and original showcase compile with GWT 2.13.
 
 ## Migration Paths
 
+Snapshots are published to GitHub Packages from the root `gwtbootstrap-parent`
+reactor. Add the package repository to the consuming build before declaring a
+dependency:
+
+```xml
+<repository>
+  <id>github</id>
+  <url>https://maven.pkg.github.com/cstainton/gwtbootstrap</url>
+  <snapshots>
+    <enabled>true</enabled>
+  </snapshots>
+</repository>
+```
+
+GitHub Packages requires GitHub credentials in Maven `settings.xml`, including
+when the package is public.
+
 Use the Bootstrap 3 artifacts when you want the safest replacement for an existing GwtBootstrap3 dependency:
 
 ```xml

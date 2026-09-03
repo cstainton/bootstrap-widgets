@@ -1,0 +1,35 @@
+name: Maven Packages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Publish library reactor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java and GitHub Packages authentication
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Publish parent and library modules
+        run: mvn -B -DskipTests -pl gwt-bootstrap3,gwt-bootstrap3-extras,gwt-bootstrap3-themes,gwt-bootstrap5,gwt-bootstrap5-extras,gwt-bootstrap5-themes,teavm-gwt-compat,teavm-bootstrap3,teavm-bootstrap5 -am deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
