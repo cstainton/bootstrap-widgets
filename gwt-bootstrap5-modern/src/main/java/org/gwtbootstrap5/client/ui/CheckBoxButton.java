@@ -392,7 +392,12 @@ public class CheckBoxButton extends CheckBox implements HasActive,
                 ? "btn-outline-" + cssName.substring("btn-".length()) : cssName;
     }
 
+    /**
+     * With the Bootstrap 5 btn-check pattern the checked state lives on the
+     * input, which assistive technology already reports; aria-pressed is not
+     * valid on a label and is deliberately not set here.
+     */
     private void updatePressedState() {
-        buttonLabel.setAttribute("aria-pressed", Boolean.toString(getValue()));
+        buttonLabel.removeAttribute("aria-pressed");
     }
 }

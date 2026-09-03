@@ -23,8 +23,13 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import com.google.gwt.editor.client.IsEditor;
+import com.google.gwt.editor.client.LeafValueEditor;
+import com.google.gwt.editor.ui.client.adapters.HasTextEditor;
+
+
 /** A semantic HTML label styled with Bootstrap 5's form-label class. */
-public class FormLabel extends ElementPanel {
+public class FormLabel extends ElementPanel implements IsEditor<LeafValueEditor<String>> {
 
     private boolean showRequiredIndicator;
     private String text = "";
@@ -93,4 +98,20 @@ public class FormLabel extends ElementPanel {
         return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("\"", "&quot;");
     }
+
+    private LeafValueEditor<String> editor;
+
+    /**
+     * Bootstrap 3 got this from AbstractTextWidget. The Bootstrap 5 widget is a
+     * panel rather than a leaf so that it can hold an icon or nested markup, so
+     * the editor is composed in rather than inherited.
+     */
+    @Override
+    public LeafValueEditor<String> asEditor() {
+        if (editor == null) {
+            editor = HasTextEditor.of(this);
+        }
+        return editor;
+    }
+
 }

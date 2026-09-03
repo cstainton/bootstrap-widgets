@@ -23,7 +23,13 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class Navbar extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasType;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.NavbarPosition;
+import org.gwtbootstrap5.client.ui.constants.NavbarType;
+
+
+public class Navbar extends ElementPanel implements HasType<NavbarType> {
 
     private final Container container = new Container();
     private final NavbarNav nav = new NavbarNav();
@@ -47,4 +53,29 @@ public class Navbar extends ElementPanel {
     public void setDark(boolean dark) {
         setStyleName(dark ? "navbar navbar-expand-xl navbar-dark bg-dark" : "navbar navbar-expand-xl bg-body-tertiary border-bottom");
     }
+
+    /**
+     * Bootstrap 5 dropped .navbar-default and .navbar-inverse in favour of
+     * data-bs-theme and the background utilities; NavbarType names the
+     * Bootstrap 5 equivalents so the Bootstrap 3 spelling still works.
+     */
+    @Override
+    public void setType(final NavbarType type) {
+        setDark(NavbarType.INVERSE == type);
+    }
+
+    @Override
+    public NavbarType getType() {
+        return StyleHelper.containsStyle(getStyleName(), "navbar-dark") ? NavbarType.INVERSE : NavbarType.DEFAULT;
+    }
+
+    public void setPosition(final NavbarPosition position) {
+        StyleHelper.addUniqueEnumStyleName(this, NavbarPosition.class,
+                position == null ? NavbarPosition.DEFAULT : position);
+    }
+
+    public NavbarPosition getPosition() {
+        return NavbarPosition.fromStyleName(getStyleName());
+    }
+
 }

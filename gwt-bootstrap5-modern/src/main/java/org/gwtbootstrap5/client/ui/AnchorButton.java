@@ -23,29 +23,116 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.HasHref;
+import org.gwtbootstrap5.client.ui.base.HasTargetHistoryToken;
+import org.gwtbootstrap5.client.ui.base.button.AbstractToggleButton;
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
 
-public class AnchorButton extends Anchor {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.ui.impl.HyperlinkImpl;
+
+/**
+ * An anchor styled and behaving as a button.
+ *
+ * <p>Extends {@link AbstractToggleButton}, so it has the whole button surface:
+ * {@code setActive}, {@code toggle()}, {@code state()} with its loading text,
+ * sizes, block layout, the mouse handlers and {@code setDataToggle}. Rendering
+ * it as an anchor rather than a button is the only difference from
+ * {@link Button}.</p>
+ */
+public class AnchorButton extends AbstractToggleButton implements HasHref, HasTargetHistoryToken {
+
+    private static final String EMPTY_HREF = "#";
+
+    private static final HyperlinkImpl impl = GWT.create(HyperlinkImpl.class);
+
+    private String targetHistoryToken;
 
     public AnchorButton() {
-        this("");
+        this(ButtonType.DEFAULT);
     }
 
-    public AnchorButton(String text) {
-        this(text, "#", Variant.PRIMARY);
+    public AnchorButton(final ButtonType type) {
+        super(type);
+        setHref(EMPTY_HREF);
+        sinkEvents(Event.ONCLICK);
     }
 
-    public AnchorButton(String text, String href) {
-        this(text, href, Variant.PRIMARY);
+    public AnchorButton(final String text) {
+        this(text, EMPTY_HREF, ButtonType.PRIMARY);
     }
 
-    public AnchorButton(String text, String href, Variant variant) {
-        super(text, href);
-        setButtonVariant(variant);
+    public AnchorButton(final String text, final String href) {
+        this(text, href, ButtonType.PRIMARY);
     }
 
-    public AnchorButton(String text, String href, ButtonType type) {
-        super(text, href);
-        setButtonType(type);
+    public AnchorButton(final String text, final String href, final ButtonType type) {
+        this(type);
+        setText(text);
+        setHref(href);
+    }
+
+    public AnchorButton(final String text, final String href, final Variant variant) {
+        this(text, href, ButtonType.DEFAULT);
+        setVariant(variant);
+    }
+
+    @Override
+    public void onBrowserEvent(final Event event) {
+        super.onBrowserEvent(event);
+        if (getTargetHistoryToken() != null
+                && DOM.eventGetType(event) == Event.ONCLICK && impl.handleAsClick(event)) {
+            History.newItem(getTargetHistoryToken());
+            event.preventDefault();
+        }
+    }
+
+    @Override
+    public void setTargetHistoryToken(final String targetHistoryToken) {
+        this.targetHistoryToken = targetHistoryToken;
+        if (targetHistoryToken != null) {
+            getAnchorElement().setHref("#" + History.encodeHistoryToken(targetHistoryToken));
+        }
+    }
+
+    @Override
+    public String getTargetHistoryToken() {
+        return targetHistoryToken;
+    }
+
+    @Override
+    public void setHref(final String href) {
+        this.targetHistoryToken = null;
+        getAnchorElement().setHref(href == null ? EMPTY_HREF : href);
+    }
+
+    @Override
+    public String getHref() {
+        return getAnchorElement().getHref();
+    }
+
+    /** Kept for source compatibility with the Anchor-based AnchorButton. */
+    public void setButtonType(final ButtonType type) {
+        setType(type);
+    }
+
+    /** Kept for source compatibility with the Anchor-based AnchorButton. */
+    public void setButtonVariant(final Variant variant) {
+        setVariant(variant);
+    }
+
+    @Override
+    protected Element createElement() {
+        return Document.get().createAnchorElement();
+    }
+
+    private AnchorElement getAnchorElement() {
+        return AnchorElement.as(getElement());
     }
 }

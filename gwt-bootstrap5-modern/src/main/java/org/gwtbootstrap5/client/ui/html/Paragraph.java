@@ -1,5 +1,10 @@
 package org.gwtbootstrap5.client.ui.html;
 
+import org.gwtbootstrap5.client.ui.base.HasPull;
+import org.gwtbootstrap5.client.ui.base.mixin.PullMixin;
+import org.gwtbootstrap5.client.ui.constants.Pull;
+
+
 /*
  * #%L
  * GwtBootstrap3
@@ -33,7 +38,7 @@ import com.google.gwt.dom.client.ParagraphElement;
 /**
  * @author Sven Jacobs
  */
-public class Paragraph extends HTMLPanel implements HasAlignment, HasEmphasis {
+public class Paragraph extends HTMLPanel implements HasAlignment, HasEmphasis, HasPull {
 
     private final HTMLMixin<Paragraph> textMixin = new HTMLMixin<Paragraph>(this);
 
@@ -81,4 +86,17 @@ public class Paragraph extends HTMLPanel implements HasAlignment, HasEmphasis {
     public Emphasis getEmphasis() {
         return Emphasis.fromStyleName(getStyleName());
     }
+
+    private final PullMixin<Paragraph> pullMixin = new PullMixin<Paragraph>(this);
+
+    @Override
+    public void setPull(final Pull pull) {
+        pullMixin.setPull(pull);
+    }
+
+    @Override
+    public Pull getPull() {
+        return pullMixin.getPull();
+    }
+
 }

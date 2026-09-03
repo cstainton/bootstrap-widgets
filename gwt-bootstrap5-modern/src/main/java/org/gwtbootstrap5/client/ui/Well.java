@@ -23,10 +23,34 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class Well extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasSize;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.WellSize;
+
+
+public class Well extends ElementPanel implements HasSize<WellSize> {
 
     public Well() {
         super("div");
-        setStyleName("p-3 rounded bg-body-tertiary border");
+        setStyleName("rounded bg-body-tertiary border");
+        setSize(WellSize.DEFAULT);
     }
+
+    private WellSize size = WellSize.DEFAULT;
+
+    /**
+     * Bootstrap 5 removed .well-lg and .well-sm; WellSize names the padding
+     * utilities that replace them.
+     */
+    @Override
+    public void setSize(final WellSize size) {
+        StyleHelper.addUniqueEnumStyleName(this, WellSize.class, size == null ? WellSize.DEFAULT : size);
+        this.size = size == null ? WellSize.DEFAULT : size;
+    }
+
+    @Override
+    public WellSize getSize() {
+        return size;
+    }
+
 }

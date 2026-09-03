@@ -23,7 +23,11 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class ListBox extends com.google.gwt.user.client.ui.ListBox {
+import org.gwtbootstrap5.client.ui.base.HasId;
+import org.gwtbootstrap5.client.ui.base.mixin.IdMixin;
+
+
+public class ListBox extends com.google.gwt.user.client.ui.ListBox implements HasId {
 
     public ListBox() {
         super();
@@ -34,4 +38,17 @@ public class ListBox extends com.google.gwt.user.client.ui.ListBox {
         this();
         setMultipleSelect(isMultipleSelect);
     }
+
+    private final IdMixin<ListBox> idMixin = new IdMixin<ListBox>(this);
+
+    @Override
+    public void setId(final String id) {
+        idMixin.setId(id);
+    }
+
+    @Override
+    public String getId() {
+        return idMixin.getId();
+    }
+
 }

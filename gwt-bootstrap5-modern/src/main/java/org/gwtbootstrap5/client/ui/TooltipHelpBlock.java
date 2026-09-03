@@ -1,5 +1,7 @@
 package org.gwtbootstrap5.client.ui;
 
+
+
 /*
  * #%L
  * GwtBootstrap3
@@ -59,4 +61,13 @@ public class TooltipHelpBlock extends Tooltip {
     public void setIconType(IconType iconType) {
         icon.setType(iconType);
     }
+
+    public void setHTML(final String html) {
+        getWidget().getElement().setInnerHTML(html == null ? "" : html);
+    }
+
+    public String getHTML() {
+        return getWidget().getElement().getInnerHTML();
+    }
+
 }

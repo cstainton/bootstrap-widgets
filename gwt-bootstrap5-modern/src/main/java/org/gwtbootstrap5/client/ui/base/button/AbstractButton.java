@@ -63,6 +63,7 @@ import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtbootstrap5.client.ui.Variant;
 
 /**
  * Abstract base class for different kinds of buttons.
@@ -154,7 +155,10 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
      */
     @Override
     public void setType(final ButtonType type) {
-        StyleHelper.addUniqueEnumStyleName(this, ButtonType.class, type);
+        removeVariantStyles();
+        final ButtonType effective = type == null ? ButtonType.DEFAULT : type;
+        StyleHelper.addUniqueEnumStyleName(this, ButtonType.class, effective);
+        setVariantField(variantFor(effective));
     }
 
     @Override
@@ -343,4 +347,77 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
             getElement().setInnerText(text == null ? "" : text);
         }
     }
+
+    private Variant variant;
+    private boolean outline;
+
+    /**
+     * Bootstrap 5 names button colours btn-primary .. btn-dark plus btn-link,
+     * with a btn-outline-* counterpart for each. {@link Variant} is that
+     * vocabulary; {@link ButtonType} is the Bootstrap 3 spelling kept for
+     * source compatibility, and setting one keeps the other in step.
+     */
+    public void setVariant(final Variant variant) {
+        removeVariantStyles();
+        this.variant = variant == null ? Variant.SECONDARY : variant;
+        addStyleName(variantStyleName(this.variant, outline));
+    }
+
+    public Variant getVariant() {
+        return variant == null ? Variant.SECONDARY : variant;
+    }
+
+    public void setOutline(final boolean outline) {
+        if (this.outline == outline) {
+            return;
+        }
+        removeVariantStyles();
+        this.outline = outline;
+        addStyleName(variantStyleName(getVariant(), outline));
+    }
+
+    public boolean isOutline() {
+        return outline;
+    }
+
+    public void setLarge(final boolean large) {
+        setStyleName("btn-lg", large);
+    }
+
+    public void setSmall(final boolean small) {
+        setStyleName("btn-sm", small);
+    }
+
+    protected void removeVariantStyles() {
+        for (final Variant candidate : Variant.values()) {
+            removeStyleName(variantStyleName(candidate, false));
+            removeStyleName(variantStyleName(candidate, true));
+        }
+    }
+
+    protected static Variant variantFor(final ButtonType type) {
+        if (type == null) {
+            return Variant.SECONDARY;
+        }
+        switch (type) {
+            case PRIMARY:  return Variant.PRIMARY;
+            case SUCCESS:  return Variant.SUCCESS;
+            case INFO:     return Variant.INFO;
+            case WARNING:  return Variant.WARNING;
+            case DANGER:   return Variant.DANGER;
+            case LINK:     return Variant.LINK;
+            case DEFAULT:
+            default:       return Variant.SECONDARY;
+        }
+    }
+
+    protected static String variantStyleName(final Variant variant, final boolean outline) {
+        final Variant effective = variant == null ? Variant.SECONDARY : variant;
+        return outline ? "btn-outline-" + effective.cssName() : "btn-" + effective.cssName();
+    }
+
+    protected void setVariantField(final Variant variant) {
+        this.variant = variant;
+    }
+
 }

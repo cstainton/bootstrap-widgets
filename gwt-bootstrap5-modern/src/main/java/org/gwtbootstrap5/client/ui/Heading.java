@@ -23,10 +23,17 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.HasAlignment;
+import org.gwtbootstrap5.client.ui.base.HasEmphasis;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.Alignment;
+import org.gwtbootstrap5.client.ui.constants.Emphasis;
+
+
 import org.gwtbootstrap5.client.ui.base.HasSubText;
 import org.gwtbootstrap5.client.ui.html.Small;
 
-public class Heading extends ElementPanel implements HasSubText {
+public class Heading extends ElementPanel implements HasSubText, HasAlignment, HasEmphasis {
 
     public Heading(int size) {
         super("h" + clamp(size));
@@ -67,6 +74,27 @@ public class Heading extends ElementPanel implements HasSubText {
     @Override
     public String getSubText() {
         return subText.getText();
+    }
+
+
+    @Override
+    public void setAlignment(final Alignment alignment) {
+        StyleHelper.addUniqueEnumStyleName(this, Alignment.class, alignment);
+    }
+
+    @Override
+    public Alignment getAlignment() {
+        return Alignment.fromStyleName(getStyleName());
+    }
+
+    @Override
+    public void setEmphasis(final Emphasis emphasis) {
+        StyleHelper.addUniqueEnumStyleName(this, Emphasis.class, emphasis);
+    }
+
+    @Override
+    public Emphasis getEmphasis() {
+        return Emphasis.fromStyleName(getStyleName());
     }
 
 }

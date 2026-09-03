@@ -23,9 +23,14 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.HasDataSpy;
+import org.gwtbootstrap5.client.ui.base.mixin.DataSpyMixin;
+import org.gwtbootstrap5.client.ui.constants.Spy;
+
+
 import com.google.gwt.user.client.ui.HTML;
 
-public class ModalHeader extends ElementPanel {
+public class ModalHeader extends ElementPanel implements HasDataSpy {
 
     private final HTML titleWidget = new HTML();
     private final HTML closeButton = new HTML("<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\" aria-label=\"Close\"></button>");
@@ -68,4 +73,17 @@ public class ModalHeader extends ElementPanel {
     private String escape(String value) {
         return value == null ? "" : value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;");
     }
+
+    private final DataSpyMixin<ModalHeader> dataSpyMixin = new DataSpyMixin<ModalHeader>(this);
+
+    @Override
+    public void setDataSpy(final Spy spy) {
+        dataSpyMixin.setDataSpy(spy);
+    }
+
+    @Override
+    public Spy getDataSpy() {
+        return dataSpyMixin.getDataSpy();
+    }
+
 }

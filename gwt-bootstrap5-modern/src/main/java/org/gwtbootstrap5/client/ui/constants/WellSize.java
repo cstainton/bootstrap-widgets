@@ -29,9 +29,9 @@ import com.google.gwt.dom.client.Style;
  * @author Joshua Godi
  */
 public enum WellSize implements Size, Style.HasCssName {
-    LARGE("well-lg"),
-    DEFAULT(""),
-    SMALL("well-sm");
+    LARGE("gbm-well-lg"),
+    DEFAULT("gbm-well"),
+    SMALL("gbm-well-sm");
 
     private final String cssClass;
 

@@ -23,7 +23,11 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public enum ModalSize {
+import org.gwtbootstrap5.client.ui.base.helper.EnumHelper;
+import com.google.gwt.dom.client.Style;
+
+
+public enum ModalSize implements Style.HasCssName {
     SMALL("modal-sm"),
     DEFAULT(""),
     LARGE("modal-lg"),
@@ -38,4 +42,14 @@ public enum ModalSize {
     public String cssName() {
         return cssName;
     }
+
+    @Override
+    public String getCssName() {
+        return cssName;
+    }
+
+    public static ModalSize fromStyleName(final String styleName) {
+        return EnumHelper.fromStyleName(styleName, ModalSize.class, DEFAULT);
+    }
+
 }

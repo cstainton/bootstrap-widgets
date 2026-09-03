@@ -23,11 +23,29 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class NavbarForm extends Form {
+import org.gwtbootstrap5.client.ui.base.HasPull;
+import org.gwtbootstrap5.client.ui.base.mixin.PullMixin;
+import org.gwtbootstrap5.client.ui.constants.Pull;
+
+
+public class NavbarForm extends Form implements HasPull {
 
     public NavbarForm() {
         super();
         setStyleName("d-flex");
         getElement().setAttribute("role", "search");
     }
+
+    private final PullMixin<NavbarForm> pullMixin = new PullMixin<NavbarForm>(this);
+
+    @Override
+    public void setPull(final Pull pull) {
+        pullMixin.setPull(pull);
+    }
+
+    @Override
+    public Pull getPull() {
+        return pullMixin.getPull();
+    }
+
 }

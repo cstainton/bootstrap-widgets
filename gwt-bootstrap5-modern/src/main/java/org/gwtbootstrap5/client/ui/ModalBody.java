@@ -23,10 +23,28 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class ModalBody extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasDataSpy;
+import org.gwtbootstrap5.client.ui.base.mixin.DataSpyMixin;
+import org.gwtbootstrap5.client.ui.constants.Spy;
+
+
+public class ModalBody extends ElementPanel implements HasDataSpy {
 
     public ModalBody() {
         super("div");
         addStyleName("modal-body");
     }
+
+    private final DataSpyMixin<ModalBody> dataSpyMixin = new DataSpyMixin<ModalBody>(this);
+
+    @Override
+    public void setDataSpy(final Spy spy) {
+        dataSpyMixin.setDataSpy(spy);
+    }
+
+    @Override
+    public Spy getDataSpy() {
+        return dataSpyMixin.getDataSpy();
+    }
+
 }

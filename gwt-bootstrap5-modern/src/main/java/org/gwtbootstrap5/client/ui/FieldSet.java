@@ -23,9 +23,27 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class FieldSet extends ElementPanel {
+import com.google.gwt.user.client.ui.HasEnabled;
+
+
+public class FieldSet extends ElementPanel implements HasEnabled {
 
     public FieldSet() {
         super("fieldset");
     }
+
+    @Override
+    public void setEnabled(final boolean enabled) {
+        if (enabled) {
+            getElement().removeAttribute("disabled");
+        } else {
+            getElement().setAttribute("disabled", "disabled");
+        }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !getElement().hasAttribute("disabled");
+    }
+
 }

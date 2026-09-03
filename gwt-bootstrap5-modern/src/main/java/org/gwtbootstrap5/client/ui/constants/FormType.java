@@ -28,10 +28,16 @@ import com.google.gwt.dom.client.Style;
  * @author Sven Jacobs
  * @author Joshua Godi
  */
+/*
+ * Bootstrap 5 removed .form-inline and .form-horizontal; both layouts are now
+ * built from grid and flex utilities. Rather than drop the two constants, they
+ * name library classes declared in css/gwt-bootstrap5-modern.cache.css that
+ * apply the documented Bootstrap 5 replacement.
+ */
 public enum FormType implements Type, Style.HasCssName {
     DEFAULT(""),
-    INLINE("form-inline"),
-    HORIZONTAL("form-horizontal");
+    INLINE("gbm-form-inline"),
+    HORIZONTAL("gbm-form-horizontal");
 
     private final String cssClass;
 

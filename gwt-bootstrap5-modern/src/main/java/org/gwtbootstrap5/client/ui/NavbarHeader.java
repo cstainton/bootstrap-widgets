@@ -23,10 +23,28 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class NavbarHeader extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasDataSpy;
+import org.gwtbootstrap5.client.ui.base.mixin.DataSpyMixin;
+import org.gwtbootstrap5.client.ui.constants.Spy;
+
+
+public class NavbarHeader extends ElementPanel implements HasDataSpy {
 
     public NavbarHeader() {
         super("div");
         addStyleName("d-flex align-items-center gap-2");
     }
+
+    private final DataSpyMixin<NavbarHeader> dataSpyMixin = new DataSpyMixin<NavbarHeader>(this);
+
+    @Override
+    public void setDataSpy(final Spy spy) {
+        dataSpyMixin.setDataSpy(spy);
+    }
+
+    @Override
+    public Spy getDataSpy() {
+        return dataSpyMixin.getDataSpy();
+    }
+
 }

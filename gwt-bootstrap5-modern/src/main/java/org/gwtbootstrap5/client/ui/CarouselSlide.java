@@ -23,6 +23,9 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+
+
 import com.google.gwt.user.client.ui.Widget;
 
 public class CarouselSlide extends ElementPanel {
@@ -40,4 +43,9 @@ public class CarouselSlide extends ElementPanel {
     public void setActive(boolean active) {
         setStyleName("active", active);
     }
+
+    public boolean isActive() {
+        return StyleHelper.containsStyle(getStyleName(), "active");
+    }
+
 }

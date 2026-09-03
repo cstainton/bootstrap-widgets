@@ -23,6 +23,9 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.constants.Styles;
+
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
@@ -148,4 +151,27 @@ public class Pagination extends ElementPanel implements HasPaginationSize {
             }
         }
     }
+
+    /**
+     * Bootstrap 5 keeps .list-inline, and marks each child .list-inline-item.
+     */
+    public void setInline(final boolean inline) {
+        setStyleName(Styles.LIST_INLINE, inline);
+        for (final Widget child : getChildren()) {
+            child.setStyleName(Styles.LIST_INLINE_ITEM, inline);
+        }
+    }
+
+    public boolean isInline() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.LIST_INLINE);
+    }
+
+    public void setUnstyled(final boolean unstyled) {
+        setStyleName(Styles.LIST_UNSTYLED, unstyled);
+    }
+
+    public boolean isUnstyled() {
+        return StyleHelper.containsStyle(getStyleName(), Styles.LIST_UNSTYLED);
+    }
+
 }

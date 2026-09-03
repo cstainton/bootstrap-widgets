@@ -23,7 +23,12 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class TabPanel extends ElementPanel {
+import org.gwtbootstrap5.client.ui.base.HasTabPosition;
+import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
+import org.gwtbootstrap5.client.ui.constants.TabPosition;
+
+
+public class TabPanel extends ElementPanel implements HasTabPosition {
 
     private final NavTabs tabs = new NavTabs();
     private final TabContent content = new TabContent();
@@ -42,4 +47,22 @@ public class TabPanel extends ElementPanel {
     public TabContent getContent() {
         return content;
     }
+
+    private TabPosition tabPosition = TabPosition.TOP;
+
+    /**
+     * Bootstrap 5 has no .tabs-left / .tabs-right / .tabs-below; the same
+     * layouts come from flex ordering, which is what TabPosition now names.
+     */
+    @Override
+    public void setTabPosition(final TabPosition tabPosition) {
+        this.tabPosition = tabPosition == null ? TabPosition.TOP : tabPosition;
+        StyleHelper.addUniqueEnumStyleName(this, TabPosition.class, this.tabPosition);
+    }
+
+    @Override
+    public TabPosition getTabPosition() {
+        return tabPosition;
+    }
+
 }

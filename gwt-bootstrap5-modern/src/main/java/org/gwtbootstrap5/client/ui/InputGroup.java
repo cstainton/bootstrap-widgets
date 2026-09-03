@@ -23,11 +23,16 @@
  */
 package org.gwtbootstrap5.client.ui;
 
+import org.gwtbootstrap5.client.ui.base.HasDataSpy;
+import org.gwtbootstrap5.client.ui.base.mixin.DataSpyMixin;
+import org.gwtbootstrap5.client.ui.constants.Spy;
+
+
 import org.gwtbootstrap5.client.ui.base.HasSize;
 import org.gwtbootstrap5.client.ui.base.helper.StyleHelper;
 import org.gwtbootstrap5.client.ui.constants.InputGroupSize;
 
-public class InputGroup extends ElementPanel implements HasSize<InputGroupSize> {
+public class InputGroup extends ElementPanel implements HasSize<InputGroupSize>, HasDataSpy {
 
     public InputGroup() {
         super("div");
@@ -59,4 +64,17 @@ public class InputGroup extends ElementPanel implements HasSize<InputGroupSize> 
     public boolean isSmall() {
         return getSize() == InputGroupSize.SMALL;
     }
+
+    private final DataSpyMixin<InputGroup> dataSpyMixin = new DataSpyMixin<InputGroup>(this);
+
+    @Override
+    public void setDataSpy(final Spy spy) {
+        dataSpyMixin.setDataSpy(spy);
+    }
+
+    @Override
+    public Spy getDataSpy() {
+        return dataSpyMixin.getDataSpy();
+    }
+
 }

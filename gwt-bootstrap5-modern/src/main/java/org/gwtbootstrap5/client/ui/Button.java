@@ -39,9 +39,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
  */
 public class Button extends AbstractToggleButton {
 
-    private Variant variant;
-    private boolean outline;
-
     public Button() {
     }
 
@@ -69,44 +66,12 @@ public class Button extends AbstractToggleButton {
         setText(text);
     }
 
-    public void setVariant(final Variant variant) {
-        removeVariantStyles();
-        this.variant = variant == null ? Variant.SECONDARY : variant;
-        addStyleName(styleName(this.variant, outline));
-    }
-
-    public Variant getVariant() {
-        return variant == null ? Variant.SECONDARY : variant;
-    }
-
-    public void setOutline(final boolean outline) {
-        if (this.outline == outline) {
-            return;
-        }
-        removeVariantStyles();
-        this.outline = outline;
-        addStyleName(styleName(getVariant(), outline));
-    }
-
-    public boolean isOutline() {
-        return outline;
-    }
-
-    public void setLarge(final boolean large) {
-        setStyleName("btn-lg", large);
-    }
-
-    public void setSmall(final boolean small) {
-        setStyleName("btn-sm", small);
-    }
-
-    /** Retained for source compatibility with the initial Bootstrap 5 port. */
     public void setDataToggle(final String toggle) {
         if (toggle == null || toggle.isEmpty()) {
             setDataToggle((Toggle) null);
             return;
         }
-        for (Toggle candidate : Toggle.values()) {
+        for (final Toggle candidate : Toggle.values()) {
             if (candidate.getToggle().equals(toggle)) {
                 setDataToggle(candidate);
                 return;
@@ -116,47 +81,7 @@ public class Button extends AbstractToggleButton {
     }
 
     @Override
-    public void setType(final ButtonType type) {
-        removeVariantStyles();
-        ButtonType effectiveType = type == null ? ButtonType.DEFAULT : type;
-        super.setType(effectiveType);
-        variant = variantFor(effectiveType);
-    }
-
-    @Override
     protected Element createElement() {
         return Document.get().createPushButtonElement().cast();
-    }
-
-    private void removeVariantStyles() {
-        for (Variant candidate : Variant.values()) {
-            removeStyleName(styleName(candidate, false));
-            removeStyleName(styleName(candidate, true));
-        }
-    }
-
-    private static Variant variantFor(ButtonType type) {
-        switch (type) {
-            case PRIMARY:
-                return Variant.PRIMARY;
-            case SUCCESS:
-                return Variant.SUCCESS;
-            case INFO:
-                return Variant.INFO;
-            case WARNING:
-                return Variant.WARNING;
-            case DANGER:
-                return Variant.DANGER;
-            case LINK:
-                return Variant.LINK;
-            case DEFAULT:
-            default:
-                return Variant.SECONDARY;
-        }
-    }
-
-    private static String styleName(Variant variant, boolean outline) {
-        Variant effectiveVariant = variant == null ? Variant.SECONDARY : variant;
-        return outline ? "btn-outline-" + effectiveVariant.cssName() : "btn-" + effectiveVariant.cssName();
     }
 }

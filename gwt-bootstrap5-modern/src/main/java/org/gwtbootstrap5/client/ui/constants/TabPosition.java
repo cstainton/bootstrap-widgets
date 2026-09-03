@@ -28,9 +28,9 @@ import com.google.gwt.dom.client.Style;
  * @author Joshua Godi
  */
 public enum TabPosition implements Type, Style.HasCssName {
-    LEFT("tabs-left"),
-    RIGHT("tabs-right"),
-    BELOW("tabs-below"),
+    LEFT("gbm-tabs-left"),
+    RIGHT("gbm-tabs-right"),
+    BELOW("gbm-tabs-below"),
     TOP("");
 
     private final String cssClass;

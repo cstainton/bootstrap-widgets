@@ -23,7 +23,11 @@
  */
 package org.gwtbootstrap5.client.ui;
 
-public class ListDropDown extends DropDown {
+import org.gwtbootstrap5.client.ui.base.HasActive;
+import com.google.gwt.user.client.ui.HasEnabled;
+
+
+public class ListDropDown extends DropDown implements HasActive, HasEnabled {
 
     public ListDropDown() {
         this("List dropdown");
@@ -38,4 +42,27 @@ public class ListDropDown extends DropDown {
         getToggle().addStyleName("border-0");
         getToggle().addStyleName("bg-transparent");
     }
+
+    @Override
+    public void setActive(final boolean active) {
+        setStyleName("active", active);
+        getToggle().setActive(active);
+    }
+
+    @Override
+    public boolean isActive() {
+        return getToggle().isActive();
+    }
+
+    @Override
+    public void setEnabled(final boolean enabled) {
+        setStyleName("disabled", !enabled);
+        getToggle().setEnabled(enabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getToggle().isEnabled();
+    }
+
 }

@@ -25,14 +25,20 @@ package org.gwtbootstrap5.client.ui;
 
 import org.gwtbootstrap5.client.ui.constants.ButtonType;
 
-public class NavbarButton extends Button {
+public class NavbarButton extends AnchorButton {
 
     public NavbarButton() {
         this("");
     }
 
     public NavbarButton(String text) {
-        super(text, ButtonType.DEFAULT);
+        super(ButtonType.DEFAULT);
+        setText(text);
         addStyleName("navbar-btn");
+    }
+
+    public NavbarButton(String text, String href) {
+        this(text);
+        setHref(href);
     }
 }
