@@ -89,6 +89,8 @@ the core widgets. Inheriting an extra's GWT module loads only that extra's resou
 | Popper | 2.11.8 | `@popperjs/core` | MIT | The DatePicker module exposes the global Popper API required by Tempus Dominus. Bootstrap's bundled private copy cannot satisfy that dependency. |
 | Quill | 2.0.3 | `quill` | BSD-3-Clause | Rich text editor, replacing the Summernote extra. No jQuery, ships its own toolbar. Licence text at `gwt-bootstrap5-modern-extras/QUILL-LICENSE`. |
 | noUiSlider | 15.8.1 | `nouislider` | MIT | Slider for what a native range input cannot do: two handles, non-linear scales, tooltips, pips. No dependencies. Licence text at `gwt-bootstrap5-modern-extras/NOUISLIDER-LICENSE`. |
+| marked | 18.0.11 | `marked` | MIT | Markdown parser, configured for GitHub Flavoured Markdown so a client-side preview matches what flexmark-java renders with its tables, strikethrough and task list extensions. No dependencies. |
+| DOMPurify | 3.4.14 | `dompurify` | MPL-2.0 OR Apache-2.0 | Sanitises rendered Markdown before it reaches the DOM. marked does not sanitise, by design, and Markdown permits raw HTML. |
 
 Programmatic alert, confirm and prompt dialogs use the core `Dialogs` and `Modal`
 widgets. They do not vendor Bootbox or add jQuery to the Bootstrap 5 track.

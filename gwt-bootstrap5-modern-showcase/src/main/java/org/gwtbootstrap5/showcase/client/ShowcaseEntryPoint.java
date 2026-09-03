@@ -32,6 +32,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import org.gwtbootstrap5.extras.markdown.client.ui.MarkdownPanel;
+import org.gwtbootstrap5.extras.markdown.client.ui.MarkdownEditor;
 import org.gwtbootstrap5.extras.slider.client.ui.Slider;
 import org.gwtbootstrap5.client.ui.Range;
 import org.gwtbootstrap5.extras.richtext.client.ui.RichTextEditor;
@@ -215,8 +217,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
     private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
     private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "richText", "slider", "unsupportedExtras"};
-    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Rich Text", "Slider", "Remaining Extras"};
+    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "richText", "markdown", "slider", "unsupportedExtras"};
+    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Rich Text", "Markdown", "Slider", "Remaining Extras"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -599,6 +601,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
 
         addPageHeader(column, "richText", "Rich Text", "Quill 2");
         column.add(richTextPanel());
+
+        addPageHeader(column, "markdown", "Markdown", "for applications that store Markdown");
+        column.add(markdownPanel());
 
         addPageHeader(column, "slider", "Slider", "noUiSlider 15");
         column.add(sliderPanel());
@@ -2973,6 +2978,42 @@ public class ShowcaseEntryPoint implements EntryPoint {
         body.add(pipGroup);
         return panel("Beyond a native range input", body,
                 "Slider between = new Slider(0, 1000);\nbetween.setRange(true);          // two handles\nbetween.setValues(200, 800);\nbetween.setTooltips(true);\nbetween.addValueChangeHandler(event -> {\n    between.getLowerValue(); between.getUpperValue();\n});\n\nSlider scaled = new Slider(0, 100);\nscaled.setPips(true);            // a scale beneath the track\n\n// Bootstrap 3 wrapped bootstrap-slider, a jQuery plugin.\n// noUiSlider has no dependencies at all.");
+    }
+
+    private Widget markdownPanel() {
+        final String sample = "## Release notes\n\n"
+                + "The **rich text** editor and this one are *separate* extras.\n\n"
+                + "- Rich text keeps HTML\n"
+                + "- This keeps ~~HTML~~ Markdown, exactly as typed\n\n"
+                + "- [x] renders task lists\n"
+                + "- [ ] and tables\n\n"
+                + "| Extra | Stores |\n| --- | --- |\n| Rich Text | HTML |\n| Markdown | Markdown |\n\n"
+                + "> Preview uses the same dialect a flexmark server renders.\n";
+
+        final MarkdownEditor editor = new MarkdownEditor(sample);
+        editor.setPlaceholder("Write Markdown...");
+        editor.setVisibleLines(10);
+
+        final MarkdownPanel rendered = new MarkdownPanel();
+        rendered.addStyleName("border rounded p-3 mt-3");
+        rendered.setMarkdown(sample);
+        editor.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                rendered.setMarkdown(event.getValue());
+            }
+        });
+
+        PanelBody editorBody = new PanelBody();
+        editorBody.add(new HTML("<p class='text-body-secondary'>A textarea that keeps the Markdown as typed,"
+                + " with a toolbar that inserts the syntax, a Preview tab, and the reference to hand rather"
+                + " than a link away to another site.</p>"));
+        editorBody.add(editor);
+        editorBody.add(new HTML("<p class='form-label mt-3 mb-1'>Rendered live from the editor above</p>"));
+        editorBody.add(rendered);
+
+        return panel("Editor and renderer", editorBody,
+                "MarkdownEditor editor = new MarkdownEditor(source);\neditor.setPlaceholder(\"Write Markdown...\");\nString markdown = editor.getValue();   // as typed\nString html = editor.getHTML();        // rendered\n\nMarkdownPanel view = new MarkdownPanel(source);\nview.setMarkdown(updated);\n\n// Separate from the Rich Text extra on purpose. A rich text\n// editor stores HTML, so an application whose format is\n// Markdown would convert on every save and lose exactly the\n// constructs a flexmark server understands: task lists and\n// tables. Rendering is sanitised with DOMPurify, because\n// Markdown permits raw HTML and marked does not sanitise.");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {
