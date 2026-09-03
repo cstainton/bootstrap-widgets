@@ -9,7 +9,9 @@ The project also keeps TeaVM tracks for both versions. Both TeaVM tracks use the
 
 ## Coordinates
 
-The artifacts publish under `io.instanto`, not the `org.gwtbootstrap3` groupId upstream uses. That namespace belongs to the original project and a repository will not accept a fork under it.
+The artifacts publish under `io.instanto`, not the `org.gwtbootstrap3` groupId upstream uses.
+
+The groupId was changed to avoid clashing with the original project. `org.gwtbootstrap3` is upstream's namespace: releasing a fork into it would put artifacts that upstream did not build alongside ones it did, in the same coordinates, where a build resolving `org.gwtbootstrap3:*` could pick up either. Maven Central would refuse it anyway, since it verifies that a publisher owns the namespace, but the reason to move is the clash rather than the rule.
 
 The **Java packages are unchanged**: `org.gwtbootstrap3.*` on the Bootstrap 3 track and `org.gwtbootstrap5.*` on the Bootstrap 5 track. That is what makes the Bootstrap 3 track a drop-in — an existing GwtBootstrap3 application swaps its two dependency coordinates and touches no source.
 
