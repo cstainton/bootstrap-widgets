@@ -42,6 +42,17 @@ import io.instanto.bootstrap5.client.ui.base.mixin.DataToggleMixin;
 import io.instanto.bootstrap5.client.ui.constants.Attributes;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
 
+/*
+ * HasWidgets MUST stay ahead of HasHTML in the implements clause below.
+ *
+ * UiBinder picks the first content parser it finds walking the type hierarchy. HasWidgets
+ * is inherited from ComplexPanel, further up than this class, so without naming it here
+ * the HasHTML parser wins and every template nesting a widget inside one of the seventy
+ * widgets extending ElementPanel fails with "Not allowed in an HTML context". Reordering
+ * or tidying this list silently breaks UiBinder with no compile error; the Setup section
+ * of the showcase is what catches it. Bootstrap 3 avoids the problem by having its
+ * containers extend Div, which is not HasHTML.
+ */
 class ElementPanel extends ComplexWidget implements HasWidgets, HasHTML, HasClickHandlers, HasDoubleClickHandlers, HasDataParent, HasDataTarget, HasDataToggle {
 
     private final DataParentMixin<ElementPanel> parentMixin = new DataParentMixin<ElementPanel>(this);
