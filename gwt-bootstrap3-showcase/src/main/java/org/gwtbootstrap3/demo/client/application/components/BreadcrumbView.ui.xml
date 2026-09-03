@@ -40,9 +40,9 @@
                 <b:PanelFooter>
                     <d:PrettyPre addStyleNames="lang-xml">
                         &lt;b:Breadcrumbs&gt;\n
-                        \s\s&lt;b:AnchorListItem text="..."&gt;\n
-                        \s\s&lt;b:AnchorListItem text="..."&gt;\n
-                        \s\s&lt;b:AnchorListItem text="..."&gt;\n
+                        \s\s&lt;b:AnchorListItem text="..."/&gt;\n
+                        \s\s&lt;b:AnchorListItem text="..."/&gt;\n
+                        \s\s&lt;b:AnchorListItem text="..."/&gt;\n
                         &lt;/b:Breadcrumbs&gt;\n
                     </d:PrettyPre>
                 </b:PanelFooter>

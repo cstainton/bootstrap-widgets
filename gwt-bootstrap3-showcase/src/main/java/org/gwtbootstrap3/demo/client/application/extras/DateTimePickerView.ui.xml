@@ -131,7 +131,7 @@
                 <b:PanelFooter>
                     <d:PrettyPre addStyleNames="lang-xml">
                         &lt;b2:DateTimePicker/&gt;\n\n
-                        &lt;b:Modal title="..." closable="..." fade="..." dataBackdrop="STATIC" b:id="..."&gt;\n\s\s&lt;b:ModalBody&gt;\n
+                        &lt;b:Modal title="..." closable="..." fade="..." dataBackdrop="STATIC" b:id="..."&gt;\n
                         \s\s&lt;b:ModalBody&gt;\n
                         \s\s\s\s&lt;b2:DateTimePicker/&gt;\n
                         \s\s&lt;/b:ModalBody&gt;\n

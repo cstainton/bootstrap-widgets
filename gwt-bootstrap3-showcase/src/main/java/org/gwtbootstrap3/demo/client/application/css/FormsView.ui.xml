@@ -149,7 +149,7 @@
                         &lt;b:Form&gt;\n
                         \s\s&lt;b:FieldSet&gt;\n
                         \s\s\s\s&lt;b:FormGroup ui:field="formGroup"&gt;\n
-                        \s\s\s\s\s\s&lt;b:FormLabel for="formSuccess"&gt;Field Label&gt;\n
+                        \s\s\s\s\s\s&lt;b:FormLabel for="formSuccess"&gt;Field Label&lt;/b:FormLabel&gt;\n
                         \s\s\s\s\s\s&lt;b:TextBox b:id="formSuccess"/&gt;\n
                         \s\s\s\s&lt;/b:FormGroup&gt;\n
                         \s\s\s\s&lt;b:Button type="PRIMARY"&gt;None&lt;/b:Button&gt;\n

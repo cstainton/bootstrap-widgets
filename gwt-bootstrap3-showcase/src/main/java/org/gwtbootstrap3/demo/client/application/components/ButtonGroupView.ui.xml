@@ -88,22 +88,22 @@
                         &lt;b:ButtonGroup size="LARGE"&gt;\n
                         \s\s&lt;b:Button&gt;Large 1&lt;/b:Button&gt;\n
                         \s\s&lt;b:Button&gt;Large 2&lt;/b:Button&gt;\n
-                        &lt;b:ButtonGroup&gt;\n
+                        &lt;/b:ButtonGroup&gt;\n
                         \n
                         &lt;b:ButtonGroup&gt;\n
                         \s\s&lt;b:Button&gt;Default 1&lt;/b:Button&gt;\n
                         \s\s&lt;b:Button&gt;Default 2&lt;/b:Button&gt;\n
-                        &lt;b:ButtonGroup&gt;\n
+                        &lt;/b:ButtonGroup&gt;\n
                         \n
                         &lt;b:ButtonGroup size="SMALL"&gt;\n
                         \s\s&lt;b:Button&gt;Small 1&lt;/b:Button&gt;\n
                         \s\s&lt;b:Button&gt;Small 2&lt;/b:Button&gt;\n
-                        &lt;b:ButtonGroup&gt;\n
+                        &lt;/b:ButtonGroup&gt;\n
                         \n
                         &lt;b:ButtonGroup size="EXTRA_SMALL"&gt;\n
                         \s\s&lt;b:Button&gt;Extra Small 1&lt;/b:Button&gt;\n
                         \s\s&lt;b:Button&gt;Extra Small 2&lt;/b:Button&gt;\n
-                        &lt;b:ButtonGroup&gt;\n
+                        &lt;/b:ButtonGroup&gt;\n
                     </d:PrettyPre>
                 </b:PanelFooter>
             </b:Panel>

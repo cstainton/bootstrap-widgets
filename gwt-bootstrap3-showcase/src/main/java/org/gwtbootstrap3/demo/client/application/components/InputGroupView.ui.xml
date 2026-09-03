@@ -127,7 +127,7 @@
                         \n
                         &lt;b:InputGroup&gt;\n
                         \s\s&lt;b:InputGroupButton&gt;\n
-                        \s\s\s\s&lt;b:RadioButton&gt;\n
+                        \s\s\s\s&lt;b:RadioButton/&gt;\n
                         \s\s&lt;/b:InputGroupButton&gt;\n
                         \s\s&lt;b:TextBox placeholder="Type here" autoComplete="false"/&gt;\n
                         &lt;/b:InputGroup&gt;\n
@@ -151,7 +151,7 @@
                     <d:PrettyPre addStyleNames="lang-xml">
                         &lt;b:InputGroup&gt;\n
                         \s\s&lt;b:InputGroupButton&gt;\n
-                        \s\s\s\s&lt;b:Button text="..."&gt;\n
+                        \s\s\s\s&lt;b:Button text="..."/&gt;\n
                         \s\s&lt;/b:InputGroupButton&gt;\n
                         \s\s&lt;b:TextBox placeholder="Type here" autoComplete="false"/&gt;\n
                         &lt;/b:InputGroup&gt;
