@@ -392,12 +392,29 @@ public class CheckBoxButton extends CheckBox implements HasActive,
                 ? "btn-outline-" + cssName.substring("btn-".length()) : cssName;
     }
 
-    /**
-     * With the Bootstrap 5 btn-check pattern the checked state lives on the
-     * input, which assistive technology already reports; aria-pressed is not
-     * valid on a label and is deliberately not set here.
+        /**
+     * Mirrors the checked state onto the label as .active.
+     *
+     * <p>Bootstrap 5 styles {@code .btn.active} with the very same rule as
+     * {@code .btn-check:checked + .btn}, so this changes nothing about how the
+     * button looks. What it changes is how the browser finds out. Relying on the
+     * sibling combinator alone leaves the label's style dependent on a state
+     * change on another element, and WebKit does not reliably invalidate that on
+     * touch: a toggle would stay looking pressed after being switched off until
+     * a scroll forced a repaint. Setting a class on the label is a direct
+     * mutation, which always invalidates.</p>
+     *
+     * <p>This is what GwtBootstrap3 did through ActiveMixin; it was lost when
+     * the widget moved to the btn-check markup.</p>
      */
     private void updatePressedState() {
+        final boolean checked = Boolean.TRUE.equals(getValue());
+        if (checked) {
+            buttonLabel.addClassName("active");
+        } else {
+            buttonLabel.removeClassName("active");
+        }
+        // aria-pressed is not valid on a label; the input already conveys state.
         buttonLabel.removeAttribute("aria-pressed");
     }
 }
