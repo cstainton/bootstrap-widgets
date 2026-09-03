@@ -32,6 +32,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.Arrays;
+import org.gwtbootstrap5.client.ui.Affix;
+import org.gwtbootstrap5.client.ui.ScrollSpy;
 import com.google.gwt.core.client.GWT;
 import org.gwtbootstrap5.client.ui.theme.StandardThemes;
 import org.gwtbootstrap5.client.ui.theme.ThemeSwitcher;
@@ -205,8 +207,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] CSS_LABELS = {"Buttons", "Code", "Forms", "Grid System", "Images", "Responsive Utilities", "Tables", "Typography"};
     private static final String[] COMPONENT_SECTIONS = {"alerts", "badges", "breadcrumbs", "buttonDropdowns", "buttonGroups", "dropdowns", "icons", "inputGroups", "jumbotron", "labels", "listGroup", "mediaObjects", "navbar", "navs", "pageHeader", "pagination", "panels", "progressBars", "suggestBox", "thumbnails", "wells"};
     private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
-    private static final String[] JS_SECTIONS = {"carousel", "collapse", "modals", "popover", "tabs", "tooltips"};
-    private static final String[] JS_LABELS = {"Carousel", "Collapse", "Modals", "Popover", "Tabs", "Tooltips"};
+    private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
+    private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
     private static final String[] EXTRA_SECTIONS = {"cards", "unsupportedExtras"};
     private static final String[] EXTRA_LABELS = {"Cards", "Unsupported Extras"};
 
@@ -525,6 +527,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Row createJavaScriptSections(RootPanel root) {
         Row row = row();
         Column column = fullColumn(row);
+        addPageHeader(column, "affix", "Affix", "sticky positioning");
+        column.add(affixPanel());
+
         addPageHeader(column, "carousel", "Carousel", null);
         column.add(panel("Basic", carousel(), "Carousel carousel = new Carousel();\ncarousel.addSlide(...);"));
         column.add(carouselCaptionsPanel());
@@ -544,6 +549,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         column.add(popoverPlacementsPanel());
         column.add(popoverTriggersPanel());
         column.add(popoverOptionsPanel());
+
+        addPageHeader(column, "scrollspy", "ScrollSpy", null);
+        column.add(scrollSpyPanel());
 
         addPageHeader(column, "tabs", "Tabs", null);
         column.add(tabsPanel());
@@ -2653,6 +2661,66 @@ public class ShowcaseEntryPoint implements EntryPoint {
                 + "<tr><td><code>.center-block</code></td><td><code>.mx-auto .d-block</code></td></tr>"
                 + "</tbody></table></div>"),
                 "// Responsiveness and DeviceSize are kept for source compatibility\n// and emit the Bootstrap 5 d-* utilities.");
+    }
+
+    private Widget affixPanel() {
+        Div demo = new Div();
+        demo.addStyleName("border rounded p-2");
+        demo.getElement().getStyle().setProperty("maxHeight", "180px");
+        demo.getElement().getStyle().setProperty("overflowY", "auto");
+
+        Div sticky = new Div();
+        sticky.addStyleName("bg-body-tertiary border-bottom py-2 mb-2");
+        sticky.add(new InlineHTML("<strong>I stay put while the box scrolls.</strong>"));
+        Affix.affix(sticky);
+        demo.add(sticky);
+
+        for (int i = 1; i <= 12; i++) {
+            demo.add(new Paragraph("Scrolling content, line " + i + "."));
+        }
+
+        return panel("Sticky positioning", demo,
+                "Div header = new Div();\nAffix.affix(header);          // adds .sticky-top\nAffix.affix(header, 56);      // .sticky-top with a top offset\n\n// Bootstrap 4 removed the affix plugin and Bootstrap 5 has no\n// JavaScript for this at all: .sticky-top is position: sticky.\n// The widget is kept so Bootstrap 3 code still compiles, and it\n// now applies that class rather than calling a plugin.");
+    }
+
+    private Widget scrollSpyPanel() {
+        String navId = "showcaseSpyNav";
+
+        NavPills spyNav = new NavPills();
+        spyNav.getElement().setId(navId);
+        spyNav.addStyleName("flex-column");
+        spyNav.addLink("First", "#spy-first");
+        spyNav.addLink("Second", "#spy-second");
+        spyNav.addLink("Third", "#spy-third");
+
+        Div scroller = new Div();
+        scroller.addStyleName("border rounded p-3");
+        scroller.getElement().setId("showcaseSpyBody");
+        scroller.getElement().getStyle().setProperty("maxHeight", "200px");
+        scroller.getElement().getStyle().setProperty("overflowY", "auto");
+        String[] ids = {"spy-first", "spy-second", "spy-third"};
+        String[] titles = {"First", "Second", "Third"};
+        for (int i = 0; i < ids.length; i++) {
+            Heading heading = new Heading(5, titles[i]);
+            heading.getElement().setId(ids[i]);
+            scroller.add(heading);
+            for (int line = 1; line <= 5; line++) {
+                scroller.add(new Paragraph(titles[i] + " section, line " + line + "."));
+            }
+        }
+
+        Row row = row();
+        Column navColumn = new Column(4);
+        navColumn.add(spyNav);
+        Column bodyColumn = new Column(8);
+        bodyColumn.add(scroller);
+        row.add(navColumn);
+        row.add(bodyColumn);
+
+        ScrollSpy.scrollSpy(scroller, "#" + navId);
+
+        return panel("Basic", row,
+                "NavPills nav = new NavPills();\nnav.getElement().setId(\"spy-nav\");\n\nScrollSpy.scrollSpy(scrollingBody, \"#spy-nav\");\n\n// Bootstrap 5 spells the attributes data-bs-spy and\n// data-bs-target, which is what the widget writes.");
     }
 
     private Panel panel(String title, Widget bodyWidget, String code) {
