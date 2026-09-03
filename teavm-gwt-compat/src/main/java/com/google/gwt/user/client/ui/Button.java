@@ -32,7 +32,6 @@ public class Button extends FocusWidget implements HasHTML {
     public Button() {
         super(Document.get().createPushButtonElement());
         getElement().setAttribute("type", "button");
-        setStyleName("gwt-Button");
     }
 
     public Button(final String text) {

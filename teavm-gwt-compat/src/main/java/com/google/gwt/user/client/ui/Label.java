@@ -32,7 +32,6 @@ public class Label extends Widget implements HasText {
 
     public Label() {
         this(Document.get().createDivElement());
-        setStyleName("gwt-Label");
     }
 
     public Label(final String text) {

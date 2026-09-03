@@ -87,7 +87,7 @@ public class TextArea extends TextBoxBase {
     }
 
     private TextAreaElement getTextAreaElement() {
-        return getElement().cast();
+        return TextAreaElement.as(getElement());
     }
 
     public void clear() {

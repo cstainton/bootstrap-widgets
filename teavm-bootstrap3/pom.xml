@@ -90,6 +90,7 @@
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/client/shared/js/JQuery.java</exclude>
+            <exclude>org/gwtbootstrap3/client/ui/base/TooltipOptions.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -109,7 +110,7 @@
               <mainClass>org.gwtbootstrap3.teavm.demo.Bootstrap3ShowcaseApp</mainClass>
               <targetDirectory>${project.build.directory}/teavm</targetDirectory>
               <targetFileName>teavm-bootstrap3-smoke.js</targetFileName>
-              <minifying>false</minifying>
+              <minifying>true</minifying>
               <sourceMapsGenerated>true</sourceMapsGenerated>
             </configuration>
           </execution>

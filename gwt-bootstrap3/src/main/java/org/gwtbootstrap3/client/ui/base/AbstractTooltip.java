@@ -47,7 +47,6 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
-import jsinterop.annotations.JsMethod;
 
 /**
  * Common implementation for the Bootstrap tooltip and popover.
@@ -825,25 +824,19 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
     }
 
     private void updateBool(Element e, String option, boolean value) {
-        updateBool(dataTarget, e, option, value);
+        TooltipOptions.updateBool(dataTarget, e, option, value);
     }
 
-    @JsMethod
-    private static native void updateBool(String dataTarget, Element e, String option, boolean value);
 
     private void updateDelay(Element e, int showDelay, int hideDelay) {
-        updateDelay(dataTarget, e, showDelay, hideDelay);
+        TooltipOptions.updateDelay(dataTarget, e, showDelay, hideDelay);
     }
 
-    @JsMethod
-    private static native void updateDelay(String dataTarget, Element e, int showDelay, int hideDelay);
 
     protected void updateString(Element e, String option, String value) {
-        updateString(dataTarget, e, option, value);
+        TooltipOptions.updateString(dataTarget, e, option, value);
     }
 
-    @JsMethod
-    private static native void updateString(String dataTarget, Element e, String option, String value);
 
     /**
      * Update the title. This should only be called when the title is already showing. It causes a small flicker but
@@ -852,10 +845,8 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
     protected abstract void updateTitleWhenShowing();
 
     private void updateViewport(Element e, String selector, int padding) {
-        updateViewport(dataTarget, e, selector, padding);
+        TooltipOptions.updateViewport(dataTarget, e, selector, padding);
     }
 
-    @JsMethod
-    private static native void updateViewport(String dataTarget, Element e, String selector, int padding);
 
 }

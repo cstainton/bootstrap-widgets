@@ -4,11 +4,6 @@
  * %%
  * Copyright (C) 2026 Carl Stainton
  * %%
- * Reimplements, over TeaVM's JSO libraries, part of the GWT client API. Class,
- * method and package names follow GWT (https://github.com/gwtproject/gwt),
- * Copyright (C) The GWT Project Authors, licensed under the Apache License,
- * Version 2.0. No GWT source is included.
- * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,19 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package com.google.gwt.user.client.ui;
+package com.google.gwt.dom.client;
 
-import com.google.gwt.dom.client.Document;
+import org.teavm.jso.dom.html.HTMLElement;
 
-/** Widget holding arbitrary HTML, rendered as a {@code span}. */
-public class InlineHTML extends HTML {
+/**
+ * The document head. Present so {@link Document#getHead()} keeps GWT's return type, which
+ * is what the theme switcher binds against when it swaps the stylesheet link.
+ */
+public class HeadElement extends Element {
 
-    public InlineHTML() {
-        super(Document.get().createSpanElement());
+    public static final String TAG = "head";
+
+    public HeadElement(final HTMLElement element) {
+        super(element);
     }
 
-    public InlineHTML(final String html) {
-        this();
-        setHTML(html);
+    /** Narrows a DOM element to the head type. */
+    public static HeadElement as(final Element element) {
+        return element == null ? null : new HeadElement(element.unwrap());
     }
 }

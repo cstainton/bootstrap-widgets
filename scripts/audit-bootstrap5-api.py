@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 B3_PACKAGE = "org.gwtbootstrap3"
-B5_PACKAGE = "org.gwtbootstrap5"
+B5_PACKAGE = "io.instanto.bootstrap5"
 
 
 @dataclass(frozen=True)
@@ -206,7 +206,7 @@ def main() -> int:
     lines = [
         "# Bootstrap 5 API Contract Audit",
         "",
-        "Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3 package names are normalized to `org.gwtbootstrap5` before comparison.",
+        "Generated from the compiled Bootstrap 3 and Bootstrap 5 public APIs. Bootstrap 3 package names are normalized to `io.instanto.bootstrap5` before comparison.",
         "",
         f"- Shared inventory: `{sum(1 for row in rows if row[1])}/{len(rows)}`",
         f"- Full normalized public contract: `{full_contract}/{len(rows)}`",

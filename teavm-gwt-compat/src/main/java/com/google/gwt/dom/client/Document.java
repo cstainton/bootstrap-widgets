@@ -143,7 +143,7 @@ public final class Document {
         return new Text(HTMLDocument.current().createTextNode(data == null ? "" : data));
     }
 
-    public Element createTextInputElement() {
+    public InputElement createTextInputElement() {
         return createInputElement("text");
     }
 
@@ -157,9 +157,9 @@ public final class Document {
         return input;
     }
 
-    /** Returns an id unique within the document, matching GWT's {@code gwt-uid-N}. */
+    /** Returns an id unique within the document, matching GWT's {@code uid-N}. */
     public String createUniqueId() {
-        return "gwt-uid-" + (++uniqueId);
+        return "uid-" + (++uniqueId);
     }
 
     private int uniqueId;
@@ -237,8 +237,8 @@ public final class Document {
         return createElement("ul");
     }
 
-    public Element getHead() {
-        return new Element(HTMLDocument.current().getHead());
+    public HeadElement getHead() {
+        return new HeadElement(HTMLDocument.current().getHead());
     }
 
     public Element getDocumentElement() {

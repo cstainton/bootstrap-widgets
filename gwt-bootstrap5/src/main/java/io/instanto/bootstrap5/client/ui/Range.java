@@ -36,6 +36,8 @@ import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+
+import io.instanto.bootstrap5.client.ui.base.InputEvents;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -63,7 +65,7 @@ public class Range extends FocusWidget implements HasId, HasName, HasResponsiven
     private boolean continuous;
 
     public Range() {
-        final InputElement element = Document.get().createElement("input").cast();
+        final InputElement element = InputElement.as(Document.get().createElement("input"));
         element.setAttribute("type", "range");
         setElement(element);
         setStyleName("form-range");
@@ -122,7 +124,7 @@ public class Range extends FocusWidget implements HasId, HasName, HasResponsiven
         }
         this.continuous = continuous;
         if (continuous) {
-            listenForInput(getElement(), this);
+            InputEvents.listen(getElement(), this::onNativeInput);
         }
     }
 
@@ -131,18 +133,11 @@ public class Range extends FocusWidget implements HasId, HasName, HasResponsiven
     }
 
     /** Called from the native input listener while dragging. */
-    void onNativeInput() {
+    private void onNativeInput() {
         if (continuous) {
             ValueChangeEvent.fire(this, getValue());
         }
     }
-
-    private static native void listenForInput(com.google.gwt.dom.client.Element element,
-            Range widget) /*-{
-        element.addEventListener("input", function () {
-            widget.@io.instanto.bootstrap5.client.ui.Range::onNativeInput()();
-        });
-    }-*/;
 
     @Override
     public Double getValue() {
@@ -198,7 +193,7 @@ public class Range extends FocusWidget implements HasId, HasName, HasResponsiven
     }
 
     private InputElement input() {
-        return getElement().cast();
+        return InputElement.as(getElement());
     }
 
     private static String trim(final double value) {

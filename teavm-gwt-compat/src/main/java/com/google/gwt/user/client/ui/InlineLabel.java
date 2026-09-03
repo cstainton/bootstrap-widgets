@@ -31,7 +31,6 @@ public class InlineLabel extends Label {
 
     public InlineLabel() {
         super(Document.get().createSpanElement());
-        setStyleName("gwt-InlineLabel");
     }
 
     public InlineLabel(final String text) {

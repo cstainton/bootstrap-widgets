@@ -31,7 +31,6 @@ public class Image extends Widget {
 
     public Image() {
         setElement(Document.get().createImageElement());
-        setStyleName("gwt-Image");
     }
 
     public Image(final String url) {

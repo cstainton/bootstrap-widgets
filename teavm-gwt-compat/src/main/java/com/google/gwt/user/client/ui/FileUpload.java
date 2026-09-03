@@ -31,7 +31,6 @@ public class FileUpload extends FocusWidget implements HasName {
 
     public FileUpload() {
         super(Document.get().createInputElement("file"));
-        setStyleName("gwt-FileUpload");
     }
 
     @Override

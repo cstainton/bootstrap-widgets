@@ -36,6 +36,5 @@ public class SimpleRadioButton extends SimpleCheckBox {
 
     protected SimpleRadioButton(final InputElement element) {
         super(element);
-        setStyleName("gwt-SimpleRadioButton");
     }
 }

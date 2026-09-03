@@ -30,7 +30,6 @@ public class PasswordTextBox extends TextBoxBase {
 
     public PasswordTextBox() {
         super(Document.get().createInputElement("password"));
-        setStyleName("gwt-PasswordTextBox");
     }
 
     public int getMaxLength() {

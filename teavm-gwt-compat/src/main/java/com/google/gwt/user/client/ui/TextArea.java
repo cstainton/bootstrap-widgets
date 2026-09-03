@@ -31,7 +31,6 @@ public class TextArea extends TextBoxBase {
 
     public TextArea() {
         super(Document.get().createTextAreaElement());
-        setStyleName("gwt-TextArea");
     }
 
     protected TextAreaElement getTextAreaElement() {

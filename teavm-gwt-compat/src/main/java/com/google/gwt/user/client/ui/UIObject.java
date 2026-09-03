@@ -200,7 +200,7 @@ public abstract class UIObject {
         }
     }
 
-    public static final String DEBUG_ID_PREFIX = "gwt-debug-";
+    public static final String DEBUG_ID_PREFIX = "debug-";
 
     /** The rendered width of this object's element, in pixels. */
     public int getOffsetWidth() {

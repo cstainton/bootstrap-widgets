@@ -32,7 +32,6 @@ public class HTML extends Label implements HasHTML {
 
     public HTML() {
         super(Document.get().createDivElement());
-        setStyleName("gwt-HTML");
     }
 
     public HTML(final String html) {

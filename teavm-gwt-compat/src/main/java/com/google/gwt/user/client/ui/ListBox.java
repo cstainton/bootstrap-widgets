@@ -38,7 +38,6 @@ public class ListBox extends FocusWidget implements HasChangeHandlers, HasName {
 
     public ListBox() {
         super(Document.get().createSelectElement());
-        setStyleName("gwt-ListBox");
     }
 
     public void addItem(final String item) {

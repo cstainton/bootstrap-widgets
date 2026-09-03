@@ -40,7 +40,6 @@ public class PopupPanel extends SimplePanel {
     public PopupPanel(final boolean autoHide) {
         super(Document.get().createDivElement());
         this.autoHide = autoHide;
-        setStyleName("gwt-PopupPanel");
         getElement().getStyle().setProperty("position", "absolute");
         hide();
     }

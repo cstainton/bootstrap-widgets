@@ -156,7 +156,6 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
         container.add(box);
         container.add(display.asPopup());
         initWidget(container);
-        setStyleName("gwt-SuggestBox");
         box.addKeyUpHandler(event -> refreshSuggestions());
     }
 

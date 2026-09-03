@@ -31,7 +31,6 @@ public class RadioButton extends CheckBox {
 
     public RadioButton(final String name) {
         super(Document.get().createRadioInputElement(name));
-        setStyleName("gwt-RadioButton");
     }
 
     public RadioButton(final String name, final String label) {

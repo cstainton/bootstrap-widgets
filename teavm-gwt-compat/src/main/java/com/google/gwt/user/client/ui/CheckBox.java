@@ -68,7 +68,6 @@ public class CheckBox extends ButtonBase implements HasName, HasValue<Boolean>,
         getElement().appendChild(labelElem);
 
         directionalTextHelper = new DirectionalTextHelper(labelElem, true);
-        setStyleName("gwt-CheckBox");
     }
 
     protected InputElement getInputElement() {
@@ -169,7 +168,6 @@ public class CheckBox extends ButtonBase implements HasName, HasValue<Boolean>,
     @Override
     public void setEnabled(final boolean enabled) {
         inputElem.setDisabled(!enabled);
-        setStyleName("gwt-CheckBox-disabled", !enabled);
     }
 
     @Override

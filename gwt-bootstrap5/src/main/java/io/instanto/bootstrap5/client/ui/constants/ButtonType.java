@@ -30,10 +30,13 @@ import com.google.gwt.dom.client.Style;
 public enum ButtonType implements Type, Style.HasCssName {
     DEFAULT("btn-secondary"),
     PRIMARY("btn-primary"),
+    SECONDARY("btn-secondary"),
     SUCCESS("btn-success"),
     INFO("btn-info"),
     WARNING("btn-warning"),
     DANGER("btn-danger"),
+    LIGHT("btn-light"),
+    DARK("btn-dark"),
     LINK("btn-link");
 
     private final String cssClass;

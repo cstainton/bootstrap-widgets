@@ -32,7 +32,6 @@ public class NamedFrame extends Widget {
     public NamedFrame(final String name) {
         setElement(Document.get().createElement("iframe"));
         getElement().setPropertyString("name", name);
-        setStyleName("gwt-Frame");
     }
 
     public String getName() {

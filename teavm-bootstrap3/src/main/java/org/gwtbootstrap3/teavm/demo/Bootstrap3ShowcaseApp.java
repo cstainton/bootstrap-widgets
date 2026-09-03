@@ -27,6 +27,31 @@ package org.gwtbootstrap3.teavm.demo;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Alert;
+import org.gwtbootstrap3.client.ui.AnchorButton;
+import org.gwtbootstrap3.client.ui.AnchorListItem;
+import org.gwtbootstrap3.client.ui.Breadcrumbs;
+import org.gwtbootstrap3.client.ui.DropDownMenu;
+import org.gwtbootstrap3.client.ui.Icon;
+import org.gwtbootstrap3.client.ui.Input;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.InputGroupAddon;
+import org.gwtbootstrap3.client.ui.InputGroupButton;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalBody;
+import org.gwtbootstrap3.client.ui.ModalFooter;
+import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.Pagination;
+import org.gwtbootstrap3.client.ui.Popover;
+import org.gwtbootstrap3.client.ui.TabContent;
+import org.gwtbootstrap3.client.ui.TabListItem;
+import org.gwtbootstrap3.client.ui.TabPane;
+import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.Tooltip;
+import org.gwtbootstrap3.client.ui.constants.IconSize;
+import org.gwtbootstrap3.client.ui.constants.IconType;
+import org.gwtbootstrap3.client.ui.constants.Placement;
+import org.gwtbootstrap3.client.ui.constants.PaginationSize;
+import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.gwtbootstrap3.client.ui.Badge;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.ButtonGroup;
@@ -84,7 +109,7 @@ public final class Bootstrap3ShowcaseApp {
         final Column column = new Column(ColumnSize.XS_12);
 
         final PageHeader header = new PageHeader();
-        header.setText("GwtBootstrap3 on TeaVM");
+        header.setText("Bootstrap 3 on TeaVM");
         header.setSubText("the same widgets, compiled to JavaScript by TeaVM");
         column.add(header);
 
@@ -117,6 +142,35 @@ public final class Bootstrap3ShowcaseApp {
                 "Progress progress = new Progress();\n"
                 + "progress.add(new ProgressBar(60));\n"
                 + "new ListGroup();"));
+        column.add(panel("Icons", icons(),
+                "new Icon(IconType.GEAR);\n"
+                + "icon.setSize(IconSize.LARGE);\n"
+                + "icon.setSpin(true);"));
+        column.add(panel("Input groups", inputGroups(),
+                "InputGroup group = new InputGroup();\n"
+                + "group.add(new InputGroupAddon(\"@\"));\n"
+                + "group.add(new InputGroupButton(new Button(\"Go\")));"));
+        column.add(panel("Tabs", tabs(),
+                "TabPanel tabPanel = new TabPanel();\n"
+                + "tabPanel.getTabs().add(new TabListItem(\"First\"));\n"
+                + "tabPanel.getTabContent().add(pane);"));
+        column.add(panel("Dropdowns", dropdowns(),
+                "ButtonGroup group = new ButtonGroup();\n"
+                + "AnchorButton toggle = new AnchorButton();\n"
+                + "toggle.setDataToggle(Toggle.DROPDOWN);\n"
+                + "group.add(new DropDownMenu());"));
+        column.add(panel("Pagination and breadcrumbs", navigation(),
+                "Pagination pagination = new Pagination();\n"
+                + "pagination.setPaginationSize(PaginationSize.SMALL);\n"
+                + "new Breadcrumbs();"));
+        column.add(panel("Tooltips and popovers", overlays(),
+                "new Tooltip(button, \"Tooltip text\");\n"
+                + "new Popover(button, \"Title\", \"Content\");\n"
+                + "// Bootstrap 3 plugins, reached through jQuery"));
+        column.add(panel("Modals", modals(),
+                "Modal modal = new Modal();\n"
+                + "modal.setClosable(true);\n"
+                + "modal.show();"));
 
         row.add(column);
         return row;
@@ -250,6 +304,164 @@ public final class Bootstrap3ShowcaseApp {
     }
 
     /** One demo section: heading, live example, and the code behind it. */
+    private static Widget icons() {
+        final Well well = new Well();
+        final Paragraph line = new Paragraph();
+        for (final IconType type : new IconType[] {IconType.HOME, IconType.HEART, IconType.STAR,
+                IconType.GEAR, IconType.ENVELOPE}) {
+            line.add(new Icon(type));
+            line.add(new Text(" "));
+        }
+        final Icon large = new Icon(IconType.CAMERA);
+        large.setSize(IconSize.LARGE);
+        line.add(large);
+        line.add(new Text(" "));
+        final Icon spinner = new Icon(IconType.SPINNER);
+        spinner.setSpin(true);
+        line.add(spinner);
+        well.add(line);
+        return well;
+    }
+
+    private static Widget inputGroups() {
+        final Well well = new Well();
+
+        final InputGroup at = new InputGroup();
+        final InputGroupAddon addon = new InputGroupAddon();
+        addon.setText("@");
+        at.add(addon);
+        final Input username = new Input();
+        username.setPlaceholder("Username");
+        at.add(username);
+
+        final InputGroup go = new InputGroup();
+        final Input search = new Input();
+        search.setPlaceholder("Search");
+        go.add(search);
+        final InputGroupButton goButton = new InputGroupButton();
+        goButton.add(button("Go", ButtonType.PRIMARY));
+        go.add(goButton);
+
+        well.add(at);
+        well.add(go);
+        return well;
+    }
+
+    private static Widget tabs() {
+        final TabPanel tabPanel = new TabPanel();
+
+        final NavTabs navTabs = new NavTabs();
+        final TabListItem first = new TabListItem("First");
+        first.setDataTarget("#teavmTab1");
+        first.setActive(true);
+        final TabListItem second = new TabListItem("Second");
+        second.setDataTarget("#teavmTab2");
+        navTabs.add(first);
+        navTabs.add(second);
+
+        final TabContent content = new TabContent();
+        content.add(pane("teavmTab1", "First tab content, shown by Bootstrap's tab plugin.", true));
+        content.add(pane("teavmTab2", "Second tab content.", false));
+
+        tabPanel.add(navTabs);
+        tabPanel.add(content);
+        return tabPanel;
+    }
+
+    private static TabPane pane(final String id, final String text, final boolean active) {
+        final TabPane pane = new TabPane();
+        pane.getElement().setId(id);
+        pane.setActive(active);
+        pane.add(new Paragraph(text));
+        return pane;
+    }
+
+    private static Widget dropdowns() {
+        final Well well = new Well();
+        final ButtonGroup group = new ButtonGroup();
+        final AnchorButton toggle = new AnchorButton();
+        toggle.setText("Click to toggle");
+        toggle.setDataToggle(Toggle.DROPDOWN);
+        final DropDownMenu menu = new DropDownMenu();
+        menu.add(new AnchorListItem("Action"));
+        menu.add(new AnchorListItem("Another action"));
+        group.add(toggle);
+        group.add(menu);
+        well.add(group);
+        return well;
+    }
+
+    private static Widget navigation() {
+        final Well well = new Well();
+
+        final Pagination pagination = new Pagination();
+        pagination.add(new AnchorListItem("Previous"));
+        pagination.add(new AnchorListItem("1"));
+        pagination.add(new AnchorListItem("2"));
+        pagination.add(new AnchorListItem("Next"));
+
+        final Pagination small = new Pagination();
+        small.setPaginationSize(PaginationSize.SMALL);
+        small.add(new AnchorListItem("1"));
+        small.add(new AnchorListItem("2"));
+
+        final Breadcrumbs breadcrumbs = new Breadcrumbs();
+        breadcrumbs.add(new AnchorListItem("Home"));
+        breadcrumbs.add(new AnchorListItem("Library"));
+        breadcrumbs.add(new AnchorListItem("Data"));
+
+        well.add(pagination);
+        well.add(small);
+        well.add(breadcrumbs);
+        return well;
+    }
+
+    private static Widget overlays() {
+        final Well well = new Well();
+        final Paragraph line = new Paragraph();
+        for (final Placement placement : new Placement[] {Placement.TOP, Placement.RIGHT,
+                Placement.BOTTOM, Placement.LEFT}) {
+            final Button target = button("Tooltip " + placement.name().toLowerCase(),
+                    ButtonType.DEFAULT);
+            final Tooltip tooltip = new Tooltip(target,
+                    "Tooltip on " + placement.name().toLowerCase());
+            tooltip.setPlacement(placement);
+            line.add(tooltip);
+            line.add(new Text(" "));
+        }
+        final Button popoverTarget = button("Popover", ButtonType.PRIMARY);
+        final Popover popover = new Popover(popoverTarget, "A popover",
+                "Its content, positioned by Bootstrap 3's popover plugin.");
+        popover.setPlacement(Placement.TOP);
+        line.add(popover);
+        well.add(line);
+        return well;
+    }
+
+    private static Widget modals() {
+        final Well well = new Well();
+
+        final Modal modal = new Modal();
+        modal.setTitle("A Bootstrap 3 modal");
+        modal.setClosable(true);
+        modal.setFade(true);
+        final ModalBody body = new ModalBody();
+        body.add(new Paragraph("Shown through Bootstrap's modal plugin."));
+        modal.add(body);
+        final ModalFooter footer = new ModalFooter();
+        final Button dismiss = button("Close", ButtonType.DEFAULT);
+        dismiss.addClickHandler(event -> modal.hide());
+        footer.add(dismiss);
+        modal.add(footer);
+
+        final Button open = button("Show modal", ButtonType.PRIMARY);
+        open.addClickHandler(event -> modal.show());
+
+        well.add(open);
+        well.add(modal);
+        return well;
+    }
+
     private static Panel panel(final String title, final Widget example, final String code) {
         final Panel panel = new Panel();
 

@@ -405,7 +405,10 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
             case INFO:     return Variant.INFO;
             case WARNING:  return Variant.WARNING;
             case DANGER:   return Variant.DANGER;
+            case LIGHT:    return Variant.LIGHT;
+            case DARK:     return Variant.DARK;
             case LINK:     return Variant.LINK;
+            case SECONDARY:
             case DEFAULT:
             default:       return Variant.SECONDARY;
         }

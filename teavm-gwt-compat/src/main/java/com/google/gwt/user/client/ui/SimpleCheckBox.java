@@ -42,7 +42,6 @@ public class SimpleCheckBox extends FocusWidget implements HasName, HasValue<Boo
 
     protected SimpleCheckBox(final Element element) {
         super(element);
-        setStyleName("gwt-SimpleCheckBox");
     }
 
     /**

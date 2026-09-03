@@ -33,7 +33,7 @@ import java.util.Map;
  * <p>Switching replaces the {@code href} of a single stylesheet link, which the browser
  * swaps atomically -- so there is no flash of a half-styled page, and no accumulation of
  * stylesheets as the user changes their mind. The link is created on first use and
- * carries {@code id="gwtbootstrap5-theme"}; a page that already declares a link with that
+ * carries {@code id="bootstrap5-theme"}; a page that already declares a link with that
  * id has it adopted instead, so a server-rendered initial theme survives startup without
  * a repaint.</p>
  *
@@ -51,10 +51,10 @@ import java.util.Map;
 public final class Themes {
 
     /** The id of the stylesheet link this class owns. */
-    public static final String LINK_ID = "gwtbootstrap5-theme";
+    public static final String LINK_ID = "bootstrap5-theme";
 
     /** The id of the overlay link, used only by themes that have one. */
-    public static final String OVERLAY_LINK_ID = "gwtbootstrap5-theme-overlay";
+    public static final String OVERLAY_LINK_ID = "bootstrap5-theme-overlay";
 
     private static final String STORAGE_KEY = "gwtbootstrap5.theme";
     private static final Map<String, Theme> REGISTRY = new LinkedHashMap<>();
