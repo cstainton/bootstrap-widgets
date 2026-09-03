@@ -376,7 +376,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Widget createSetup() {
         Row row = section("setup", "Setup", "Bootstrap 5-native module setup");
         Column column = fullColumn(row);
-        column.add(panel("Maven", new HTML("<p>Use the Bootstrap 5 module when migrating code/templates to Bootstrap 5 idioms.</p>"), "<dependency>\n  <groupId>org.gwtbootstrap3</groupId>\n  <artifactId>gwt-bootstrap5-modern</artifactId>\n  <version>1.0-SNAPSHOT</version>\n</dependency>"));
+        column.add(panel("Maven", new HTML("<p>Use the Bootstrap 5 module when migrating code/templates to Bootstrap 5 idioms.</p>"), "<dependency>\n  <groupId>io.instanto</groupId>\n  <artifactId>gwt-bootstrap5-modern</artifactId>\n  <version>1.0-SNAPSHOT</version>\n</dependency>"));
         column.add(panel("GWT Module", new HTML("<p>Inherit the Bootstrap 5 GWT module.</p>"), "<inherits name=\"org.gwtbootstrap5.GwtBootstrap5\"/>"));
         return row;
     }

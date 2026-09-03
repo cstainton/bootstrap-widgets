@@ -7,6 +7,14 @@ GWT Bootstrap Modern is a maintained fork of GwtBootstrap3 with two deliberately
 
 The project also keeps TeaVM tracks for both versions. Both TeaVM tracks use the shared `gwt-teavm-compat` layer for the small GWT client surface they need, but the version-specific widgets remain separate. The TeaVM modules are not UiBinder/GWT DOM builds; they are direct Java widget APIs backed by TeaVM DOM/JSO calls.
 
+## Coordinates
+
+The artifacts publish under `io.instanto`, not the `org.gwtbootstrap3` groupId upstream uses. That namespace belongs to the original project and a repository will not accept a fork under it.
+
+The **Java packages are unchanged**: `org.gwtbootstrap3.*` on the Bootstrap 3 track and `org.gwtbootstrap5.*` on the Bootstrap 5 track. That is what makes the Bootstrap 3 track a drop-in — an existing GwtBootstrap3 application swaps its two dependency coordinates and touches no source.
+
+The corollary is that upstream GwtBootstrap3 and this fork must never both be on the same classpath, since they declare the same classes.
+
 ## Showcases
 
 - [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/gwtbootstrap-modern/)
@@ -26,13 +34,13 @@ Use the Bootstrap 3 artifacts when you want the safest replacement for an existi
 
 ```xml
 <dependency>
-  <groupId>org.gwtbootstrap3</groupId>
+  <groupId>io.instanto</groupId>
   <artifactId>gwt-bootstrap3-modern</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
 
 <dependency>
-  <groupId>org.gwtbootstrap3</groupId>
+  <groupId>io.instanto</groupId>
   <artifactId>gwt-bootstrap3-modern-extras</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -42,7 +50,7 @@ Use the Bootstrap 5 artifact when you are ready to migrate templates and code to
 
 ```xml
 <dependency>
-  <groupId>org.gwtbootstrap3</groupId>
+  <groupId>io.instanto</groupId>
   <artifactId>gwt-bootstrap5-modern</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -52,7 +60,7 @@ TeaVM Bootstrap 3 experiment:
 
 ```xml
 <dependency>
-  <groupId>org.gwtbootstrap3</groupId>
+  <groupId>io.instanto</groupId>
   <artifactId>teavm-bootstrap3-modern</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
@@ -62,7 +70,7 @@ TeaVM Bootstrap 5 experiment:
 
 ```xml
 <dependency>
-  <groupId>org.gwtbootstrap3</groupId>
+  <groupId>io.instanto</groupId>
   <artifactId>teavm-bootstrap5-modern</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
