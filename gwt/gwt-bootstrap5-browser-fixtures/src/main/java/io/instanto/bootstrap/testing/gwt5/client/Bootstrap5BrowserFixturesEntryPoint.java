@@ -289,10 +289,17 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         Button validate = tagged(new Button("Validate"), "behaviour/form/validation/action");
         validate.addClickHandler(event -> group.getElement().setAttribute(
                 "data-validation-result", Boolean.toString(textBox.validate(true))));
+        Button clear = tagged(new Button("Set valid"), "behaviour/form/validation/clear");
+        clear.addClickHandler(event -> {
+            textBox.setValue("valid");
+            group.getElement().setAttribute("data-validation-result",
+                    Boolean.toString(textBox.validate(true)));
+        });
         group.add(label);
         group.add(textBox);
         group.add(message);
         group.add(validate);
+        group.add(clear);
         return fixture("Validation", group);
     }
 

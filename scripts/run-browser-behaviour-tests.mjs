@@ -675,6 +675,25 @@ async function main() {
         assert.ok(result.describedBy.includes(result.messageId), JSON.stringify(result));
         assert.equal(result.messageVisible, true);
         assert.equal(result.valid, "false");
+
+        await tap("behaviour/form/validation/clear");
+        const cleared = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/form/validation"]');
+          const control = document.querySelector('[data-testid="behaviour/form/validation/control"]');
+          const message = document.querySelector('[data-testid="behaviour/form/validation/message"]');
+          return {
+            invalidClass: group.classList.contains('has-error') || control.classList.contains('is-invalid'),
+            ariaInvalid: control.getAttribute('aria-invalid'),
+            describedBy: control.getAttribute('aria-describedby'),
+            message: message.textContent.trim(),
+            valid: group.dataset.validationResult
+          };
+        })()`);
+        assert.equal(cleared.invalidClass, false);
+        assert.equal(cleared.ariaInvalid, null);
+        assert.equal(cleared.describedBy, null);
+        assert.equal(cleared.message, "");
+        assert.equal(cleared.valid, "true");
       });
 
       test("FRM-007", "list selection exposes one selected value", async () => {
