@@ -61,6 +61,7 @@ import com.google.gwt.event.dom.client.MouseWheelEvent;
 import com.google.gwt.event.dom.client.MouseWheelHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -78,11 +79,11 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
         }
 
         public void loading() {
-            button(getElement(), "loading");
+            setLoading(true);
         }
 
         public void reset() {
-            button(getElement(), "reset");
+            setLoading(false);
         }
 
         /**
@@ -91,11 +92,21 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
          * @param state Text state
          */
         public void reset(final String state) {
-            button(getElement(), state);
+            setButtonText(state);
+            normalText = state == null ? "" : state;
+            setEnabled(true);
+            getElement().removeAttribute("aria-busy");
+            loading = false;
         }
     }
 
     private final ButtonStateHandler buttonStateHandler = new ButtonStateHandler();
+
+    private String loadingText;
+
+    private String normalText = "";
+
+    private boolean loading;
     private final DataTargetMixin<AbstractButton> targetMixin = new DataTargetMixin<AbstractButton>(this);
     private final ActiveMixin<AbstractButton> activeMixin = new ActiveMixin<AbstractButton>(this);
     private final FocusableMixin<AbstractButton> focusableMixin = new FocusableMixin<AbstractButton>(this);
@@ -274,6 +285,7 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     }
 
     public void setDataLoadingText(final String loadingText) {
+        this.loadingText = loadingText;
         if (loadingText != null) {
             getElement().setAttribute(Attributes.DATA_LOADING_TEXT, loadingText);
         } else {
@@ -297,6 +309,54 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     protected abstract Element createElement();
 
     // @formatter:off
+
+    /**
+     * Swaps the button text for its loading text and disables it.
+     *
+     * <p>Bootstrap 3 does this through {@code $.fn.button}, which is a global any other
+     * library can take: jQuery UI's own button widget replaces it, and the FullCalendar
+     * extra vendors jQuery UI, so an application using both silently loses the loading
+     * state with "cannot call methods on button prior to initialization" on the console.
+     * Owning the behaviour removes that dependency, and matches the Bootstrap 5 track,
+     * which has to own it anyway because Bootstrap 5 dropped the plugin.</p>
+     */
+    public void setLoading(final boolean loading) {
+        if (loading) {
+            if (!this.loading) {
+                normalText = getButtonText();
+            }
+            if (loadingText != null && !loadingText.isEmpty()) {
+                setButtonText(loadingText);
+            }
+            setEnabled(false);
+            getElement().setAttribute("aria-busy", "true");
+        } else {
+            setButtonText(normalText);
+            setEnabled(true);
+            getElement().removeAttribute("aria-busy");
+        }
+        this.loading = loading;
+    }
+
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public String getLoadingText() {
+        return loadingText;
+    }
+
+    private String getButtonText() {
+        return this instanceof HasText ? ((HasText) this).getText() : getElement().getInnerText();
+    }
+
+    private void setButtonText(final String text) {
+        if (this instanceof HasText) {
+            ((HasText) this).setText(text == null ? "" : text);
+        } else {
+            getElement().setInnerText(text == null ? "" : text);
+        }
+    }
 
     private void button(final Element e, final String arg) {
         JQuery.jQuery(e).button(arg);
