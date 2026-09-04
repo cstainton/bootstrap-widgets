@@ -43,6 +43,7 @@
   </distributionManagement>
 
   <modules>
+    <module>widget-processor</module>
     <module>gwt</module>
     <module>testing</module>
     <module>teavm</module>

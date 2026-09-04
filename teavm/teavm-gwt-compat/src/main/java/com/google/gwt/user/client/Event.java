@@ -77,6 +77,41 @@ public class Event extends NativeEvent {
      * The event mask previously sunk on an element. Handlers here attach real DOM
      * listeners on registration, so nothing is pre-sunk and this reports none.
      */
+    /**
+     * The bit constant for a DOM event name, as GWT's Event exposes it.
+     *
+     * <p>Widgets test the event they are given against the ON* constants, which needs the
+     * name mapping back to a bit. Unknown names give -1, matching GWT.</p>
+     */
+    public static int getTypeInt(final String eventType) {
+        if (eventType == null) {
+            return -1;
+        }
+        switch (eventType) {
+            case "blur": return ONBLUR;
+            case "change": return ONCHANGE;
+            case "click": return ONCLICK;
+            case "dblclick": return ONDBLCLICK;
+            case "focus": return ONFOCUS;
+            case "keydown": return ONKEYDOWN;
+            case "keypress": return ONKEYPRESS;
+            case "keyup": return ONKEYUP;
+            case "load": return ONLOAD;
+            case "mousedown": return ONMOUSEDOWN;
+            case "mouseenter": return ONMOUSEENTER;
+            case "mouseleave": return ONMOUSELEAVE;
+            case "mousemove": return ONMOUSEMOVE;
+            case "mouseout": return ONMOUSEOUT;
+            case "mouseover": return ONMOUSEOVER;
+            case "mouseup": return ONMOUSEUP;
+            case "mousewheel": return ONMOUSEWHEEL;
+            case "paste": return ONPASTE;
+            case "scroll": return ONSCROLL;
+            case "touchstart": return ONTOUCHSTART;
+            default: return -1;
+        }
+    }
+
     public static int getEventsSunk(final com.google.gwt.dom.client.Element element) {
         return 0;
     }

@@ -310,6 +310,15 @@ public final class Bootstrap5ShowcaseApp {
                 + "slider.setTooltips(true);\n"
                 + "slider.setValues(20, 80);\n\n"
                 + "// noUiSlider, loaded by URL rather than inlined"));
+        column.add(panel("UiBinder", new UiBinderDemo(),
+                "<!-- UiBinderDemo.ui.xml, the same file a GWT application writes -->\n"
+                + "<b:ButtonGroup>\n"
+                + "  <b:Button type=\"PRIMARY\" text=\"Primary\"/>\n"
+                + "  <b:Button ui:field=\"counter\" text=\"Clicked 0 times\"/>\n"
+                + "</b:ButtonGroup>\n\n"
+                + "// GWT reaches its generator through deferred binding, which TeaVM\n"
+                + "// has no equivalent for. An annotation processor runs the same step\n"
+                + "// inside javac, where the types it needs are already known."));
         column.add(panel("Markdown", markdown(),
                 "MarkdownEditor editor = new MarkdownEditor(source);\n"
                 + "String markdown = editor.getValue();   // as typed\n"

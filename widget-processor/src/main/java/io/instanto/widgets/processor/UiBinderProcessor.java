@@ -1,0 +1,219 @@
+/*
+ * #%L
+ * GWT Bootstrap
+ * %%
+ * Copyright (C) 2026 Carl Stainton
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package io.instanto.widgets.processor;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+/**
+ * Turns a {@code .ui.xml} template into the Java a UiBinder implementation would be.
+ *
+ * <p>GWT answers {@code GWT.create(SomeBinder.class)} with a generator reached through
+ * deferred binding. TeaVM has no generator SPI, which is the only thing that stopped
+ * UiBinder working there, because what a generator emits is ordinary Java. Running the
+ * same step as an annotation processor puts it somewhere both compilers can use, and puts
+ * it inside javac, which already knows the types.</p>
+ *
+ * <p>That last part matters. A UiBinder generator has to know whether a widget has a
+ * {@code @UiConstructor} and what its parameters are, what type each setter takes, and
+ * whether that type is an enum, following the hierarchy because a widget inherits most of
+ * its setters. Those are questions about types, and {@code Elements} and {@code Types}
+ * answer them exactly.</p>
+ */
+@SupportedAnnotationTypes("*")
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
+public class UiBinderProcessor extends AbstractProcessor {
+
+    private static final String UI_NS = "urn:ui:com.google.gwt.uibinder";
+    private static final String IMPORT_PREFIX = "urn:import:";
+    private static final String BINDER = "com.google.gwt.uibinder.client.UiBinder";
+
+    @Override
+    public boolean process(final Set<? extends TypeElement> annotations,
+            final RoundEnvironment round) {
+        if (round.processingOver()) {
+            return false;
+        }
+        for (final Element element : round.getRootElements()) {
+            if (element.getKind() != ElementKind.CLASS) {
+                continue;
+            }
+            final TypeElement owner = (TypeElement) element;
+            final TypeElement binder = findBinder(owner);
+            if (binder != null) {
+                try {
+                    generate(owner, binder);
+                } catch (final Failure failure) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                            failure.getMessage(), failure.element == null ? owner : failure.element);
+                } catch (final Exception problem) {
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
+                            "could not generate a UiBinder for " + owner.getSimpleName()
+                                    + ": " + problem, owner);
+                }
+            }
+        }
+        return false;
+    }
+
+    /** The nested interface that extends UiBinder, if the owner declares one. */
+    private TypeElement findBinder(final TypeElement owner) {
+        for (final Element nested : owner.getEnclosedElements()) {
+            if (nested.getKind() != ElementKind.INTERFACE) {
+                continue;
+            }
+            final TypeElement candidate = (TypeElement) nested;
+            for (final TypeMirror parent : candidate.getInterfaces()) {
+                if (processingEnv.getTypeUtils().erasure(parent).toString().equals(BINDER)) {
+                    return candidate;
+                }
+            }
+        }
+        return null;
+    }
+
+    static final class Failure extends RuntimeException {
+        final Element element;
+
+        Failure(final String message, final Element element) {
+            super(message);
+            this.element = element;
+        }
+    }
+
+    private void generate(final TypeElement owner, final TypeElement binder) throws IOException {
+        final String pkg = processingEnv.getElementUtils().getPackageOf(owner)
+                .getQualifiedName().toString();
+        final String simple = owner.getSimpleName().toString();
+        final Document template = readTemplate(pkg, simple, owner);
+        if (template == null) {
+            return;
+        }
+
+        final Emitter emitter = new Emitter(processingEnv, owner);
+        final Node root = firstElement(template.getDocumentElement());
+        if (root == null) {
+            throw new Failure(simple + ".ui.xml has no widget in it", owner);
+        }
+        final String rootVar = emitter.emit(root, null);
+
+        final String impl = simple + "_BinderImpl";
+        final JavaFileObject file = processingEnv.getFiler()
+                .createSourceFile(pkg + "." + impl, owner);
+        try (Writer out = file.openWriter()) {
+            out.write("// Generated from " + simple + ".ui.xml. Do not edit.\n");
+            out.write("package " + pkg + ";\n\n");
+            out.write("/** UiBinder implementation for {@link " + simple + "}. */\n");
+            out.write("public class " + impl + " implements " + simple + ".Binder {\n\n");
+            out.write("    @Override\n");
+            out.write("    public " + emitter.rootType() + " createAndBindUi(final "
+                    + simple + " owner) {\n");
+            out.write(emitter.body());
+            out.write(emitter.fieldAssignments());
+            out.write(emitter.handlerWiring());
+            out.write("        return " + rootVar + ";\n");
+            out.write("    }\n}\n");
+        }
+
+        // so the compatibility layer's GWT.create finds it without deferred binding
+        // ServiceLoader looks the interface up by its binary name, so a nested
+        // interface is Owner$Binder rather than Owner.Binder. Getting this wrong
+        // leaves GWT.create finding nothing and handing back null.
+        final String binderBinary = processingEnv.getElementUtils()
+                .getBinaryName(binder).toString();
+        final FileObject service = processingEnv.getFiler().createResource(
+                StandardLocation.CLASS_OUTPUT, "", "META-INF/services/" + binderBinary);
+        try (Writer out = service.openWriter()) {
+            out.write(pkg + "." + impl + "\n");
+        }
+    }
+
+    private Document readTemplate(final String pkg, final String simple, final Element owner) {
+        final String name = simple + ".ui.xml";
+        for (final StandardLocation where : new StandardLocation[] {
+                StandardLocation.SOURCE_PATH, StandardLocation.CLASS_PATH,
+                StandardLocation.CLASS_OUTPUT}) {
+            try {
+                final FileObject found = processingEnv.getFiler().getResource(where, pkg, name);
+                try (InputStream stream = found.openInputStream()) {
+                    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    factory.setNamespaceAware(true);
+                    return factory.newDocumentBuilder().parse(stream);
+                }
+            } catch (final Exception ignored) {
+                // try the next location
+            }
+        }
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
+                "no " + name + " found for " + simple + "; leaving its binder to GWT", owner);
+        return null;
+    }
+
+    static Node firstElement(final Node parent) {
+        final NodeList children = parent.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            final Node child = children.item(i);
+            if (child.getNodeType() == Node.ELEMENT_NODE) {
+                if (UI_NS.equals(child.getNamespaceURI())) {
+                    final Node inner = firstElement(child);
+                    if (inner != null) {
+                        return inner;
+                    }
+                    continue;
+                }
+                return child;
+            }
+        }
+        return null;
+    }
+}

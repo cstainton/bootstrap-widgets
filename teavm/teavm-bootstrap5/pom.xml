@@ -104,6 +104,21 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <!--
+            UiBinder for TeaVM. GWT reaches its generator through deferred binding,
+            which TeaVM has no equivalent for; running the same step inside javac
+            puts it somewhere both compilers can use, and gives it the real type
+            model rather than an approximation of one. A module with no templates
+            generates nothing, so this costs an application that does not use
+            UiBinder exactly nothing.
+          -->
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.instanto</groupId>
+              <artifactId>widget-processor</artifactId>
+              <version>${project.version}</version>
+            </path>
+          </annotationProcessorPaths>
           <excludes>
             <exclude>io/instanto/bootstrap5/client/GwtBootstrap5EntryPoint.java</exclude>
             <exclude>io/instanto/bootstrap5/client/ui/base/BootstrapEventBridge.java</exclude>
