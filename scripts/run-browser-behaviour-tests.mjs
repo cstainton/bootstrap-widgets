@@ -104,6 +104,31 @@ async function poll(operation, description, timeout = timeoutMs) {
   throw new Error(`Timed out waiting for ${description}${lastError ? `: ${lastError.message}` : ""}`);
 }
 
+function signalAndWait(child, signal, timeout) {
+  if (child.exitCode !== null || child.signalCode !== null) {
+    return Promise.resolve(true);
+  }
+  return new Promise((resolveExit) => {
+    let timer;
+    const onExit = () => {
+      clearTimeout(timer);
+      resolveExit(true);
+    };
+    child.once("exit", onExit);
+    child.kill(signal);
+    timer = setTimeout(() => {
+      child.off("exit", onExit);
+      resolveExit(false);
+    }, timeout);
+  });
+}
+
+async function stopBrowser(browser) {
+  if (await signalAndWait(browser, "SIGTERM", 5000)) return;
+  if (await signalAndWait(browser, "SIGKILL", 2000)) return;
+  browser.unref();
+}
+
 class CdpClient {
   constructor(url) {
     this.url = url;
@@ -144,8 +169,28 @@ class CdpClient {
   send(method, params = {}) {
     const id = this.nextId++;
     return new Promise((resolveCommand, reject) => {
-      this.pending.set(id, { resolve: resolveCommand, reject });
-      this.socket.send(JSON.stringify({ id, method, params }));
+      const timer = setTimeout(() => {
+        if (this.pending.delete(id)) {
+          reject(new Error(`Timed out waiting for Chrome response to ${method}`));
+        }
+      }, timeoutMs);
+      this.pending.set(id, {
+        resolve: (value) => {
+          clearTimeout(timer);
+          resolveCommand(value);
+        },
+        reject: (error) => {
+          clearTimeout(timer);
+          reject(error);
+        },
+      });
+      try {
+        this.socket.send(JSON.stringify({ id, method, params }));
+      } catch (error) {
+        this.pending.delete(id);
+        clearTimeout(timer);
+        reject(error);
+      }
     });
   }
 
@@ -2019,8 +2064,7 @@ async function main() {
     if (failures) process.exitCode = 1;
   } finally {
     cdp?.close();
-    browser.kill("SIGTERM");
-    await new Promise((resolveExit) => browser.once("exit", resolveExit));
+    await stopBrowser(browser);
     server.close();
     rmSync(profile, { recursive: true, force: true });
     if (process.exitCode && browserStderr) {
