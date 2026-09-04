@@ -433,6 +433,8 @@ async function main() {
       return evaluate(`(() => {
         const element = document.querySelector('[data-testid=' + ${JSON.stringify(JSON.stringify(testId))} + ']');
         const input = element && element.querySelector('input');
+        const paintTarget = input ? element.querySelector('label') || element : element;
+        const paint = paintTarget && getComputedStyle(paintTarget);
         return element && {
           active: element.classList.contains('active') || Boolean(element.querySelector('label.active')),
           open: element.classList.contains('open') || element.classList.contains('show')
@@ -446,6 +448,7 @@ async function main() {
           changeCount: Number(element.dataset.changeCount || 0),
           value: element.dataset.value,
           checked: input ? input.checked : undefined,
+          backgroundColor: paint ? paint.backgroundColor : undefined,
           text: element.textContent.trim(),
           events: element.dataset.eventOrder || ''
         };
@@ -462,11 +465,14 @@ async function main() {
         assert.equal(result.active, true);
         assert.equal(result.ariaPressed, "true");
         assert.equal(result.clickCount, 1);
+        const activeBackground = result.backgroundColor;
         await tap("behaviour/toggle-button/basic");
         result = await state("behaviour/toggle-button/basic");
         assert.equal(result.active, false);
         assert.equal(result.ariaPressed, "false");
         assert.equal(result.clickCount, 2);
+        assert.notEqual(result.backgroundColor, activeBackground,
+          "inactive touch paint must differ from active paint");
       });
 
       test("BTN-003", "checkbox value assignment honours the fire-events flag", async () => {

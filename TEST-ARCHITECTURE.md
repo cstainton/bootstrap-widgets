@@ -59,11 +59,10 @@ claim about observable behaviour in a browser, not about Java.
 ```
 features/*.feature          13 files, 72 scenarios   what should be true
    |
-   |  generate-behaviour-inventory.py   validates tags, writes the matrix
+   |  (by hand — nothing executes the .feature files)
    v
-showcase-behaviour-inventory.tsv        which targets each scenario covers
+run-browser-behaviour-tests.mjs         62 implemented, by spec id
    |
-   |  run-browser-behaviour-tests.mjs   drives Chrome, implements by spec id
    v
 /fixtures/gwt-bootstrap3/index.html     54 fixtures
 /fixtures/gwt-bootstrap5/index.html     53 fixtures
@@ -80,10 +79,11 @@ part of the site.
 **The harness** (`run-browser-behaviour-tests.mjs`) serves the assembled site,
 launches Chrome, and runs the assertions for each spec id against each target.
 
-**The inventory** is the coverage ledger. A scenario tags the targets it covers
-(`@gwt3`, `@teavm5`); anything untagged shows as `-` in the matrix, meaning nobody
-has written that scenario for that target. Negative tags are rejected — a spec says
-what it covers, not what it does not.
+**The gap.** The specs are documentation, not executable: nothing reads a `.feature`
+file, and the harness mirrors scenario ids by convention. Ten of the 72 scenarios
+have no implementation — `BTN-001/002`, `COL-001/002/003`, `DRP-001/002`,
+`RES-001/002/004`. A check worth having would compare the two sets; a previous
+script instead validated tag spelling on every build and never noticed.
 
 ## 4. Structural guards
 
@@ -102,7 +102,6 @@ Two checks that are not tests of behaviour but of the repository's shape:
 | | local `mvn install` | CI |
 |---|---|---|
 | Contracts, widget tests, processor tests | yes | yes |
-| `generate-behaviour-inventory.py --check` | yes (validate phase) | yes |
 | Browser behaviour tests | no | yes |
 | Structural guards | no | yes |
 | GWT compilation of the showcases | **no** | yes |
@@ -120,14 +119,10 @@ Two of these are worth knowing about:
 | Script | Lines | Runs |
 |---|---|---|
 | `run-browser-behaviour-tests.mjs` | 2093 | CI |
-| `generate-behaviour-inventory.py` | 228 | build (validate) + CI |
 | `check-module-layout.py` | 148 | CI |
 | `prepare-showcase-debug-artifacts.py` | 122 | CI |
 | `check-showcase-samples.py` | 104 | CI |
 | `smoke-showcase-pages.sh` | 78 | CI |
 
-`generate-behaviour-inventory.py` is the only one that gates a local build, so it is
-the only thing making `mvn install` depend on a python interpreter. What it does is
-validation, which is what a test is for: it would sit more naturally as a JUnit test
-inside `bootstrap-widget-specifications` than as a build plugin, and would then
-report failures as test failures.
+Nothing here gates a local build any more: `mvn install` no longer needs a python
+interpreter. All six run in CI only.

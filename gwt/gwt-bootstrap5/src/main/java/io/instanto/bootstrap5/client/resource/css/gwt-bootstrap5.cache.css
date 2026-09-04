@@ -233,15 +233,16 @@
 /* ---------------------------------------------------------------------------
    Toggle buttons on touch devices.
 
-   Bootstrap styles .btn-check + .btn:hover the same as the checked state, so an
+   Bootstrap styles toggle-button hover the same as the checked state, so an
    outline toggle button turns solid on hover. Touch browsers latch :hover after
    a tap and hold it until you tap elsewhere, which leaves a tapped-but-unchecked
-   button looking exactly like a checked one. Restrict the hover styling to
-   devices that actually have a pointer; the values come from Bootstrap's own
-   button variables, so every variant stays correct.
+   button looking exactly like a checked one. On devices without hover, restore
+   unchecked and inactive controls to the values from Bootstrap's own button
+   variables so every variant stays correct.
    --------------------------------------------------------------------------- */
 
 @media (hover: none) {
+  .btn[data-bs-toggle="button"]:not(.active):hover,
   .btn-check:not(:checked):not(:disabled) + .btn:not(.active):hover {
     color: var(--bs-btn-color);
     background-color: var(--bs-btn-bg);

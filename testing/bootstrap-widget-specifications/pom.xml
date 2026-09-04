@@ -13,30 +13,4 @@
   <artifactId>bootstrap-widget-specifications</artifactId>
   <name>Bootstrap Widget Behaviour Specifications</name>
   <description>Shared Gherkin behaviour specifications and their target matrix.</description>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>check-behaviour-inventory</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>python3</executable>
-              <arguments>
-                <argument>${maven.multiModuleProjectDirectory}/scripts/generate-behaviour-inventory.py</argument>
-                <argument>--check</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

@@ -30,20 +30,27 @@
  * The state is correct throughout -- .active and the input's checked property
  * both track properly -- it is only the paint that misleads.
  *
- * Under (hover: none) a button in a toggle group that is not active therefore
- * paints as its resting self, leaving .active as the only thing that changes
- * the background. Bootstrap 3 has no custom properties, so each variant has to
- * name its own resting colours; the values are Bootstrap 3.4.1's, which is the
- * version vendored beside this file. :focus is included because Bootstrap gives
- * it the same background as :hover and it also survives a tap.
+ * Under (hover: none) a standalone toggle or a button in a toggle group that is
+ * not active therefore paints as its resting self, leaving .active as the only
+ * thing that changes the background. Bootstrap 3 has no custom properties, so
+ * each variant has to name its own resting colours; the values are Bootstrap
+ * 3.4.1's, which is the version vendored beside this file. :focus is included
+ * because Bootstrap gives it the same background as :hover and it also survives
+ * a tap.
  */
 @media (hover: none) {
+  .btn[data-toggle="button"]:not(.active):hover,
+  .btn[data-toggle="button"]:not(.active):focus,
+  .btn[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn:not(.active).focus {
     box-shadow: none;
   }
 
+  .btn-default[data-toggle="button"]:not(.active):hover,
+  .btn-default[data-toggle="button"]:not(.active):focus,
+  .btn-default[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-default:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-default:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-default:not(.active).focus {
@@ -52,6 +59,9 @@
     border-color: #ccc;
   }
 
+  .btn-primary[data-toggle="button"]:not(.active):hover,
+  .btn-primary[data-toggle="button"]:not(.active):focus,
+  .btn-primary[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-primary:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-primary:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-primary:not(.active).focus {
@@ -60,6 +70,9 @@
     border-color: #2e6da4;
   }
 
+  .btn-success[data-toggle="button"]:not(.active):hover,
+  .btn-success[data-toggle="button"]:not(.active):focus,
+  .btn-success[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-success:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-success:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-success:not(.active).focus {
@@ -68,6 +81,9 @@
     border-color: #4cae4c;
   }
 
+  .btn-info[data-toggle="button"]:not(.active):hover,
+  .btn-info[data-toggle="button"]:not(.active):focus,
+  .btn-info[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-info:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-info:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-info:not(.active).focus {
@@ -76,6 +92,9 @@
     border-color: #46b8da;
   }
 
+  .btn-warning[data-toggle="button"]:not(.active):hover,
+  .btn-warning[data-toggle="button"]:not(.active):focus,
+  .btn-warning[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-warning:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-warning:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-warning:not(.active).focus {
@@ -84,6 +103,9 @@
     border-color: #eea236;
   }
 
+  .btn-danger[data-toggle="button"]:not(.active):hover,
+  .btn-danger[data-toggle="button"]:not(.active):focus,
+  .btn-danger[data-toggle="button"]:not(.active).focus,
   .btn-group[data-toggle="buttons"] > .btn-danger:not(.active):hover,
   .btn-group[data-toggle="buttons"] > .btn-danger:not(.active):focus,
   .btn-group[data-toggle="buttons"] > .btn-danger:not(.active).focus {
