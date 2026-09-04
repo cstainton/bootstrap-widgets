@@ -173,6 +173,11 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
         return "sorted-descending";
     }
 
+    /** GWT takes a widget here; the String overload is kept for convenience. */
+    public void setEmptyTableWidget(final com.google.gwt.user.client.ui.Widget widget) {
+        setEmptyTableWidget(widget == null ? "" : widget.getElement().getInnerHTML());
+    }
+
     public void setEmptyTableWidget(final String text) {
         emptyTableText = text == null ? "" : text;
         refresh();

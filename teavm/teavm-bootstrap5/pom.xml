@@ -93,6 +93,7 @@
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java</source>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java</source>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</source>
+                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-showcase/src/main/java</source>
                 <source>${project.build.directory}/generated-sources/teavm-modules</source>
               </sources>
             </configuration>
@@ -128,7 +129,9 @@
               Only the Markdown extra crosses to TeaVM so far; the others still reach
               the browser through JSNI and a ClientBundle.
             -->
-            <exclude>io/instanto/bootstrap5/extras/datepicker/**</exclude>
+            <exclude>io/instanto/bootstrap5/extras/datepicker/client/DatePickerClientBundle.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/datepicker/client/DatePickerEntryPoint.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/datepicker/client/ui/DatePickerJs.java</exclude>
             <!--
               GWT-only pieces of the Markdown extra: the ClientBundle that inlines the
               vendored scripts and the entry point that injects them. MarkdownResources
@@ -283,7 +286,7 @@
               <goal>compile</goal>
             </goals>
             <configuration>
-              <mainClass>io.instanto.bootstrap5.teavm.demo.Bootstrap5ShowcaseApp</mainClass>
+              <mainClass>io.instanto.bootstrap5.teavm.demo.SharedShowcaseApp</mainClass>
               <targetDirectory>${project.build.directory}/teavm</targetDirectory>
               <targetFileName>teavm-bootstrap5-smoke.js</targetFileName>
               <minifying>true</minifying>

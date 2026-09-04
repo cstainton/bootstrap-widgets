@@ -34,6 +34,7 @@ import io.instanto.bootstrap5.client.ui.base.HasResponsiveness;
 import io.instanto.bootstrap5.client.ui.constants.DeviceSize;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -73,6 +74,12 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
 
     private final String wrapperId;
 
+    private static final int READY_TIMEOUT_MILLIS = 5000;
+
+    private static final int READY_POLL_MILLIS = 50;
+
+    private Timer readyTimer;
+
     private JavaScriptObject picker;
 
     private String format;
@@ -84,6 +91,7 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
     private boolean showClose = true;
 
     public DatePicker() {
+        DatePickerJs.ensureResources();
         wrapperId = Document.get().createUniqueId();
         addStyleName("input-group");
         getElement().setId(wrapperId);
@@ -138,14 +146,65 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
     @Override
     protected void onLoad() {
         super.onLoad();
-        picker = create(getElement(), format, sideBySide, showClear, showClose);
-        bindChange(picker, this);
+        initialise();
+    }
+
+    /**
+     * Builds the picker, waiting for Tempus Dominus if it has not arrived yet. The GWT
+     * module injects it as inline script text before the application runs; the TeaVM
+     * backend fetches it by URL, and a picker attached during startup would otherwise
+     * stay an inert input.
+     */
+    private void initialise() {
+        if (!DatePickerJs.isReady()) {
+            waitForLibrary();
+            return;
+        }
+        stopWaiting();        picker = DatePickerJs.create(getElement(), format, sideBySide, showClear, showClose);
+        DatePickerJs.bindChange(picker, new DatePickerJs.ChangeHandler() {
+            @Override
+            public void onDateChange(final double millis) {
+                onPickerChange(millis);
+            }
+        });
+    }
+
+    private void waitForLibrary() {
+        if (readyTimer != null) {
+            return;
+        }
+        readyTimer = new Timer() {
+            private int waited;
+
+            @Override
+            public void run() {
+                waited += READY_POLL_MILLIS;
+                if (DatePickerJs.isReady()) {
+                    if (isAttached()) {
+                        initialise();
+                    } else {
+                        stopWaiting();
+                    }
+                } else if (waited >= READY_TIMEOUT_MILLIS) {
+                    stopWaiting();
+                }
+            }
+        };
+        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
+    }
+
+    private void stopWaiting() {
+        if (readyTimer != null) {
+            readyTimer.cancel();
+            readyTimer = null;
+        }
     }
 
     @Override
     protected void onUnload() {
+        stopWaiting();
         if (picker != null) {
-            dispose(picker);
+            DatePickerJs.dispose(picker);
             picker = null;
         }
         super.onUnload();
@@ -153,19 +212,19 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
 
     public void show() {
         if (picker != null) {
-            invoke(picker, "show");
+            DatePickerJs.invoke(picker, "show");
         }
     }
 
     public void hide() {
         if (picker != null) {
-            invoke(picker, "hide");
+            DatePickerJs.invoke(picker, "hide");
         }
     }
 
     public void toggle() {
         if (picker != null) {
-            invoke(picker, "toggle");
+            DatePickerJs.invoke(picker, "toggle");
         }
     }
 
@@ -175,7 +234,7 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
 
     @Override
     public Date getValue() {
-        final double millis = picker == null ? -1 : readValue(picker);
+        final double millis = picker == null ? -1 : DatePickerJs.readValue(picker);
         return millis < 0 ? null : new Date((long) millis);
     }
 
@@ -187,7 +246,7 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
     @Override
     public void setValue(final Date value, final boolean fireEvents) {
         if (picker != null) {
-            writeValue(picker, value == null ? -1 : value.getTime());
+            DatePickerJs.writeValue(picker, value == null ? -1 : value.getTime());
         }
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -257,51 +316,4 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
     }
 
     // ---- Tempus Dominus ------------------------------------------------------
-
-    private static native JavaScriptObject create(com.google.gwt.dom.client.Element element, String format,
-            boolean sideBySide, boolean showClear, boolean showClose) /*-{
-        var options = {
-            display: {
-                sideBySide: sideBySide,
-                buttons: { today: true, clear: showClear, close: showClose },
-                theme: "auto"
-            }
-        };
-        if (format) {
-            options.localization = { format: format };
-        }
-        return new $wnd.tempusDominus.TempusDominus(element, options);
-    }-*/;
-
-    private static native void bindChange(JavaScriptObject picker, DatePicker widget) /*-{
-        picker.subscribe($wnd.tempusDominus.Namespace.events.change, function (e) {
-            var d = e && e.date ? e.date.valueOf() : -1;
-            widget.@io.instanto.bootstrap5.extras.datepicker.client.ui.DatePicker::onPickerChange(D)(d);
-        });
-    }-*/;
-
-    private static native void invoke(JavaScriptObject picker, String method) /*-{
-        if (typeof picker[method] === "function") {
-            picker[method]();
-        }
-    }-*/;
-
-    private static native double readValue(JavaScriptObject picker) /*-{
-        var dates = picker.dates.picked;
-        return dates && dates.length ? dates[0].valueOf() : -1;
-    }-*/;
-
-    private static native void writeValue(JavaScriptObject picker, double millis) /*-{
-        if (millis < 0) {
-            picker.dates.clear();
-        } else {
-            picker.dates.setValue(new $wnd.tempusDominus.DateTime(millis));
-        }
-    }-*/;
-
-    private static native void dispose(JavaScriptObject picker) /*-{
-        if (typeof picker.dispose === "function") {
-            picker.dispose();
-        }
-    }-*/;
 }

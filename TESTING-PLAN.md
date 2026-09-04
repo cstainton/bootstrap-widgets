@@ -21,6 +21,10 @@ JavaScript.
 
 The first executable tranche is now in the repository:
 
+- The shared-source UiBinder annotation processor has five compiler-level
+  contracts covering generated source compilation, typed construction,
+  inherited setters, fields, handlers, service registration and negative
+  diagnostics. Cross-compiler runtime fixtures remain open.
 - Phase 0 core reachability is complete. Generated source contains a direct
   construction path and an independently reported TeaVM test for every core
   export in its inventory: 121 Bootstrap 3 fixtures and 131 Bootstrap 5
@@ -49,12 +53,13 @@ The first executable tranche is now in the repository:
   local vendored JavaScript, renders each in Chromium, and passes that exact
   artifact to the Pages workflow for the same successful run.
 
-The current Maven matrix executes 287 tests: 5 JVM reference contracts, 4 GWT
-browser reference contracts, 9 TeaVM compatibility contracts, 128 Bootstrap 3
-TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI additionally executes 58
-compiled-GWT mobile-touch tests. Phase 5, generated Cucumber Tea glue, the
-remaining Phase 3/4/6 work, the expanded behaviour matrix, pinned Chrome for
-Testing, structural snapshots and accessibility gating remain open.
+The current Maven matrix executes 292 tests: 5 processor contracts, 5 JVM
+reference contracts, 4 GWT browser reference contracts, 9 TeaVM compatibility
+contracts, 128 Bootstrap 3 TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI
+additionally executes 58 compiled-GWT mobile-touch tests. Phase 5, generated
+Cucumber Tea glue, the remaining Phase 3/4/6 work, the expanded behaviour
+matrix, pinned Chrome for Testing, structural snapshots and accessibility
+gating remain open.
 
 Current P0 rendered-browser coverage follows the priorities below:
 
@@ -168,6 +173,7 @@ The repository layout is part of the test isolation model:
 | Path | Responsibility |
 | --- | --- |
 | `pom.xml` | Root `bootstrap-widgets` reactor and common build policy |
+| `widget-processor` | Shared-source UiBinder generation and its compiler-level contract tests |
 | `gwt/pom.xml` | GWT libraries, themes, extras, showcases and GWT-only tests |
 | `teavm/pom.xml` | TeaVM compatibility runtime, TeaVM widget builds and TeaVM-only tests |
 | `testing/pom.xml` | Future cross-target specifications, fixture metadata and assembled-site tests |
@@ -273,6 +279,35 @@ registry. This preserves TeaVM reachability while giving every widget an
 independent result; one constructor or linkage failure cannot mask all fixtures
 that follow it. A registry loop may be used only for inventory consistency
 checks, never as the executable reachability suite.
+
+### Generated fixture source
+
+Where a fixture uses UiBinder, its owner class and `.ui.xml` template are shared
+source. The GWT build uses the normal GWT generator and the TeaVM build uses the
+`widget-processor` annotation processor. A TeaVM-specific handwritten copy of
+the layout is not a fixture implementation and must not become one.
+
+The compiler launchers remain thin and target-specific. Each generated test
+method directly constructs its fixture owner, after which the generated binder
+contains direct widget constructor calls. This preserves TeaVM reachability
+without using reflection or runtime fixture discovery. Service descriptors may
+select a generated binder, but they must not be used to discover the fixture
+catalogue itself.
+
+The processor has its own test boundary, independent of widget behaviour:
+
+1. Compile representative owner classes and templates with the JDK compiler.
+2. Compile the generated binder in the same task, rather than only comparing
+   generated text.
+3. Verify typed constructors, inherited setters, enum conversion, nested
+   composition, `ui:field`, `@UiHandler` and binder service registration.
+4. Verify failures identify unsupported attributes, event types, missing
+   fields and malformed templates at compile time.
+5. Exercise generated binders under both GWT and TeaVM in browser fixtures.
+
+Focused generated-source assertions protect important reachability and wiring
+statements. They are not full-file golden snapshots; runtime structural
+snapshots remain responsible for detecting emitted markup changes.
 
 ### Authoritative widget inventory
 
@@ -883,16 +918,19 @@ CI artifact.
 
 ### Phase 0: Reach every TeaVM widget now
 
-1. Add Maven Enforcer bans for all historical and current `gwt-user` and
+1. Test `widget-processor` generation and diagnostics with compiler-level
+   positive and negative fixtures.
+2. Add Maven Enforcer bans for all historical and current `gwt-user` and
    `gwt-dev` coordinates to every module under `teavm/`.
-2. Add in-repository Bootstrap 3 and Bootstrap 5 fixture registries whose
+3. Add in-repository Bootstrap 3 and Bootstrap 5 fixture registries whose
    factory bodies contain concrete `new` expressions under
    `teavm/teavm-bootstrap3` and `teavm/teavm-bootstrap5`. Prohibit reflection,
    `ServiceLoader`, scanning and runtime class lookup.
-3. Generate one plain JUnit method per fixture under `TeaVMTestRunner`; do not
+4. Generate one plain JUnit method per fixture under `TeaVMTestRunner`; do not
    execute reachability through a loop over dynamic registry entries.
-4. Construct, mount, minimally inspect and detach every fixture independently.
-5. Add explicit paths for service providers, range input, tooltip options and
+5. Construct, mount, minimally inspect and detach every fixture independently.
+6. Add explicit paths for service providers, generated UiBinder owners, range
+   input, tooltip options and
    every currently known native seam.
 
 Exit condition: the stale service descriptor, invalid element narrowing,
@@ -936,8 +974,9 @@ toggle, emit the wrong value event or leak handlers after detach.
 1. Add stable fixture hosts to `gwt/gwt-bootstrap3-showcase`,
    `gwt/gwt-bootstrap5-showcase`, `teavm/teavm-bootstrap3` and
    `teavm/teavm-bootstrap5` only for scenarios selected for frame coverage.
-2. Reuse the catalogue factories where the compiler permits it; otherwise add
-   a thin showcase adapter with the same fixture ID and contract.
+2. Share fixture owner and UiBinder sources between compiler targets. Generate
+   their binder implementation through the native GWT generator or
+   `widget-processor`; keep only the launcher target-specific.
 3. Keep narrative text, source examples and non-tested demonstrations in the
    handwritten showcase pages.
 4. Add a machine-readable fixture index and readiness marker to each
