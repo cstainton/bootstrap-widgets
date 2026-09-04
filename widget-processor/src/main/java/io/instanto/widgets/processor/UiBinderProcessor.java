@@ -149,27 +149,35 @@ public class UiBinderProcessor extends AbstractProcessor {
         final String rootVar = emitter.emit(root, null);
 
         final String impl = simple + "_BinderImpl";
+
+        // Assembled whole before anything is created, because handlerWiring() can still
+        // fail: a file opened and then abandoned half-written draws a second "reached end
+        // of file" error from javac, which buries the diagnostic that actually explains it.
+        final StringBuilder source = new StringBuilder();
+        source.append("// Generated from ").append(simple).append(".ui.xml. Do not edit.\n");
+        source.append("package ").append(pkg).append(";\n\n");
+        source.append("/** UiBinder implementation for {@link ").append(simple).append("}. */\n");
+        source.append("public class ").append(impl).append(" implements ")
+              .append(simple).append(".Binder {\n\n");
+        source.append("    @Override\n");
+        source.append("    public ").append(emitter.rootType()).append(" createAndBindUi(final ")
+              .append(simple).append(" owner) {\n");
+        if (emitter.styles() != null) {
+            source.append("        com.google.gwt.dom.client.StyleInjector.inject(\"")
+                  .append(emitter.styles().replace("\\", "\\\\").replace("\"", "\\\"")
+                          .replaceAll("\\s+", " ").trim())
+                  .append("\");\n");
+        }
+        source.append(emitter.body());
+        source.append(emitter.fieldAssignments());
+        source.append(emitter.handlerWiring());
+        source.append("        return ").append(rootVar).append(";\n");
+        source.append("    }\n}\n");
+
         final JavaFileObject file = processingEnv.getFiler()
                 .createSourceFile(pkg + "." + impl, owner);
         try (Writer out = file.openWriter()) {
-            out.write("// Generated from " + simple + ".ui.xml. Do not edit.\n");
-            out.write("package " + pkg + ";\n\n");
-            out.write("/** UiBinder implementation for {@link " + simple + "}. */\n");
-            out.write("public class " + impl + " implements " + simple + ".Binder {\n\n");
-            out.write("    @Override\n");
-            out.write("    public " + emitter.rootType() + " createAndBindUi(final "
-                    + simple + " owner) {\n");
-            if (emitter.styles() != null) {
-                out.write("        com.google.gwt.dom.client.StyleInjector.inject(\"");
-                out.write(emitter.styles().replace("\\", "\\\\").replace("\"", "\\\"")
-                        .replaceAll("\\s+", " ").trim());
-                out.write("\");\n");
-            }
-            out.write(emitter.body());
-            out.write(emitter.fieldAssignments());
-            out.write(emitter.handlerWiring());
-            out.write("        return " + rootVar + ";\n");
-            out.write("    }\n}\n");
+            out.write(source.toString());
         }
 
         // so the compatibility layer's GWT.create finds it without deferred binding

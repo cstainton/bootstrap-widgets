@@ -108,7 +108,7 @@ public class UiBinderProcessorTest {
 
         assertFalse(compilation.success);
         assertTrue(compilation.diagnostics(), compilation.diagnostics()
-                .contains("fixture.UnsupportedEvent is not an event this generator wires yet"));
+                .contains("action has no method that takes a handler for fixture.UnsupportedEvent"));
     }
 
     @Test

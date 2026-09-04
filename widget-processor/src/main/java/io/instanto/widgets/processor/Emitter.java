@@ -57,6 +57,8 @@ final class Emitter {
     private final Element owner;
     private final StringBuilder body = new StringBuilder();
     private final Map<String, String> fields = new LinkedHashMap<>();
+    private final Map<String, javax.lang.model.type.TypeMirror> fieldTypes =
+            new LinkedHashMap<>();
     private int counter;
     private String rootType;
     private final java.util.Set<String> domVars = new java.util.HashSet<>();
@@ -99,11 +101,32 @@ final class Emitter {
                         "a typed <ui:style> is not supported yet", owner);
             }
             String css = child.getTextContent();
-            final java.util.regex.Matcher declared = java.util.regex.Pattern
-                    .compile("\\.([A-Za-z][\\w-]*)\\s*(?=[,{])").matcher(css);
-            while (declared.find()) {
-                final String name = declared.group(1);
-                styleClasses.put(name, owner.getSimpleName() + "-" + name);
+
+            // @external tells GWT to leave a class name alone rather than obfuscate it,
+            // because something outside the template -- a vendored stylesheet, a plugin
+            // -- already owns it. It is a CssResource directive, not CSS, so it also has
+            // to come back out before the text reaches the browser.
+            final java.util.Set<String> external = new java.util.HashSet<>();
+            final java.util.regex.Matcher directive = java.util.regex.Pattern
+                    .compile("@external\\s+([^;]*);").matcher(css);
+            while (directive.find()) {
+                for (final String name : directive.group(1).trim().split("\\s*,\\s*")) {
+                    if (!name.isEmpty()) {
+                        external.add(name);
+                    }
+                }
+            }
+            css = css.replaceAll("@external\\s+[^;]*;", "");
+
+            for (final String selector : selectors(css)) {
+                final java.util.regex.Matcher declared = java.util.regex.Pattern
+                        .compile("\\.([A-Za-z][\\w-]*)").matcher(selector);
+                while (declared.find()) {
+                    final String name = declared.group(1);
+                    if (!external.contains(name)) {
+                        styleClasses.put(name, owner.getSimpleName() + "-" + name);
+                    }
+                }
             }
             for (final Map.Entry<String, String> entry : styleClasses.entrySet()) {
                 css = css.replaceAll("\\." + java.util.regex.Pattern.quote(entry.getKey())
@@ -111,6 +134,39 @@ final class Emitter {
             }
             styleCss = css;
         }
+    }
+
+    /**
+     * The selector of every rule in a stylesheet.
+     *
+     * <p>Enough of a CSS parser to find class names, and no more. Selectors are richer
+     * than one leading class -- ".buttons > button" and ".labels span" both appear in the
+     * showcase -- so the text before each brace is taken whole and every class in it
+     * collected. Declaration bodies are skipped, so a colour like "#fcf2f2" or a
+     * property value can never be mistaken for a selector.</p>
+     */
+    private static List<String> selectors(final String css) {
+        final List<String> found = new ArrayList<>();
+        int depth = 0;
+        int start = 0;
+        for (int i = 0; i < css.length(); i++) {
+            final char c = css.charAt(i);
+            if (c == '{') {
+                if (depth == 0) {
+                    final String selector = css.substring(start, i).trim();
+                    if (!selector.startsWith("@")) {
+                        found.add(selector);
+                    }
+                }
+                depth++;
+            } else if (c == '}') {
+                depth = Math.max(0, depth - 1);
+                if (depth == 0) {
+                    start = i + 1;
+                }
+            }
+        }
+        return found;
     }
 
     /** The CSS this template declares, already prefixed, or null. */
@@ -167,6 +223,7 @@ final class Emitter {
         }
         if (field != null) {
             fields.put(field, var);
+            fieldTypes.put(field, type.asType());
         }
 
         emitChildren(element, var, hasElementChildren(element));
@@ -445,26 +502,26 @@ final class Emitter {
                     throw new UiBinderProcessor.Failure(
                             "@UiHandler methods take exactly one event", method);
                 }
-                final String event = env.getTypeUtils()
-                        .erasure(method.getParameters().get(0).asType()).toString();
-                final Handlers.Binding binding = Handlers.forEvent(event);
-                if (binding == null) {
-                    throw new UiBinderProcessor.Failure(
-                            event + " is not an event this generator wires yet", method);
-                }
+                final javax.lang.model.type.TypeMirror event =
+                        method.getParameters().get(0).asType();
                 for (final String fieldName : Handlers.namedFields(mirror)) {
                     final String var = fields.get(fieldName);
                     if (var == null) {
                         throw new UiBinderProcessor.Failure("@UiHandler names " + fieldName
                                 + ", which no ui:field declares", method);
                     }
+                    final Handlers.Binding binding = Handlers.resolve(
+                            env, fieldTypes.get(fieldName), event);
+                    if (binding == null) {
+                        throw new UiBinderProcessor.Failure(fieldName + " has no method that "
+                                + "takes a handler for " + env.getTypeUtils().erasure(event),
+                                method);
+                    }
                     out.append("        ").append(var).append('.').append(binding.adder)
-                       .append("(new ").append(binding.handler)
-                       .append(binding.generic ? "<>" : "").append("() {\n")
+                       .append("(new ").append(binding.handler).append("() {\n")
                        .append("            @Override\n")
                        .append("            public void ").append(binding.method)
-                       .append("(final ").append(event).append(binding.generic ? "<?>" : "")
-                       .append(" event) {\n")
+                       .append("(final ").append(binding.parameter).append(" event) {\n")
                        .append("                owner.").append(method.getSimpleName())
                        .append("(event);\n")
                        .append("            }\n        });\n");
