@@ -7,7 +7,7 @@
         <b:ButtonGroup>
             <b:Button type="PRIMARY" text="Primary"/>
             <b:Button type="SUCCESS" text="Success"/>
-            <b:Button ui:field="counter" text="Clicked 0 times"/>
+            <b:Button ui:field="counter" text="Clicked 0 times" data-testid="counter" aria-label="Click counter"/>
         </b:ButtonGroup>
         <b:FormGroup>
             <b:FormLabel text="Bound with ui:field"/>

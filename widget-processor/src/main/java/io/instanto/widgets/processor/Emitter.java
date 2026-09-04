@@ -156,11 +156,29 @@ final class Emitter {
         final String setter = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
         final ExecutableElement method = findSetter(type, setter);
         if (method == null) {
+            if (isDomAttribute(name)) {
+                // data-testid, aria-* and role have no setter and are not meant to: they
+                // belong to the element. A test locating a widget by data-testid is the
+                // main reason a template carries one, so passing them through matters.
+                body.append("        ").append(var).append(".getElement().setAttribute(\"")
+                    .append(escape(name)).append("\", \"").append(escape(value)).append("\");\n");
+                return;
+            }
             throw new UiBinderProcessor.Failure(
                     simple + " has no " + setter + " for the " + name + " attribute", owner);
         }
         body.append("        ").append(var).append('.').append(setter).append('(')
             .append(render(method.getParameters().get(0).asType(), value)).append(");\n");
+    }
+
+    /**
+     * Whether an attribute belongs on the element rather than to a setter.
+     *
+     * <p>Anything hyphenated is a DOM attribute by construction, since a Java setter
+     * cannot be named that way; role is the one common exception that is not.</p>
+     */
+    private static boolean isDomAttribute(final String name) {
+        return name.indexOf('-') >= 0 || "role".equals(name);
     }
 
     /** Renders a value at the type the setter or constructor actually declares. */

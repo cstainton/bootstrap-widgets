@@ -178,6 +178,29 @@ public class UiBinderProcessor extends AbstractProcessor {
         }
     }
 
+    /**
+     * A parser that never reaches the network.
+     *
+     * <p>Every template opens with a DOCTYPE pointing at dl.google.com, which GWT does
+     * not fetch and neither should a build: resolving it would put a network call in the
+     * middle of compilation, failing offline and slowing it down otherwise. The entity
+     * is not needed to read the document, so external entities are refused outright,
+     * which also closes the usual XXE exposure.</p>
+     */
+    private javax.xml.parsers.DocumentBuilder parser() throws Exception {
+        final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        factory.setXIncludeAware(false);
+        factory.setExpandEntityReferences(false);
+        final javax.xml.parsers.DocumentBuilder builder = factory.newDocumentBuilder();
+        builder.setEntityResolver((publicId, systemId) ->
+                new org.xml.sax.InputSource(new java.io.StringReader("")));
+        return builder;
+    }
+
     private Document readTemplate(final String pkg, final String simple, final Element owner) {
         final String name = simple + ".ui.xml";
         for (final StandardLocation where : new StandardLocation[] {
@@ -186,9 +209,7 @@ public class UiBinderProcessor extends AbstractProcessor {
             try {
                 final FileObject found = processingEnv.getFiler().getResource(where, pkg, name);
                 try (InputStream stream = found.openInputStream()) {
-                    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                    factory.setNamespaceAware(true);
-                    return factory.newDocumentBuilder().parse(stream);
+                    return parser().parse(stream);
                 }
             } catch (final Exception ignored) {
                 // try the next location
