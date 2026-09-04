@@ -20,6 +20,7 @@ package org.gwtbootstrap3.extras.gallery.client;
  * #L%
  */
 
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.ScriptInjector;
@@ -29,14 +30,37 @@ import com.google.gwt.core.client.ScriptInjector;
  */
 public class GalleryEntryPoint implements EntryPoint {
 
+    /**
+     * Loads the gallery scripts, the second only once the first has arrived.
+     *
+     * <p>These were injected one after the other, which does not mean one after the
+     * other: fromUrl is asynchronous, so both requests went out together and whichever
+     * answered first ran first. bootstrap-image-gallery extends blueimp.Gallery and
+     * reads it as it loads, so when it won the race it threw, and the jQuery gallery
+     * plugin was never registered -- on every page, since a module's entry points all
+     * run at startup whether or not anything on screen uses them.</p>
+     */
     @Override
     public void onModuleLoad() {
-        inject(GalleryClientBundle.BLUEIMP_JS);
-        inject(GalleryClientBundle.GALLERY_JS);
+        inject(GalleryClientBundle.BLUEIMP_JS, new Callback<Void, Exception>() {
+            @Override
+            public void onSuccess(final Void result) {
+                inject(GalleryClientBundle.GALLERY_JS, null);
+            }
+
+            @Override
+            public void onFailure(final Exception reason) {
+                GWT.log("Gallery: " + GalleryClientBundle.BLUEIMP_JS + " failed to load; "
+                        + GalleryClientBundle.GALLERY_JS + " needs it and was not loaded", reason);
+            }
+        });
     }
 
-    private void inject(String resource) {
+    private void inject(final String resource, final Callback<Void, Exception> callback) {
         ScriptInjector.fromUrl(GWT.getModuleBaseURL() + resource)
-            .setRemoveTag(true).setWindow(ScriptInjector.TOP_WINDOW).inject();
+            .setRemoveTag(true)
+            .setWindow(ScriptInjector.TOP_WINDOW)
+            .setCallback(callback)
+            .inject();
     }
 }
