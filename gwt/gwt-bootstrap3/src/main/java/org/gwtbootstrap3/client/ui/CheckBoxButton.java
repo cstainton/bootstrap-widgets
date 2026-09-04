@@ -36,6 +36,8 @@ import org.gwtbootstrap3.client.ui.constants.IconSize;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -189,7 +191,18 @@ public class CheckBoxButton extends CheckBox implements HasActive,
 
             @Override
             public void onClick(ClickEvent event) {
-                ValueChangeEvent.fire(CheckBoxButton.this, getValue());
+                final boolean oldValue = getValue();
+
+                // Bootstrap handles button toggles at the document level, after
+                // GWT sees the bubbling click on this label. Read the resulting
+                // input state only after Bootstrap has processed that click.
+                Scheduler.get().scheduleDeferred(new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        ValueChangeEvent.fireIfNotEqual(CheckBoxButton.this,
+                                oldValue, getValue());
+                    }
+                });
             }
 
         });

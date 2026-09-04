@@ -19,6 +19,7 @@
     <module>gwt-bootstrap3-extras</module>
     <module>gwt-bootstrap3-themes</module>
     <module>gwt-bootstrap3-showcase</module>
+    <module>gwt-bootstrap3-browser-fixtures</module>
     <module>gwt-bootstrap5</module>
     <module>gwt-bootstrap5-themes</module>
     <module>gwt-bootstrap5-extras</module>

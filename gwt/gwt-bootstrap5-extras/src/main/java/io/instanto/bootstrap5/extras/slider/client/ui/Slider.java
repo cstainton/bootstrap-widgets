@@ -29,6 +29,7 @@ import io.instanto.bootstrap5.client.ui.base.HasId;
 import io.instanto.bootstrap5.client.ui.base.mixin.IdMixin;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -69,6 +70,12 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     private boolean pips;
 
     private boolean enabled = true;
+
+    private static final int READY_TIMEOUT_MILLIS = 5000;
+
+    private static final int READY_POLL_MILLIS = 50;
+
+    private Timer readyTimer;
 
     private JavaScriptObject slider;
 
@@ -131,12 +138,12 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     public void setValue(final double value) {
         start = value;
         if (slider != null) {
-            applyValues(slider, value, value);
+            SliderJs.applyValues(slider, value, value);
         }
     }
 
     public double getValue() {
-        return slider == null ? start : readValue(slider, 0);
+        return slider == null ? start : SliderJs.readValue(slider, 0);
     }
 
     /** The handle positions of a two-handle slider. */
@@ -144,32 +151,86 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
         start = lower;
         end = upper;
         if (slider != null) {
-            applyValues(slider, lower, upper);
+            SliderJs.applyValues(slider, lower, upper);
         }
     }
 
     public double getLowerValue() {
-        return slider == null ? start : readValue(slider, 0);
+        return slider == null ? start : SliderJs.readValue(slider, 0);
     }
 
     public double getUpperValue() {
-        return slider == null ? end : readValue(slider, 1);
+        return slider == null ? end : SliderJs.readValue(slider, 1);
     }
 
     @Override
     protected void onLoad() {
         super.onLoad();
-        slider = create(getElement(), min, max, step, start, end, range, tooltips, pips);
-        bindChange(slider, this);
+        initialise();
+    }
+
+    /**
+     * Builds the slider, waiting for noUiSlider if it has not arrived yet.
+     *
+     * <p>The GWT module injects the library as inline script text before the application
+     * runs, so it is always ready and the first attempt succeeds. The TeaVM backend fetches
+     * it by URL, which is asynchronous, and a slider attached during startup would
+     * otherwise stay an empty div.</p>
+     */
+    private void initialise() {
+        if (!SliderJs.isReady()) {
+            waitForLibrary();
+            return;
+        }
+        stopWaiting();
+        slider = SliderJs.create(getElement(), min, max, step, start, end, range, tooltips, pips);
+        SliderJs.bindChange(slider, new SliderJs.UpdateHandler() {
+            @Override
+            public void onUpdate(final double value) {
+                onSliderUpdate(value);
+            }
+        });
         if (!enabled) {
-            applyEnabled(getElement(), false);
+            SliderJs.applyEnabled(getElement(), false);
+        }
+    }
+
+    private void waitForLibrary() {
+        if (readyTimer != null) {
+            return;
+        }
+        readyTimer = new Timer() {
+            private int waited;
+
+            @Override
+            public void run() {
+                waited += READY_POLL_MILLIS;
+                if (SliderJs.isReady()) {
+                    if (isAttached()) {
+                        initialise();
+                    } else {
+                        stopWaiting();
+                    }
+                } else if (waited >= READY_TIMEOUT_MILLIS) {
+                    stopWaiting();
+                }
+            }
+        };
+        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
+    }
+
+    private void stopWaiting() {
+        if (readyTimer != null) {
+            readyTimer.cancel();
+            readyTimer = null;
         }
     }
 
     @Override
     protected void onUnload() {
+        stopWaiting();
         if (slider != null) {
-            destroy(slider);
+            SliderJs.destroy(slider);
             slider = null;
         }
         super.onUnload();
@@ -184,7 +245,7 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
         if (slider != null) {
-            applyEnabled(getElement(), enabled);
+            SliderJs.applyEnabled(getElement(), enabled);
         }
     }
 
@@ -207,63 +268,4 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     void onSliderUpdate(final double value) {
         ValueChangeEvent.fire(this, value);
     }
-
-    private static native JavaScriptObject create(com.google.gwt.dom.client.Element element,
-            double min, double max, double step, double start, double end,
-            boolean range, boolean tooltips, boolean pips) /*-{
-        var options = {
-            start: range ? [start, end] : [start],
-            connect: range ? true : "lower",
-            step: step,
-            range: { min: min, max: max },
-            tooltips: tooltips
-        };
-        if (pips) {
-            options.pips = { mode: "count", values: 5, density: 4 };
-        }
-        $wnd.noUiSlider.create(element, options);
-        return element.noUiSlider;
-    }-*/;
-
-    private static native void bindChange(JavaScriptObject slider, Slider widget) /*-{
-        slider.on("update", function (values, handle) {
-            widget.@io.instanto.bootstrap5.extras.slider.client.ui.Slider::onSliderUpdate(D)(
-                    parseFloat(values[handle]));
-        });
-    }-*/;
-
-    /**
-     * noUiSlider returns a string for one handle and an array of strings for
-     * two. "instanceof Array" is unreliable from compiled GWT, where the array
-     * can come from another realm; a false result there silently parsed
-     * "120.00,880.00" as 120, so both handles read the same. Duck-typing the
-     * array is what actually holds.
-     */
-    private static native double readValue(JavaScriptObject slider, int handle) /*-{
-        var v = slider.get();
-        var isArray = v != null && typeof v !== "string" && typeof v.length === "number";
-        return parseFloat(isArray ? v[handle] : v);
-    }-*/;
-
-    private static native void applyValues(JavaScriptObject slider, double lower, double upper) /*-{
-        var current = slider.get();
-        var isArray = current != null && typeof current !== "string"
-                && typeof current.length === "number";
-        slider.set(isArray ? [lower, upper] : lower);
-    }-*/;
-
-    private static native void applyEnabled(com.google.gwt.dom.client.Element element,
-            boolean enabled) /*-{
-        if (enabled) {
-            element.removeAttribute("disabled");
-        } else {
-            element.setAttribute("disabled", true);
-        }
-    }-*/;
-
-    private static native void destroy(JavaScriptObject slider) /*-{
-        if (typeof slider.destroy === "function") {
-            slider.destroy();
-        }
-    }-*/;
 }

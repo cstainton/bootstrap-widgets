@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.Widget;
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.extras.markdown.client.MarkdownResources;
+import io.instanto.bootstrap5.extras.slider.client.SliderResources;
+import io.instanto.bootstrap5.extras.slider.client.ui.Slider;
 import io.instanto.bootstrap5.extras.markdown.client.ui.MarkdownEditor;
 import io.instanto.bootstrap5.client.ui.BlockQuote;
 import io.instanto.bootstrap5.client.ui.ButtonToolBar;
@@ -155,6 +157,8 @@ public final class Bootstrap5ShowcaseApp {
         // The parser and sanitiser ship beside the compiled TeaVM module.
         MarkdownResources.setBase("teavm5/js/");
         MarkdownResources.ensureInjected();
+        SliderResources.setBase("teavm5/js/", "teavm5/css/");
+        SliderResources.ensureInjected();
         Themes.register(StandardThemes.all(CSS));
         Themes.register(BootswatchThemes.all(CSS));
         Themes.restore(StandardThemes.bootstrap(CSS));
@@ -296,6 +300,12 @@ public final class Bootstrap5ShowcaseApp {
                 "Form form = new Form();\nFieldSet fieldSet = new FieldSet();\n"
                 + "fieldSet.add(new Legend(\"...\"));\n"
                 + "new FormControlStatic(\"read-only text\");"));
+        column.add(panel("Slider", slider(),
+                "Slider slider = new Slider(0, 100);\n"
+                + "slider.setRange(true);      // two handles\n"
+                + "slider.setTooltips(true);\n"
+                + "slider.setValues(20, 80);\n\n"
+                + "// noUiSlider, loaded by URL rather than inlined"));
         column.add(panel("Markdown", markdown(),
                 "MarkdownEditor editor = new MarkdownEditor(source);\n"
                 + "String markdown = editor.getValue();   // as typed\n"
@@ -1127,6 +1137,36 @@ public final class Bootstrap5ShowcaseApp {
                 + "| Backend | Markdown |\n| --- | --- |\n| GWT | yes |\n| TeaVM | yes |\n");
         editor.setVisibleLines(10);
         body.add(editor);
+        return body;
+    }
+
+    private static Widget slider() {
+        final PanelBody body = new PanelBody();
+        body.add(new HTML("<p class='text-body-secondary mb-4'>noUiSlider through the"
+                + " same widget the GWT build uses. Use Range above when a native"
+                + " control will do; this is for two handles, pips and tooltips.</p>"));
+
+        final Paragraph single = new Paragraph("Single: 40");
+        final Slider one = new Slider(0, 100);
+        one.setTooltips(true);
+        one.setValue(40);
+        one.addValueChangeHandler(new ValueChangeHandler<Double>() {
+            @Override
+            public void onValueChange(final ValueChangeEvent<Double> event) {
+                single.setText("Single: " + (long) event.getValue().doubleValue());
+            }
+        });
+
+        final Slider two = new Slider(0, 1000);
+        two.setRange(true);
+        two.setTooltips(true);
+        two.setPips(true);
+        two.setValues(120, 880);
+
+        body.add(single);
+        body.add(one);
+        body.add(new HTML("<p class='mt-4 mb-2'>Two handles, with pips</p>"));
+        body.add(two);
         return body;
     }
 

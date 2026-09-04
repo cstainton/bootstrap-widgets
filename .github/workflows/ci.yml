@@ -37,6 +37,9 @@ jobs:
       - name: Compile showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
+      - name: Compile Bootstrap 3 browser fixtures with GWT
+        run: mvn -B -f gwt/gwt-bootstrap3-browser-fixtures/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
       - name: Compile Bootstrap 5 showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
@@ -48,6 +51,9 @@ jobs:
 
       - name: Smoke-test assembled showcases in Chromium
         run: bash scripts/smoke-showcase-pages.sh
+
+      - name: Exercise compiled GWT Bootstrap 3 with mobile touch input
+        run: node scripts/run-browser-behaviour-tests.mjs
 
       - name: Upload verified showcase site
         uses: actions/upload-artifact@v4

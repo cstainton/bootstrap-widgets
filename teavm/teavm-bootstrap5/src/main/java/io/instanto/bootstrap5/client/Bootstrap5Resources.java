@@ -90,6 +90,14 @@ public final class Bootstrap5Resources {
         Document.get().getHead().appendChild(script);
     }
 
+    /**
+     * Injects a stylesheet once, for an extra that has one. The library's own sheets go
+     * through {@link #ensureInjected()}; this is for modules loaded on demand.
+     */
+    public static void stylesheet(final String id, final String href) {
+        link(id, href);
+    }
+
     private static void link(final String id, final String href) {
         if (Document.get().getElementById(id) != null) {
             return;
