@@ -27,11 +27,10 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
-public class MarkdownView extends ViewImpl implements MarkdownPresenter.MyView {
+public class MarkdownView extends Composite {
 
     private static final String SAMPLE = "## Release notes\n\n"
             + "Stored as **Markdown**, exactly as typed.\n\n"
@@ -45,13 +44,14 @@ public class MarkdownView extends ViewImpl implements MarkdownPresenter.MyView {
     interface Binder extends UiBinder<Widget, MarkdownView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     @UiField MarkdownEditor editor;
 
     @UiField MarkdownPanel rendered;
 
-    @Inject
-    MarkdownView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public MarkdownView() {
+        initWidget(BINDER.createAndBindUi(this));
         editor.setValue(SAMPLE);
         rendered.setMarkdown(SAMPLE);
         editor.addValueChangeHandler(new ValueChangeHandler<String>() {

@@ -20,20 +20,21 @@ package org.gwtbootstrap3.demo.client.application.components;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class PanelView extends ViewImpl implements PanelPresenter.MyView {
+public class PanelView extends Composite {
     interface Binder extends UiBinder<Widget, PanelView> {
     }
 
-    @Inject
-    PanelView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public PanelView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

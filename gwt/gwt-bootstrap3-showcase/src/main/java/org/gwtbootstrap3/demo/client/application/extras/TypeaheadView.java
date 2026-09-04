@@ -20,11 +20,11 @@ package org.gwtbootstrap3.demo.client.application.extras;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.extras.typeahead.client.base.CollectionDataset;
 import org.gwtbootstrap3.extras.typeahead.client.base.Dataset;
 import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
@@ -40,11 +40,13 @@ import java.util.List;
 /**
  * @author Florian Kremser <florian.kremser@sage.com>
  */
-public class TypeaheadView extends ViewImpl implements TypeaheadPresenter.MyView {
+public class TypeaheadView extends Composite {
 
     interface Binder extends UiBinder<Widget, TypeaheadView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     private class Person {
         final String name;
         final int age;
@@ -75,8 +77,7 @@ public class TypeaheadView extends ViewImpl implements TypeaheadPresenter.MyView
     private final List<Person> persons = new ArrayList<Person>();
     private final String placeholder = "Enter a name";
 
-    @Inject
-    TypeaheadView(final Binder uiBinder) {
+    public TypeaheadView() {
       persons.add(new Person("Bill Happernan", 50));
       persons.add(new Person("Bob Wondersteen", 38));
       persons.add(new Person("Bobak Longfield", 24));
@@ -98,7 +99,7 @@ public class TypeaheadView extends ViewImpl implements TypeaheadPresenter.MyView
       createHighlightTypeahead();
       createTemplateTypeahead();
 
-      initWidget(uiBinder.createAndBindUi(this));
+      initWidget(BINDER.createAndBindUi(this));
     }
 
     private void createStaticTypeahead() {

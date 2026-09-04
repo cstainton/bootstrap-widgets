@@ -33,19 +33,19 @@ import org.gwtbootstrap3.extras.slider.client.ui.base.event.SlideStopEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Xiaodong SUN
  */
-public class SliderView extends ViewImpl implements SliderPresenter.MyView {
+public class SliderView extends Composite {
 
     @UiField Slider basicExample;
     @UiField RangeSlider rangeExample;
@@ -58,9 +58,10 @@ public class SliderView extends ViewImpl implements SliderPresenter.MyView {
 
     interface Binder extends UiBinder<Widget, SliderView> {}
 
-    @Inject
-    SliderView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public SliderView() {
+        initWidget(BINDER.createAndBindUi(this));
 
         formatterExample.setFormatter(new FormatterCallback<Double>() {
             @Override

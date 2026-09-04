@@ -39,19 +39,19 @@ import org.gwtbootstrap3.extras.select.client.ui.event.ShownEvent;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author godi
  */
-public class BootstrapSelectView extends ViewImpl implements BootstrapSelectPresenter.MyView {
+public class BootstrapSelectView extends Composite {
 
     @UiField MultipleSelect maxOptionsSelect;
     @UiField Select simpleSelect;
@@ -68,9 +68,10 @@ public class BootstrapSelectView extends ViewImpl implements BootstrapSelectPres
     interface Binder extends UiBinder<Widget, BootstrapSelectView> {
     }
 
-    @Inject
-    BootstrapSelectView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public BootstrapSelectView() {
+        initWidget(BINDER.createAndBindUi(this));
         maxOptionsSelect.setMaxOptionsTextHandler(new MaxOptionsTextHandler() {
             @Override
             public String getMaxSelectOptionsText(int maxSelectOptions) {

@@ -20,19 +20,19 @@ package org.gwtbootstrap3.demo.client.application;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.NavbarCollapse;
 
 /**
  * @author Joshua Godi
  */
-public class ApplicationView extends ViewImpl implements ApplicationPresenter.MyView {
+public class ApplicationView extends Composite {
 
     static {
         // the switcher owns the Bootstrap stylesheet: the module inherits NoTheme so
@@ -53,7 +53,7 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     @UiField
     NavbarCollapse navbarCollapse;
 
-    @Override
+    /** The nav menu, so a page change can collapse it. */
     public NavbarCollapse getNavbarCollapse() {
         return navbarCollapse;
     }
@@ -61,17 +61,14 @@ public class ApplicationView extends ViewImpl implements ApplicationPresenter.My
     interface Binder extends UiBinder<Widget, ApplicationView> {
     }
 
-    @Inject
-    ApplicationView(final Binder binder) {
-        initWidget(binder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public ApplicationView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 
-    @Override
-    public void setInSlot(final Object slot, final IsWidget content) {
-        if (slot == ApplicationPresenter.TYPE_SetMainContent) {
-            contentContainer.setWidget(content);
-        } else {
-            super.setInSlot(slot, content);
-        }
+    /** Shows a page in the shell. This was the framework's slot protocol. */
+    public void setContent(final IsWidget content) {
+        contentContainer.setWidget(content);
     }
 }

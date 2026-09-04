@@ -41,19 +41,19 @@ import org.gwtbootstrap3.extras.datetimepicker.client.ui.base.events.OutOfRangeE
 import org.gwtbootstrap3.extras.datetimepicker.client.ui.base.events.OutOfRangeHandler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class DateTimePickerView extends ViewImpl implements DateTimePickerPresenter.MyView {
+public class DateTimePickerView extends Composite {
     @UiField(provided = true)
     DateTimePicker eventDateTimePicker;
     @UiField
@@ -93,12 +93,11 @@ public class DateTimePickerView extends ViewImpl implements DateTimePickerPresen
     @UiField
     Button setFormat;
 
-    @Inject
-    DateTimePickerView(final Binder uiBinder) {
+    public DateTimePickerView() {
         eventDateTimePicker = new DateTimePicker();
         eventDateTimePicker.setValue(new Date());
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(BINDER.createAndBindUi(this));
 
         eventDateTimePicker.addChangeDateHandler(new ChangeDateHandler() {
             @Override
@@ -237,4 +236,6 @@ public class DateTimePickerView extends ViewImpl implements DateTimePickerPresen
 
     interface Binder extends UiBinder<Widget, DateTimePickerView> {
     }
+
+    private static final Binder BINDER = GWT.create(Binder.class);
 }

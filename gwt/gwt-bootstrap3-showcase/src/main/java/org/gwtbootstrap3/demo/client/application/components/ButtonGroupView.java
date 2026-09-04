@@ -22,23 +22,25 @@ package org.gwtbootstrap3.demo.client.application.components;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.RadioButton;
 import org.gwtbootstrap3.client.ui.html.Paragraph;
 
 /**
  * @author Joshua Godi
  */
-public class ButtonGroupView extends ViewImpl implements ButtonGroupPresenter.MyView {
+public class ButtonGroupView extends Composite {
 
     interface Binder extends UiBinder<Widget, ButtonGroupView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     @UiField
     RadioButton button1;
 
@@ -51,9 +53,8 @@ public class ButtonGroupView extends ViewImpl implements ButtonGroupPresenter.My
     @UiField
     FlowPanel log;
 
-    @Inject
-    ButtonGroupView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public ButtonGroupView() {
+        initWidget(BINDER.createAndBindUi(this));
 
         button1.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
             @Override

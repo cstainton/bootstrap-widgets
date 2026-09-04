@@ -20,20 +20,21 @@ package org.gwtbootstrap3.demo.client.application.components;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class IconView extends ViewImpl implements IconPresenter.MyView {
+public class IconView extends Composite {
     interface Binder extends UiBinder<Widget, IconView> {
     }
 
-    @Inject
-    IconView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public IconView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

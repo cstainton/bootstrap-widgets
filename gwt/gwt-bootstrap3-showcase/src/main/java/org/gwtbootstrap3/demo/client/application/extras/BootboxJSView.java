@@ -35,18 +35,18 @@ import org.gwtbootstrap3.extras.bootbox.client.options.PromptOptions;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author lyhcode
  */
-public class BootboxJSView extends ViewImpl implements BootboxJSPresenter.MyView {
+public class BootboxJSView extends Composite {
 
     @UiField ListBox localeBox;
 
@@ -164,10 +164,11 @@ public class BootboxJSView extends ViewImpl implements BootboxJSPresenter.MyView
     interface Binder extends UiBinder<Widget, BootboxJSView> {
     }
 
-    @Inject
-    BootboxJSView(final Binder uiBinder) {
 
-        initWidget(uiBinder.createAndBindUi(this));
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public BootboxJSView() {
+
+        initWidget(BINDER.createAndBindUi(this));
 
         // Populate locales
         for (BootboxLocale locale : BootboxLocale.values()) {

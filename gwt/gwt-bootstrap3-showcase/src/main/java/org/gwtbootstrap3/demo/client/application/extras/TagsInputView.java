@@ -31,20 +31,22 @@ import org.gwtbootstrap3.extras.tagsinput.client.ui.TagsInput;
 import org.gwtbootstrap3.extras.tagsinput.client.ui.base.SingleValueTagsInput;
 import org.gwtbootstrap3.extras.typeahead.client.base.CollectionDataset;
 import org.gwtbootstrap3.extras.typeahead.client.base.StringDataset;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Marko Nikolić <marko.nikolic@iten.rs>
  */
-public class TagsInputView extends ViewImpl implements TagsInputPresenter.MyView {
+public class TagsInputView extends Composite {
 
     interface Binder extends UiBinder<Widget, TagsInputView> {
     }
     
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     @UiField TagsInput markupTagsInput;
     @UiField MVTagsInput multiValueTagsInput;
     @UiField TagsInput typeaheadTagsInput;
@@ -77,9 +79,8 @@ public class TagsInputView extends ViewImpl implements TagsInputPresenter.MyView
     
     @UiField TagsInput categoryTagsInput;
     
-    @Inject
-    public TagsInputView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public TagsInputView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 
     @Override

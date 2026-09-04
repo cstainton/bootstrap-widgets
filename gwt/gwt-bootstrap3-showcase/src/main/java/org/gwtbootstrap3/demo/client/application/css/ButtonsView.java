@@ -21,29 +21,30 @@ package org.gwtbootstrap3.demo.client.application.css;
  */
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Button;
 
 /**
  * @author Joshua Godi
  */
-public class ButtonsView extends ViewImpl implements ButtonsPresenter.MyView {
+public class ButtonsView extends Composite {
 
     interface Binder extends UiBinder<Widget, ButtonsView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     @UiField
     Button button;
 
-    @Inject
-    ButtonsView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public ButtonsView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 
     @UiHandler("button")

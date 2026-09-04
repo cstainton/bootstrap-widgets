@@ -20,7 +20,6 @@
   -->
 <module rename-to="GwtBootstrap3Demo">
     <inherits name="com.google.gwt.uibinder.UiBinder"/>
-    <inherits name="com.google.gwt.inject.Inject"/>
 	<inherits name="com.arcbees.analytics.Analytics"/>
 
     <!-- Validation and locale dependencies. -->
@@ -58,7 +57,6 @@
     <inherits name="org.gwtbootstrap3.extras.animate.Animate"/>
     <inherits name="org.gwtbootstrap3.extras.fullcalendar.FullCalendar"/>
     <inherits name="org.gwtbootstrap3.extras.gallery.Gallery"/>
-    <inherits name='com.gwtplatform.mvp.MvpWithEntryPoint'/>
     <inherits name="org.gwtbootstrap3.extras.tagsinput.TagsInput"/>
 
     <!-- For SDM -->

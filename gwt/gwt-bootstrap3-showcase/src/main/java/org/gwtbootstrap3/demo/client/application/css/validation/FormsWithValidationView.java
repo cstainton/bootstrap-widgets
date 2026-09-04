@@ -38,6 +38,7 @@ import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.editor.client.Editor;
+import com.google.gwt.editor.client.Editor.Ignore;
 import com.google.gwt.editor.client.EditorError;
 import com.google.gwt.editor.client.SimpleBeanEditorDriver;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -46,18 +47,19 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Steven Jardine
  */
-public class FormsWithValidationView extends ViewImpl implements FormsWithValidationPresenter.MyView {
+public class FormsWithValidationView extends Composite {
 
     interface Binder extends UiBinder<Widget, FormsWithValidationView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     interface CredentialDriver extends SimpleBeanEditorDriver<Credentials, CredentialsEditor> {
     }
 
@@ -91,9 +93,9 @@ public class FormsWithValidationView extends ViewImpl implements FormsWithValida
     @UiField
     protected TextBox yesNoTextBox;
 
-    @Inject
-    FormsWithValidationView(final Binder uiBinder, CredentialsEditor editor) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public FormsWithValidationView() {
+        final CredentialsEditor editor = new CredentialsEditor();
+        initWidget(BINDER.createAndBindUi(this));
         body.add(editor);
         DRIVER.initialize(editor);
         form.setSubmitOnEnter(true);

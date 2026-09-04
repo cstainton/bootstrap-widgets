@@ -25,15 +25,15 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.gwtbootstrap3.extras.fullcalendar.client.ui.*;
@@ -43,7 +43,7 @@ import java.util.Date;
 /**
  * @author Jeff Isenhart
  */
-public class FullCalendarView extends ViewImpl implements FullCalendarPresenter.MyView {
+public class FullCalendarView extends Composite {
 
     @UiField
     Button configuring;
@@ -66,9 +66,10 @@ public class FullCalendarView extends ViewImpl implements FullCalendarPresenter.
     interface Binder extends UiBinder<Widget, FullCalendarView> {
     }
 
-    @Inject
-    FullCalendarView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public FullCalendarView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
     
     @UiHandler("backgroundEvents")

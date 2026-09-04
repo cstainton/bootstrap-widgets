@@ -20,20 +20,21 @@ package org.gwtbootstrap3.demo.client.application.components;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class BadgeView extends ViewImpl implements BadgePresenter.MyView {
+public class BadgeView extends Composite {
     interface Binder extends UiBinder<Widget, BadgeView> {
     }
 
-    @Inject
-    BadgeView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public BadgeView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

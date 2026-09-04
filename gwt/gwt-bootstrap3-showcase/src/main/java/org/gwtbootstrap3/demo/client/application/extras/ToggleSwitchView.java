@@ -20,21 +20,22 @@ package org.gwtbootstrap3.demo.client.application.extras;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Grant Slender
  */
-public class ToggleSwitchView extends ViewImpl implements ToggleSwitchPresenter.MyView {
+public class ToggleSwitchView extends Composite {
 
     interface Binder extends UiBinder<Widget, ToggleSwitchView> {
     }
 
-    @Inject
-    ToggleSwitchView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public ToggleSwitchView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

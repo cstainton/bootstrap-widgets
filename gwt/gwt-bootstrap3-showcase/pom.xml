@@ -15,8 +15,6 @@
 
   <properties>
     <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-    <gwtp.version>1.6</gwtp.version>
-    <gin.version>2.1.2</gin.version>
     <validation.version>1.0.0.GA</validation.version>
     <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
     <slf4j.version>1.7.12</slf4j.version>
@@ -50,26 +48,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap3-themes</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt.inject</groupId>
-      <artifactId>gin</artifactId>
-      <version>${gin.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.gwtplatform</groupId>
-      <artifactId>gwtp-mvp-client</artifactId>
-      <version>${gwtp.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-user</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>javax.validation</groupId>

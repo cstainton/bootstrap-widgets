@@ -29,17 +29,17 @@ import org.gwtbootstrap3.extras.notify.client.ui.Notify;
 import org.gwtbootstrap3.extras.notify.client.ui.NotifySettings;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Xiaodong SUN
  */
-public class NotifyView extends ViewImpl implements NotifyPresenter.MyView {
+public class NotifyView extends Composite {
 
     @UiField
     Button basicNotify;
@@ -115,8 +115,9 @@ public class NotifyView extends ViewImpl implements NotifyPresenter.MyView {
     interface Binder extends UiBinder<Widget, NotifyView> {
     }
 
-    @Inject
-    NotifyView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public NotifyView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

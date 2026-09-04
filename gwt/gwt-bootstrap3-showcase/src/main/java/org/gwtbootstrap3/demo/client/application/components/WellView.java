@@ -20,20 +20,21 @@ package org.gwtbootstrap3.demo.client.application.components;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class WellView extends ViewImpl implements WellPresenter.MyView {
+public class WellView extends Composite {
     interface Binder extends UiBinder<Widget, WellView> {
     }
 
-    @Inject
-    WellView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public WellView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

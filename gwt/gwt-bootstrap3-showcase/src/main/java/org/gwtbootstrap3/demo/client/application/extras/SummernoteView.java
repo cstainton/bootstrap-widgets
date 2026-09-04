@@ -64,15 +64,14 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author godi
  * @author Xiaodong Sun
  */
-public class SummernoteView extends ViewImpl implements SummernotePresenter.MyView {
+public class SummernoteView extends Composite {
 
     @UiField Summernote customToolbar;
     @UiField Summernote apiTest;
@@ -203,10 +202,11 @@ public class SummernoteView extends ViewImpl implements SummernotePresenter.MyVi
     interface Binder extends UiBinder<Widget, SummernoteView> {
     }
 
-    @Inject
-    SummernoteView(final Binder uiBinder) {
 
-        initWidget(uiBinder.createAndBindUi(this));
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public SummernoteView() {
+
+        initWidget(BINDER.createAndBindUi(this));
 
         // Hint for words
         hintWords.setHint("\\b(\\w{1,})$", new DefaultHintHandler() {

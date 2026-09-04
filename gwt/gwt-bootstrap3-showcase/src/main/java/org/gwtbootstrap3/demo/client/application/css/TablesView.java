@@ -21,6 +21,7 @@ package org.gwtbootstrap3.demo.client.application.css;
  */
 
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
@@ -28,11 +29,10 @@ import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.RangeChangeEvent;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Pagination;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.IconType;
@@ -44,7 +44,7 @@ import org.gwtbootstrap3.demo.client.pojo.TableTestPojo;
 /**
  * @author Joshua Godi
  */
-public class TablesView extends ViewImpl implements TablesPresenter.MyView {
+public class TablesView extends Composite {
     @UiField(provided = true)
     DataGrid<TableTestPojo> dataGrid = new DataGrid<TableTestPojo>(10);
     @UiField
@@ -57,14 +57,15 @@ public class TablesView extends ViewImpl implements TablesPresenter.MyView {
     interface Binder extends UiBinder<Widget, TablesView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     private SimplePager dataGridPager = new SimplePager();
     private SimplePager cellTablePager = new SimplePager();
     private ListDataProvider<TableTestPojo> dataGridProvider = new ListDataProvider<TableTestPojo>();
     private ListDataProvider<TableTestPojo> cellTableProvider = new ListDataProvider<TableTestPojo>();
 
-    @Inject
-    TablesView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+    public TablesView() {
+        initWidget(BINDER.createAndBindUi(this));
 
         initTable(dataGrid, dataGridPager, dataGridPagination, dataGridProvider);
         initTable(cellTable, cellTablePager, cellTablePagination, cellTableProvider);

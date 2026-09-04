@@ -24,21 +24,23 @@ import java.util.Arrays;
 
 import org.gwtbootstrap3.client.ui.SuggestBox;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Steven Jardine
  */
-public class SuggestBoxView extends ViewImpl implements SuggestBoxPresenter.MyView {
+public class SuggestBoxView extends Composite {
 
     interface Binder extends UiBinder<Widget, SuggestBoxView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     private static final String[] COUNTRIES = new String[] { "Afghanistan", "Albania", "Algeria", "American Samoa", "Andorra",
             "Angola", "Anguilla", "Antarctica", "Antigua And Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria",
             "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda",
@@ -79,8 +81,7 @@ public class SuggestBoxView extends ViewImpl implements SuggestBoxPresenter.MyVi
     @UiField(provided = true)
     protected SuggestBox country2;
 
-    @Inject
-    public SuggestBoxView(final Binder uiBinder) {
+    public SuggestBoxView() {
         MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
         oracle.addAll(Arrays.asList(COUNTRIES));
         country = new SuggestBox(oracle);
@@ -89,7 +90,7 @@ public class SuggestBoxView extends ViewImpl implements SuggestBoxPresenter.MyVi
         oracle2.addAll(Arrays.asList(COUNTRIES));
         country2 = new SuggestBox(oracle2);
 
-        initWidget(uiBinder.createAndBindUi(this));
+        initWidget(BINDER.createAndBindUi(this));
     }
 
 }

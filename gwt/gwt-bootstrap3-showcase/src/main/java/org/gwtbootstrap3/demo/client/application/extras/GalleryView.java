@@ -22,28 +22,29 @@ package org.gwtbootstrap3.demo.client.application.extras;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.extras.gallery.client.ui.Gallery;
 
 /**
  * @author Ben Dol
  */
-public class GalleryView extends ViewImpl implements GalleryPresenter.MyView {
+public class GalleryView extends Composite {
 
     interface Binder extends UiBinder<Widget, GalleryView> {
     }
 
+
+    private static final Binder BINDER = GWT.create(Binder.class);
     @UiField Gallery gallery;
     @UiField Gallery galleryWithControls;
 
-    @Inject
-    GalleryView(final Binder uiBinder) {
-      initWidget(uiBinder.createAndBindUi(this));
+    public GalleryView() {
+      initWidget(BINDER.createAndBindUi(this));
     }
 
     @UiHandler({"delete1", "delete2", "delete3", "delete4", "delete5", "delete6"})

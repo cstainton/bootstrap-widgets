@@ -21,12 +21,12 @@ package org.gwtbootstrap3.demo.client.application.extras;
  */
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.extras.animate.client.ui.Animate;
 import org.gwtbootstrap3.extras.animate.client.ui.constants.Animation;
@@ -34,14 +34,15 @@ import org.gwtbootstrap3.extras.animate.client.ui.constants.Animation;
 /**
  * @author Pavel Zlámal
  */
-public class AnimateView extends ViewImpl implements AnimatePresenter.MyView {
+public class AnimateView extends Composite {
 
     interface Binder extends UiBinder<Widget, AnimateView> {
     }
 
-    @Inject
-    AnimateView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public AnimateView() {
+        initWidget(BINDER.createAndBindUi(this));
         Animate.animate(animated, Animation.RUBBER_BAND);
     }
 

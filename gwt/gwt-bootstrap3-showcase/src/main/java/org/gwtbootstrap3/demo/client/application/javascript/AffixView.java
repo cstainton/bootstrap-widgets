@@ -20,20 +20,21 @@ package org.gwtbootstrap3.demo.client.application.javascript;
  * #L%
  */
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 
 /**
  * @author Joshua Godi
  */
-public class AffixView extends ViewImpl implements AffixPresenter.MyView {
+public class AffixView extends Composite {
     interface Binder extends UiBinder<Widget, AffixView> {
     }
 
-    @Inject
-    AffixView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public AffixView() {
+        initWidget(BINDER.createAndBindUi(this));
     }
 }

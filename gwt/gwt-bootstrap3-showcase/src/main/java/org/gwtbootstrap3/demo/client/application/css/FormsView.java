@@ -22,11 +22,11 @@ package org.gwtbootstrap3.demo.client.application.css;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
@@ -34,7 +34,7 @@ import org.gwtbootstrap3.client.ui.constants.ValidationState;
 /**
  * @author Joshua Godi
  */
-public class FormsView extends ViewImpl implements FormsPresenter.MyView {
+public class FormsView extends Composite {
     @UiField
     FormGroup formGroup;
     @UiField
@@ -49,9 +49,10 @@ public class FormsView extends ViewImpl implements FormsPresenter.MyView {
     interface Binder extends UiBinder<Widget, FormsView> {
     }
 
-    @Inject
-    FormsView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public FormsView() {
+        initWidget(BINDER.createAndBindUi(this));
 
         none.addClickHandler(new ClickHandler() {
             @Override

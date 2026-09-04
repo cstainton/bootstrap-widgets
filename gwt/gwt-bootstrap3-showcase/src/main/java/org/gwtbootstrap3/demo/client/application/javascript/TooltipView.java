@@ -22,18 +22,18 @@ package org.gwtbootstrap3.demo.client.application.javascript;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.inject.Inject;
-import com.gwtplatform.mvp.client.ViewImpl;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.Tooltip;
 
 /**
  * @author Joshua Godi
  */
-public class TooltipView extends ViewImpl implements TooltipPresenter.MyView {
+public class TooltipView extends Composite {
 
     @UiField
     Tooltip forceTooltip;
@@ -45,9 +45,10 @@ public class TooltipView extends ViewImpl implements TooltipPresenter.MyView {
     interface Binder extends UiBinder<Widget, TooltipView> {
     }
 
-    @Inject
-    TooltipView(final Binder uiBinder) {
-        initWidget(uiBinder.createAndBindUi(this));
+
+    private static final Binder BINDER = GWT.create(Binder.class);
+    public TooltipView() {
+        initWidget(BINDER.createAndBindUi(this));
 
         forceHideButton.addClickHandler(new ClickHandler() {
             @Override
