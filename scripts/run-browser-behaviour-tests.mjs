@@ -10,7 +10,7 @@ import { extname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
-const pages = resolve(process.env.PAGES_OUTPUT_DIR || join(root, "target/pages"));
+const pages = resolve(process.env.PAGES_OUTPUT_DIR || join(root, "showcase-site/target/pages"));
 const fixtureTargets = [
   { name: "GWT3", generation: 3, path: "/fixtures/gwt-bootstrap3/index.html" },
   { name: "GWT5", generation: 5, path: "/fixtures/gwt-bootstrap5/index.html" },
