@@ -47,6 +47,36 @@
             the component seam - which this module re-implements against TeaVM's
             @JSBody under the same package and API. Every widget is shared source.
       -->
+      <!--
+        The TeaVM equivalent of GWT's module declarations, read from the very same
+        .gwt.xml files rather than declared again. Nothing is imposed on an
+        application: it constructs a widget and the widget asks for what it needs.
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>generate-teavm-modules</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>python3</executable>
+              <arguments>
+                <argument>${project.parent.parent.basedir}/scripts/generate-teavm-modules.py</argument>
+                <argument>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</argument>
+                <argument>${project.build.directory}/generated-sources/teavm-modules</argument>
+                <argument>${project.build.directory}/teavm</argument>
+                <argument>${project.build.outputDirectory}/META-INF/bootstrap5-assets</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -63,6 +93,7 @@
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java</source>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java</source>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</source>
+                <source>${project.build.directory}/generated-sources/teavm-modules</source>
               </sources>
             </configuration>
           </execution>

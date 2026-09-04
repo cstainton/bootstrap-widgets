@@ -272,12 +272,16 @@ async function main() {
         return {
           x,
           y,
+          rect: {left: rect.left, top: rect.top, width: rect.width, height: rect.height},
+          viewport: {width: window.innerWidth, height: window.innerHeight},
+          scroll: {x: window.scrollX, y: window.scrollY},
           hitTestId: hit && hit.closest('[data-testid]')
             ? hit.closest('[data-testid]').getAttribute('data-testid') : null
         };
       })()`);
       if (!allowPointerPassThrough) {
-        assert.equal(point.hitTestId, testId, `Touch point for ${testId} was obscured by ${point.hitTestId}`);
+        assert.equal(point.hitTestId, testId,
+          `Touch point for ${testId} was obscured: ${JSON.stringify(point)}`);
       }
       await cdp.send("Input.synthesizeTapGesture", {
         x: point.x,
@@ -327,17 +331,31 @@ async function main() {
       const test = (id, name, body) => tests.push({ name: `${target.name}-TOUCH-${id} ${name}`, body });
 
       test("BTN-001/002", "toggle receives one click per activation and toggles twice", async () => {
-      await tap("behaviour/toggle-button/basic");
-      let result = await state("behaviour/toggle-button/basic");
-      assert.equal(result.active, true);
-      assert.equal(result.ariaPressed, "true");
-      assert.equal(result.clickCount, 1);
-      await tap("behaviour/toggle-button/basic");
-      result = await state("behaviour/toggle-button/basic");
-      assert.equal(result.active, false);
-      assert.equal(result.ariaPressed, "false");
-      assert.equal(result.clickCount, 2);
-    });
+        await tap("behaviour/toggle-button/basic");
+        let result = await state("behaviour/toggle-button/basic");
+        assert.equal(result.active, true);
+        assert.equal(result.ariaPressed, "true");
+        assert.equal(result.clickCount, 1);
+        await tap("behaviour/toggle-button/basic");
+        result = await state("behaviour/toggle-button/basic");
+        assert.equal(result.active, false);
+        assert.equal(result.ariaPressed, "false");
+        assert.equal(result.clickCount, 2);
+      });
+
+      test("BTN-003", "checkbox value assignment honours the fire-events flag", async () => {
+        await tap("behaviour/check-box-button/set-silent");
+        let result = await state("behaviour/check-box-button/basic");
+        assert.equal(result.checked, true);
+        assert.equal(result.value, "true");
+        assert.equal(result.changeCount, 0);
+
+        await tap("behaviour/check-box-button/set-firing");
+        result = await state("behaviour/check-box-button/basic");
+        assert.equal(result.checked, false);
+        assert.equal(result.value, "false");
+        assert.equal(result.changeCount, 1);
+      });
 
       test("BTN-004", "disabled toggle suppresses touch activation", async () => {
       await tap("behaviour/toggle-button/disabled", true);
@@ -456,26 +474,132 @@ async function main() {
     });
 
       test("BTN-007", "loading state starts and restores after one touch", async () => {
-      await tap("behaviour/button/loading");
-      await waitFor(
-        "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Saving...'",
-        "the deferred loading state",
-      );
-      let result = await state("behaviour/button/loading");
-      assert.equal(result.text, "Saving...");
-      assert.equal(result.disabled, true);
-      assert.equal(result.ariaBusy, "true");
-      assert.equal(result.clickCount, 1);
-      await waitFor(
-        "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Save'",
-        "the loading state reset",
-      );
-      result = await state("behaviour/button/loading");
-      assert.equal(result.text, "Save");
-      assert.equal(result.disabled, false);
-      assert.equal(result.ariaBusy, null);
-      assert.equal(result.clickCount, 1);
-    });
+        await tap("behaviour/button/loading");
+        await waitFor(
+          "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Saving...'",
+          "the deferred loading state",
+        );
+        let result = await state("behaviour/button/loading");
+        assert.equal(result.text, "Saving...");
+        assert.equal(result.disabled, true);
+        assert.equal(result.ariaBusy, "true");
+        assert.equal(result.clickCount, 1);
+        await waitFor(
+          "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Save'",
+          "the loading state reset",
+        );
+        result = await state("behaviour/button/loading");
+        assert.equal(result.text, "Save");
+        assert.equal(result.disabled, false);
+        assert.equal(result.ariaBusy, null);
+        assert.equal(result.clickCount, 1);
+      });
+
+      test("BTN-008", "button types round-trip without framework-class fallthrough", async () => {
+        const buttons = await evaluate(`Array.from(
+          document.querySelector('[data-testid="behaviour/button/types"]').children
+        ).map((button) => ({
+          assigned: button.dataset.assignedType,
+          reported: button.dataset.reportedType,
+          expectedClass: button.dataset.expectedClass,
+          typeClasses: Array.from(button.classList).filter((name) => name.startsWith('btn-'))
+        }))`);
+        assert.ok(buttons.length >= 7);
+        for (const button of buttons) {
+          assert.equal(button.reported, button.assigned, `${button.assigned} did not round-trip`);
+          assert.deepEqual(button.typeClasses, [button.expectedClass],
+            `${button.assigned} did not map exclusively to ${button.expectedClass}`);
+        }
+      });
+
+      test("BTN-009", "button size replacement removes the previous size", async () => {
+        let result = await state("behaviour/button/sizes");
+        assert.equal(result.text, "Sized");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/button/sizes"]'
+        ).dataset.reportedSize`), "LARGE");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/button/sizes"]'
+        ).classList.contains('btn-lg')`), true);
+
+        await tap("behaviour/button/sizes/change");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/button/sizes"]'
+        ).dataset.reportedSize`), "SMALL");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/button/sizes"]'
+        ).classList.contains('btn-sm')`), true);
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/button/sizes"]'
+        ).classList.contains('btn-lg')`), false);
+      });
+
+      test("BGR-001", "button group preserves rendered insertion order", async () => {
+        const labels = await evaluate(`Array.from(document.querySelector(
+          '[data-testid="behaviour/button-group/basic"]'
+        ).children).map((button) => button.textContent.trim())`);
+        assert.deepEqual(labels, ["First", "Second", "Third"]);
+      });
+
+      test("BGR-002", "group size changes without changing child values", async () => {
+        const selector = '[data-testid="behaviour/button-group/sizes"]';
+        const before = await evaluate(`(() => {
+          const group = document.querySelector(${JSON.stringify(selector)});
+          return {
+            size: group.dataset.reportedSize,
+            large: group.classList.contains('btn-group-lg'),
+            values: Array.from(group.children).map((child) => child.dataset.value)
+          };
+        })()`);
+        assert.equal(before.size, "LARGE");
+        assert.equal(before.large, true);
+        assert.deepEqual(before.values, ["true", "false", "true"]);
+
+        await tap("behaviour/button-group/sizes/change");
+        const after = await evaluate(`(() => {
+          const group = document.querySelector(${JSON.stringify(selector)});
+          return {
+            size: group.dataset.reportedSize,
+            large: group.classList.contains('btn-group-lg'),
+            small: group.classList.contains('btn-group-sm'),
+            values: Array.from(group.children).map((child) => child.dataset.value)
+          };
+        })()`);
+        assert.equal(after.size, "SMALL");
+        assert.equal(after.large, false);
+        assert.equal(after.small, true);
+        assert.deepEqual(after.values, ["true", "false", "true"]);
+      });
+
+      test("BGR-003", "vertical button group stacks each child", async () => {
+        const result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/button-group/vertical"]');
+          const tops = Array.from(group.children).map((child) => child.getBoundingClientRect().top);
+          return {
+            vertical: group.classList.contains('btn-group-vertical'),
+            ordered: tops.every((top, index) => index === 0 || top > tops[index - 1])
+          };
+        })()`);
+        assert.equal(result.vertical, true);
+        assert.equal(result.ordered, true);
+      });
+
+      test("BGR-005", "removing a grouped button clears DOM and widget ownership", async () => {
+        await tap("behaviour/button-group/removal/action");
+        const result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/button-group/removal"]');
+          return {
+            childCount: group.children.length,
+            removedPresent: Boolean(document.querySelector(
+              '[data-testid="behaviour/button-group/removal/middle"]'
+            )),
+            parentNull: group.dataset.removedParentNull
+          };
+        })()`);
+        assert.equal(result.childCount, 2);
+        assert.equal(result.removedPresent, false);
+        assert.equal(result.parentNull, "true");
+      });
 
       return tests;
     }

@@ -7,6 +7,10 @@ import io.instanto.bootstrap5.client.ui.Collapse;
 import io.instanto.bootstrap5.client.ui.DropDown;
 import io.instanto.bootstrap5.client.ui.DropDownItem;
 import io.instanto.bootstrap5.client.ui.RadioButton;
+import io.instanto.bootstrap5.client.ui.VerticalButtonGroup;
+import io.instanto.bootstrap5.client.ui.constants.ButtonGroupSize;
+import io.instanto.bootstrap5.client.ui.constants.ButtonSize;
+import io.instanto.bootstrap5.client.ui.constants.ButtonType;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -35,6 +39,13 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         root.add(dropdownFixture());
         root.add(collapseFixture());
         root.add(loadingFixture());
+        root.add(programmaticCheckboxFixture());
+        root.add(buttonTypesFixture());
+        root.add(buttonSizesFixture());
+        root.add(basicButtonGroupFixture());
+        root.add(buttonGroupSizesFixture());
+        root.add(verticalButtonGroupFixture());
+        root.add(buttonGroupRemovalFixture());
 
         Document.get().getBody().setAttribute("data-fixtures-ready", "true");
         markReady();
@@ -150,6 +161,139 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
             }.schedule(750);
         });
         return fixture("Loading button", button);
+    }
+
+    private Widget programmaticCheckboxFixture() {
+        FlowPanel container = new FlowPanel();
+        CheckBoxButton button = tagged(new CheckBoxButton("Programmatic"),
+                "behaviour/check-box-button/basic");
+        initializeCounter(button.getElement(), CHANGE_COUNT);
+        initializeValue(button, false);
+        button.addValueChangeHandler(event -> {
+            increment(button.getElement(), CHANGE_COUNT);
+            initializeValue(button, event.getValue());
+        });
+
+        Button silent = tagged(new Button("Set true silently"),
+                "behaviour/check-box-button/set-silent");
+        silent.addClickHandler(event -> {
+            button.setValue(true, false);
+            initializeValue(button, button.getValue());
+        });
+        Button firing = tagged(new Button("Set false with event"),
+                "behaviour/check-box-button/set-firing");
+        firing.addClickHandler(event -> {
+            button.setValue(false, true);
+            initializeValue(button, button.getValue());
+        });
+
+        container.add(button);
+        container.add(silent);
+        container.add(firing);
+        return fixture("Programmatic checkbox button", container);
+    }
+
+    private Widget buttonTypesFixture() {
+        FlowPanel buttons = tagged(new FlowPanel(), "behaviour/button/types");
+        for (ButtonType type : ButtonType.values()) {
+            Button button = new Button(type.name());
+            button.setType(type);
+            button.getElement().setAttribute("data-assigned-type", type.name());
+            button.getElement().setAttribute("data-reported-type", button.getType().name());
+            button.getElement().setAttribute("data-expected-class", type.getCssName());
+            buttons.add(button);
+        }
+        return fixture("Button types", buttons);
+    }
+
+    private Widget buttonSizesFixture() {
+        FlowPanel container = new FlowPanel();
+        Button button = tagged(new Button("Sized"), "behaviour/button/sizes");
+        button.setSize(ButtonSize.LARGE);
+        recordButtonSize(button);
+        Button change = tagged(new Button("Use small size"), "behaviour/button/sizes/change");
+        change.addClickHandler(event -> {
+            button.setSize(ButtonSize.SMALL);
+            recordButtonSize(button);
+        });
+        container.add(button);
+        container.add(change);
+        return fixture("Button sizes", container);
+    }
+
+    private Widget basicButtonGroupFixture() {
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/button-group/basic");
+        group.add(new Button("First"));
+        group.add(new Button("Second"));
+        group.add(new Button("Third"));
+        return fixture("Basic button group", group);
+    }
+
+    private Widget buttonGroupSizesFixture() {
+        FlowPanel container = new FlowPanel();
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/button-group/sizes");
+        group.setDataToggle(Toggle.BUTTONS);
+        group.setSize(ButtonGroupSize.LARGE);
+        addPresetCheckbox(group, "First", true);
+        addPresetCheckbox(group, "Second", false);
+        addPresetCheckbox(group, "Third", true);
+        recordButtonGroupSize(group);
+
+        Button change = tagged(new Button("Use small group size"),
+                "behaviour/button-group/sizes/change");
+        change.addClickHandler(event -> {
+            group.setSize(ButtonGroupSize.SMALL);
+            recordButtonGroupSize(group);
+        });
+        container.add(group);
+        container.add(change);
+        return fixture("Button group sizes", container);
+    }
+
+    private Widget verticalButtonGroupFixture() {
+        VerticalButtonGroup group = tagged(new VerticalButtonGroup(),
+                "behaviour/button-group/vertical");
+        group.add(new Button("First"));
+        group.add(new Button("Second"));
+        group.add(new Button("Third"));
+        return fixture("Vertical button group", group);
+    }
+
+    private Widget buttonGroupRemovalFixture() {
+        FlowPanel container = new FlowPanel();
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/button-group/removal");
+        Button first = new Button("First");
+        Button middle = tagged(new Button("Second"), "behaviour/button-group/removal/middle");
+        Button third = new Button("Third");
+        group.add(first);
+        group.add(middle);
+        group.add(third);
+        group.getElement().setAttribute("data-removed-parent-null", "false");
+
+        Button remove = tagged(new Button("Remove middle"), "behaviour/button-group/removal/action");
+        remove.addClickHandler(event -> {
+            group.remove(middle);
+            group.getElement().setAttribute("data-removed-parent-null",
+                    Boolean.toString(middle.getParent() == null));
+        });
+        container.add(group);
+        container.add(remove);
+        return fixture("Button group removal", container);
+    }
+
+    private void addPresetCheckbox(ButtonGroup group, String label, boolean value) {
+        CheckBoxButton button = new CheckBoxButton(label);
+        button.setValue(value);
+        initializeValue(button, value);
+        group.add(button);
+    }
+
+    private void recordButtonSize(Button button) {
+        button.getElement().setAttribute("data-reported-size", button.getSize().name());
+    }
+
+    private void recordButtonGroupSize(ButtonGroup group) {
+        group.getElement().setAttribute("data-reported-size", group.getSize().name());
     }
 
     private void addCheckbox(ButtonGroup group, String label, String fixtureId) {
