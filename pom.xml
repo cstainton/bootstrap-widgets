@@ -46,6 +46,7 @@
     <module>gwt</module>
     <module>testing</module>
     <module>teavm</module>
+    <module>showcase-site</module>
   </modules>
 
   <properties>

@@ -55,7 +55,7 @@ jobs:
         run: python3 scripts/prepare-showcase-debug-artifacts.py
 
       - name: Assemble verified showcase site
-        run: bash scripts/assemble-pages.sh
+        run: mvn -B -pl showcase-site -am -DskipTests package
 
       - name: Smoke-test assembled showcases in Chromium
         run: bash scripts/smoke-showcase-pages.sh
@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: showcase-pages
-          path: target/pages
+          path: showcase-site/target/pages
           if-no-files-found: error
           retention-days: 7
 

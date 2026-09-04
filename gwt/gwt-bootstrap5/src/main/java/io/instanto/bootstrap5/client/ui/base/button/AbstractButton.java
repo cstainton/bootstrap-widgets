@@ -108,6 +108,7 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     private String normalText = "";
     private String loadingText;
     private boolean loading;
+    private ButtonType type = ButtonType.DEFAULT;
 
     /**
      * Creates button with DEFAULT type.
@@ -157,13 +158,14 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     public void setType(final ButtonType type) {
         removeVariantStyles();
         final ButtonType effective = type == null ? ButtonType.DEFAULT : type;
+        this.type = effective;
         StyleHelper.addUniqueEnumStyleName(this, ButtonType.class, effective);
         setVariantField(variantFor(effective));
     }
 
     @Override
     public ButtonType getType() {
-        return ButtonType.fromStyleName(getStyleName());
+        return type;
     }
 
     /**
@@ -360,6 +362,7 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
     public void setVariant(final Variant variant) {
         removeVariantStyles();
         this.variant = variant == null ? Variant.SECONDARY : variant;
+        this.type = typeFor(this.variant);
         addStyleName(variantStyleName(this.variant, outline));
     }
 
@@ -411,6 +414,24 @@ public abstract class AbstractButton extends ComplexWidget implements HasEnabled
             case SECONDARY:
             case DEFAULT:
             default:       return Variant.SECONDARY;
+        }
+    }
+
+    private static ButtonType typeFor(final Variant variant) {
+        if (variant == null) {
+            return ButtonType.SECONDARY;
+        }
+        switch (variant) {
+            case PRIMARY:   return ButtonType.PRIMARY;
+            case SUCCESS:   return ButtonType.SUCCESS;
+            case INFO:      return ButtonType.INFO;
+            case WARNING:   return ButtonType.WARNING;
+            case DANGER:    return ButtonType.DANGER;
+            case LIGHT:     return ButtonType.LIGHT;
+            case DARK:      return ButtonType.DARK;
+            case LINK:      return ButtonType.LINK;
+            case SECONDARY:
+            default:        return ButtonType.SECONDARY;
         }
     }
 

@@ -6,6 +6,7 @@ import io.instanto.bootstrap5.client.ui.CheckBoxButton;
 import io.instanto.bootstrap5.client.ui.Collapse;
 import io.instanto.bootstrap5.client.ui.DropDown;
 import io.instanto.bootstrap5.client.ui.DropDownItem;
+import io.instanto.bootstrap5.client.ui.DropDownMenu;
 import io.instanto.bootstrap5.client.ui.RadioButton;
 import io.instanto.bootstrap5.client.ui.VerticalButtonGroup;
 import io.instanto.bootstrap5.client.ui.constants.ButtonGroupSize;
@@ -45,6 +46,7 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         root.add(basicButtonGroupFixture());
         root.add(buttonGroupSizesFixture());
         root.add(verticalButtonGroupFixture());
+        root.add(nestedButtonGroupFixture());
         root.add(buttonGroupRemovalFixture());
 
         Document.get().getBody().setAttribute("data-fixtures-ready", "true");
@@ -118,6 +120,12 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         initializeCounter(action.getElement(), CLICK_COUNT);
         action.addClickHandler(event -> increment(action.getElement(), CLICK_COUNT));
         dropdown.addItem(action);
+        DropDownItem disabled = tagged(new DropDownItem("Disabled", "#disabled-action"),
+                "behaviour/dropdown/disabled-item");
+        disabled.setDisabled(true);
+        initializeCounter(disabled.getElement(), CLICK_COUNT);
+        disabled.addClickHandler(event -> increment(disabled.getElement(), CLICK_COUNT));
+        dropdown.addItem(disabled);
 
         Button outside = tagged(new Button("Outside"), "behaviour/dropdown/outside");
         outside.getElement().getStyle().setProperty("marginTop", "80px");
@@ -257,6 +265,24 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         group.add(new Button("Second"));
         group.add(new Button("Third"));
         return fixture("Vertical button group", group);
+    }
+
+    private Widget nestedButtonGroupFixture() {
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/button-group/nested-dropdown");
+        Button sibling = tagged(new Button("Sibling"),
+                "behaviour/button-group/nested-dropdown/sibling");
+        countClicks(sibling, sibling);
+        Button toggle = tagged(new Button("More"),
+                "behaviour/button-group/nested-dropdown/toggle");
+        toggle.addStyleName("dropdown-toggle");
+        toggle.setDataToggle(Toggle.DROPDOWN);
+        DropDownMenu menu = tagged(new DropDownMenu(),
+                "behaviour/button-group/nested-dropdown/menu");
+        menu.add(new DropDownItem("Nested action", "#"));
+        group.add(sibling);
+        group.add(toggle);
+        group.add(menu);
+        return fixture("Nested button group dropdown", group);
     }
 
     private Widget buttonGroupRemovalFixture() {

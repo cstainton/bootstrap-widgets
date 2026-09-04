@@ -257,8 +257,14 @@ async function main() {
       await evaluate(`new Promise((resolve) => {
         const element = document.querySelector(${JSON.stringify(selector)});
         if (!element) throw new Error('Missing fixture ${testId}');
-        element.scrollIntoView({block: 'center', inline: 'center'});
-        requestAnimationFrame(() => resolve(true));
+        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+        requestAnimationFrame(() => {
+          const rect = element.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > window.innerHeight) {
+            window.scrollBy(0, rect.top + rect.height / 2 - window.innerHeight / 2);
+          }
+          requestAnimationFrame(() => resolve(true));
+        });
       })`);
       const point = await evaluate(`(() => {
         const element = document.querySelector(${JSON.stringify(selector)});
@@ -300,6 +306,18 @@ async function main() {
         duration: 50,
         gestureSourceType: "touch",
       });
+      await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+    }
+
+    async function pressKey(key, code, keyCode) {
+      const keyEvent = {
+        key,
+        code,
+        windowsVirtualKeyCode: keyCode,
+        nativeVirtualKeyCode: keyCode,
+      };
+      await cdp.send("Input.dispatchKeyEvent", { type: "rawKeyDown", ...keyEvent });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", ...keyEvent });
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
     }
 
@@ -346,7 +364,7 @@ async function main() {
       test("BTN-003", "checkbox value assignment honours the fire-events flag", async () => {
         await tap("behaviour/check-box-button/set-silent");
         let result = await state("behaviour/check-box-button/basic");
-        assert.equal(result.checked, true);
+        assert.equal(result.checked, true, JSON.stringify(result));
         assert.equal(result.value, "true");
         assert.equal(result.changeCount, 0);
 
@@ -433,6 +451,36 @@ async function main() {
       assert.equal(toggle.ariaExpanded, "false");
       assert.deepEqual(await evaluate("window.__dropdownEvents"), ["show", "shown", "hide", "hidden"]);
     });
+
+      test("DRP-003", "Escape closes the dropdown and restores toggle focus", async () => {
+        await tap("behaviour/dropdown/toggle");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/dropdown/basic"]').classList.contains('open')
+            || document.querySelector('[data-testid="behaviour/dropdown/basic"]').classList.contains('show')
+            || Boolean(document.querySelector('[data-testid="behaviour/dropdown/basic"] .dropdown-menu.show'))`,
+          "the dropdown to open",
+        );
+        await evaluate(`(() => {
+          const item = document.querySelector('[data-testid="behaviour/dropdown/action"]');
+          const focusTarget = item.matches('a, button, input') ? item : item.querySelector('a, button, input');
+          focusTarget.focus();
+        })()`);
+        await pressKey("Escape", "Escape", 27);
+        const dropdown = await state("behaviour/dropdown/basic");
+        const focusedFixture = await evaluate(`document.activeElement.closest('[data-testid]')
+          && document.activeElement.closest('[data-testid]').getAttribute('data-testid')`);
+        assert.equal(dropdown.open, false);
+        assert.equal(focusedFixture, "behaviour/dropdown/toggle");
+      });
+
+      test("DRP-004", "disabled dropdown item suppresses action and navigation", async () => {
+        const locationBefore = await evaluate("window.location.href");
+        await tap("behaviour/dropdown/toggle");
+        await tap("behaviour/dropdown/disabled-item");
+        const disabled = await state("behaviour/dropdown/disabled-item");
+        assert.equal(disabled.clickCount, 0);
+        assert.equal(await evaluate("window.location.href"), locationBefore);
+      });
 
       test("COL-001/002/003", "collapse reports one ordered transition each way", async () => {
       await evaluate(`(() => {
@@ -582,6 +630,30 @@ async function main() {
         })()`);
         assert.equal(result.vertical, true);
         assert.equal(result.ordered, true);
+      });
+
+      test("BGR-004", "nested dropdown remains owned and leaves siblings actionable", async () => {
+        await tap("behaviour/button-group/nested-dropdown/toggle");
+        await waitFor(
+          `getComputedStyle(document.querySelector(
+            '[data-testid="behaviour/button-group/nested-dropdown/menu"]'
+          )).display !== 'none'`,
+          "the nested dropdown menu to open",
+        );
+        const composition = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/button-group/nested-dropdown"]');
+          const menu = document.querySelector('[data-testid="behaviour/button-group/nested-dropdown/menu"]');
+          return {
+            ownsMenu: menu.parentElement === group,
+            menuVisible: getComputedStyle(menu).display !== 'none'
+          };
+        })()`);
+        assert.equal(composition.ownsMenu, true);
+        assert.equal(composition.menuVisible, true);
+
+        await tap("behaviour/button-group/nested-dropdown/sibling");
+        const sibling = await state("behaviour/button-group/nested-dropdown/sibling");
+        assert.equal(sibling.clickCount, 1);
       });
 
       test("BGR-005", "removing a grouped button clears DOM and widget ownership", async () => {

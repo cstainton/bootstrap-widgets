@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-pages_dir="${PAGES_OUTPUT_DIR:-${root_dir}/target/pages}"
+pages_dir="${PAGES_OUTPUT_DIR:-${root_dir}/showcase-site/target/pages}"
 port="${SHOWCASE_SMOKE_PORT:-8878}"
 
 find_chrome() {
