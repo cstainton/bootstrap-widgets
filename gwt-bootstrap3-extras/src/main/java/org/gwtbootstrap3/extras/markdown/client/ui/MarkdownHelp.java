@@ -48,7 +48,8 @@ public class MarkdownHelp extends Div {
 
         final Anchor toggle = new Anchor("");
         toggle.setText("Markdown supported");
-        toggle.addStyleName("small text-body-secondary text-decoration-none");
+        // text-body-secondary is Bootstrap 5; Bootstrap 3 calls it text-muted.
+        toggle.addStyleName("small text-muted");
         toggle.setHref("javascript:;");
         toggle.getElement().setAttribute("role", "button");
         toggle.addClickHandler(new ClickHandler() {
@@ -58,7 +59,8 @@ public class MarkdownHelp extends Div {
             }
         });
 
-        body.addStyleName("border rounded p-2 mt-2 small");
+        // Bootstrap 3's bordered box is the well; the spacing utilities are Bootstrap 5 only.
+        body.addStyleName("well well-sm small");
         body.getElement().setInnerHTML(reference());
         body.setVisible(false);
 
@@ -85,7 +87,7 @@ public class MarkdownHelp extends Div {
                 + row("~~struck~~", "<del>struck</del>")
                 + row("`code`", "<code>code</code>")
                 + row("# Heading", "<strong>Heading</strong>")
-                + row("&gt; quote", "<span class='text-body-secondary'>quote</span>")
+                + row("&gt; quote", "<span class='text-muted'>quote</span>")
                 + row("- item", "a bulleted list")
                 + row("1. item", "a numbered list")
                 + row("- [ ] task", "a task list")

@@ -74,18 +74,22 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
 
     private final MarkdownHelp help = new MarkdownHelp();
 
-    private final Button writeTab = new Button("Write", ButtonType.DEFAULT);
+    /** The one control that changes mode: a pencil to edit, an eye to read. */
+    private final Button modeButton = new Button("", ButtonType.DEFAULT);
 
-    private final Button previewTab = new Button("Preview", ButtonType.DEFAULT);
+    private final Div syntaxButtons = syntaxButtons();
 
-    private boolean previewing;
+    private boolean editing;
+
+    /** Whether the reference should show while editing; it never shows while reading. */
+    private boolean helpVisible = true;
 
     public MarkdownEditor() {
         addStyleName("gbm-markdown-editor");
 
         toolbar.addStyleName("d-flex flex-wrap align-items-center gap-2 mb-2");
-        toolbar.add(tabs());
-        toolbar.add(syntaxButtons());
+        toolbar.add(modeToggle());
+        toolbar.add(syntaxButtons);
         add(toolbar);
 
         textArea.setVisibleLines(8);
@@ -102,33 +106,36 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
         add(preview);
 
         add(help);
-        showWrite();
+        // Nothing to read yet, so an empty editor opens ready to type.
+        showEditor();
     }
 
     public MarkdownEditor(final String markdown) {
         this();
         setValue(markdown);
+        // There is something to read now, so start by reading it.
+        showRendered();
     }
 
-    private ButtonGroup tabs() {
-        writeTab.setSmall(true);
-        writeTab.addClickHandler(new ClickHandler() {
+    private Button modeToggle() {
+        modeButton.setSmall(true);
+        modeButton.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(final ClickEvent event) {
-                showWrite();
+                if (editing) {
+                    showRendered();
+                } else {
+                    showEditor();
+                }
             }
         });
-        previewTab.setSmall(true);
-        previewTab.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(final ClickEvent event) {
-                showPreview();
-            }
-        });
-        final ButtonGroup group = new ButtonGroup();
-        group.addButton(writeTab);
-        group.addButton(previewTab);
-        return group;
+        return modeButton;
+    }
+
+    private void setModeButton(final IconType icon, final String title) {
+        modeButton.clear();
+        modeButton.add(new Icon(icon));
+        modeButton.setTitle(title);
     }
 
     private Div syntaxButtons() {
@@ -175,30 +182,75 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
         focusAfterInsert(element, start + before.length(), selected.length());
     }
 
-    public void showWrite() {
-        previewing = false;
+    /** Shows the textarea and the syntax buttons, with an eye to go back to reading. */
+    public void showEditor() {
+        editing = true;
         textArea.setVisible(true);
         preview.setVisible(false);
-        writeTab.setActive(true);
-        previewTab.setActive(false);
+        setToolbarVisible(true);
+        help.setVisible(helpVisible);
+        setModeButton(IconType.EYE, "Done editing");
     }
 
-    public void showPreview() {
-        previewing = true;
+    /**
+     * Shows the rendered Markdown, with a pencil to start editing. The syntax buttons and
+     * the reference go with the textarea, because neither means anything while reading.
+     */
+    public void showRendered() {
+        editing = false;
         preview.setMarkdown(getValue());
         textArea.setVisible(false);
         preview.setVisible(true);
-        writeTab.setActive(false);
-        previewTab.setActive(true);
+        setToolbarVisible(false);
+        help.setVisible(false);
+        setModeButton(IconType.PENCIL, "Edit");
     }
 
+    /**
+     * Bootstrap 5's display utilities are declared !important, so the inline style that
+     * setVisible writes cannot beat the d-flex on this container. The class has to come
+     * off for the buttons to actually go away.
+     */
+    private void setToolbarVisible(final boolean visible) {
+        if (visible) {
+            syntaxButtons.addStyleName("d-flex");
+        } else {
+            syntaxButtons.removeStyleName("d-flex");
+        }
+        syntaxButtons.setVisible(visible);
+    }
+
+    /** True while the textarea is showing. */
+    public boolean isEditing() {
+        return editing;
+    }
+
+    /** @deprecated use {@link #showEditor()} */
+    @Deprecated
+    public void showWrite() {
+        showEditor();
+    }
+
+    /** @deprecated use {@link #showRendered()} */
+    @Deprecated
+    public void showPreview() {
+        showRendered();
+    }
+
+    /** @deprecated use {@link #isEditing()} */
+    @Deprecated
     public boolean isPreviewing() {
-        return previewing;
+        return !editing;
     }
 
     /** Shows or hides the syntax reference beneath the editor. */
     public void setHelpVisible(final boolean visible) {
-        help.setVisible(visible);
+        helpVisible = visible;
+        help.setVisible(visible && editing);
+    }
+
+    public boolean isHelpVisible() {
+        return helpVisible;
     }
 
     public void setVisibleLines(final int lines) {
@@ -228,7 +280,7 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
     @Override
     public void setValue(final String value, final boolean fireEvents) {
         textArea.setValue(value == null ? "" : value);
-        if (previewing) {
+        if (!editing) {
             preview.setMarkdown(getValue());
         }
         if (fireEvents) {
