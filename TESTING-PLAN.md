@@ -282,10 +282,18 @@ checks, never as the executable reachability suite.
 
 ### Generated fixture source
 
-Where a fixture uses UiBinder, its owner class and `.ui.xml` template are shared
-source. The GWT build uses the normal GWT generator and the TeaVM build uses the
-`widget-processor` annotation processor. A TeaVM-specific handwritten copy of
-the layout is not a fixture implementation and must not become one.
+Where a fixture applies to both compilers, its owner class and `.ui.xml`
+template are shared source. The GWT build uses the normal GWT generator and the
+TeaVM build uses the `widget-processor` annotation processor. A handwritten
+Java copy of that shared layout is not a fixture implementation and must not
+become one.
+
+TeaVM may also own widgets, owners and UiBinder templates that have no GWT
+counterpart. Those templates use the same annotation processor and participate
+in TeaVM reachability, behaviour and markup-regression tests, but not in the
+GWT-versus-TeaVM structural differential. GWT-only fixtures follow the
+corresponding rule. Target applicability in the fixture catalogue determines
+which generated harnesses include each fixture.
 
 The compiler launchers remain thin and target-specific. Each generated test
 method directly constructs its fixture owner, after which the generated binder
@@ -308,6 +316,29 @@ The processor has its own test boundary, independent of widget behaviour:
 Focused generated-source assertions protect important reachability and wiring
 statements. They are not full-file golden snapshots; runtime structural
 snapshots remain responsible for detecting emitted markup changes.
+
+To support the complete fixture corpus, the processor and its build integration
+must provide:
+
+- Reusable annotation-processor configuration for both TeaVM Bootstrap
+  generations and downstream TeaVM applications, not only this repository's
+  Bootstrap 5 module.
+- Stable fixture attributes, including `data-testid`, ARIA and ordinary DOM
+  attributes, without requiring a widget setter for every attribute.
+- `@UiField(provided = true)`, `@UiFactory`, `@UiChild`, `IsWidget` and
+  non-`HasWidgets` child composition so tests can supply collaborators and
+  exercise real widget composition paths.
+- `@UiTemplate`, inherited binder and inherited handler support so fixture
+  owners are not constrained to one nested-interface convention.
+- HTML-namespace elements, DOM `ui:field` references and mixed text/widget
+  content for structural and accessibility fixtures.
+- UiBinder expressions and resources needed by real templates, including
+  owner fields, `ui:with`, messages, styles and safe HTML.
+- Deterministic generated binder selection and direct generated fixture
+  factories. Service descriptors may bind a known interface but may not be the
+  only mechanism that makes a fixture reachable.
+- Offline, external-entity-safe XML parsing and source-positioned diagnostics
+  for malformed or unsupported templates.
 
 ### Authoritative widget inventory
 
