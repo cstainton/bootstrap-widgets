@@ -16,9 +16,10 @@ esac
 showcase_dir="$(find gwt/gwt-bootstrap3-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap3-showcase-*' -print -quit)"
 bootstrap3_fixture_dir="$(find gwt/gwt-bootstrap3-browser-fixtures/target -maxdepth 1 -type d -name 'gwt-bootstrap3-browser-fixtures-*' -print -quit)"
 bootstrap5_showcase_dir="$(find gwt/gwt-bootstrap5-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap5-showcase-*' -print -quit)"
+bootstrap5_fixture_dir="$(find gwt/gwt-bootstrap5-browser-fixtures/target -maxdepth 1 -type d -name 'gwt-bootstrap5-browser-fixtures-*' -print -quit)"
 
-if [[ -z "${showcase_dir}" || -z "${bootstrap3_fixture_dir}" || -z "${bootstrap5_showcase_dir}" ]]; then
-  echo "Both compiled GWT showcases and the Bootstrap 3 browser fixtures are required" >&2
+if [[ -z "${showcase_dir}" || -z "${bootstrap3_fixture_dir}" || -z "${bootstrap5_showcase_dir}" || -z "${bootstrap5_fixture_dir}" ]]; then
+  echo "Both compiled GWT showcases and browser fixture applications are required" >&2
   exit 1
 fi
 
@@ -35,6 +36,9 @@ cp -R "${bootstrap5_showcase_dir}/"* "${pages_dir}/bootstrap5/"
 
 mkdir -p "${pages_dir}/fixtures/gwt-bootstrap3"
 cp -R "${bootstrap3_fixture_dir}/"* "${pages_dir}/fixtures/gwt-bootstrap3/"
+
+mkdir -p "${pages_dir}/fixtures/gwt-bootstrap5"
+cp -R "${bootstrap5_fixture_dir}/"* "${pages_dir}/fixtures/gwt-bootstrap5/"
 
 mkdir -p "${pages_dir}/teavm"
 cp -R teavm/teavm-bootstrap3/target/teavm/* "${pages_dir}/teavm/"
@@ -64,6 +68,8 @@ test -s "${pages_dir}/showcase.html"
 test -s "${pages_dir}/bootstrap5/index.html"
 test -s "${pages_dir}/fixtures/gwt-bootstrap3/index.html"
 test -s "${pages_dir}/fixtures/gwt-bootstrap3/Bootstrap3BrowserFixtures/Bootstrap3BrowserFixtures.nocache.js"
+test -s "${pages_dir}/fixtures/gwt-bootstrap5/index.html"
+test -s "${pages_dir}/fixtures/gwt-bootstrap5/Bootstrap5BrowserFixtures/Bootstrap5BrowserFixtures.nocache.js"
 test -s "${pages_dir}/teavm.html"
 test -s "${pages_dir}/teavm-bootstrap5.html"
 test -s "${pages_dir}/teavm/teavm-bootstrap3-smoke.js"

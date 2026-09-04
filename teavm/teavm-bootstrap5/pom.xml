@@ -83,8 +83,6 @@
               the browser through JSNI and a ClientBundle.
             -->
             <exclude>io/instanto/bootstrap5/extras/datepicker/**</exclude>
-            <exclude>io/instanto/bootstrap5/extras/richtext/**</exclude>
-            <exclude>io/instanto/bootstrap5/extras/slider/**</exclude>
             <!--
               GWT-only pieces of the Markdown extra: the ClientBundle that inlines the
               vendored scripts and the entry point that injects them. MarkdownResources
@@ -94,6 +92,12 @@
             <exclude>io/instanto/bootstrap5/extras/markdown/client/MarkdownEntryPoint.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/markdown/client/Markdown.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/markdown/client/ui/TextAreaSelection.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/slider/client/SliderClientBundle.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/slider/client/SliderEntryPoint.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/slider/client/ui/SliderJs.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/richtext/client/RichTextClientBundle.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/richtext/client/RichTextEntryPoint.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/richtext/client/ui/QuillJs.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -158,6 +162,12 @@
                     <include>*.js</include>
                   </includes>
                 </resource>
+                <resource>
+                  <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java/io/instanto/bootstrap5/extras/richtext/client/resource/js</directory>
+                  <includes>
+                    <include>*.js</include>
+                  </includes>
+                </resource>
               </resources>
             </configuration>
           </execution>
@@ -172,6 +182,12 @@
               <resources>
                 <resource>
                   <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java/io/instanto/bootstrap5/extras/slider/client/resource/css</directory>
+                  <includes>
+                    <include>*.css</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java/io/instanto/bootstrap5/extras/richtext/client/resource/css</directory>
                   <includes>
                     <include>*.css</include>
                   </includes>

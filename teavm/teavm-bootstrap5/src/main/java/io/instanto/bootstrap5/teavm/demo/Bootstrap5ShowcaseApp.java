@@ -27,6 +27,8 @@ import com.google.gwt.user.client.ui.Widget;
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.extras.markdown.client.MarkdownResources;
+import io.instanto.bootstrap5.extras.richtext.client.RichTextResources;
+import io.instanto.bootstrap5.extras.richtext.client.ui.RichTextEditor;
 import io.instanto.bootstrap5.extras.slider.client.SliderResources;
 import io.instanto.bootstrap5.extras.slider.client.ui.Slider;
 import io.instanto.bootstrap5.extras.markdown.client.ui.MarkdownEditor;
@@ -159,6 +161,8 @@ public final class Bootstrap5ShowcaseApp {
         MarkdownResources.ensureInjected();
         SliderResources.setBase("teavm5/js/", "teavm5/css/");
         SliderResources.ensureInjected();
+        RichTextResources.setBase("teavm5/js/", "teavm5/css/");
+        RichTextResources.ensureInjected();
         Themes.register(StandardThemes.all(CSS));
         Themes.register(BootswatchThemes.all(CSS));
         Themes.restore(StandardThemes.bootstrap(CSS));
@@ -300,6 +304,12 @@ public final class Bootstrap5ShowcaseApp {
                 "Form form = new Form();\nFieldSet fieldSet = new FieldSet();\n"
                 + "fieldSet.add(new Legend(\"...\"));\n"
                 + "new FormControlStatic(\"read-only text\");"));
+        column.add(panel("Rich text", richText(),
+                "RichTextEditor editor = new RichTextEditor(Toolbar.FULL);\n"
+                + "editor.setHTML(\"<p>Hello</p>\");\n"
+                + "String html = editor.getHTML();\n\n"
+                + "// Quill, loaded by URL rather than inlined. Use Markdown above\n"
+                + "// when the stored format is Markdown rather than HTML."));
         column.add(panel("Slider", slider(),
                 "Slider slider = new Slider(0, 100);\n"
                 + "slider.setRange(true);      // two handles\n"
@@ -1167,6 +1177,23 @@ public final class Bootstrap5ShowcaseApp {
         body.add(one);
         body.add(new HTML("<p class='mt-4 mb-2'>Two handles, with pips</p>"));
         body.add(two);
+        return body;
+    }
+
+    private static Widget richText() {
+        final PanelBody body = new PanelBody();
+        body.add(new HTML("<p class='text-body-secondary'>Quill through the same widget"
+                + " the GWT build uses. This stores HTML; the Markdown editor below"
+                + " stores Markdown.</p>"));
+
+        final RichTextEditor editor = new RichTextEditor(RichTextEditor.Toolbar.FULL);
+        editor.setPlaceholder("Write something...");
+        editor.setHTML("<h3>Rich text on TeaVM</h3>"
+                + "<p>The toolbar, the <strong>formatting</strong> and the"
+                + " <em>document model</em> are all Quill's.</p>"
+                + "<ul><li>Compiled from the shared widget source</li>"
+                + "<li>Quill fetched by URL, not inlined</li></ul>");
+        body.add(editor);
         return body;
     }
 

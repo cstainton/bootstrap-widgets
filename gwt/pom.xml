@@ -24,6 +24,7 @@
     <module>gwt-bootstrap5-themes</module>
     <module>gwt-bootstrap5-extras</module>
     <module>gwt-bootstrap5-showcase</module>
+    <module>gwt-bootstrap5-browser-fixtures</module>
     <module>gwt-user-jvm-contract-tests</module>
     <module>gwt-bootstrap-widget-tests</module>
   </modules>

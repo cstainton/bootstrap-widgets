@@ -29,6 +29,7 @@ import io.instanto.bootstrap5.client.ui.base.HasId;
 import io.instanto.bootstrap5.client.ui.base.mixin.IdMixin;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -74,6 +75,12 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
 
     private boolean enabled = true;
 
+    private static final int READY_TIMEOUT_MILLIS = 5000;
+
+    private static final int READY_POLL_MILLIS = 50;
+
+    private Timer readyTimer;
+
     private JavaScriptObject quill;
 
     public RichTextEditor() {
@@ -98,7 +105,7 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
     public void setPlaceholder(final String placeholder) {
         this.placeholder = placeholder == null ? "" : placeholder;
         if (quill != null) {
-            applyPlaceholder(quill, this.placeholder);
+            QuillJs.applyPlaceholder(quill, this.placeholder);
         }
     }
 
@@ -109,10 +116,31 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
     @Override
     protected void onLoad() {
         super.onLoad();
-        quill = create(surface.getElement(), toolbarSpec(), placeholder);
-        bindChange(quill, this);
+        initialise();
+    }
+
+    /**
+     * Builds the editor, waiting for Quill if it has not arrived yet. The GWT module
+     * injects Quill as inline script text before the application runs, so the first
+     * attempt succeeds there; the TeaVM backend fetches it by URL, and an editor attached
+     * during startup would otherwise stay an empty div.
+     */
+    private void initialise() {
+        if (!QuillJs.isReady()) {
+            waitForQuill();
+            return;
+        }
+        stopWaiting();
+        quill = QuillJs.create(surface.getElement(), toolbarSpec(), placeholder);
+        QuillJs.bindChange(quill, new QuillJs.ChangeHandler() {
+            @Override
+            public void onTextChange() {
+                RichTextEditor.this.onTextChange();
+            }
+        });
+
         if (pendingHtml != null) {
-            writeHtml(quill, pendingHtml);
+            QuillJs.writeHtml(quill, pendingHtml);
             pendingHtml = null;
         }
         if (!enabled) {
@@ -120,15 +148,47 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
         }
     }
 
+    private void waitForQuill() {
+        if (readyTimer != null) {
+            return;
+        }
+        readyTimer = new Timer() {
+            private int waited;
+
+            @Override
+            public void run() {
+                waited += READY_POLL_MILLIS;
+                if (QuillJs.isReady()) {
+                    if (isAttached()) {
+                        initialise();
+                    } else {
+                        stopWaiting();
+                    }
+                } else if (waited >= READY_TIMEOUT_MILLIS) {
+                    stopWaiting();
+                }
+            }
+        };
+        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
+    }
+
+    private void stopWaiting() {
+        if (readyTimer != null) {
+            readyTimer.cancel();
+            readyTimer = null;
+        }
+    }
+
     @Override
     protected void onUnload() {
+        stopWaiting();
         quill = null;
         super.onUnload();
     }
 
     @Override
     public String getHTML() {
-        return quill == null ? (pendingHtml == null ? "" : pendingHtml) : readHtml(quill);
+        return quill == null ? (pendingHtml == null ? "" : pendingHtml) : QuillJs.readHtml(quill);
     }
 
     @Override
@@ -137,13 +197,13 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
         if (quill == null) {
             pendingHtml = value;
         } else {
-            writeHtml(quill, value);
+            QuillJs.writeHtml(quill, value);
         }
     }
 
     @Override
     public String getText() {
-        return quill == null ? "" : readText(quill);
+        return quill == null ? "" : QuillJs.readText(quill);
     }
 
     @Override
@@ -160,7 +220,7 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
     public void setEnabled(final boolean enabled) {
         this.enabled = enabled;
         if (quill != null) {
-            applyEnabled(quill, enabled);
+            QuillJs.applyEnabled(quill, enabled);
         }
     }
 
@@ -195,60 +255,4 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
                 return "basic";
         }
     }
-
-    private static native JavaScriptObject create(com.google.gwt.dom.client.Element element,
-            String toolbarSpec, String placeholder) /*-{
-        var toolbar;
-        if (toolbarSpec === "none") {
-            toolbar = false;
-        } else if (toolbarSpec === "full") {
-            toolbar = [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ color: [] }, { background: [] }],
-                [{ list: "ordered" }, { list: "bullet" }],
-                [{ align: [] }],
-                ["blockquote", "code-block", "link"],
-                ["clean"]
-            ];
-        } else {
-            toolbar = [
-                ["bold", "italic", "underline", "strike"],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "clean"]
-            ];
-        }
-        return new $wnd.Quill(element, {
-            theme: "snow",
-            placeholder: placeholder,
-            modules: { toolbar: toolbar }
-        });
-    }-*/;
-
-    private static native void bindChange(JavaScriptObject quill, RichTextEditor widget) /*-{
-        quill.on("text-change", function () {
-            widget.@io.instanto.bootstrap5.extras.richtext.client.ui.RichTextEditor::onTextChange()();
-        });
-    }-*/;
-
-    private static native String readHtml(JavaScriptObject quill) /*-{
-        return typeof quill.getSemanticHTML === "function"
-            ? quill.getSemanticHTML() : quill.root.innerHTML;
-    }-*/;
-
-    private static native void writeHtml(JavaScriptObject quill, String html) /*-{
-        quill.setContents(quill.clipboard.convert({ html: html }), "silent");
-    }-*/;
-
-    private static native String readText(JavaScriptObject quill) /*-{
-        return quill.getText();
-    }-*/;
-
-    private static native void applyEnabled(JavaScriptObject quill, boolean enabled) /*-{
-        quill.enable(enabled);
-    }-*/;
-
-    private static native void applyPlaceholder(JavaScriptObject quill, String placeholder) /*-{
-        quill.root.setAttribute("data-placeholder", placeholder);
-    }-*/;
 }

@@ -22,6 +22,11 @@ jobs:
           java-version: '21'
           cache: maven
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
       - name: Check showcase code samples
         run: python3 scripts/check-showcase-samples.py
 
@@ -43,6 +48,9 @@ jobs:
       - name: Compile Bootstrap 5 showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
+      - name: Compile Bootstrap 5 browser fixtures with GWT
+        run: mvn -B -f gwt/gwt-bootstrap5-browser-fixtures/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
       - name: Verify published source maps and source JARs
         run: python3 scripts/prepare-showcase-debug-artifacts.py
 
@@ -52,7 +60,7 @@ jobs:
       - name: Smoke-test assembled showcases in Chromium
         run: bash scripts/smoke-showcase-pages.sh
 
-      - name: Exercise compiled GWT Bootstrap 3 with mobile touch input
+      - name: Exercise compiled GWT widgets with mobile touch input
         run: node scripts/run-browser-behaviour-tests.mjs
 
       - name: Upload verified showcase site

@@ -11,7 +11,10 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const pages = resolve(process.env.PAGES_OUTPUT_DIR || join(root, "target/pages"));
-const fixturePath = "/fixtures/gwt-bootstrap3/index.html";
+const fixtureTargets = [
+  { name: "GWT3", generation: 3, path: "/fixtures/gwt-bootstrap3/index.html" },
+  { name: "GWT5", generation: 5, path: "/fixtures/gwt-bootstrap5/index.html" },
+];
 const timeoutMs = Number(process.env.BROWSER_TEST_TIMEOUT_MS || 15000);
 
 function findChrome() {
@@ -151,14 +154,16 @@ class CdpClient {
 }
 
 async function main() {
-  if (!existsSync(join(pages, fixturePath))) {
-    throw new Error(`Missing assembled GWT browser fixtures under ${pages}`);
+  for (const target of fixtureTargets) {
+    if (!existsSync(join(pages, target.path))) {
+      throw new Error(`Missing assembled ${target.name} browser fixtures under ${pages}`);
+    }
   }
 
   const server = await startStaticServer();
   const appPort = server.address().port;
   const debugPort = await reservePort();
-  const fixtureUrl = `http://127.0.0.1:${appPort}${fixturePath}`;
+  const initialUrl = `http://127.0.0.1:${appPort}${fixtureTargets[0].path}`;
   const profile = mkdtempSync(join(tmpdir(), "bootstrap-widget-browser-"));
   const browser = spawn(findChrome(), [
     "--headless=new",
@@ -168,7 +173,7 @@ async function main() {
     "--disable-background-networking",
     `--remote-debugging-port=${debugPort}`,
     `--user-data-dir=${profile}`,
-    fixtureUrl,
+    initialUrl,
   ], { stdio: ["ignore", "ignore", "pipe"] });
   let browserStderr = "";
   browser.stderr.on("data", (chunk) => { browserStderr += chunk.toString(); });
@@ -179,7 +184,7 @@ async function main() {
       const response = await fetch(`http://127.0.0.1:${debugPort}/json/list`);
       if (!response.ok) return null;
       const targets = await response.json();
-      return targets.find((candidate) => candidate.type === "page" && candidate.url.startsWith(fixtureUrl));
+      return targets.find((candidate) => candidate.type === "page" && candidate.url.startsWith(initialUrl));
     }, "the Chrome DevTools target");
 
     cdp = new CdpClient(target.webSocketDebuggerUrl);
@@ -234,7 +239,7 @@ async function main() {
       }, description, timeout);
     }
 
-    async function freshPage(name) {
+    async function freshPage(fixtureUrl, name) {
       diagnostics.length = 0;
       await cdp.send("Page.navigate", { url: `${fixtureUrl}?case=${encodeURIComponent(name)}&t=${Date.now()}` });
       await waitFor(
@@ -250,7 +255,10 @@ async function main() {
         const element = document.querySelector(${JSON.stringify(selector)});
         if (!element) throw new Error('Missing fixture ${testId}');
         element.scrollIntoView({block: 'center', inline: 'center'});
-        const rect = element.getBoundingClientRect();
+        const hitTarget = element.matches('button, a, input, label')
+          ? element
+          : element.querySelector('label, button, a, input') || element;
+        const rect = hitTarget.getBoundingClientRect();
         return {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2};
       })()`);
       await cdp.send("Input.synthesizeTapGesture", {
@@ -267,9 +275,9 @@ async function main() {
         const element = document.querySelector('[data-testid=' + ${JSON.stringify(JSON.stringify(testId))} + ']');
         const input = element && element.querySelector('input');
         return element && {
-          active: element.classList.contains('active'),
-          open: element.classList.contains('open'),
-          shown: element.classList.contains('in'),
+          active: element.classList.contains('active') || Boolean(element.querySelector('label.active')),
+          open: element.classList.contains('open') || element.classList.contains('show'),
+          shown: element.classList.contains('in') || element.classList.contains('show'),
           disabled: element.hasAttribute('disabled'),
           ariaPressed: element.getAttribute('aria-pressed'),
           ariaExpanded: element.getAttribute('aria-expanded'),
@@ -283,10 +291,11 @@ async function main() {
       })()`);
     }
 
-    const tests = [];
-    const test = (name, body) => tests.push({ name, body });
+    function testsFor(target) {
+      const tests = [];
+      const test = (id, name, body) => tests.push({ name: `${target.name}-TOUCH-${id} ${name}`, body });
 
-    test("GWT3-TOUCH-001 toggle receives one click and toggles twice", async () => {
+      test("001", "toggle receives one click and toggles twice", async () => {
       await tap("behaviour/toggle-button/basic");
       let result = await state("behaviour/toggle-button/basic");
       assert.equal(result.active, true);
@@ -299,14 +308,14 @@ async function main() {
       assert.equal(result.clickCount, 2);
     });
 
-    test("GWT3-TOUCH-002 disabled toggle suppresses touch activation", async () => {
+      test("002", "disabled toggle suppresses touch activation", async () => {
       await tap("behaviour/toggle-button/disabled");
       const result = await state("behaviour/toggle-button/disabled");
       assert.equal(result.active, false);
       assert.equal(result.clickCount, 0);
     });
 
-    test("GWT3-TOUCH-003 checkbox button changes exactly once", async () => {
+      test("003", "checkbox button changes exactly once", async () => {
       await tap("behaviour/check-box-button/touch");
       const result = await state("behaviour/check-box-button/touch");
       assert.equal(result.active, true);
@@ -316,7 +325,7 @@ async function main() {
       assert.equal(result.clickCount, 1);
     });
 
-    test("GWT3-TOUCH-004 radio button remains exclusive and reports once", async () => {
+      test("004", "radio button remains exclusive and reports once", async () => {
       await tap("behaviour/radio-button/second");
       await waitFor(
         "document.querySelector('[data-testid=\"behaviour/radio-button/second\"]').dataset.value === 'true'",
@@ -334,15 +343,20 @@ async function main() {
       assert.equal(second.clickCount, 1);
     });
 
-    test("GWT3-TOUCH-005 dropdown opens and closes from touch", async () => {
-      await evaluate(`(() => {
+      test("005", "dropdown opens and closes from touch", async () => {
+        await evaluate(`(() => {
         window.__dropdownEvents = [];
         const dropdown = document.querySelector('[data-testid="behaviour/dropdown/touch"]');
-        window.jQuery(dropdown)
-          .on('show.bs.dropdown', () => window.__dropdownEvents.push('show'))
-          .on('shown.bs.dropdown', () => window.__dropdownEvents.push('shown'))
-          .on('hide.bs.dropdown', () => window.__dropdownEvents.push('hide'))
-          .on('hidden.bs.dropdown', () => window.__dropdownEvents.push('hidden'));
+        const events = ['show', 'shown', 'hide', 'hidden'];
+        if (${target.generation} === 3) {
+          for (const event of events) {
+            window.jQuery(dropdown).on(event + '.bs.dropdown', () => window.__dropdownEvents.push(event));
+          }
+        } else {
+          for (const event of events) {
+            dropdown.addEventListener(event + '.bs.dropdown', () => window.__dropdownEvents.push(event));
+          }
+        }
       })()`);
       await tap("behaviour/dropdown/toggle");
       let dropdown = await state("behaviour/dropdown/touch");
@@ -358,10 +372,10 @@ async function main() {
       assert.deepEqual(await evaluate("window.__dropdownEvents"), ["show", "shown", "hide", "hidden"]);
     });
 
-    test("GWT3-TOUCH-006 collapse reports one ordered transition each way", async () => {
+      test("006", "collapse reports one ordered transition each way", async () => {
       await tap("behaviour/collapse/toggle");
       await waitFor(
-        "document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in')",
+        "document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') || document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show')",
         "the collapse show transition",
       );
       let collapse = await state("behaviour/collapse/touch");
@@ -371,7 +385,7 @@ async function main() {
       assert.equal(toggle.clickCount, 1);
       await tap("behaviour/collapse/toggle");
       await waitFor(
-        "!document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('collapsing')",
+        "!document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('collapsing')",
         "the collapse hide transition",
       );
       collapse = await state("behaviour/collapse/touch");
@@ -381,7 +395,7 @@ async function main() {
       assert.equal(toggle.clickCount, 2);
     });
 
-    test("GWT3-TOUCH-007 loading state reacts to one touch", async () => {
+      test("007", "loading state reacts to one touch", async () => {
       await tap("behaviour/button/loading-touch");
       await waitFor(
         "document.querySelector('[data-testid=\"behaviour/button/loading-touch\"]').textContent.trim() === 'Saving...'",
@@ -393,21 +407,31 @@ async function main() {
       assert.equal(result.clickCount, 1);
     });
 
-    let failures = 0;
-    for (const current of tests) {
-      await freshPage(current.name);
-      try {
-        await current.body();
-        if (diagnostics.length) throw new Error(diagnostics.join("\n"));
-        console.log(`ok - ${current.name}`);
-      } catch (error) {
-        failures++;
-        console.error(`not ok - ${current.name}`);
-        console.error(error.stack || error);
-        if (diagnostics.length) console.error(diagnostics.join("\n"));
-      }
+      return tests;
     }
-    console.log(`${tests.length - failures}/${tests.length} compiled GWT Bootstrap 3 touch tests passed`);
+
+    let total = 0;
+    let failures = 0;
+    for (const fixtureTarget of fixtureTargets) {
+      const fixtureUrl = `http://127.0.0.1:${appPort}${fixtureTarget.path}`;
+      const tests = testsFor(fixtureTarget);
+      for (const current of tests) {
+        total++;
+        await freshPage(fixtureUrl, current.name);
+        try {
+          await current.body();
+          if (diagnostics.length) throw new Error(diagnostics.join("\n"));
+          console.log(`ok - ${current.name}`);
+        } catch (error) {
+          failures++;
+          console.error(`not ok - ${current.name}`);
+          console.error(error.stack || error);
+          if (diagnostics.length) console.error(diagnostics.join("\n"));
+        }
+      }
+      console.log(`${tests.length - failures}/${tests.length} compiled ${fixtureTarget.name} touch tests passed`);
+    }
+    console.log(`${total - failures}/${total} compiled GWT mobile touch tests passed`);
     if (failures) process.exitCode = 1;
   } finally {
     cdp?.close();
