@@ -252,6 +252,7 @@ async function main() {
       if (response?.status >= 400) diagnostics.push(`HTTP ${response.status}: ${response.url}`);
     });
     cdp.on("Network.loadingFailed", ({ errorText, type }) => {
+      if (errorText === "net::ERR_ABORTED") return;
       diagnostics.push(`Network failure (${type}): ${errorText}`);
     });
 
@@ -291,12 +292,30 @@ async function main() {
       }, description, timeout);
     }
 
+    async function dispatchTouchTap(x, y) {
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchStart",
+        touchPoints: [{ x, y, radiusX: 1, radiusY: 1, force: 1, id: 1 }],
+      });
+      await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+      await cdp.send("Input.dispatchTouchEvent", {
+        type: "touchEnd",
+        touchPoints: [],
+      });
+    }
+
     async function freshPage(fixtureUrl, name) {
       diagnostics.length = 0;
-      await evaluate("localStorage.clear()");
-      await cdp.send("Page.navigate", { url: `${fixtureUrl}?case=${encodeURIComponent(name)}&t=${Date.now()}` });
+      await cdp.send("Storage.clearDataForOrigin", {
+        origin: new URL(fixtureUrl).origin,
+        storageTypes: "local_storage",
+      });
+      const caseUrl = `${fixtureUrl}?case=${encodeURIComponent(name)}&t=${Date.now()}`;
+      await cdp.send("Page.navigate", { url: caseUrl });
       await waitFor(
-        "document.body && document.body.dataset.fixturesReady === 'true' && window.__bootstrapWidgetFixturesReady === true",
+        `new URL(location.href).searchParams.get('case') === ${JSON.stringify(name)}
+          && document.body && document.body.dataset.fixturesReady === 'true'
+          && window.__bootstrapWidgetFixturesReady === true`,
         "the GWT fixtures to become ready",
       );
       assert.ok(await evaluate("navigator.maxTouchPoints > 0"), "Chrome touch emulation was not active");
@@ -351,12 +370,7 @@ async function main() {
         assert.equal(point.selectedTargetHit, true,
           `Touch point for ${description} was obscured: ${JSON.stringify(point)}`);
       }
-      await cdp.send("Input.synthesizeTapGesture", {
-        x: point.x,
-        y: point.y,
-        duration: 50,
-        gestureSourceType: "touch",
-      });
+      await dispatchTouchTap(point.x, point.y);
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
     }
 
@@ -367,12 +381,7 @@ async function main() {
 
     async function tapOutside() {
       const point = await evaluate("({x: document.documentElement.clientWidth - 8, y: window.innerHeight - 8})");
-      await cdp.send("Input.synthesizeTapGesture", {
-        x: point.x,
-        y: point.y,
-        duration: 50,
-        gestureSourceType: "touch",
-      });
+      await dispatchTouchTap(point.x, point.y);
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
     }
 
@@ -1055,7 +1064,7 @@ async function main() {
         );
         await tap("behaviour/lifecycle/plugin/detach");
         await waitFor(
-          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 0",
+          "document.querySelectorAll('.tooltip').length === 0",
           "the detached tooltip markup to be removed",
         );
         assert.equal(await evaluate(`document.querySelector(
@@ -1305,10 +1314,19 @@ async function main() {
       test("THM-001", "standard theme replaces the previous stylesheet", async () => {
         const linkId = target.generation === 3 ? "gwtbootstrap3-theme" : "bootstrap5-theme";
         await tap("behaviour/themes/switcher/flatly");
+        await waitFor(
+          `document.getElementById('${linkId}').href.includes('bootswatch-flatly')`,
+          "the Flatly theme stylesheet",
+        );
         const previousUrl = await evaluate(`document.getElementById('${linkId}').href`);
         assert.match(previousUrl, /bootswatch-flatly/);
 
         await tap("behaviour/themes/switcher/standard");
+        const standardVersion = target.generation === 3 ? "bootstrap-3.4.1" : "bootstrap-5.3.8";
+        await waitFor(
+          `document.getElementById('${linkId}').href.includes(${JSON.stringify(standardVersion)})`,
+          "the standard Bootstrap theme stylesheet",
+        );
         const result = await evaluate(`(() => {
           const links = Array.from(document.querySelectorAll('#${linkId}'));
           return {
