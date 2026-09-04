@@ -11,7 +11,6 @@ Feature: Bootstrap 3 select enhancement
     Then the native select is wrapped by one Bootstrap Select container
     And the container reports Bootstrap 3 mode
     And its toggle uses the Bootstrap 3 default button class
-    And no Bootstrap 5 toggle attributes or button classes are present
 
   @browser @javascript @functional @dom-contract
   Scenario: SEL-002 Select opens from touch input

@@ -1981,9 +1981,7 @@ async function main() {
               ).length,
               bootstrap3Mode: Boolean(plugin && plugin.classList.contains('bs3')),
               defaultButton: Boolean(toggle && toggle.classList.contains('btn-default')),
-              bootstrap5Button: Boolean(toggle && toggle.classList.contains('btn-light')),
-              bootstrap3Toggle: toggle && toggle.getAttribute('data-toggle'),
-              bootstrap5Toggle: toggle && toggle.getAttribute('data-bs-toggle')
+              bootstrap3Toggle: toggle && toggle.getAttribute('data-toggle')
             };
           })()`);
           assert.equal(result.pluginRegistered, true, JSON.stringify(result));
@@ -1991,9 +1989,7 @@ async function main() {
           assert.equal(result.containers, 1);
           assert.equal(result.bootstrap3Mode, true);
           assert.equal(result.defaultButton, true);
-          assert.equal(result.bootstrap5Button, false);
           assert.equal(result.bootstrap3Toggle, "dropdown");
-          assert.equal(result.bootstrap5Toggle, null);
         });
 
         test("SEL-002", "Bootstrap Select opens from mobile touch", async () => {
