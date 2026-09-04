@@ -40,6 +40,7 @@ TRACKS = {
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java",
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java",
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java",
+            "${project.build.directory}/generated-sources/teavm-modules",
         },
         "source_roots": (
             ROOT / "gwt/gwt-bootstrap5/src/main/java",
@@ -56,8 +57,12 @@ TRACKS = {
             "io/instanto/bootstrap5/extras/markdown/client/MarkdownClientBundle.java",
             "io/instanto/bootstrap5/extras/markdown/client/MarkdownEntryPoint.java",
             "io/instanto/bootstrap5/extras/markdown/client/ui/TextAreaSelection.java",
-            "io/instanto/bootstrap5/extras/richtext/**",
-            "io/instanto/bootstrap5/extras/slider/**",
+            "io/instanto/bootstrap5/extras/richtext/client/RichTextClientBundle.java",
+            "io/instanto/bootstrap5/extras/richtext/client/RichTextEntryPoint.java",
+            "io/instanto/bootstrap5/extras/richtext/client/ui/QuillJs.java",
+            "io/instanto/bootstrap5/extras/slider/client/SliderClientBundle.java",
+            "io/instanto/bootstrap5/extras/slider/client/SliderEntryPoint.java",
+            "io/instanto/bootstrap5/extras/slider/client/ui/SliderJs.java",
         },
         "replacements": {
             "io/instanto/bootstrap5/client/TeaVmBootstrap5EntryPoint.java",
