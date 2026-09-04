@@ -173,13 +173,13 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
 
     /** Wraps the selection, or inserts a placeholder when nothing is selected. */
     private void wrapSelection(final String before, final String after, final String placeholder) {
-        final TextAreaElement element = textArea.getElement().cast();
-        final int start = selectionStart(element);
-        final int end = selectionEnd(element);
+        final TextAreaElement element = TextAreaElement.as(textArea.getElement());
+        final int start = TextAreaSelection.start(element);
+        final int end = TextAreaSelection.end(element);
         final String value = getValue();
         final String selected = start == end ? placeholder : value.substring(start, end);
         setValue(value.substring(0, start) + before + selected + after + value.substring(end), true);
-        focusAfterInsert(element, start + before.length(), selected.length());
+        TextAreaSelection.focusAndSelect(element, start + before.length(), selected.length());
     }
 
     /** Shows the textarea and the syntax buttons, with an eye to go back to reading. */
@@ -313,16 +313,6 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
         return idMixin.getId();
     }
 
-    private static native int selectionStart(TextAreaElement element) /*-{
-        return element.selectionStart | 0;
-    }-*/;
 
-    private static native int selectionEnd(TextAreaElement element) /*-{
-        return element.selectionEnd | 0;
-    }-*/;
 
-    private static native void focusAfterInsert(TextAreaElement element, int start, int length) /*-{
-        element.focus();
-        element.setSelectionRange(start, start + length);
-    }-*/;
 }

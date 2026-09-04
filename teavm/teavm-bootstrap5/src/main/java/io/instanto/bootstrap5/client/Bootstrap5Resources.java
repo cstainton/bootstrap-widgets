@@ -73,6 +73,23 @@ public final class Bootstrap5Resources {
         link(ID_PREFIX + "library", base + LIBRARY);
     }
 
+    /**
+     * Injects a script once, by URL rather than by embedding it. GWT's ClientBundle
+     * inlines the vendored JavaScript into the compiled output; TeaVM has no generator to
+     * do that, and loading by URL keeps 74KB of parser and sanitiser out of the module.
+     * Returns immediately if a script with this id is already present.
+     */
+    public static void script(final String id, final String src) {
+        if (Document.get().getElementById(id) != null) {
+            return;
+        }
+        final Element script = Document.get().createElement("script");
+        script.setId(id);
+        script.setAttribute("src", src);
+        script.setAttribute("defer", "defer");
+        Document.get().getHead().appendChild(script);
+    }
+
     private static void link(final String id, final String href) {
         if (Document.get().getElementById(id) != null) {
             return;

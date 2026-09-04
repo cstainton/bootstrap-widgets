@@ -26,6 +26,8 @@ import com.google.gwt.user.client.ui.Widget;
 
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
+import io.instanto.bootstrap5.extras.markdown.client.MarkdownResources;
+import io.instanto.bootstrap5.extras.markdown.client.ui.MarkdownEditor;
 import io.instanto.bootstrap5.client.ui.BlockQuote;
 import io.instanto.bootstrap5.client.ui.ButtonToolBar;
 import io.instanto.bootstrap5.client.ui.Card;
@@ -150,6 +152,9 @@ public final class Bootstrap5ShowcaseApp {
 
     public static void main(final String[] args) {
         Bootstrap5Resources.setBase(CSS);
+        // The parser and sanitiser ship beside the compiled TeaVM module.
+        MarkdownResources.setBase("teavm5/js/");
+        MarkdownResources.ensureInjected();
         Themes.register(StandardThemes.all(CSS));
         Themes.register(BootswatchThemes.all(CSS));
         Themes.restore(StandardThemes.bootstrap(CSS));
@@ -291,6 +296,13 @@ public final class Bootstrap5ShowcaseApp {
                 "Form form = new Form();\nFieldSet fieldSet = new FieldSet();\n"
                 + "fieldSet.add(new Legend(\"...\"));\n"
                 + "new FormControlStatic(\"read-only text\");"));
+        column.add(panel("Markdown", markdown(),
+                "MarkdownEditor editor = new MarkdownEditor(source);\n"
+                + "String markdown = editor.getValue();   // as typed\n"
+                + "String html = editor.getHTML();        // rendered\n\n"
+                + "// The first extra to reach TeaVM. marked and DOMPurify load by\n"
+                + "// URL rather than being inlined by a ClientBundle, and the two\n"
+                + "// JSNI seams are re-implemented against @JSBody."));
         column.add(panel("Modals and dialogs", modals(),
                 "Modal modal = new Modal();\nmodal.show();\n\n"
                 + "// native replacements for window.alert/confirm/prompt,\n"
@@ -1098,6 +1110,24 @@ public final class Bootstrap5ShowcaseApp {
         fieldSet.add(readOnly);
         form.add(fieldSet);
         return form;
+    }
+
+    private static Widget markdown() {
+        final PanelBody body = new PanelBody();
+        body.add(new HTML("<p class='text-body-secondary'>The Markdown extra, compiled by"
+                + " TeaVM from the same sources the GWT build uses. The pencil switches"
+                + " between reading and editing.</p>"));
+
+        final MarkdownEditor editor = new MarkdownEditor("## Release notes\n\n"
+                + "The **first** extra to reach TeaVM.\n\n"
+                + "- Rich text keeps HTML\n"
+                + "- This keeps Markdown, exactly as typed\n\n"
+                + "- [x] renders task lists\n"
+                + "- [ ] and tables\n\n"
+                + "| Backend | Markdown |\n| --- | --- |\n| GWT | yes |\n| TeaVM | yes |\n");
+        editor.setVisibleLines(10);
+        body.add(editor);
+        return body;
     }
 
     private static Panel panel(final String title, final Widget example, final String code) {

@@ -62,6 +62,7 @@
               <sources>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java</source>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java</source>
+                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</source>
               </sources>
             </configuration>
           </execution>
@@ -77,6 +78,22 @@
             <exclude>io/instanto/bootstrap5/client/ui/base/BootstrapEventBridge.java</exclude>
             <exclude>io/instanto/bootstrap5/client/ui/base/BootstrapComponent.java</exclude>
             <exclude>io/instanto/bootstrap5/client/ui/base/InputEvents.java</exclude>
+            <!--
+              Only the Markdown extra crosses to TeaVM so far; the others still reach
+              the browser through JSNI and a ClientBundle.
+            -->
+            <exclude>io/instanto/bootstrap5/extras/datepicker/**</exclude>
+            <exclude>io/instanto/bootstrap5/extras/richtext/**</exclude>
+            <exclude>io/instanto/bootstrap5/extras/slider/**</exclude>
+            <!--
+              GWT-only pieces of the Markdown extra: the ClientBundle that inlines the
+              vendored scripts and the entry point that injects them. MarkdownResources
+              loads them by URL instead.
+            -->
+            <exclude>io/instanto/bootstrap5/extras/markdown/client/MarkdownClientBundle.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/markdown/client/MarkdownEntryPoint.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/markdown/client/Markdown.java</exclude>
+            <exclude>io/instanto/bootstrap5/extras/markdown/client/ui/TextAreaSelection.java</exclude>
           </excludes>
         </configuration>
       </plugin>
@@ -106,6 +123,36 @@
                   </files>
                 </requireFilesExist>
               </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!--
+        The Markdown extra's scripts are inlined into the GWT output by a ClientBundle,
+        so they are never emitted as files. TeaVM loads them by URL instead, which means
+        shipping them beside the compiled module.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-markdown-scripts</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/teavm/js</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java/io/instanto/bootstrap5/extras/markdown/client/resource/js</directory>
+                  <includes>
+                    <include>*.js</include>
+                  </includes>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
