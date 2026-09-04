@@ -10,7 +10,10 @@ import org.gwtbootstrap3.client.ui.RadioButton;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.teavm.interop.Async;
+import org.teavm.interop.AsyncCallback;
 import org.teavm.jso.JSBody;
+import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.junit.AttachJavaScript;
 import org.teavm.junit.SkipJVM;
@@ -84,13 +87,14 @@ public class Bootstrap3ControlBehaviourTest {
     }
 
     @Test
-    public void nativeInputActivationUpdatesCheckboxButtonOnce() {
+    public void nativeLabelActivationUpdatesCheckboxButtonOnce() {
         CheckBoxButton button = new CheckBoxButton("One");
         int[] changes = {0};
         button.addValueChangeHandler(event -> changes[0]++);
         RootPanel.get().add(button);
         try {
-            clickInput(button.getElement().unwrap());
+            click(button.getElement().unwrap());
+            awaitDeferredCommands();
             assertTrue(button.getValue());
             assertEquals(1, changes[0]);
         } finally {
@@ -137,6 +141,10 @@ public class Bootstrap3ControlBehaviourTest {
     @JSBody(params = "element", script = "element.click();")
     private static native void click(HTMLElement element);
 
-    @JSBody(params = "element", script = "element.querySelector('input').click();")
-    private static native void clickInput(HTMLElement element);
+    @Async
+    private static native void awaitDeferredCommands();
+
+    private static void awaitDeferredCommands(final AsyncCallback<Void> callback) {
+        Window.setTimeout(() -> callback.complete(null), 0);
+    }
 }
