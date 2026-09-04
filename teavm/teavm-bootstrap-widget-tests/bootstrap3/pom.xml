@@ -20,6 +20,30 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>bootstrap-widget-specifications</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>cucumber-tea</artifactId>
+      <version>${cucumber-tea.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>cucumber-tea-codegen</artifactId>
+      <version>${cucumber-tea.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>mockatcha-dom</artifactId>
+      <version>${mockatcha.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>

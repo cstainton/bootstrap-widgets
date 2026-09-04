@@ -124,11 +124,9 @@ visible failure and the specifications become worth maintaining. If they are not
 please say so plainly and we will treat them as documentation and stop implying
 otherwise.
 
-A related question: `cucumber-tea-codegen` has `TargetTags` with `BROWSER`, `WORKER`
-and `PORTABLE` runtimes. We have been hand-maintaining our own target tags
-(`@gwt3`, `@teavm3`, `@gwt5`, `@teavm5`) and, until recently, a script that policed
-them. If `TargetTags` is the intended mechanism for target applicability, we would
-rather adopt it than keep our own.
+Our own target tags (`@gwt3`, `@teavm3`, `@gwt5`, `@teavm5`) record which compiler
+targets a scenario covers. They are ours, and we are not asking for anything from
+the framework to support them.
 
 ## What this repository will provide
 

@@ -83,6 +83,8 @@
     <teavm.version>0.15.0</teavm.version>
     <junit.version>4.13.2</junit.version>
     <teavm.junit.js.runner>browser-chrome</teavm.junit.js.runner>
+    <cucumber-tea.version>0.1.0-SNAPSHOT</cucumber-tea.version>
+    <mockatcha.version>0.1.0-SNAPSHOT</mockatcha.version>
   </properties>
   <build>
     <plugins>
