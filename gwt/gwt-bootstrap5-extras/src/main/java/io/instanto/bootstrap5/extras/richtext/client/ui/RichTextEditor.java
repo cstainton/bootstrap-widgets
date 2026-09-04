@@ -29,7 +29,6 @@ import io.instanto.bootstrap5.client.ui.base.HasId;
 import io.instanto.bootstrap5.client.ui.base.mixin.IdMixin;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -75,16 +74,9 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
 
     private boolean enabled = true;
 
-    private static final int READY_TIMEOUT_MILLIS = 5000;
-
-    private static final int READY_POLL_MILLIS = 50;
-
-    private Timer readyTimer;
-
     private JavaScriptObject quill;
 
     public RichTextEditor() {
-        QuillJs.ensureResources();
         addStyleName("gbm-richtext");
         add(surface);
     }
@@ -126,12 +118,27 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
      * attempt succeeds there; the TeaVM backend fetches it by URL, and an editor attached
      * during startup would otherwise stay an empty div.
      */
+    /**
+     * Builds the widget once Quill is usable.
+     *
+     * <p>Which backend this is no longer matters here. GWT compiles the library into the
+     * module, so the action runs immediately; TeaVM fetches it and runs the action when
+     * it arrives. Either way this asks the module instead of polling for a global to
+     * appear, and a module that cannot load reports it rather than letting the widget
+     * wait out a timeout and give up in silence.</p>
+     */
     private void initialise() {
-        if (!QuillJs.isReady()) {
-            waitForQuill();
-            return;
-        }
-        stopWaiting();
+        QuillJs.whenReady(new Runnable() {
+            @Override
+            public void run() {
+                if (isAttached()) {
+                    build();
+                }
+            }
+        });
+    }
+
+    private void build() {
         quill = QuillJs.create(surface.getElement(), toolbarSpec(), placeholder);
         QuillJs.bindChange(quill, new QuillJs.ChangeHandler() {
             @Override
@@ -149,40 +156,8 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
         }
     }
 
-    private void waitForQuill() {
-        if (readyTimer != null) {
-            return;
-        }
-        readyTimer = new Timer() {
-            private int waited;
-
-            @Override
-            public void run() {
-                waited += READY_POLL_MILLIS;
-                if (QuillJs.isReady()) {
-                    if (isAttached()) {
-                        initialise();
-                    } else {
-                        stopWaiting();
-                    }
-                } else if (waited >= READY_TIMEOUT_MILLIS) {
-                    stopWaiting();
-                }
-            }
-        };
-        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
-    }
-
-    private void stopWaiting() {
-        if (readyTimer != null) {
-            readyTimer.cancel();
-            readyTimer = null;
-        }
-    }
-
     @Override
     protected void onUnload() {
-        stopWaiting();
         quill = null;
         super.onUnload();
     }

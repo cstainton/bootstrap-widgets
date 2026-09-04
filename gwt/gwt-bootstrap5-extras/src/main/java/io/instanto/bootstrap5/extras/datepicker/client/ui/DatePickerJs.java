@@ -47,6 +47,24 @@ final class DatePickerJs {
     }-*/;
 
     /** Asks for the library; a no-op on GWT, where the entry point already injected it. */
+    /**
+     * Runs an action once the date picker is usable.
+     *
+     * <p>The GWT module injects the library as script text before the application runs,
+     * so by the time a widget attaches it is there. If it is not, waiting will not help
+     * -- nothing else is going to load it -- so this says so rather than failing later
+     * inside the library.</p>
+     */
+    static void whenReady(final Runnable action) {
+        ensureResources();
+        if (isReady()) {
+            action.run();
+        } else {
+            com.google.gwt.core.client.GWT.log(
+                    "DatePicker: the date picker is not on the page; the module did not load it");
+        }
+    }
+
     static void ensureResources() {
     }
 

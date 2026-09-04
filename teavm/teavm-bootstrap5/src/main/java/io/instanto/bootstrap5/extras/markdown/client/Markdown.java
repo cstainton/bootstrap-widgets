@@ -36,6 +36,17 @@ public final class Markdown {
     }
 
     /** Fetches the parser and sanitiser, once. */
+    /**
+     * Runs an action once the parser is usable.
+     *
+     * <p>The module fetches the library by URL, so this is genuinely asynchronous. The
+     * presence test is passed in so a page that already loaded the parser itself is
+     * recognised and nothing is fetched at all.</p>
+     */
+    public static void whenReady(final Runnable action) {
+        MarkdownResources.whenReady(Markdown::isReady, action);
+    }
+
     public static void ensureResources() {
         MarkdownResources.ensureInjected();
     }

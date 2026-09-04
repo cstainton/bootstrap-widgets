@@ -50,6 +50,17 @@ final class QuillJs {
 
 
     /** Fetches the library this seam wraps, once. */
+    /**
+     * Runs an action once Quill is usable.
+     *
+     * <p>The module fetches the library by URL, so this is genuinely asynchronous. The
+     * presence test is passed in so a page that already loaded Quill itself is
+     * recognised and nothing is fetched at all.</p>
+     */
+    static void whenReady(final Runnable action) {
+        RichTextResources.whenReady(QuillJs::isReady, action);
+    }
+
     static void ensureResources() {
         RichTextResources.ensureInjected();
     }

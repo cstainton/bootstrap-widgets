@@ -86,7 +86,6 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
     private boolean helpVisible = true;
 
     public MarkdownEditor() {
-        Markdown.ensureResources();
         addStyleName("gbm-markdown-editor");
 
         toolbar.addStyleName("d-flex flex-wrap align-items-center gap-2 mb-2");

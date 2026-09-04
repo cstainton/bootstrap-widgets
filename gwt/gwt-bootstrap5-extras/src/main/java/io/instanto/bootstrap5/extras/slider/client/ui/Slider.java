@@ -29,7 +29,6 @@ import io.instanto.bootstrap5.client.ui.base.HasId;
 import io.instanto.bootstrap5.client.ui.base.mixin.IdMixin;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -71,16 +70,12 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
 
     private boolean enabled = true;
 
-    private static final int READY_TIMEOUT_MILLIS = 5000;
 
-    private static final int READY_POLL_MILLIS = 50;
 
-    private Timer readyTimer;
 
     private JavaScriptObject slider;
 
     public Slider() {
-        SliderJs.ensureResources();
         addStyleName("gbm-slider");
         getElement().getStyle().setProperty("margin", "1.5rem 0.5rem");
     }
@@ -171,19 +166,26 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     }
 
     /**
-     * Builds the slider, waiting for noUiSlider if it has not arrived yet.
+     * Builds the slider once noUiSlider is usable.
      *
-     * <p>The GWT module injects the library as inline script text before the application
-     * runs, so it is always ready and the first attempt succeeds. The TeaVM backend fetches
-     * it by URL, which is asynchronous, and a slider attached during startup would
-     * otherwise stay an empty div.</p>
+     * <p>Which backend this is does not matter here any more. GWT compiles the library
+     * into the module, so the action runs immediately; TeaVM fetches it by URL and runs
+     * the action when it arrives. Either way the widget asks the module rather than
+     * polling for a global to appear, and a module that fails to load reports it instead
+     * of letting the widget wait out a timeout and give up silently.</p>
      */
     private void initialise() {
-        if (!SliderJs.isReady()) {
-            waitForLibrary();
-            return;
-        }
-        stopWaiting();
+        SliderJs.whenReady(new Runnable() {
+            @Override
+            public void run() {
+                if (isAttached()) {
+                    build();
+                }
+            }
+        });
+    }
+
+    private void build() {
         slider = SliderJs.create(getElement(), min, max, step, start, end, range, tooltips, pips);
         SliderJs.bindChange(slider, new SliderJs.UpdateHandler() {
             @Override
@@ -196,40 +198,8 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
         }
     }
 
-    private void waitForLibrary() {
-        if (readyTimer != null) {
-            return;
-        }
-        readyTimer = new Timer() {
-            private int waited;
-
-            @Override
-            public void run() {
-                waited += READY_POLL_MILLIS;
-                if (SliderJs.isReady()) {
-                    if (isAttached()) {
-                        initialise();
-                    } else {
-                        stopWaiting();
-                    }
-                } else if (waited >= READY_TIMEOUT_MILLIS) {
-                    stopWaiting();
-                }
-            }
-        };
-        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
-    }
-
-    private void stopWaiting() {
-        if (readyTimer != null) {
-            readyTimer.cancel();
-            readyTimer = null;
-        }
-    }
-
     @Override
     protected void onUnload() {
-        stopWaiting();
         if (slider != null) {
             SliderJs.destroy(slider);
             slider = null;

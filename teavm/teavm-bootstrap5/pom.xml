@@ -52,26 +52,27 @@
         .gwt.xml files rather than declared again. Nothing is imposed on an
         application: it constructs a widget and the widget asks for what it needs.
       -->
+      <!--
+        The TeaVM counterpart of the GWT module declarations: a class per module that
+        loads what it needs and reports when it is usable, plus the assets themselves.
+        Reads the same .gwt.xml and ClientBundle the GWT build reads.
+      -->
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>3.5.0</version>
+        <groupId>io.instanto</groupId>
+        <artifactId>teavm-module-maven-plugin</artifactId>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <id>generate-teavm-modules</id>
             <phase>generate-sources</phase>
             <goals>
-              <goal>exec</goal>
+              <goal>generate</goal>
             </goals>
             <configuration>
-              <executable>python3</executable>
-              <arguments>
-                <argument>${project.parent.parent.basedir}/scripts/generate-teavm-modules.py</argument>
-                <argument>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</argument>
-                <argument>${project.build.directory}/generated-sources/teavm-modules</argument>
-                <argument>${project.build.directory}/teavm</argument>
-                <argument>${project.build.outputDirectory}/META-INF/bootstrap5-assets</argument>
-              </arguments>
+              <sourceRoot>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java</sourceRoot>
+              <outputRoot>${project.build.directory}/generated-sources/teavm-modules</outputRoot>
+              <assetRoot>${project.build.directory}/teavm</assetRoot>
+              <packagedRoot>${project.build.outputDirectory}/META-INF/bootstrap5-assets</packagedRoot>
             </configuration>
           </execution>
         </executions>

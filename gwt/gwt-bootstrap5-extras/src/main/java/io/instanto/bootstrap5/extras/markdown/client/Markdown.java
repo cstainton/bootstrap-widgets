@@ -45,6 +45,24 @@ public final class Markdown {
      * Ensures the parser and sanitiser have been asked for. On GWT the module's entry
      * point has already injected them, so this does nothing.
      */
+    /**
+     * Runs an action once the parser is usable.
+     *
+     * <p>The GWT module injects the library as script text before the application runs,
+     * so by the time a widget attaches it is there. If it is not, waiting will not help
+     * -- nothing else is going to load it -- so this says so rather than failing later
+     * inside the library.</p>
+     */
+    public static void whenReady(final Runnable action) {
+        ensureResources();
+        if (isReady()) {
+            action.run();
+        } else {
+            com.google.gwt.core.client.GWT.log(
+                    "Markdown: the parser is not on the page; the module did not load it");
+        }
+    }
+
     public static void ensureResources() {
     }
 

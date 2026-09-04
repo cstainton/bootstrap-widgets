@@ -34,7 +34,6 @@ import io.instanto.bootstrap5.client.ui.base.HasResponsiveness;
 import io.instanto.bootstrap5.client.ui.constants.DeviceSize;
 import io.instanto.bootstrap5.client.ui.html.Div;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
@@ -74,12 +73,6 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
 
     private final String wrapperId;
 
-    private static final int READY_TIMEOUT_MILLIS = 5000;
-
-    private static final int READY_POLL_MILLIS = 50;
-
-    private Timer readyTimer;
-
     private JavaScriptObject picker;
 
     private String format;
@@ -91,7 +84,6 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
     private boolean showClose = true;
 
     public DatePicker() {
-        DatePickerJs.ensureResources();
         wrapperId = Document.get().createUniqueId();
         addStyleName("input-group");
         getElement().setId(wrapperId);
@@ -155,12 +147,28 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
      * backend fetches it by URL, and a picker attached during startup would otherwise
      * stay an inert input.
      */
+    /**
+     * Builds the widget once the date picker is usable.
+     *
+     * <p>Which backend this is no longer matters here. GWT compiles the library into the
+     * module, so the action runs immediately; TeaVM fetches it and runs the action when
+     * it arrives. Either way this asks the module instead of polling for a global to
+     * appear, and a module that cannot load reports it rather than letting the widget
+     * wait out a timeout and give up in silence.</p>
+     */
     private void initialise() {
-        if (!DatePickerJs.isReady()) {
-            waitForLibrary();
-            return;
-        }
-        stopWaiting();        picker = DatePickerJs.create(getElement(), format, sideBySide, showClear, showClose);
+        DatePickerJs.whenReady(new Runnable() {
+            @Override
+            public void run() {
+                if (isAttached()) {
+                    build();
+                }
+            }
+        });
+    }
+
+    private void build() {
+        picker = DatePickerJs.create(getElement(), format, sideBySide, showClear, showClose);
         DatePickerJs.bindChange(picker, new DatePickerJs.ChangeHandler() {
             @Override
             public void onDateChange(final double millis) {
@@ -169,40 +177,8 @@ public class DatePicker extends Div implements HasEnabled, HasId, HasName, HasPl
         });
     }
 
-    private void waitForLibrary() {
-        if (readyTimer != null) {
-            return;
-        }
-        readyTimer = new Timer() {
-            private int waited;
-
-            @Override
-            public void run() {
-                waited += READY_POLL_MILLIS;
-                if (DatePickerJs.isReady()) {
-                    if (isAttached()) {
-                        initialise();
-                    } else {
-                        stopWaiting();
-                    }
-                } else if (waited >= READY_TIMEOUT_MILLIS) {
-                    stopWaiting();
-                }
-            }
-        };
-        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
-    }
-
-    private void stopWaiting() {
-        if (readyTimer != null) {
-            readyTimer.cancel();
-            readyTimer = null;
-        }
-    }
-
     @Override
     protected void onUnload() {
-        stopWaiting();
         if (picker != null) {
             DatePickerJs.dispose(picker);
             picker = null;

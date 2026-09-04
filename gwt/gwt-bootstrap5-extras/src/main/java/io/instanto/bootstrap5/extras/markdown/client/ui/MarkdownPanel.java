@@ -25,8 +25,6 @@
  */
 package io.instanto.bootstrap5.extras.markdown.client.ui;
 
-import com.google.gwt.user.client.Timer;
-
 import io.instanto.bootstrap5.client.ui.html.Div;
 import io.instanto.bootstrap5.extras.markdown.client.Markdown;
 
@@ -39,17 +37,9 @@ import io.instanto.bootstrap5.extras.markdown.client.Markdown;
  */
 public class MarkdownPanel extends Div {
 
-    /** How long to keep waiting for the parser before giving up and showing the source. */
-    private static final int READY_TIMEOUT_MILLIS = 5000;
-
-    private static final int READY_POLL_MILLIS = 50;
-
     private String markdown = "";
 
-    private Timer readyTimer;
-
     public MarkdownPanel() {
-        Markdown.ensureResources();
         addStyleName("gbm-markdown");
     }
 
@@ -72,43 +62,21 @@ public class MarkdownPanel extends Div {
      * render its own source once and keep it. Rendering again when they land costs
      * nothing on GWT, where the first attempt already succeeds.</p>
      */
+    /**
+     * Renders the markdown once the parser is usable.
+     *
+     * <p>The source is shown meanwhile, which is the honest fallback and stays readable
+     * if the parser never arrives. On GWT it is replaced in the same turn, because the
+     * module compiles the parser in and the action runs immediately.</p>
+     */
     private void render() {
-        if (Markdown.isReady()) {
-            stopWaiting();
-            getElement().setInnerHTML(Markdown.toHtml(markdown));
-            return;
-        }
-        // Show the source meanwhile; it is the honest fallback and stays readable.
         getElement().setInnerText(markdown);
-        waitForParser();
-    }
-
-    private void waitForParser() {
-        if (readyTimer != null) {
-            return;
-        }
-        readyTimer = new Timer() {
-            private int waited;
-
+        Markdown.whenReady(new Runnable() {
             @Override
             public void run() {
-                waited += READY_POLL_MILLIS;
-                if (Markdown.isReady()) {
-                    stopWaiting();
-                    getElement().setInnerHTML(Markdown.toHtml(markdown));
-                } else if (waited >= READY_TIMEOUT_MILLIS) {
-                    stopWaiting();
-                }
+                getElement().setInnerHTML(Markdown.toHtml(markdown));
             }
-        };
-        readyTimer.scheduleRepeating(READY_POLL_MILLIS);
-    }
-
-    private void stopWaiting() {
-        if (readyTimer != null) {
-            readyTimer.cancel();
-            readyTimer = null;
-        }
+        });
     }
 
     /** The Markdown source, as given. */
