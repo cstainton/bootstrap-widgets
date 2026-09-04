@@ -797,6 +797,183 @@ async function main() {
       assert.equal(toggle.clickCount, 2);
     });
 
+      test("TAB-001", "touch activation selects one tab and its associated pane", async () => {
+        await tap("behaviour/tabs/basic/second-tab");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/tabs/basic/second-pane"]')
+            .classList.contains('active')`,
+          "the second basic tab pane to become active",
+        );
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/tabs/basic"]');
+          const tabs = Array.from(fixture.querySelectorAll('[role="tab"]'));
+          const panes = Array.from(fixture.querySelectorAll('[role="tabpanel"], .tab-pane'));
+          const active = (tab) => tab.classList.contains('active')
+            || tab.parentElement.classList.contains('active');
+          return {
+            activeTabs: tabs.filter(active).map((tab) => tab.dataset.testid),
+            activePanes: panes.filter((pane) => pane.classList.contains('active'))
+              .map((pane) => pane.dataset.testid),
+            visiblePanes: panes.filter((pane) => getComputedStyle(pane).display !== 'none')
+              .map((pane) => pane.dataset.testid),
+            firstSelected: tabs[0].getAttribute('aria-selected'),
+            secondSelected: tabs[1].getAttribute('aria-selected')
+          };
+        })()`);
+        assert.deepEqual(result.activeTabs, ["behaviour/tabs/basic/second-tab"]);
+        assert.deepEqual(result.activePanes, ["behaviour/tabs/basic/second-pane"]);
+        assert.deepEqual(result.visiblePanes, ["behaviour/tabs/basic/second-pane"]);
+        assert.equal(result.firstSelected, "false");
+        assert.equal(result.secondSelected, "true");
+      });
+
+      test("TAB-002", "disabled tab cannot change selection or emit transition events", async () => {
+        await evaluate(`(() => {
+          window.__tabEvents = [];
+          const fixture = document.querySelector('[data-testid="behaviour/tabs/disabled"]');
+          const tabs = fixture.querySelectorAll('[role="tab"]');
+          const names = ['hide', 'show', 'hidden', 'shown'];
+          for (const tab of tabs) {
+            for (const name of names) {
+              if (${target.generation} === 3) {
+                window.jQuery(tab).on(name + '.bs.tab.fixture',
+                  () => window.__tabEvents.push(name));
+              } else {
+                tab.addEventListener(name + '.bs.tab', () => window.__tabEvents.push(name));
+              }
+            }
+          }
+        })()`);
+        // Bootstrap 5 removes the disabled link from pointer hit-testing. A real
+        // touch therefore lands on its parent and must remain inert.
+        await tap("behaviour/tabs/disabled/third-tab", target.generation === 5);
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/tabs/disabled"]');
+          const first = fixture.querySelector('[data-testid="behaviour/tabs/disabled/first-tab"]');
+          const firstPane = fixture.querySelector(
+            '[data-testid="behaviour/tabs/disabled/first-pane"]'
+          );
+          return {
+            firstActive: first.classList.contains('active')
+              || first.parentElement.classList.contains('active'),
+            paneActive: firstPane.classList.contains('active'),
+            paneVisible: getComputedStyle(firstPane).display !== 'none',
+            widgetEvents: fixture.dataset.eventOrder,
+            nativeEvents: window.__tabEvents
+          };
+        })()`);
+        assert.equal(result.firstActive, true);
+        assert.equal(result.paneActive, true);
+        assert.equal(result.paneVisible, true);
+        assert.equal(result.widgetEvents, "");
+        assert.deepEqual(result.nativeEvents, []);
+      });
+
+      test("TAB-003", "programmatic selection matches the native tab transition contract", async () => {
+        await evaluate(`(() => {
+          window.__tabEvents = [];
+          const fixture = document.querySelector('[data-testid="behaviour/tabs/programmatic"]');
+          const tabs = fixture.querySelectorAll('[role="tab"]');
+          const names = ['hide', 'show', 'hidden', 'shown'];
+          for (const tab of tabs) {
+            for (const name of names) {
+              if (${target.generation} === 3) {
+                window.jQuery(tab).on(name + '.bs.tab.fixture',
+                  () => window.__tabEvents.push(name));
+              } else {
+                tab.addEventListener(name + '.bs.tab', () => window.__tabEvents.push(name));
+              }
+            }
+          }
+        })()`);
+        await tap("behaviour/tabs/programmatic/show-second");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/tabs/programmatic/second-pane"]')
+            .classList.contains('active')`,
+          "the programmatically selected tab pane",
+        );
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/tabs/programmatic"]');
+          const second = fixture.querySelector(
+            '[data-testid="behaviour/tabs/programmatic/second-tab"]'
+          );
+          return {
+            active: second.classList.contains('active')
+              || second.parentElement.classList.contains('active'),
+            nativeEvents: window.__tabEvents,
+            widgetEvents: fixture.dataset.eventOrder
+          };
+        })()`);
+        assert.equal(result.active, true);
+        assert.deepEqual(result.nativeEvents, ["hide", "show", "hidden", "shown"]);
+        assert.equal(result.widgetEvents, "show,shown");
+      });
+
+      test("TAB-004", "fading panes finish with one visible active pane", async () => {
+        await tap("behaviour/tabs/fade/second-tab");
+        await waitFor(
+          `(() => {
+            const pane = document.querySelector('[data-testid="behaviour/tabs/fade/second-pane"]');
+            return pane.classList.contains('active')
+              && (pane.classList.contains('in') || pane.classList.contains('show'));
+          })()`,
+          "the second fading tab pane transition",
+        );
+        const result = await evaluate(`(() => {
+          const first = document.querySelector('[data-testid="behaviour/tabs/fade/first-pane"]');
+          const second = document.querySelector('[data-testid="behaviour/tabs/fade/second-pane"]');
+          const visible = (pane) => pane.classList.contains('in') || pane.classList.contains('show');
+          return {
+            firstActive: first.classList.contains('active'),
+            firstVisible: visible(first),
+            secondActive: second.classList.contains('active'),
+            secondVisible: visible(second),
+            secondFades: second.classList.contains('fade')
+          };
+        })()`);
+        assert.equal(result.firstActive, false);
+        assert.equal(result.firstVisible, false);
+        assert.equal(result.secondActive, true);
+        assert.equal(result.secondVisible, true);
+        assert.equal(result.secondFades, true);
+      });
+
+      test("TAB-005", "positioned tab sets retain local pane targets", async () => {
+        for (const position of ["left", "right", "below"]) {
+          await tap(`behaviour/tabs/positions/${position}/second-tab`);
+          await waitFor(
+            `document.querySelector('[data-testid="behaviour/tabs/positions/${position}/second-pane"]')
+              .classList.contains('active')`,
+            `the ${position} second tab pane`,
+          );
+        }
+        const result = await evaluate(`(() => {
+          const positions = ['left', 'right', 'below'];
+          return positions.map((position) => {
+            const fixture = document.querySelector(
+              '[data-testid="behaviour/tabs/positions/' + position + '"]'
+            );
+            const tab = fixture.querySelector(
+              '[data-testid="behaviour/tabs/positions/' + position + '/second-tab"]'
+            );
+            const pane = fixture.querySelector(
+              '[data-testid="behaviour/tabs/positions/' + position + '/second-pane"]'
+            );
+            const target = tab.getAttribute('data-target')
+              || tab.getAttribute('data-bs-target') || tab.getAttribute('href');
+            return {
+              position,
+              paneActive: pane.classList.contains('active'),
+              targetIsLocal: fixture.querySelector(target) === pane
+            };
+          });
+        })()`);
+        for (const item of result) {
+          assert.equal(item.paneActive, true, JSON.stringify(item));
+          assert.equal(item.targetIsLocal, true, JSON.stringify(item));
+        }
+      });
+
       test("BTN-007", "loading state starts and restores after one touch", async () => {
         await tap("behaviour/button/loading");
         await waitFor(

@@ -73,6 +73,8 @@ public class TabListItem extends AnchorListItem implements HasDataTarget {
     public TabListItem(final String text) {
         super(text);
         setDataToggle(Toggle.TAB);
+        anchor.getElement().setAttribute("role", "tab");
+        updateAriaSelected();
     }
 
     public TabListItem(final String text, final IconType iconType) {
@@ -103,11 +105,8 @@ public class TabListItem extends AnchorListItem implements HasDataTarget {
      * @param fireEvents true=fire show/hide events, false=don't fire show/hide events
      */
     public void showTab(final boolean fireEvents) {
+        // The plugin event bridge supplies the canonical show event.
         showTab(anchor.getElement());
-
-        if (fireEvents) {
-            fireEvent(new TabShowEvent(this, null));
-        }
     }
 
     /**
@@ -173,6 +172,7 @@ public class TabListItem extends AnchorListItem implements HasDataTarget {
     @Override
     public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
+        anchor.getElement().setAttribute("aria-disabled", enabled ? "false" : "true");
 
         // On enable/disable we need to add/remove the data toggle for it to work properly
         if (enabled) {
@@ -216,7 +216,22 @@ public class TabListItem extends AnchorListItem implements HasDataTarget {
      * @see org.gwtbootstrap3.client.shared.event.ShowEvent
      */
     protected void onShow(final Event evt) {
+        if (evt != null && evt.getRelatedEventTarget() != null) {
+            Element.as(evt.getRelatedEventTarget()).setAttribute("aria-selected", "false");
+        }
+        anchor.getElement().setAttribute("aria-selected", "true");
         fireEvent(new TabShowEvent(this, evt));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void setActive(final boolean active) {
+        super.setActive(active);
+        updateAriaSelected();
+    }
+
+    private void updateAriaSelected() {
+        anchor.getElement().setAttribute("aria-selected", isActive() ? "true" : "false");
     }
 
     /**

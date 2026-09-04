@@ -34,10 +34,10 @@ The first executable tranche is now in the repository:
   exports. The reviewed P0 corpus contains 61 scenarios with stable IDs,
   fixture IDs, Bootstrap 3 showcase references and a four-target matrix.
 - Phase 2 has an initial rendered Chromium tranche for both compiled GWT
-  generations. Fifty-eight mobile-touch tests execute 33 canonical scenarios:
+  generations. Sixty-eight mobile-touch tests execute 38 canonical scenarios:
   BTN-001 through BTN-009, BGR-001 through BGR-005, DRP-001 through DRP-007,
-  FRM-001 through FRM-009 and COL-001 through COL-003. The same P0 feature text
-  is not yet Cucumber Tea executable.
+  FRM-001 through FRM-009, COL-001 through COL-003 and TAB-001 through TAB-005.
+  The same P0 feature text is not yet Cucumber Tea executable.
 - Phase 3 is partial. Dedicated Bootstrap 3 and Bootstrap 5 GWT fixture
   applications expose those canonical fixture IDs and readiness markers;
   equivalent TeaVM fixture hosts and integration into all four narrative
@@ -56,7 +56,7 @@ The first executable tranche is now in the repository:
 The current Maven matrix executes 292 tests: 5 processor contracts, 5 JVM
 reference contracts, 4 GWT browser reference contracts, 9 TeaVM compatibility
 contracts, 128 Bootstrap 3 TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI
-additionally executes 58 compiled-GWT mobile-touch tests. Phase 5, generated
+additionally executes 68 compiled-GWT mobile-touch tests. Phase 5, generated
 Cucumber Tea glue, the remaining Phase 3/4/6 work, the expanded behaviour
 matrix, pinned Chrome for Testing, structural snapshots and accessibility
 gating remain open.
@@ -66,7 +66,7 @@ Current P0 rendered-browser coverage follows the priorities below:
 | Area | Executable against compiled GWT 3 and 5 | Highest-priority gaps |
 | --- | --- | --- |
 | Controls | All nine button, five button-group and nine form scenarios, including labels, focus, values, validation, selection and cancelled submission | Input-group composition and SuggestBox interaction |
-| Bootstrap JavaScript | All seven dropdown scenarios and ordered collapse open/close events | Accordion/detach, tabs and overlays |
+| Bootstrap JavaScript | All seven dropdown scenarios, ordered collapse open/close events and all five tab scenarios | Accordion/detach and overlays |
 | Lifecycle/resources | Fixture startup, local assets, browser exceptions and failed network requests | Detach/remount cleanup, missing bindings, source maps and theme replacement/persistence |
 
 ## Decisions

@@ -13,6 +13,9 @@ import io.instanto.bootstrap5.client.ui.FormGroup;
 import io.instanto.bootstrap5.client.ui.FormLabel;
 import io.instanto.bootstrap5.client.ui.HelpBlock;
 import io.instanto.bootstrap5.client.ui.ListBox;
+import io.instanto.bootstrap5.client.ui.TabListItem;
+import io.instanto.bootstrap5.client.ui.TabPane;
+import io.instanto.bootstrap5.client.ui.TabPanel;
 import io.instanto.bootstrap5.client.ui.Radio;
 import io.instanto.bootstrap5.client.ui.RadioButton;
 import io.instanto.bootstrap5.client.ui.TextBox;
@@ -20,6 +23,7 @@ import io.instanto.bootstrap5.client.ui.VerticalButtonGroup;
 import io.instanto.bootstrap5.client.ui.constants.ButtonGroupSize;
 import io.instanto.bootstrap5.client.ui.constants.ButtonSize;
 import io.instanto.bootstrap5.client.ui.constants.ButtonType;
+import io.instanto.bootstrap5.client.ui.constants.TabPosition;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
 import io.instanto.bootstrap5.client.ui.form.validator.BlankValidator;
 
@@ -60,6 +64,11 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         root.add(radioGroupFixture());
         root.add(formSubmissionFixture());
         root.add(collapseFixture());
+        root.add(basicTabsFixture());
+        root.add(disabledTabsFixture());
+        root.add(programmaticTabsFixture());
+        root.add(fadingTabsFixture());
+        root.add(positionedTabsFixture());
         root.add(loadingFixture());
         root.add(programmaticCheckboxFixture());
         root.add(buttonTypesFixture());
@@ -379,6 +388,98 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         container.add(target);
         container.add(collapse);
         return fixture("Collapse", container);
+    }
+
+    private Widget basicTabsFixture() {
+        return fixture("Basic tabs", createTabSet("basic-tabs", "behaviour/tabs/basic",
+                false, false, TabPosition.TOP, false));
+    }
+
+    private Widget disabledTabsFixture() {
+        return fixture("Disabled tabs", createTabSet("disabled-tabs",
+                "behaviour/tabs/disabled", true, false, TabPosition.TOP, false));
+    }
+
+    private Widget programmaticTabsFixture() {
+        return fixture("Programmatic tabs", createTabSet("programmatic-tabs",
+                "behaviour/tabs/programmatic", false, false, TabPosition.TOP, true));
+    }
+
+    private Widget fadingTabsFixture() {
+        return fixture("Fading tabs", createTabSet("fading-tabs", "behaviour/tabs/fade",
+                false, true, TabPosition.TOP, false));
+    }
+
+    private Widget positionedTabsFixture() {
+        FlowPanel positions = tagged(new FlowPanel(), "behaviour/tabs/positions");
+        positions.add(createTabSet("left-tabs", "behaviour/tabs/positions/left",
+                false, false, TabPosition.LEFT, false));
+        positions.add(createTabSet("right-tabs", "behaviour/tabs/positions/right",
+                false, false, TabPosition.RIGHT, false));
+        positions.add(createTabSet("below-tabs", "behaviour/tabs/positions/below",
+                false, false, TabPosition.BELOW, false));
+        return fixture("Positioned tabs", positions);
+    }
+
+    private Widget createTabSet(String prefix, String fixtureId, boolean disableThird,
+            boolean fade, TabPosition position, boolean programmatic) {
+        FlowPanel container = tagged(new FlowPanel(), fixtureId);
+        container.getElement().setAttribute("data-event-order", "");
+        TabPanel panel = new TabPanel();
+        panel.setTabPosition(position);
+
+        TabListItem first = createTab(prefix, fixtureId, "first", true, true);
+        TabListItem second = createTab(prefix, fixtureId, "second", false, true);
+        TabListItem third = createTab(prefix, fixtureId, "third", false, !disableThird);
+        panel.getTabs().add(first);
+        panel.getTabs().add(second);
+        panel.getTabs().add(third);
+        panel.getContent().add(createTabPane(prefix, fixtureId, "first", true, fade));
+        panel.getContent().add(createTabPane(prefix, fixtureId, "second", false, fade));
+        panel.getContent().add(createTabPane(prefix, fixtureId, "third", false, fade));
+        recordTabEvents(container, first, second, third);
+        container.add(panel);
+
+        if (programmatic) {
+            Button showSecond = tagged(new Button("Show second tab"),
+                    fixtureId + "/show-second");
+            showSecond.addClickHandler(event -> second.showTab());
+            container.add(showSecond);
+        }
+        return container;
+    }
+
+    private TabListItem createTab(String prefix, String fixtureId, String name,
+            boolean active, boolean enabled) {
+        TabListItem tab = new TabListItem(capitalize(name), prefix + "-" + name + "-pane");
+        tab.setActive(active);
+        tab.setEnabled(enabled);
+        Element control = tab.getElement().getFirstChildElement();
+        control.setAttribute("data-testid", fixtureId + "/" + name + "-tab");
+        control.setAttribute("aria-controls", prefix + "-" + name + "-pane");
+        return tab;
+    }
+
+    private TabPane createTabPane(String prefix, String fixtureId, String name,
+            boolean active, boolean fade) {
+        TabPane pane = tagged(new TabPane(), fixtureId + "/" + name + "-pane");
+        pane.getElement().setId(prefix + "-" + name + "-pane");
+        pane.setFade(fade);
+        pane.setActive(active);
+        pane.setIn(fade && active);
+        pane.add(new HTML("<p>" + capitalize(name) + " pane</p>"));
+        return pane;
+    }
+
+    private void recordTabEvents(FlowPanel state, TabListItem... tabs) {
+        for (TabListItem tab : tabs) {
+            tab.addShowHandler(event -> appendEvent(state.getElement(), "show"));
+            tab.addShownHandler(event -> appendEvent(state.getElement(), "shown"));
+        }
+    }
+
+    private String capitalize(String value) {
+        return Character.toUpperCase(value.charAt(0)) + value.substring(1);
     }
 
     private Widget loadingFixture() {
