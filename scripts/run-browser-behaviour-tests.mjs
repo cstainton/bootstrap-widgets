@@ -281,6 +281,11 @@ async function main() {
           rect: {left: rect.left, top: rect.top, width: rect.width, height: rect.height},
           viewport: {width: window.innerWidth, height: window.innerHeight},
           scroll: {x: window.scrollX, y: window.scrollY},
+          hitStack: document.elementsFromPoint(x, y).slice(0, 5).map((candidate) => ({
+            tag: candidate.tagName,
+            className: candidate.className,
+            testId: candidate.getAttribute && candidate.getAttribute('data-testid')
+          })),
           hitTestId: hit && hit.closest('[data-testid]')
             ? hit.closest('[data-testid]').getAttribute('data-testid') : null
         };
@@ -651,6 +656,11 @@ async function main() {
         assert.equal(composition.ownsMenu, true);
         assert.equal(composition.menuVisible, true);
 
+        if (target.generation === 3) {
+          // Bootstrap 3 inserts a mobile backdrop; the first touch dismisses it.
+          await tap("behaviour/button-group/nested-dropdown/sibling", true);
+          await new Promise((resolveWait) => setTimeout(resolveWait, 500));
+        }
         await tap("behaviour/button-group/nested-dropdown/sibling");
         const sibling = await state("behaviour/button-group/nested-dropdown/sibling");
         assert.equal(sibling.clickCount, 1);

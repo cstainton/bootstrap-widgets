@@ -19,6 +19,8 @@
  */
 package io.instanto.bootstrap5.client.ui;
 
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.Widget;
 
 public class DropDownItem extends ElementPanel {
@@ -69,5 +71,19 @@ public class DropDownItem extends ElementPanel {
         anchor.setStyleName("disabled", disabled);
         anchor.getElement().setAttribute("aria-disabled", disabled ? "true" : "false");
         anchor.getElement().setAttribute("tabindex", disabled ? "-1" : "0");
+    }
+
+    public boolean isDisabled() {
+        return "true".equals(anchor.getElement().getAttribute("aria-disabled"));
+    }
+
+    @Override
+    public void onBrowserEvent(Event event) {
+        if (Event.ONCLICK == DOM.eventGetType(event) && isDisabled()) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+        }
+        super.onBrowserEvent(event);
     }
 }

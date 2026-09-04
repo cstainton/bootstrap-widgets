@@ -545,6 +545,8 @@ public class Anchor extends ComplexWidget implements HasEnabled, HasClickHandler
             case Event.ONFOCUS:
             case Event.ONCLICK:
                 if (!isEnabled()) {
+                    event.preventDefault();
+                    event.stopPropagation();
                     return;
                 }
                 break;
