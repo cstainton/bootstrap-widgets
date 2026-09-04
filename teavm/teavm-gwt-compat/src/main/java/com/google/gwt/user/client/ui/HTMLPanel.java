@@ -59,6 +59,19 @@ public class HTMLPanel extends ComplexPanel {
         add(widget, container);
     }
 
+    /**
+     * Attaches a widget inside an element of this panel's markup.
+     *
+     * <p>ComplexPanel keeps this protected; HTMLPanel is where GWT makes it public,
+     * because a panel built from markup is the one case where the caller legitimately
+     * knows which element a widget belongs in. UiBinder needs it for a widget written
+     * inside an HTML element in a template.</p>
+     */
+    @Override
+    public void add(final Widget widget, final Element container) {
+        super.add(widget, container);
+    }
+
     public void addAndReplaceElement(final Widget widget, final Element toReplace) {
         final Element parent = toReplace.getParentElement();
         if (parent == null) {

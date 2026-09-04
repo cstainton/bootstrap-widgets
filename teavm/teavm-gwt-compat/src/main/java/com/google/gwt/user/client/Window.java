@@ -83,4 +83,12 @@ public final class Window {
             super(width, height);
         }
     }
+
+    /** Scrolls the page to an absolute position, as the showcase does on navigation. */
+    public static void scrollTo(final int left, final int top) {
+        scrollWindowTo(left, top);
+    }
+
+    @org.teavm.jso.JSBody(params = {"left", "top"}, script = "window.scrollTo(left, top);")
+    private static native void scrollWindowTo(int left, int top);
 }

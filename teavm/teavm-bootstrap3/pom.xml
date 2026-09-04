@@ -76,6 +76,8 @@
             <configuration>
               <sources>
                 <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java</source>
+                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3-themes/src/main/java</source>
+                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/java</source>
               </sources>
             </configuration>
           </execution>
@@ -86,7 +88,27 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
+          <!--
+            UiBinder for TeaVM, as on the Bootstrap 5 module. The showcase templates are
+            the point: forty-one of the fifty-five pages are ordinary widget code, and
+            this is what turns their .ui.xml into something both compilers can build.
+          -->
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.instanto</groupId>
+              <artifactId>widget-processor</artifactId>
+              <version>${project.version}</version>
+            </path>
+          </annotationProcessorPaths>
           <excludes>
+            <!--
+              The fourteen showcase pages backed by gwt-bootstrap3-extras, which is not
+              ported: it reaches the browser through 352 JSNI methods. ExtrasPages is
+              the seam; this module supplies its own, returning null for every token.
+            -->
+            <exclude>org/gwtbootstrap3/demo/client/ExtrasPages.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/**</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/css/validation/**</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/client/shared/js/JQuery.java</exclude>

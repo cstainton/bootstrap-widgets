@@ -142,6 +142,8 @@ public class UiBinderProcessor extends AbstractProcessor {
 
         final Emitter emitter = new Emitter(processingEnv, owner);
         emitter.readStyles(template.getDocumentElement());
+        emitter.readWith(template.getDocumentElement());
+        rejectUnsupported(template.getDocumentElement(), owner);
         final Node root = firstElement(template.getDocumentElement());
         if (root == null) {
             throw new Failure(simple + ".ui.xml has no widget in it", owner);
@@ -233,6 +235,33 @@ public class UiBinderProcessor extends AbstractProcessor {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
                 "no " + name + " found for " + simple + "; leaving its binder to GWT", owner);
         return null;
+    }
+
+    /**
+     * Rejects any ui: element this generator does not implement.
+     *
+     * <p>GWT's UiBinder has a wider vocabulary than this: ui:msg for internationalised
+     * text, ui:image and ui:data for bundled resources, ui:attribute. None appears in
+     * any template here, so none is implemented. A template that used one would
+     * otherwise be built as though the element were not there, and the difference would
+     * show only at runtime; naming it at compile time is the whole point.
+     */
+    private void rejectUnsupported(final Node root, final TypeElement owner) {
+        final NodeList children = root.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            final Node child = children.item(i);
+            if (child.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            if (Emitter.UI_NS.equals(child.getNamespaceURI())) {
+                final String name = child.getLocalName();
+                if (!"style".equals(name) && !"with".equals(name)) {
+                    throw new Failure("<ui:" + name
+                            + "> is not supported by this generator", owner);
+                }
+            }
+            rejectUnsupported(child, owner);
+        }
     }
 
     static Node firstElement(final Node parent) {

@@ -162,6 +162,64 @@ public class UiBinderProcessorTest {
                 "{style.absent} is not declared by this template's <ui:style>"));
     }
 
+    @Test
+    public void readsValuesThroughUiWithRatherThanEmittingTheExpression() throws Exception {
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                "<ui:UiBinder xmlns:ui=\"urn:ui:com.google.gwt.uibinder\" "
+                + "xmlns:w=\"urn:import:widgets\">\n"
+                + "  <ui:with field=\"tokens\" type=\"tokens.Tokens\"/>\n"
+                + "  <w:Panel>\n"
+                + "    <w:Button ui:field=\"action\" kind=\"PRIMARY\" "
+                + "text=\"{tokens.getHome}\"/>\n"
+                + "  </w:Panel>\n"
+                + "</ui:UiBinder>\n");
+
+        assertTrue(compilation.diagnostics(), compilation.success);
+        assertContains(compilation.generated("fixture/Sample_BinderImpl.java"),
+                "button2.setText(tokens.Tokens.getHome());");
+    }
+
+    @Test
+    public void refusesAnExpressionNoUiWithDeclares() throws Exception {
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                validTemplate().replace(">Save</w:Button>", " text=\"{absent.thing}\"/>"));
+
+        // The failure that matters: emitted as a literal it would compile and run,
+        // and the value would quietly be the text of the expression.
+        assertFalse(compilation.success);
+        assertTrue(compilation.diagnostics(), compilation.diagnostics().contains(
+                "no <ui:with> declares absent, which {absent.thing} reads from"));
+    }
+
+    @Test
+    public void refusesAUiElementItDoesNotImplement() throws Exception {
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                validTemplate().replace("<w:Panel>",
+                        "<w:Panel>\n    <ui:msg description=\"greeting\">Hello</ui:msg>"));
+
+        assertFalse(compilation.success);
+        assertTrue(compilation.diagnostics(), compilation.diagnostics().contains(
+                "<ui:msg> is not supported by this generator"));
+    }
+
+    @Test
+    public void assignsOnlyTheFieldsTheOwnerDeclares() throws Exception {
+        // A ui:field names an element for the template's own use; it does not oblige
+        // the owner to hold it, and assigning one it never declared will not compile.
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                validTemplate().replace("<w:Panel>", "<w:Panel ui:field=\"unheld\">"));
+
+        assertTrue(compilation.diagnostics(), compilation.success);
+        final String generated = compilation.generated("fixture/Sample_BinderImpl.java");
+        assertContains(generated, "owner.action = button2;");
+        assertFalse("assigned a field the owner does not declare\n" + generated,
+                generated.contains("owner.unheld"));
+    }
+
     private Compilation compile(final String owner, final String template) throws Exception {
         final Path workspace = Files.createTempDirectory("uibinder-processor-test-");
         workspaces.add(workspace);
@@ -191,6 +249,10 @@ public class UiBinderProcessorTest {
                 + "public interface ClickHandler { void onClick(ClickEvent event); }\n");
         write(sources, "fixture/UnsupportedEvent.java",
                 "package fixture; public class UnsupportedEvent {}\n");
+        write(sources, "tokens/Tokens.java",
+                "package tokens; public class Tokens {\n"
+                + "  public static String getHome() { return \"home\"; }\n"
+                + "}\n");
         write(sources, "widgets/Kind.java",
                 "package widgets; public enum Kind { PRIMARY, SECONDARY }\n");
         write(sources, "widgets/DomElement.java",

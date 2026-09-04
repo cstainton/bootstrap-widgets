@@ -76,17 +76,21 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
     }
 
     private Widget pageFor(final String token) {
+        // Every page backed by gwt-bootstrap3-extras lives behind this call. The extras
+        // still reach the browser through JSNI, which TeaVM cannot compile, so that
+        // backend supplies its own ExtrasPages returning null and the showcase runs
+        // without those pages rather than not at all.
+        final Widget extras = ExtrasPages.forToken(token);
+        if (extras != null) {
+            return extras;
+        }
         switch (token) {
             case NameTokens.AFFIX:
                 return new org.gwtbootstrap3.demo.client.application.javascript.AffixView();
             case NameTokens.ALERTS:
                 return new org.gwtbootstrap3.demo.client.application.components.AlertView();
-            case NameTokens.ANIMATE:
-                return new org.gwtbootstrap3.demo.client.application.extras.AnimateView();
             case NameTokens.BADGES:
                 return new org.gwtbootstrap3.demo.client.application.components.BadgeView();
-            case NameTokens.BOOTBOX:
-                return new org.gwtbootstrap3.demo.client.application.extras.BootboxJSView();
             case NameTokens.BREADCRUMBS:
                 return new org.gwtbootstrap3.demo.client.application.components.BreadcrumbView();
             case NameTokens.BUTTON_DROPDOWNS:
@@ -103,20 +107,10 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
                 return new org.gwtbootstrap3.demo.client.application.css.CodeView();
             case NameTokens.COLLAPSE:
                 return new org.gwtbootstrap3.demo.client.application.javascript.CollapseView();
-            case NameTokens.DATE_PICKER:
-                return new org.gwtbootstrap3.demo.client.application.extras.DatePickerView();
-            case NameTokens.DATETIME_PICKER:
-                return new org.gwtbootstrap3.demo.client.application.extras.DateTimePickerView();
             case NameTokens.DROPDOWNS:
                 return new org.gwtbootstrap3.demo.client.application.components.DropdownView();
             case NameTokens.FORMS:
                 return new org.gwtbootstrap3.demo.client.application.css.FormsView();
-            case NameTokens.FORMS_WITH_VALIDATION:
-                return new org.gwtbootstrap3.demo.client.application.css.validation.FormsWithValidationView();
-            case NameTokens.FULL_CALENDAR:
-                return new org.gwtbootstrap3.demo.client.application.extras.FullCalendarView();
-            case NameTokens.GALLERY:
-                return new org.gwtbootstrap3.demo.client.application.extras.GalleryView();
             case NameTokens.GRID_SYSTEM:
                 return new org.gwtbootstrap3.demo.client.application.css.GridSystemView();
             case NameTokens.HOME:
@@ -133,8 +127,6 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
                 return new org.gwtbootstrap3.demo.client.application.components.LabelView();
             case NameTokens.LIST_GROUP:
                 return new org.gwtbootstrap3.demo.client.application.components.ListGroupView();
-            case NameTokens.MARKDOWN:
-                return new org.gwtbootstrap3.demo.client.application.extras.MarkdownView();
             case NameTokens.MEDIA_OBJECTS:
                 return new org.gwtbootstrap3.demo.client.application.components.MediaObjectView();
             case NameTokens.MODALS:
@@ -143,8 +135,6 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
                 return new org.gwtbootstrap3.demo.client.application.components.NavbarView();
             case NameTokens.NAVS:
                 return new org.gwtbootstrap3.demo.client.application.components.NavView();
-            case NameTokens.NOTIFY:
-                return new org.gwtbootstrap3.demo.client.application.extras.NotifyView();
             case NameTokens.OFFLINE:
                 return new org.gwtbootstrap3.demo.client.application.extras.OfflineView();
             case NameTokens.PAGE_HEADER:
@@ -159,30 +149,20 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
                 return new org.gwtbootstrap3.demo.client.application.components.ProgressBarView();
             case NameTokens.RESPONSIVE_UTILITIES:
                 return new org.gwtbootstrap3.demo.client.application.css.ResponsiveUtilitiesView();
-            case NameTokens.SELECT:
-                return new org.gwtbootstrap3.demo.client.application.extras.BootstrapSelectView();
             case NameTokens.SETUP:
                 return new org.gwtbootstrap3.demo.client.application.general.SetupView();
-            case NameTokens.SLIDER:
-                return new org.gwtbootstrap3.demo.client.application.extras.SliderView();
             case NameTokens.SUGGEST_BOX:
                 return new org.gwtbootstrap3.demo.client.application.components.SuggestBoxView();
-            case NameTokens.SUMMERNOTE:
-                return new org.gwtbootstrap3.demo.client.application.extras.SummernoteView();
             case NameTokens.TABLES:
                 return new org.gwtbootstrap3.demo.client.application.css.TablesView();
             case NameTokens.TABS:
                 return new org.gwtbootstrap3.demo.client.application.javascript.TabView();
-            case NameTokens.TAGSINPUT:
-                return new org.gwtbootstrap3.demo.client.application.extras.TagsInputView();
             case NameTokens.THUMBNAILS:
                 return new org.gwtbootstrap3.demo.client.application.components.ThumbnailView();
             case NameTokens.TOGGLESWITCH:
                 return new org.gwtbootstrap3.demo.client.application.extras.ToggleSwitchView();
             case NameTokens.TOOLTIPS:
                 return new org.gwtbootstrap3.demo.client.application.javascript.TooltipView();
-            case NameTokens.TYPEAHEAD:
-                return new org.gwtbootstrap3.demo.client.application.extras.TypeaheadView();
             case NameTokens.TYPOGRAPHY:
                 return new org.gwtbootstrap3.demo.client.application.css.TypographyView();
             case NameTokens.WELLS:

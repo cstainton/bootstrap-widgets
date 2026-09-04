@@ -65,6 +65,51 @@ public class Element {
     @JSBody(params = {"value"}, script = "return !!value && value.nodeType === 1;")
     private static native boolean isElement(JSObject value);
 
+    /** How far the element's content is scrolled from its left edge. */
+    public int getScrollLeft() {
+        return scrollLeft(element);
+    }
+
+    public void setScrollLeft(final int position) {
+        setScrollLeft(element, position);
+    }
+
+    /** How far the element's content is scrolled from its top edge. */
+    public int getScrollTop() {
+        return scrollTop(element);
+    }
+
+    public void setScrollTop(final int position) {
+        setScrollTop(element, position);
+    }
+
+    /** The full scrollable height, which is what a scroll position is measured against. */
+    public int getScrollHeight() {
+        return scrollHeight(element);
+    }
+
+    public int getScrollWidth() {
+        return scrollWidth(element);
+    }
+
+    @JSBody(params = {"e"}, script = "return e.scrollLeft | 0;")
+    private static native int scrollLeft(HTMLElement e);
+
+    @JSBody(params = {"e", "position"}, script = "e.scrollLeft = position;")
+    private static native void setScrollLeft(HTMLElement e, int position);
+
+    @JSBody(params = {"e"}, script = "return e.scrollTop | 0;")
+    private static native int scrollTop(HTMLElement e);
+
+    @JSBody(params = {"e", "position"}, script = "e.scrollTop = position;")
+    private static native void setScrollTop(HTMLElement e, int position);
+
+    @JSBody(params = {"e"}, script = "return e.scrollHeight | 0;")
+    private static native int scrollHeight(HTMLElement e);
+
+    @JSBody(params = {"e"}, script = "return e.scrollWidth | 0;")
+    private static native int scrollWidth(HTMLElement e);
+
     @SuppressWarnings("unchecked")
     public <T extends Element> T cast() {
         return (T) this;

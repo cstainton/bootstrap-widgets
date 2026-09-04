@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
  */
 final class Emitter {
 
-    private static final String UI_NS = "urn:ui:com.google.gwt.uibinder";
+    static final String UI_NS = "urn:ui:com.google.gwt.uibinder";
     private static final String IMPORT_PREFIX = "urn:import:";
 
     private final ProcessingEnvironment env;
@@ -62,8 +62,11 @@ final class Emitter {
     private int counter;
     private String rootType;
     private final java.util.Set<String> domVars = new java.util.HashSet<>();
+    /** For a DOM variable, the widget whose markup encloses it. */
+    private final Map<String, String> enclosingWidget = new LinkedHashMap<>();
     private final Map<String, String> styleClasses = new LinkedHashMap<>();
     private String styleCss;
+    private final Map<String, TypeElement> withFields = new LinkedHashMap<>();
 
     Emitter(final ProcessingEnvironment env, final Element owner) {
         this.env = env;
@@ -137,6 +140,103 @@ final class Emitter {
     }
 
     /**
+     * Reads the {@code <ui:with>} declarations and makes each one a local.
+     *
+     * <p>These are the objects a template is allowed to read values from: a template
+     * says {@code targetHistoryToken="{nameTokens.getHome}"} and means the value that
+     * call returns. GWT instantiates them through deferred binding unless the owner
+     * provides one; for a plain class that is a constructor call, which is what this
+     * emits.</p>
+     */
+    void readWith(final Node root) {
+        final NodeList children = root.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            final Node child = children.item(i);
+            if (child.getNodeType() != Node.ELEMENT_NODE
+                    || !UI_NS.equals(child.getNamespaceURI())
+                    || !"with".equals(child.getLocalName())) {
+                continue;
+            }
+            final Map<String, String> attrs = attributes(child);
+            final String name = attrs.get("field");
+            final String typeName = attrs.get("type");
+            if (name == null || typeName == null) {
+                throw new UiBinderProcessor.Failure(
+                        "<ui:with> needs both a field and a type", owner);
+            }
+            final TypeElement type = env.getElementUtils().getTypeElement(typeName);
+            if (type == null) {
+                throw new UiBinderProcessor.Failure(
+                        typeName + ", named by <ui:with>, is not on the compile path", owner);
+            }
+            withFields.put(name, type);
+            // Prefixed, because the template chooses this name and a bare one can obscure
+            // a package: a ui:with field called "tokens" would make tokens.Tokens.get()
+            // resolve against the local instead of the package, and not compile.
+            body.append("        final ").append(typeName).append(' ').append(local(name))
+                .append(" = new ").append(typeName).append("();\n");
+        }
+    }
+
+    /** The Java name for a ui:with field, kept clear of anything it could obscure. */
+    private static String local(final String field) {
+        return "uiWith_" + field;
+    }
+
+    /**
+     * Turns a whole-value template expression into Java, or returns null.
+     *
+     * <p>{@code {nameTokens.getHome}} is a read of getHome on the object ui:with called
+     * nameTokens. Returning null for anything else is what keeps an unrecognised
+     * expression from being emitted as its own literal text: the showcase navbar spent
+     * this session pointing every link at the string "{nameTokens.getHome}".</p>
+     */
+    private String expression(final String raw) {
+        final String trimmed = raw == null ? "" : raw.trim();
+        if (!trimmed.startsWith("{") || !trimmed.endsWith("}") || trimmed.length() < 3) {
+            return null;
+        }
+        final String path = trimmed.substring(1, trimmed.length() - 1);
+        final int dot = path.indexOf('.');
+        if (dot < 0) {
+            return null;
+        }
+        final String root = path.substring(0, dot);
+        final TypeElement type = withFields.get(root);
+        if (type == null) {
+            // Reaching here means the template asked for something and this generator
+            // has no idea what. Emitting it as text is the one outcome that must not
+            // happen: it compiles, it runs, and the value is silently the wrong thing.
+            throw new UiBinderProcessor.Failure("no <ui:with> declares " + root
+                    + ", which " + trimmed + " reads from", owner);
+        }
+        final String member = path.substring(dot + 1);
+        for (final ExecutableElement method : ElementFilter.methodsIn(
+                env.getElementUtils().getAllMembers(type))) {
+            if (!method.getParameters().isEmpty()) {
+                continue;
+            }
+            final String name = method.getSimpleName().toString();
+            if (name.equals(member) || name.equals(
+                    "get" + Character.toUpperCase(member.charAt(0)) + member.substring(1))) {
+                // A static read through an instance compiles but reads as a mistake.
+                final String target = method.getModifiers()
+                        .contains(javax.lang.model.element.Modifier.STATIC)
+                        ? type.getQualifiedName().toString() : local(root);
+                return target + "." + name + "()";
+            }
+        }
+        for (final Element member2 : env.getElementUtils().getAllMembers(type)) {
+            if (member2.getKind() == ElementKind.FIELD
+                    && member2.getSimpleName().contentEquals(member)) {
+                return local(root) + "." + member;
+            }
+        }
+        throw new UiBinderProcessor.Failure(
+                type.getQualifiedName() + " has no " + member + ", named by " + trimmed, owner);
+    }
+
+    /**
      * The selector of every rule in a stylesheet.
      *
      * <p>Enough of a CSS parser to find class names, and no more. Selectors are richer
@@ -174,6 +274,36 @@ final class Emitter {
         return styleCss;
     }
 
+    /**
+     * Handles a lower-case child element, which names something on the parent rather
+     * than a widget class.
+     *
+     * <p>GWT calls these element parsers and has one per widget that needs it: g:item
+     * for a ListBox, g:cell, g:header, g:tab and so on. Only g:item appears in these
+     * templates, so only g:item is implemented; anything else is named in the error
+     * rather than left to fail later as a missing class.</p>
+     */
+    private String childDirective(final Node element, final String parent,
+            final String name) {
+        if (parent == null) {
+            throw new UiBinderProcessor.Failure(
+                    "<" + name + "> has to appear inside a widget", owner);
+        }
+        if (!"item".equals(name)) {
+            throw new UiBinderProcessor.Failure(
+                    "<" + name + "> is not a template element this generator knows", owner);
+        }
+        final Map<String, String> attrs = attributes(element);
+        final String text = escapeTrimmed(directText(element));
+        final String value = attrs.get("value");
+        body.append("        ").append(parent).append(".addItem(\"").append(text).append('"');
+        if (value != null) {
+            body.append(", \"").append(escapeTrimmed(value)).append('"');
+        }
+        body.append(");\n");
+        return parent;
+    }
+
     /** Emits an element and its children, returning the variable holding it. */
     String emit(final Node element, final String parent) {
         final String uri = element.getNamespaceURI();
@@ -182,6 +312,9 @@ final class Emitter {
         }
         final String pkg = uri.substring(IMPORT_PREFIX.length());
         final String simple = element.getLocalName();
+        if (!simple.isEmpty() && Character.isLowerCase(simple.charAt(0))) {
+            return childDirective(element, parent, simple);
+        }
         final TypeElement type = env.getElementUtils().getTypeElement(pkg + "." + simple);
         if (type == null) {
             throw new UiBinderProcessor.Failure(
@@ -192,6 +325,11 @@ final class Emitter {
         final Map<String, String> attrs = attributes(element);
         final String field = attrs.remove("$field");
 
+        // HTMLPanel is the one widget whose constructor takes the markup it will hold.
+        // A template builds those children as elements instead, so it starts empty --
+        // GWT special-cases it in the same way, for the same reason.
+        final boolean htmlPanel =
+                "com.google.gwt.user.client.ui.HTMLPanel".equals(type.getQualifiedName().toString());
         final ExecutableElement uiConstructor = uiConstructor(type);
         final List<String> args = new ArrayList<>();
         if (uiConstructor != null) {
@@ -208,7 +346,8 @@ final class Emitter {
 
         body.append("        ").append(pkg).append('.').append(simple).append(' ').append(var)
             .append(" = new ").append(pkg).append('.').append(simple)
-            .append('(').append(String.join(", ", args)).append(");\n");
+            .append('(').append(htmlPanel && args.isEmpty() ? "\"\"" : String.join(", ", args))
+            .append(");\n");
         if (rootType == null) {
             rootType = pkg + "." + simple;
         }
@@ -247,6 +386,10 @@ final class Emitter {
                 ? element.getNodeName() : element.getLocalName();
         final String var = "element" + (++counter);
         domVars.add(var);
+        if (parent != null) {
+            enclosingWidget.put(var,
+                    domVars.contains(parent) ? enclosingWidget.get(parent) : parent);
+        }
         body.append("        com.google.gwt.dom.client.Element ").append(var)
             .append(" = com.google.gwt.dom.client.Document.get().createElement(\"")
             .append(escape(tag)).append("\");\n");
@@ -298,8 +441,20 @@ final class Emitter {
     private void attach(final String parent, final String var, final boolean childIsDom) {
         final boolean parentIsDom = domVars.contains(parent);
         if (parentIsDom && !childIsDom) {
-            throw new UiBinderProcessor.Failure(
-                    "a widget inside an HTML element is not supported yet", owner);
+            // A widget written inside markup, as in <a href="#">Inbox <b:Badge/></a>.
+            // GWT renders a placeholder and swaps the widget in afterwards; the element
+            // exists here already, so the enclosing panel is simply told to adopt the
+            // widget into it. That is HTMLPanel.add(Widget, Element) -- the panel has to
+            // know, or the widget is in the DOM but not in the widget tree, and never
+            // gets attached, detached or handed events.
+            final String host = enclosingWidget.get(parent);
+            if (host == null) {
+                throw new UiBinderProcessor.Failure(
+                        "a widget inside an HTML element needs an enclosing panel", owner);
+            }
+            body.append("        ").append(host).append(".add(").append(var).append(", ")
+                .append(parent).append(");\n");
+            return;
         }
         if (parentIsDom) {
             body.append("        ").append(parent).append(".appendChild(").append(var).append(");\n");
@@ -356,8 +511,10 @@ final class Emitter {
             return;
         }
         if ("id".equals(name)) {
-            body.append("        ").append(var).append(".getElement().setId(\"")
-                .append(escape(value)).append("\");\n");
+            final String expression = expression(value);
+            body.append("        ").append(var).append(".getElement().setId(")
+                .append(expression != null ? expression : "\"" + escape(value) + "\"")
+                .append(");\n");
             return;
         }
         final String setter = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
@@ -367,8 +524,11 @@ final class Emitter {
                 // data-testid, aria-* and role have no setter and are not meant to: they
                 // belong to the element. A test locating a widget by data-testid is the
                 // main reason a template carries one, so passing them through matters.
+                final String expression = expression(value);
                 body.append("        ").append(var).append(".getElement().setAttribute(\"")
-                    .append(escape(name)).append("\", \"").append(escape(value)).append("\");\n");
+                    .append(escape(name)).append("\", ")
+                    .append(expression != null ? expression : "\"" + escape(value) + "\"")
+                    .append(");\n");
                 return;
             }
             throw new UiBinderProcessor.Failure(
@@ -390,6 +550,10 @@ final class Emitter {
 
     /** Renders a value at the type the setter or constructor actually declares. */
     private String render(final TypeMirror target, final String raw) {
+        final String expression = expression(raw);
+        if (expression != null) {
+            return expression;
+        }
         switch (target.getKind()) {
             case BOOLEAN: return raw;
             case INT: case LONG: case SHORT: case BYTE: case FLOAT: case DOUBLE: return raw;
@@ -479,13 +643,39 @@ final class Emitter {
         return text.toString().trim();
     }
 
+    /**
+     * Assigns the template's fields back to the owner.
+     *
+     * <p>Only the ones the owner actually declares. A ui:field names an element for the
+     * template's own use -- so a @UiHandler can reach it, or another attribute can refer
+     * to it -- and does not oblige the owner to hold it. The showcase relies on this:
+     * ApplicationView names brand and themeSwitcher in its template and declares
+     * neither.</p>
+     */
     String fieldAssignments() {
         final StringBuilder out = new StringBuilder();
         for (final Map.Entry<String, String> entry : fields.entrySet()) {
-            out.append("        owner.").append(entry.getKey()).append(" = ")
-               .append(entry.getValue()).append(";\n");
+            if (declaresField(owner, entry.getKey())) {
+                out.append("        owner.").append(entry.getKey()).append(" = ")
+                   .append(entry.getValue()).append(";\n");
+            }
         }
         return out.toString();
+    }
+
+    /** Whether the owner, or anything it extends, has a field of this name. */
+    private boolean declaresField(final Element type, final String name) {
+        if (!(type instanceof TypeElement)) {
+            return true;
+        }
+        for (final Element member
+                : env.getElementUtils().getAllMembers((TypeElement) type)) {
+            if (member.getKind() == javax.lang.model.element.ElementKind.FIELD
+                    && member.getSimpleName().contentEquals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Wires @UiHandler methods to the fields they name. */
