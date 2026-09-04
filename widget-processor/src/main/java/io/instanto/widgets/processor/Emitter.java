@@ -60,6 +60,8 @@ final class Emitter {
     private int counter;
     private String rootType;
     private final java.util.Set<String> domVars = new java.util.HashSet<>();
+    private final Map<String, String> styleClasses = new LinkedHashMap<>();
+    private String styleCss;
 
     Emitter(final ProcessingEnvironment env, final Element owner) {
         this.env = env;
@@ -72,6 +74,48 @@ final class Emitter {
 
     String rootType() {
         return rootType == null ? "com.google.gwt.user.client.ui.Widget" : rootType;
+    }
+
+    /**
+     * Reads a {@code <ui:style>} block, if the template has one.
+     *
+     * <p>GWT turns these into a CssResource with a method per class and obfuscated names,
+     * which is what stops two templates that both declare ".spacing" colliding. Every
+     * block in this repository is the plain form with no declared type, so rather than
+     * generate an interface the class names are prefixed with the owner's name: unique
+     * per template, and still legible in the inspector, which obfuscation is not.</p>
+     */
+    void readStyles(final Node root) {
+        final NodeList children = root.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            final Node child = children.item(i);
+            if (child.getNodeType() != Node.ELEMENT_NODE
+                    || !UI_NS.equals(child.getNamespaceURI())
+                    || !"style".equals(child.getLocalName())) {
+                continue;
+            }
+            if (child.getAttributes().getLength() > 0) {
+                throw new UiBinderProcessor.Failure(
+                        "a typed <ui:style> is not supported yet", owner);
+            }
+            String css = child.getTextContent();
+            final java.util.regex.Matcher declared = java.util.regex.Pattern
+                    .compile("\\.([A-Za-z][\\w-]*)\\s*(?=[,{])").matcher(css);
+            while (declared.find()) {
+                final String name = declared.group(1);
+                styleClasses.put(name, owner.getSimpleName() + "-" + name);
+            }
+            for (final Map.Entry<String, String> entry : styleClasses.entrySet()) {
+                css = css.replaceAll("\\." + java.util.regex.Pattern.quote(entry.getKey())
+                        + "(?![\\w-])", "." + entry.getValue());
+            }
+            styleCss = css;
+        }
+    }
+
+    /** The CSS this template declares, already prefixed, or null. */
+    String styles() {
+        return styleCss;
     }
 
     /** Emits an element and its children, returning the variable holding it. */
@@ -210,6 +254,23 @@ final class Emitter {
         }
     }
 
+    /** Turns {style.foo} into the prefixed class name the block now declares. */
+    private String resolveStyles(final String value) {
+        String out = value;
+        final java.util.regex.Matcher m = java.util.regex.Pattern
+                .compile("\\{style\\.([A-Za-z][\\w-]*)\\}").matcher(value);
+        while (m.find()) {
+            final String mapped = styleClasses.get(m.group(1));
+            if (mapped == null) {
+                throw new UiBinderProcessor.Failure(
+                        "{style." + m.group(1) + "} is not declared by this template's <ui:style>",
+                        owner);
+            }
+            out = out.replace(m.group(0), mapped);
+        }
+        return out;
+    }
+
     /** Whitespace between two inline elements is content, not indentation. */
     private static boolean hasElementSibling(final Node text) {
         return text.getPreviousSibling() != null && text.getNextSibling() != null
@@ -344,7 +405,7 @@ final class Emitter {
             if ("xmlns".equals(attr.getPrefix()) || "xmlns".equals(name)) {
                 continue;
             }
-            attrs.put(name, attr.getNodeValue());
+            attrs.put(name, resolveStyles(attr.getNodeValue()));
         }
         return attrs;
     }

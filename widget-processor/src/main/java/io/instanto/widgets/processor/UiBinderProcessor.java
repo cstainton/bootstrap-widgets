@@ -141,6 +141,7 @@ public class UiBinderProcessor extends AbstractProcessor {
         }
 
         final Emitter emitter = new Emitter(processingEnv, owner);
+        emitter.readStyles(template.getDocumentElement());
         final Node root = firstElement(template.getDocumentElement());
         if (root == null) {
             throw new Failure(simple + ".ui.xml has no widget in it", owner);
@@ -158,6 +159,12 @@ public class UiBinderProcessor extends AbstractProcessor {
             out.write("    @Override\n");
             out.write("    public " + emitter.rootType() + " createAndBindUi(final "
                     + simple + " owner) {\n");
+            if (emitter.styles() != null) {
+                out.write("        com.google.gwt.dom.client.StyleInjector.inject(\"");
+                out.write(emitter.styles().replace("\\", "\\\\").replace("\"", "\\\"")
+                        .replaceAll("\\s+", " ").trim());
+                out.write("\");\n");
+            }
             out.write(emitter.body());
             out.write(emitter.fieldAssignments());
             out.write(emitter.handlerWiring());

@@ -134,6 +134,34 @@ public class UiBinderProcessorTest {
                 .contains("@UiHandler names missing, which no ui:field declares"));
     }
 
+    @Test
+    public void prefixesUiStyleClassesPerTemplateAndInjectsThem() throws Exception {
+        final Compilation compilation = compile(sampleOwner(
+                "com.google.gwt.event.dom.client.ClickEvent"), styledTemplate());
+
+        assertTrue(compilation.diagnostics(), compilation.success);
+        final String generated = compilation.generated("fixture/Sample_BinderImpl.java");
+        // Prefixed, because 21 of the showcase templates each declare their own .margin-fix
+        // and they all end up on one page.
+        assertContains(generated,
+                "StyleInjector.inject(\".Sample-spacing { margin: 4px; } "
+                        + ".Sample-margin-fix { margin-bottom: 0 !important; }\");",
+                "button2.addStyleName(\"btn\");",
+                "button2.addStyleName(\"Sample-spacing\");",
+                "button2.addStyleName(\"Sample-margin-fix\");");
+    }
+
+    @Test
+    public void reportsStyleReferenceThatTheTemplateDoesNotDeclare() throws Exception {
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                styledTemplate().replace("{style.margin-fix}", "{style.absent}"));
+
+        assertFalse(compilation.success);
+        assertTrue(compilation.diagnostics(), compilation.diagnostics().contains(
+                "{style.absent} is not declared by this template's <ui:style>"));
+    }
+
     private Compilation compile(final String owner, final String template) throws Exception {
         final Path workspace = Files.createTempDirectory("uibinder-processor-test-");
         workspaces.add(workspace);
@@ -153,6 +181,9 @@ public class UiBinderProcessorTest {
                 + "public @interface UiHandler { String[] value(); }\n");
         write(sources, "com/google/gwt/uibinder/client/UiConstructor.java",
                 annotation("UiConstructor", "CONSTRUCTOR"));
+        write(sources, "com/google/gwt/dom/client/StyleInjector.java",
+                "package com.google.gwt.dom.client;\n"
+                + "public class StyleInjector { public static void inject(String css) {} }\n");
         write(sources, "com/google/gwt/event/dom/client/ClickEvent.java",
                 "package com.google.gwt.event.dom.client; public class ClickEvent {}\n");
         write(sources, "com/google/gwt/event/dom/client/ClickHandler.java",
@@ -226,6 +257,20 @@ public class UiBinderProcessorTest {
                 + "  <w:Panel>\n"
                 + "    <w:Button ui:field=\"action\" kind=\"PRIMARY\" enabled=\"true\" "
                 + "id=\"save-button\" addStyleNames=\"btn btn-primary\">Save</w:Button>\n"
+                + "  </w:Panel>\n"
+                + "</ui:UiBinder>\n";
+    }
+
+    private static String styledTemplate() {
+        return "<ui:UiBinder xmlns:ui=\"urn:ui:com.google.gwt.uibinder\" "
+                + "xmlns:w=\"urn:import:widgets\">\n"
+                + "  <ui:style>\n"
+                + "    .spacing { margin: 4px; }\n"
+                + "    .margin-fix { margin-bottom: 0 !important; }\n"
+                + "  </ui:style>\n"
+                + "  <w:Panel>\n"
+                + "    <w:Button ui:field=\"action\" kind=\"PRIMARY\" "
+                + "addStyleNames=\"btn {style.spacing} {style.margin-fix}\">Save</w:Button>\n"
                 + "  </w:Panel>\n"
                 + "</ui:UiBinder>\n";
     }
