@@ -21,15 +21,26 @@ JavaScript.
 
 The first executable tranche is now in the repository:
 
-- Phase 0 is complete. Generated source contains a direct construction path
-  and an independently reported TeaVM test for every exported widget: 121
-  Bootstrap 3 fixtures and 131 Bootstrap 5 fixtures.
+- Phase 0 core reachability is complete. Generated source contains a direct
+  construction path and an independently reported TeaVM test for every core
+  export in its inventory: 121 Bootstrap 3 fixtures and 131 Bootstrap 5
+  fixtures. Extending the same enforcement across every optional extra and
+  theme remains open.
 - Phase 1 fixture/API enforcement is complete for the core and Markdown
   exports. The reviewed P0 corpus contains 61 scenarios with stable IDs,
   fixture IDs, Bootstrap 3 showcase references and a four-target matrix.
-- Phase 2 has an initial direct Chromium tranche for toggle, disabled,
-  checkbox-button, radio-button and loading-state behaviour on both Bootstrap
-  generations. The P0 feature text is not yet Cucumber Tea executable.
+- Phase 2 has an initial rendered Chromium tranche for both compiled GWT
+  generations. Fourteen mobile-touch tests execute the canonical fixtures for
+  BTN-001/002/004/005/006/007, DRP-001/002 and COL-001/002/003. The same P0
+  feature text is not yet Cucumber Tea executable.
+- Phase 3 is partial. Dedicated Bootstrap 3 and Bootstrap 5 GWT fixture
+  applications expose those canonical fixture IDs and readiness markers;
+  equivalent TeaVM fixture hosts and integration into all four narrative
+  showcases remain open.
+- Phase 4 has a temporary dependency-free Chrome DevTools Protocol executor
+  with real touch input, browser exception/log/network diagnostics and
+  target/case filtering. The planned Cucumber Tea frame host and
+  document-scoped Mockatcha API remain open.
 - Phase 6 has five JVM-safe contracts against real `gwt-user`, four
   browser-bound contracts through `GWTTestCase`, and all nine contracts against
   `teavm-gwt-compat` in Chromium.
@@ -37,12 +48,20 @@ The first executable tranche is now in the repository:
   local vendored JavaScript, renders each in Chromium, and passes that exact
   artifact to the Pages workflow for the same successful run.
 
-The current matrix executes 287 tests: 5 JVM reference contracts, 4 GWT
+The current Maven matrix executes 287 tests: 5 JVM reference contracts, 4 GWT
 browser reference contracts, 9 TeaVM compatibility contracts, 128 Bootstrap 3
-TeaVM tests and 141 Bootstrap 5 TeaVM tests. Phases 3-5, generated Cucumber Tea
-glue, the remaining Phase 6 contract areas, the expanded behaviour matrix,
-browser-version pinning, console capture, structural snapshots and
-accessibility gating remain open.
+TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI additionally executes 14
+compiled-GWT mobile-touch tests. Phase 5, generated Cucumber Tea glue, the
+remaining Phase 3/4/6 work, the expanded behaviour matrix, pinned Chrome for
+Testing, structural snapshots and accessibility gating remain open.
+
+Current P0 rendered-browser coverage follows the priorities below:
+
+| Area | Executable against compiled GWT 3 and 5 | Highest-priority gaps |
+| --- | --- | --- |
+| Controls | Toggle activation/deactivation, disabled toggle, independent checkbox buttons, radio exclusivity, loading and reset | Programmatic event suppression, type/size mappings, remaining button-group and form contracts |
+| Bootstrap JavaScript | Dropdown open/outside-close and ordered collapse open/close events | Dropdown Escape/disabled/split/dropup/alignment, accordion/detach, tabs and overlays |
+| Lifecycle/resources | Fixture startup, local assets, browser exceptions and failed network requests | Detach/remount cleanup, missing bindings, source maps and theme replacement/persistence |
 
 ## Decisions
 

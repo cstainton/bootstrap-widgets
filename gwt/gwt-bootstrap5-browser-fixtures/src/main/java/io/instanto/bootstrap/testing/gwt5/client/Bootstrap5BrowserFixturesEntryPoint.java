@@ -10,6 +10,7 @@ import io.instanto.bootstrap5.client.ui.RadioButton;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -55,23 +56,16 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
     }
 
     private Widget checkboxFixture() {
-        ButtonGroup group = new ButtonGroup();
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/check-box-buttons/independent");
         group.setDataToggle(Toggle.BUTTONS);
-        CheckBoxButton button = tagged(new CheckBoxButton("Touch choice"),
-                "behaviour/check-box-button/touch");
-        initializeCounter(button.getElement(), CHANGE_COUNT);
-        initializeValue(button, false);
-        countClicks(button, button);
-        button.addValueChangeHandler(event -> {
-            increment(button.getElement(), CHANGE_COUNT);
-            initializeValue(button, event.getValue());
-        });
-        group.add(button);
-        return fixture("Checkbox button", group);
+        addCheckbox(group, "First", "behaviour/check-box-button/first");
+        addCheckbox(group, "Second", "behaviour/check-box-button/second");
+        addCheckbox(group, "Third", "behaviour/check-box-button/third");
+        return fixture("Checkbox buttons", group);
     }
 
     private Widget radioFixture() {
-        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/radio-buttons/touch");
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/radio-buttons/exclusive");
         group.setDataToggle(Toggle.BUTTONS);
         group.setName("touch-radio-fixture");
 
@@ -105,7 +99,7 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
 
     private Widget dropdownFixture() {
         FlowPanel container = new FlowPanel();
-        DropDown dropdown = tagged(new DropDown("Touch menu"), "behaviour/dropdown/touch");
+        DropDown dropdown = tagged(new DropDown("Touch menu"), "behaviour/dropdown/basic");
         tagged(dropdown.getToggle(), "behaviour/dropdown/toggle");
         countClicks(dropdown.getToggle(), dropdown.getToggle());
 
@@ -124,7 +118,7 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
     private Widget collapseFixture() {
         FlowPanel container = new FlowPanel();
         Button target = tagged(new Button("Touch collapse"), "behaviour/collapse/toggle");
-        Collapse collapse = tagged(new Collapse(), "behaviour/collapse/touch");
+        Collapse collapse = tagged(new Collapse(), "behaviour/collapse/basic");
         collapse.getElement().setId("touch-collapse-content");
         collapse.setToggle(false);
         collapse.add(new HTML("<p>Collapsed content</p>"));
@@ -143,11 +137,31 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
     }
 
     private Widget loadingFixture() {
-        Button button = tagged(new Button("Save"), "behaviour/button/loading-touch");
+        Button button = tagged(new Button("Save"), "behaviour/button/loading");
         button.setDataLoadingText("Saving...");
         countClicks(button, button);
-        button.addClickHandler(event -> button.state().loading());
+        button.addClickHandler(event -> {
+            button.state().loading();
+            new Timer() {
+                @Override
+                public void run() {
+                    button.state().reset();
+                }
+            }.schedule(750);
+        });
         return fixture("Loading button", button);
+    }
+
+    private void addCheckbox(ButtonGroup group, String label, String fixtureId) {
+        CheckBoxButton button = tagged(new CheckBoxButton(label), fixtureId);
+        initializeCounter(button.getElement(), CHANGE_COUNT);
+        initializeValue(button, false);
+        countClicks(button, button);
+        button.addValueChangeHandler(event -> {
+            increment(button.getElement(), CHANGE_COUNT);
+            initializeValue(button, event.getValue());
+        });
+        group.add(button);
     }
 
     private FlowPanel fixture(String title, Widget content) {

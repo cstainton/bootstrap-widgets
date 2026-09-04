@@ -212,7 +212,7 @@ async function main() {
     ]);
     await cdp.send("Emulation.setDeviceMetricsOverride", {
       width: 390,
-      height: 844,
+      height: 1200,
       deviceScaleFactor: 3,
       mobile: true,
     });
@@ -248,6 +248,8 @@ async function main() {
         "the GWT fixtures to become ready",
       );
       assert.ok(await evaluate("navigator.maxTouchPoints > 0"), "Chrome touch emulation was not active");
+      // Keep independent cases outside Chrome's double-tap recognition window.
+      await new Promise((resolveWait) => setTimeout(resolveWait, 400));
     }
 
     async function tap(testId, allowPointerPassThrough = false) {
@@ -286,6 +288,17 @@ async function main() {
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
     }
 
+    async function tapOutside() {
+      const point = await evaluate("({x: document.documentElement.clientWidth - 8, y: window.innerHeight - 8})");
+      await cdp.send("Input.synthesizeTapGesture", {
+        x: point.x,
+        y: point.y,
+        duration: 50,
+        gestureSourceType: "touch",
+      });
+      await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+    }
+
     async function state(testId) {
       return evaluate(`(() => {
         const element = document.querySelector('[data-testid=' + ${JSON.stringify(JSON.stringify(testId))} + ']');
@@ -298,6 +311,7 @@ async function main() {
           disabled: element.hasAttribute('disabled'),
           ariaPressed: element.getAttribute('aria-pressed'),
           ariaExpanded: element.getAttribute('aria-expanded'),
+          ariaBusy: element.getAttribute('aria-busy'),
           clickCount: Number(element.dataset.clickCount || 0),
           changeCount: Number(element.dataset.changeCount || 0),
           value: element.dataset.value,
@@ -312,7 +326,7 @@ async function main() {
       const tests = [];
       const test = (id, name, body) => tests.push({ name: `${target.name}-TOUCH-${id} ${name}`, body });
 
-      test("001", "toggle receives one click and toggles twice", async () => {
+      test("BTN-001/002", "toggle receives one click per activation and toggles twice", async () => {
       await tap("behaviour/toggle-button/basic");
       let result = await state("behaviour/toggle-button/basic");
       assert.equal(result.active, true);
@@ -325,24 +339,37 @@ async function main() {
       assert.equal(result.clickCount, 2);
     });
 
-      test("002", "disabled toggle suppresses touch activation", async () => {
+      test("BTN-004", "disabled toggle suppresses touch activation", async () => {
       await tap("behaviour/toggle-button/disabled", true);
       const result = await state("behaviour/toggle-button/disabled");
       assert.equal(result.active, false);
       assert.equal(result.clickCount, 0);
     });
 
-      test("003", "checkbox button changes exactly once", async () => {
-      await tap("behaviour/check-box-button/touch");
-      const result = await state("behaviour/check-box-button/touch");
-      assert.equal(result.active, true);
-      assert.equal(result.checked, true);
-      assert.equal(result.value, "true");
-      assert.equal(result.changeCount, 1);
-      assert.equal(result.clickCount, 1);
+      test("BTN-005", "checkbox buttons retain independent touch selections", async () => {
+      await tap("behaviour/check-box-button/first");
+      await tap("behaviour/check-box-button/third");
+      const first = await state("behaviour/check-box-button/first");
+      const second = await state("behaviour/check-box-button/second");
+      const third = await state("behaviour/check-box-button/third");
+      assert.equal(first.active, true);
+      assert.equal(first.checked, true);
+      assert.equal(first.value, "true");
+      assert.equal(first.changeCount, 1);
+      assert.equal(first.clickCount, 1);
+      assert.equal(second.active, false);
+      assert.equal(second.checked, false);
+      assert.equal(second.value, "false");
+      assert.equal(second.changeCount, 0);
+      assert.equal(second.clickCount, 0);
+      assert.equal(third.active, true);
+      assert.equal(third.checked, true);
+      assert.equal(third.value, "true");
+      assert.equal(third.changeCount, 1);
+      assert.equal(third.clickCount, 1);
     });
 
-      test("004", "radio button remains exclusive and reports once", async () => {
+      test("BTN-006", "radio button remains exclusive and reports once", async () => {
       await tap("behaviour/radio-button/second");
       await waitFor(
         "document.querySelector('[data-testid=\"behaviour/radio-button/second\"]').dataset.value === 'true'",
@@ -360,10 +387,10 @@ async function main() {
       assert.equal(second.clickCount, 1);
     });
 
-      test("005", "dropdown opens and closes from touch", async () => {
+      test("DRP-001/002", "dropdown opens and closes from touch", async () => {
         await evaluate(`(() => {
         window.__dropdownEvents = [];
-        const dropdown = document.querySelector('[data-testid="behaviour/dropdown/touch"]');
+        const dropdown = document.querySelector('[data-testid="behaviour/dropdown/basic"]');
         const events = ['show', 'shown', 'hide', 'hidden'];
         if (${target.generation} === 3) {
           for (const event of events) {
@@ -376,20 +403,20 @@ async function main() {
         }
       })()`);
       await tap("behaviour/dropdown/toggle");
-      let dropdown = await state("behaviour/dropdown/touch");
+      let dropdown = await state("behaviour/dropdown/basic");
       let toggle = await state("behaviour/dropdown/toggle");
       assert.equal(dropdown.open, true);
       assert.equal(toggle.ariaExpanded, "true");
       assert.deepEqual(await evaluate("window.__dropdownEvents"), ["show", "shown"]);
-      await tap("behaviour/dropdown/outside");
-      dropdown = await state("behaviour/dropdown/touch");
+      await tapOutside();
+      dropdown = await state("behaviour/dropdown/basic");
       toggle = await state("behaviour/dropdown/toggle");
       assert.equal(dropdown.open, false);
       assert.equal(toggle.ariaExpanded, "false");
       assert.deepEqual(await evaluate("window.__dropdownEvents"), ["show", "shown", "hide", "hidden"]);
     });
 
-      test("006", "collapse reports one ordered transition each way", async () => {
+      test("COL-001/002/003", "collapse reports one ordered transition each way", async () => {
       await evaluate(`(() => {
         window.__collapseInputEvents = [];
         const toggle = document.querySelector('[data-testid="behaviour/collapse/toggle"]');
@@ -399,10 +426,10 @@ async function main() {
       })()`);
       await tap("behaviour/collapse/toggle");
       await waitFor(
-        "document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') || document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show')",
+        "document.querySelector('[data-testid=\"behaviour/collapse/basic\"]').classList.contains('in') || document.querySelector('[data-testid=\"behaviour/collapse/basic\"]').classList.contains('show')",
         "the collapse show transition",
       );
-      let collapse = await state("behaviour/collapse/touch");
+      let collapse = await state("behaviour/collapse/basic");
       let toggle = await state("behaviour/collapse/toggle");
       assert.equal(collapse.events, "show,shown");
       assert.equal(toggle.ariaExpanded, "true");
@@ -411,32 +438,42 @@ async function main() {
       await tap("behaviour/collapse/toggle");
       try {
         await waitFor(
-          "!document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('collapsing')",
+          "!document.querySelector('[data-testid=\"behaviour/collapse/basic\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/basic\"]').classList.contains('show') && !document.querySelector('[data-testid=\"behaviour/collapse/basic\"]').classList.contains('collapsing')",
           "the collapse hide transition",
         );
       } catch (error) {
-        const failedCollapse = await state("behaviour/collapse/touch");
+        const failedCollapse = await state("behaviour/collapse/basic");
         const failedToggle = await state("behaviour/collapse/toggle");
         const inputEvents = await evaluate("window.__collapseInputEvents");
         const toggleHtml = await evaluate("document.querySelector('[data-testid=\"behaviour/collapse/toggle\"]').outerHTML");
         throw new Error(`${error.message}\nCollapse: ${JSON.stringify(failedCollapse)}\nToggle: ${JSON.stringify(failedToggle)}\nInput events: ${JSON.stringify(inputEvents)}\nToggle HTML: ${toggleHtml}`);
       }
-      collapse = await state("behaviour/collapse/touch");
+      collapse = await state("behaviour/collapse/basic");
       toggle = await state("behaviour/collapse/toggle");
       assert.equal(collapse.events, "show,shown,hide,hidden");
       assert.equal(toggle.ariaExpanded, "false");
       assert.equal(toggle.clickCount, 2);
     });
 
-      test("007", "loading state reacts to one touch", async () => {
-      await tap("behaviour/button/loading-touch");
+      test("BTN-007", "loading state starts and restores after one touch", async () => {
+      await tap("behaviour/button/loading");
       await waitFor(
-        "document.querySelector('[data-testid=\"behaviour/button/loading-touch\"]').textContent.trim() === 'Saving...'",
+        "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Saving...'",
         "the deferred loading state",
       );
-      const result = await state("behaviour/button/loading-touch");
+      let result = await state("behaviour/button/loading");
       assert.equal(result.text, "Saving...");
       assert.equal(result.disabled, true);
+      assert.equal(result.ariaBusy, "true");
+      assert.equal(result.clickCount, 1);
+      await waitFor(
+        "document.querySelector('[data-testid=\"behaviour/button/loading\"]').textContent.trim() === 'Save'",
+        "the loading state reset",
+      );
+      result = await state("behaviour/button/loading");
+      assert.equal(result.text, "Save");
+      assert.equal(result.disabled, false);
+      assert.equal(result.ariaBusy, null);
       assert.equal(result.clickCount, 1);
     });
 
