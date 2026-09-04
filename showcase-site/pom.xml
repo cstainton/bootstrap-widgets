@@ -65,6 +65,30 @@
       <artifactId>teavm-bootstrap5</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>gwt-bootstrap3</artifactId>
+      <version>${project.version}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>gwt-bootstrap3-extras</artifactId>
+      <version>${project.version}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>gwt-bootstrap5</artifactId>
+      <version>${project.version}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>io.instanto</groupId>
+      <artifactId>gwt-bootstrap5-extras</artifactId>
+      <version>${project.version}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
   </dependencies>
 
   <build>
@@ -105,6 +129,45 @@
                   <artifactId>gwt-bootstrap5-browser-fixtures</artifactId>
                   <type>war</type>
                   <outputDirectory>${pages.dir}/fixtures/gwt-bootstrap5</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-api-documentation</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>io.instanto</groupId>
+                  <artifactId>gwt-bootstrap3</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>javadoc</classifier>
+                  <outputDirectory>${pages.dir}/apidocs</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>io.instanto</groupId>
+                  <artifactId>gwt-bootstrap3-extras</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>javadoc</classifier>
+                  <outputDirectory>${pages.dir}/extras-apidocs</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>io.instanto</groupId>
+                  <artifactId>gwt-bootstrap5</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>javadoc</classifier>
+                  <outputDirectory>${pages.dir}/bootstrap5/apidocs</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>io.instanto</groupId>
+                  <artifactId>gwt-bootstrap5-extras</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>javadoc</classifier>
+                  <outputDirectory>${pages.dir}/bootstrap5/extras-apidocs</outputDirectory>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -258,6 +321,10 @@
                     <file>${pages.dir}/vendor/jquery-3.7.1.min.cache.js</file>
                     <file>${pages.dir}/vendor/bootstrap-3.4.1.min.cache.js</file>
                     <file>${pages.dir}/vendor/bootstrap-5.3.8.bundle.min.cache.js</file>
+                    <file>${pages.dir}/apidocs/index.html</file>
+                    <file>${pages.dir}/extras-apidocs/index.html</file>
+                    <file>${pages.dir}/bootstrap5/apidocs/index.html</file>
+                    <file>${pages.dir}/bootstrap5/extras-apidocs/index.html</file>
                   </files>
                 </requireFilesExist>
               </rules>

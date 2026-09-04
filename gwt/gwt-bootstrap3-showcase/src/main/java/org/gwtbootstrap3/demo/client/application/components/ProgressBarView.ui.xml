@@ -130,7 +130,7 @@
                 </b:PanelHeader>
                 <b:PanelBody>
                     <b.html:Paragraph>
-                        ** Not available in all versions of IE.
+                        The diagonal stripes move continuously while the progress bar is active.
                     </b.html:Paragraph>
                     <b:Progress active="true" type="STRIPED">
                         <b:ProgressBar type="SUCCESS" percent="40"/>

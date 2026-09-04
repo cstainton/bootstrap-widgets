@@ -342,7 +342,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbar.getNav().add(dropdown("Components", COMPONENT_LABELS, COMPONENT_SECTIONS));
         navbar.getNav().add(dropdown("JavaScript", JS_LABELS, JS_SECTIONS));
         navbar.getNav().add(dropdown("Extras", EXTRA_LABELS, EXTRA_SECTIONS));
-        navbar.getNav().add(dropdown("View Javadoc", new String[] {"GWT Bootstrap 5"}, new String[] {"apidocs/index.html"}));
+        String docsBase = "teavm".equals(GWT.getModuleName()) ? "bootstrap5/" : "";
+        navbar.getNav().add(dropdown("View Javadoc",
+                new String[] {"Core API", "Extras API"},
+                new String[] {docsBase + "apidocs/index.html", docsBase + "extras-apidocs/index.html"}));
         navbar.getNav().add(dropdown("Other Builds",
                 new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
                 new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
@@ -1106,7 +1109,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Widget progressAnimatedPanel() {
         Progress progress = stripedProgress(40, ProgressBarType.SUCCESS);
         progress.setActive(true);
-        return panel("Animated", progress, "Progress progress = new Progress();\nprogress.setType(ProgressType.STRIPED);\nprogress.setActive(true);");
+        return panel("Animated", stacked(
+                new Paragraph("The diagonal stripes move continuously unless the device requests reduced motion."),
+                progress),
+                "Progress progress = new Progress();\nprogress.setType(ProgressType.STRIPED);\nprogress.setActive(true);");
     }
 
     private Widget progressStackedPanel() {

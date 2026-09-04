@@ -44,7 +44,7 @@
             <b:BlockQuote>
                 <b.html:Paragraph>
                     Tooltip supports setting options for things like animation, html support,
-                    container element, and more. See the <a href="http://gwtbootstrap3.github.io/gwtbootstrap3-demo/snapshot/apidocs/org/gwtbootstrap3/client/ui/Tooltip.html">
+                    container element, and more. See the <a href="apidocs/org/gwtbootstrap3/client/ui/Tooltip.html">
                     Tooltip javadoc</a> for the full set of options.
                 </b.html:Paragraph>
                 <b.html:Paragraph>

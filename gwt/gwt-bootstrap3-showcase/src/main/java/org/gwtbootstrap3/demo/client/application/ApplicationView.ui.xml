@@ -174,8 +174,8 @@
                             <b:ListDropDown>
                                 <b:AnchorButton dataToggle="DROPDOWN">View Javadoc</b:AnchorButton>
                                 <b:DropDownMenu>
-                                    <b:AnchorListItem text="GwtBootstrap3" href="apidocs/index.html"/>
-                                    <b:AnchorListItem text="GwtBootstrap3-Extras" href="extras-apidocs/index.html"/>
+                                    <b:AnchorListItem text="Core API" href="apidocs/index.html"/>
+                                    <b:AnchorListItem text="Extras API" href="extras-apidocs/index.html"/>
                                 </b:DropDownMenu>
                             </b:ListDropDown>
                             <b:ListDropDown>
@@ -186,6 +186,9 @@
                                     <b:AnchorListItem text="Bootstrap 5 Showcase (TeaVM)" href="teavm-bootstrap5.html"/>
                                 </b:DropDownMenu>
                             </b:ListDropDown>
+                            <b:AnchorListItem text="Original showcase"
+                                              href="https://gwtbootstrap3.github.io/gwtbootstrap3-demo/"
+                                              target="_blank"/>
                             <b:AnchorListItem text="Fork on GitHub" href="https://github.com/cstainton/bootstrap-widgets"/>
                             <theme:ThemeSwitcher ui:field="themeSwitcher"/>
                         </b:NavbarNav>

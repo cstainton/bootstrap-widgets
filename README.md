@@ -1,55 +1,77 @@
 # Bootstrap Widgets
 
-Bootstrap Widgets is a single Maven reactor for Bootstrap 3 and Bootstrap 5 widget libraries targeting GWT and TeaVM.
+Bootstrap Widgets provides Bootstrap 3 and Bootstrap 5 widget libraries for GWT and TeaVM.
 
-1. The Bootstrap 3 track is the drop-in maintenance build for existing GwtBootstrap3 applications. It keeps `org.gwtbootstrap3.*`, the original GWT module names, Bootstrap 3 markup, and Bootstrap 3 widget behaviour, while updating the build to GWT 2.13.1, Bootstrap 3.4.1, and jQuery 3.7.1.
-2. The Bootstrap 5 track is a native migration build. It uses `io.instanto.bootstrap5.*`, Bootstrap 5 resources, Bootstrap 5 class names, Bootstrap 5 data attributes, and breaking API changes where Bootstrap 5 changed or removed Bootstrap 3 concepts.
+The Bootstrap 3 build is a maintained replacement for
+[GwtBootstrap3](https://github.com/gwtbootstrap3/gwtbootstrap3). It keeps the original Java packages,
+GWT module names, markup, and behaviour while updating the toolchain and browser dependencies. The
+Bootstrap 5 build provides a migration path with native Bootstrap 5 markup and JavaScript behaviour.
 
-The project also keeps TeaVM tracks for both versions. Both TeaVM tracks use the shared `teavm-gwt-compat` layer for the small GWT client surface they need, but the version-specific widgets remain separate. The TeaVM modules are not UiBinder/GWT DOM builds; they are direct Java widget APIs backed by TeaVM DOM/JSO calls.
-
-## Coordinates
-
-The artifacts publish under `io.instanto`, not the `org.gwtbootstrap3` groupId upstream uses.
-
-The groupId was changed to avoid clashing with the original project. `org.gwtbootstrap3` is upstream's namespace: releasing a fork into it would put artifacts that upstream did not build alongside ones it did, in the same coordinates, where a build resolving `org.gwtbootstrap3:*` could pick up either. Maven Central would refuse it anyway, since it verifies that a publisher owns the namespace, but the reason to move is the clash rather than the rule.
-
-The two tracks treat Java packages differently, on purpose.
-
-The Bootstrap 3 track keeps **`org.gwtbootstrap3.*` unchanged**. That is what makes it a drop-in: an existing GwtBootstrap3 application swaps its two dependency coordinates and touches no source. The corollary is that upstream GwtBootstrap3 and this fork must never both be on the same classpath, since they declare the same classes.
-
-The Bootstrap 5 track moves to **`io.instanto.bootstrap5.*`**. Nothing depends on it yet, so there is no drop-in compatibility to preserve, and the Bootstrap 5 widgets are not a version of anything upstream published. Upstream's copyright headers stay on every file they apply to, as the Apache License requires; the namespace changed, the attribution did not.
-
-### Artifact naming
-
-Artifacts are named `<backend>-<library>`, so the backend is the first thing you read:
-
-| | Bootstrap 3 | Bootstrap 5 |
+| Track | Purpose | Java packages |
 |---|---|---|
-| GWT | `gwt-bootstrap3` (`-extras`, `-themes`) | `gwt-bootstrap5` (`-extras`, `-themes`) |
-| TeaVM | `teavm-bootstrap3` | `teavm-bootstrap5` |
+| GWT Bootstrap 3 | Drop-in maintenance build for existing applications | `org.gwtbootstrap3.*` |
+| GWT Bootstrap 5 | Bootstrap 5-native migration target | `io.instanto.bootstrap5.*` |
+| TeaVM Bootstrap 3 | Bootstrap 3 widgets compiled from the GWT sources | `org.gwtbootstrap3.*` |
+| TeaVM Bootstrap 5 | Bootstrap 5 widgets compiled from the GWT sources | `io.instanto.bootstrap5.*` |
 
-`teavm-gwt-compat` carries the two backends' shared seam: a minimal `com.google.gwt.*` client API backed by TeaVM DOM calls, so the widget sources compile unchanged on both.
-
-The TeaVM builds are **separate artifactIds, not a `teavm` classifier**, because the two variants do not share a dependency set. A classifier attaches a second jar to the *same* groupId:artifactId:version, and a GAV has exactly one POM — so both jars would advertise the same dependencies. The GWT jar needs `org.gwtproject:gwt-user` and `gwt-dev` and must not drag TeaVM onto a consumer's classpath; the TeaVM jar needs `teavm-jso`, `teavm-jso-apis`, `teavm-classlib` and `teavm-gwt-compat` and must not drag in `gwt-user`. Maven has no variant-aware resolution to tell those apart (that is a Gradle module-metadata feature), so a classifier would hand every consumer both toolchains. Classifiers here are reserved for what they are for: `sources` and `javadoc`.
+Current core versions are GWT 2.13.1, TeaVM 0.15.0, Bootstrap 3.4.1, Bootstrap 5.3.8, and jQuery
+3.7.1. Bootstrap 5 does not use jQuery.
 
 ## Showcases
 
-- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/bootstrap-widgets/)
-- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/bootstrap-widgets/bootstrap5/)
-- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/bootstrap-widgets/teavm.html)
-- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
+- [GWT Bootstrap 3](https://cstainton.github.io/bootstrap-widgets/)
+- [GWT Bootstrap 5](https://cstainton.github.io/bootstrap-widgets/bootstrap5/)
+- [TeaVM Bootstrap 3](https://cstainton.github.io/bootstrap-widgets/teavm.html)
+- [TeaVM Bootstrap 5](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
 
-## Status
+The GWT and TeaVM showcases use the same widget and showcase sources where possible. This makes
+differences between the compilers visible instead of hiding them behind separate demos.
 
-This project is under active migration.
+## Choosing An Artifact
 
-The Bootstrap 3 compatibility build and original showcase compile with GWT 2.13.1. The Bootstrap 5 module is a native widget track with top-level coverage for the current GwtBootstrap3 widget catalogue. Its compiled showcase covers layout, buttons, cards, alerts, badges, list groups, linked groups, typography helpers, icons, images, thumbnails, dropdowns, modals, navbars, navs, tabs, progress bars, input groups, form adapters, value boxes, radio groups, collapse, tooltips, popovers, carousels, pagination, and Bootstrap 3 panel/well concepts mapped to Bootstrap 5 card/utility idioms. The TeaVM modules are experimental and currently contain compile-checked subsets for Bootstrap 3-compatible and Bootstrap 5-native rendering.
+All artifacts use the `io.instanto` group ID and currently publish as `1.0-SNAPSHOT`.
 
-## Migration Paths
+| Runtime | Bootstrap 3 | Bootstrap 5 |
+|---|---|---|
+| GWT | `gwt-bootstrap3` | `gwt-bootstrap5` |
+| GWT extras | `gwt-bootstrap3-extras` | `gwt-bootstrap5-extras` |
+| GWT themes | `gwt-bootstrap3-themes` | `gwt-bootstrap5-themes` |
+| TeaVM | `teavm-bootstrap3` | `teavm-bootstrap5` |
 
-Snapshots are published to GitHub Packages from the root `bootstrap-widgets`
-reactor. Add the package repository to the consuming build before declaring a
-dependency:
+Use `gwt-bootstrap3` when updating an existing GwtBootstrap3 application. Only the Maven group ID
+and version need to change. Do not put the original GwtBootstrap3 artifact and this replacement on
+the same classpath because both contain `org.gwtbootstrap3.*` classes.
+
+Use `gwt-bootstrap5` for new Bootstrap 5 code or when migrating an application. Its API follows the
+same widget composition and event-handling model where that still fits Bootstrap 5, but it is not a
+drop-in replacement. Templates, styles, and removed Bootstrap 3 concepts may need changes. See
+[BOOTSTRAP5-PORTING.md](BOOTSTRAP5-PORTING.md) for current coverage.
+
+TeaVM artifacts have separate names because they use TeaVM libraries and `teavm-gwt-compat` instead
+of `gwt-user`. The build rejects `gwt-user` and `gwt-dev` on TeaVM module classpaths.
+
+## TeaVM Support
+
+The TeaVM builds compile the corresponding GWT widget sources. They do not maintain a second copy of
+the widget API. `teavm-gwt-compat` implements the part of the GWT client API used by those sources and
+provides TeaVM-backed DOM, events, widgets, history, scheduling, and resource support.
+
+UiBinder templates are supported through the `widget-processor` annotation processor. It generates
+ordinary Java during compilation, including widget construction, fields, handlers, constructors,
+enum attributes, and the template features used by the shared showcases.
+
+The `teavm-module-maven-plugin` reads GWT module and ClientBundle declarations and generates TeaVM
+resource loaders. Scripts load in declaration order, expose a readiness result, report failures, and
+are not loaded again when the host application already provides them.
+
+This compatibility layer covers what these widget libraries currently use; it is not a complete
+replacement for all of GWT. In particular, the TeaVM Bootstrap 3 showcase currently runs 41 of the
+original 55 pages. The remaining 14 pages depend on old extras with extensive JSNI code. Bootstrap 5
+extras are being moved to explicit JavaScript seams that both compilers can implement.
+
+## Using GitHub Packages
+
+Add the package repository to the consuming build:
 
 ```xml
 <repository>
@@ -61,10 +83,8 @@ dependency:
 </repository>
 ```
 
-GitHub Packages requires GitHub credentials in Maven `settings.xml`, including
-when the package is public.
-
-Use the Bootstrap 3 artifacts when you want the safest replacement for an existing GwtBootstrap3 dependency:
+GitHub Packages requires GitHub credentials in Maven `settings.xml`, including for public packages.
+Then add the artifact for the track you want, for example:
 
 ```xml
 <dependency>
@@ -72,118 +92,58 @@ Use the Bootstrap 3 artifacts when you want the safest replacement for an existi
   <artifactId>gwt-bootstrap3</artifactId>
   <version>1.0-SNAPSHOT</version>
 </dependency>
-
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap3-extras</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</dependency>
 ```
-
-Use the Bootstrap 5 artifact when you are ready to migrate templates and code to Bootstrap 5 concepts:
-
-```xml
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>gwt-bootstrap5</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</dependency>
-```
-
-TeaVM Bootstrap 3 experiment:
-
-```xml
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>teavm-bootstrap3</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</dependency>
-```
-
-TeaVM Bootstrap 5 experiment:
-
-```xml
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>teavm-bootstrap5</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</dependency>
-```
-
-## Modules
-
-The root reactor contains two independently addressable sub-reactors:
-
-- `gwt/`: GWT libraries, extras, themes, and showcases for Bootstrap 3 and Bootstrap 5.
-- `teavm/`: the shared GWT compatibility layer and TeaVM Bootstrap 3 and Bootstrap 5 libraries/showcases.
-
-The GWT modules are `gwt-bootstrap3`, `gwt-bootstrap3-extras`, `gwt-bootstrap3-themes`, `gwt-bootstrap3-showcase`, `gwt-bootstrap5`, `gwt-bootstrap5-extras`, `gwt-bootstrap5-themes`, and `gwt-bootstrap5-showcase`.
-
-The TeaVM modules are `teavm-gwt-compat`, `teavm-bootstrap3`, and `teavm-bootstrap5`. The version-specific modules include their TeaVM showcase entry points.
-
-All published library artifacts include a `-sources.jar`. The GWT and TeaVM
-showcases publish their JavaScript source maps together with the mapped Java
-source trees.
-
-## Bootstrap 5 Coverage
-
-`BOOTSTRAP5-PORTING.md` tracks the Bootstrap 5-native implementation. It draws on familiar GwtBootstrap3 widget concepts where that helps migration, but Bootstrap 5 has its own public API and may diverge where the underlying framework differs. The showcase provides visible coverage for common content, status, navigation, overlay, dropdown, progress, basic form, value, radio group, media, image, tab, collapse, tooltip, popover, carousel and pagination widgets. The compatibility story belongs to Bootstrap 3; Bootstrap 5 keeps native markup and behaviour.
-
-The Bootstrap 5 migration path is widget-by-widget: port the Bootstrap 3 widget concept, replace Bootstrap 3 styles and markup with Bootstrap 5 equivalents, and replace jQuery plugin behaviour with Bootstrap 5 JavaScript APIs or direct DOM behaviour.
 
 ## Build
 
-Build and install the Maven reactor:
+CI uses Java 21; the libraries target Java 17 bytecode.
+
+Build and install the complete reactor:
 
 ```bash
-mvn -f pom.xml -DskipTests install
+mvn -DskipTests install
 ```
 
-Compile the Bootstrap 3 compatibility showcase:
+Compile either GWT showcase directly:
 
 ```bash
 mvn -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
-```
-
-Compile the Bootstrap 5-native showcase:
-
-```bash
 mvn -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 ```
 
-Compile the TeaVM Bootstrap 3 smoke target:
+Compile either TeaVM library and showcase:
 
 ```bash
 mvn -f teavm/teavm-bootstrap3/pom.xml -DskipTests package
-```
-
-Compile the TeaVM Bootstrap 5 smoke target:
-
-```bash
 mvn -f teavm/teavm-bootstrap5/pom.xml -DskipTests package
 ```
 
-## Showcase Details
+Published library artifacts include source JARs. GWT core and extras artifacts also include
+Javadoc JARs, which are published with the showcases. The GWT and TeaVM showcase builds publish
+JavaScript source maps and the corresponding Java source trees.
 
-GitHub Pages serves the Bootstrap 3-compatible showcase:
+## Tests
 
-[https://cstainton.github.io/bootstrap-widgets/](https://cstainton.github.io/bootstrap-widgets/)
+The test suite includes:
 
-The Bootstrap 5-native GWT showcase is published at:
+- shared Gherkin behaviour specifications based on the original GwtBootstrap3 showcase;
+- API contracts run against both `gwt-user` and `teavm-gwt-compat`;
+- compiled GWT and TeaVM widget fixtures;
+- real-browser showcase smoke tests and mobile touch tests.
 
-[https://cstainton.github.io/bootstrap-widgets/bootstrap5/](https://cstainton.github.io/bootstrap-widgets/bootstrap5/)
+[TESTING-PLAN.md](TESTING-PLAN.md) describes the test families, tags, coverage rules, and remaining
+work.
 
-The TeaVM Bootstrap 3 smoke page is published at:
+## Repository Layout
 
-[https://cstainton.github.io/bootstrap-widgets/teavm.html](https://cstainton.github.io/bootstrap-widgets/teavm.html)
+| Path | Contents |
+|---|---|
+| `gwt/` | Bootstrap 3 and 5 libraries, extras, themes, showcases, fixtures, and GWT tests |
+| `teavm/` | GWT compatibility layer, Bootstrap 3 and 5 TeaVM builds, and TeaVM tests |
+| `widget-processor/` | UiBinder annotation processor used by TeaVM builds |
+| `teavm-module-plugin/` | Maven plugin that converts GWT module resources for TeaVM |
+| `testing/` | Shared behaviour specifications, fixture identities, and API contracts |
+| `showcase-site/` | GitHub Pages assembly for all four showcases |
 
-The TeaVM Bootstrap 5 smoke page is published at:
-
-[https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
-
-## Notes
-
-- Java package names remain `org.gwtbootstrap3.*` for source compatibility in the Bootstrap 3 compatibility modules.
-- Bootstrap 5 widgets use `io.instanto.bootstrap5.*` and should not change `org.gwtbootstrap3` semantics.
-- GWT module names remain based on the original GwtBootstrap3 modules for the Bootstrap 3 compatibility track.
-- Browser assets are tracked in `THIRD-PARTY-ASSETS.md`.
+Third-party browser assets and their versions are listed in
+[THIRD-PARTY-ASSETS.md](THIRD-PARTY-ASSETS.md).
