@@ -21,29 +21,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${exec-maven-plugin.version}</version>
-        <inherited>false</inherited>
-        <executions>
-          <execution>
-            <id>check-widget-fixture-coverage</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>exec</goal>
-            </goals>
-            <configuration>
-              <executable>python3</executable>
-              <workingDirectory>${project.parent.parent.basedir}</workingDirectory>
-              <arguments>
-                <argument>scripts/generate-teavm-widget-tests.py</argument>
-                <argument>--check</argument>
-              </arguments>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>

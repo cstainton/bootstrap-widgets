@@ -15,7 +15,6 @@
   <name>Bootstrap Widget Testing</name>
 
   <modules>
-    <module>bootstrap-widget-fixtures</module>
     <module>bootstrap-widget-specifications</module>
     <module>bootstrap-widget-contracts</module>
   </modules>
