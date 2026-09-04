@@ -114,18 +114,32 @@ would otherwise add DOM or server concerns to the small Cucumber Tea runtime.
 queries and interactions to a same-origin child document. No
 `mockatcha-gwt-dom` module is planned initially.
 
-### GWT Bootstrap repository
+### Bootstrap Widgets repository
 
-| Module | Responsibility |
+The repository layout is part of the test isolation model:
+
+| Path | Responsibility |
 | --- | --- |
-| `bootstrap-widget-specifications` | Shared `.feature` resources and coverage metadata |
-| `bootstrap-widget-fixtures` | Authoritative fixture catalogue, stable fixture IDs and renderable examples |
-| `bootstrap-widget-contracts` | Portable Java contracts used by compatibility runners |
-| `gwt-user-jvm-contract-tests` | Fast ordinary-JUnit reference tests for contracts that need no GWT compile or browser |
-| `gwt-bootstrap-widget-tests` | Browser-bound real-`gwt-user` compatibility reference tests only |
-| `teavm-bootstrap-widget-tests` | Generated TeaVM tests for Bootstrap 3 and Bootstrap 5 |
-| `bootstrap-showcase-browser-tests` | Framed tests against all compiled showcases and the assembled site |
-| `teavm-gwt-compat-contracts` | GWT API conformance corpus shared by reference and compatibility runs |
+| `pom.xml` | Root `bootstrap-widgets` reactor and common build policy |
+| `gwt/pom.xml` | GWT libraries, themes, extras, showcases and GWT-only tests |
+| `teavm/pom.xml` | TeaVM compatibility runtime, TeaVM widget builds and TeaVM-only tests |
+| `testing/pom.xml` | Future cross-target specifications, fixture metadata and assembled-site tests |
+
+The root reactor will add `testing/` when its first module is implemented.
+Compiler-bound tests stay in their compiler sub-reactor; no test module may
+bridge `gwt/` and `teavm/` by putting both runtime implementations on one
+classpath.
+
+| Proposed path | Responsibility |
+| --- | --- |
+| `testing/bootstrap-widget-specifications` | Shared `.feature` resources and coverage metadata |
+| `testing/bootstrap-widget-fixtures` | Compiler-neutral fixture IDs, metadata and renderable-example contracts |
+| `testing/bootstrap-widget-contracts` | Portable Java contracts used by compatibility runners |
+| `gwt/gwt-user-jvm-contract-tests` | Fast ordinary-JUnit reference tests for contracts that need no GWT compile or browser |
+| `gwt/gwt-bootstrap-widget-tests` | Browser-bound real-`gwt-user` compatibility reference tests only |
+| `teavm/teavm-bootstrap-widget-tests` | Generated TeaVM tests and concrete fixture factories for Bootstrap 3 and Bootstrap 5 |
+| `testing/bootstrap-showcase-browser-tests` | Framed tests against all compiled showcases and the assembled Pages site |
+| `teavm/teavm-gwt-compat-contracts` | TeaVM execution of the shared GWT API conformance corpus |
 
 These can begin as fewer integration-test modules and be split only when build
 ordering or dependency isolation requires it. In particular, GWT and TeaVM
@@ -133,6 +147,11 @@ must never see both `gwt-user` and `teavm-gwt-compat` implementations of the
 same `com.google.gwt.*` classes on one compiler classpath. The `teavm/`
 sub-reactor enforces this by banning both the current `org.gwtproject` and
 legacy `com.google.gwt` coordinates for `gwt-user` and `gwt-dev`.
+
+The GWT showcases at `gwt/gwt-bootstrap3-showcase` and
+`gwt/gwt-bootstrap5-showcase` compile with Thomas Broyer's
+`net.ltgt.gwt.maven:gwt-maven-plugin`. TeaVM tests must not invoke that plugin
+or inherit a GWT application lifecycle.
 
 ## Shared Feature Corpus
 
@@ -767,7 +786,8 @@ snapshot changes, then update the pin deliberately.
 ### Pull requests
 
 1. Enforce compiler classpath isolation and fixture-to-public-API coverage.
-2. Build the reactor without globally skipping tests.
+2. Build the root reactor without globally skipping tests; this traverses
+   `gwt/`, `teavm/` and, once introduced, `testing/`.
 3. Run the plain TeaVM reachability suite for both Bootstrap generations.
 4. Run Cucumber Tea parser and existing code-generation unit tests.
 5. Run JVM-safe `gwt-user` reference contracts, browser-bound GWT reference
@@ -816,9 +836,10 @@ CI artifact.
 ### Phase 0: Reach every TeaVM widget now
 
 1. Add Maven Enforcer bans for all historical and current `gwt-user` and
-   `gwt-dev` coordinates to every TeaVM module.
+   `gwt-dev` coordinates to every module under `teavm/`.
 2. Add in-repository Bootstrap 3 and Bootstrap 5 fixture registries whose
-   factory bodies contain concrete `new` expressions. Prohibit reflection,
+   factory bodies contain concrete `new` expressions under
+   `teavm/teavm-bootstrap3` and `teavm/teavm-bootstrap5`. Prohibit reflection,
    `ServiceLoader`, scanning and runtime class lookup.
 3. Generate one plain JUnit method per fixture under `TeaVMTestRunner`; do not
    execute reachability through a loop over dynamic registry entries.
@@ -864,8 +885,9 @@ toggle, emit the wrong value event or leak handlers after detach.
 
 ### Phase 3: Expose catalogue fixtures in the showcases
 
-1. Add stable fixture hosts to existing showcase routes only for scenarios
-   selected for frame coverage.
+1. Add stable fixture hosts to `gwt/gwt-bootstrap3-showcase`,
+   `gwt/gwt-bootstrap5-showcase`, `teavm/teavm-bootstrap3` and
+   `teavm/teavm-bootstrap5` only for scenarios selected for frame coverage.
 2. Reuse the catalogue factories where the compiler permits it; otherwise add
    a thin showcase adapter with the same fixture ID and contract.
 3. Keep narrative text, source examples and non-tested demonstrations in the

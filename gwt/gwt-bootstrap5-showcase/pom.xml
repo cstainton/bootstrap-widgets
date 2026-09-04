@@ -54,7 +54,7 @@
       <plugin>
         <groupId>net.ltgt.gwt.maven</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1.0</version>
+        <version>${gwt-maven-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <moduleName>io.instanto.bootstrap5.showcase.GwtBootstrap5Showcase</moduleName>
