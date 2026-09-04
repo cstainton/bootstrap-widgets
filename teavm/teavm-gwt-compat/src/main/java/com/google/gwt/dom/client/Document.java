@@ -177,16 +177,48 @@ public final class Document {
     public NativeEvent createClickEvent(final int detail, final int screenX, final int screenY,
             final int clientX, final int clientY, final boolean ctrlKey, final boolean altKey,
             final boolean shiftKey, final boolean metaKey) {
-        return new NativeEvent(newMouseEvent("click", clientX, clientY, ctrlKey, altKey, shiftKey, metaKey));
+        return createMouseEvent("click", true, true, detail, screenX, screenY, clientX, clientY,
+                ctrlKey, altKey, shiftKey, metaKey, 0, null);
+    }
+
+    public NativeEvent createMouseOverEvent(final int detail, final int screenX, final int screenY,
+            final int clientX, final int clientY, final boolean ctrlKey, final boolean altKey,
+            final boolean shiftKey, final boolean metaKey, final int button,
+            final Element relatedTarget) {
+        return createMouseEvent("mouseover", true, true, detail, screenX, screenY, clientX,
+                clientY, ctrlKey, altKey, shiftKey, metaKey, button, relatedTarget);
+    }
+
+    public NativeEvent createMouseOutEvent(final int detail, final int screenX, final int screenY,
+            final int clientX, final int clientY, final boolean ctrlKey, final boolean altKey,
+            final boolean shiftKey, final boolean metaKey, final int button,
+            final Element relatedTarget) {
+        return createMouseEvent("mouseout", true, true, detail, screenX, screenY, clientX,
+                clientY, ctrlKey, altKey, shiftKey, metaKey, button, relatedTarget);
+    }
+
+    public NativeEvent createMouseEvent(final String type, final boolean canBubble,
+            final boolean cancelable, final int detail, final int screenX, final int screenY,
+            final int clientX, final int clientY, final boolean ctrlKey, final boolean altKey,
+            final boolean shiftKey, final boolean metaKey, final int button,
+            final Element relatedTarget) {
+        return new NativeEvent(newMouseEvent(type, canBubble, cancelable, detail, screenX,
+                screenY, clientX, clientY, ctrlKey, altKey, shiftKey, metaKey, button,
+                relatedTarget == null ? null : relatedTarget.unwrap()));
     }
 
     @org.teavm.jso.JSBody(
-            params = {"type", "clientX", "clientY", "ctrlKey", "altKey", "shiftKey", "metaKey"},
-            script = "return new MouseEvent(type, {bubbles: true, cancelable: true,"
-                    + " clientX: clientX, clientY: clientY, ctrlKey: ctrlKey,"
-                    + " altKey: altKey, shiftKey: shiftKey, metaKey: metaKey});")
-    private static native org.teavm.jso.dom.events.Event newMouseEvent(String type, int clientX,
-            int clientY, boolean ctrlKey, boolean altKey, boolean shiftKey, boolean metaKey);
+            params = {"type", "canBubble", "cancelable", "detail", "screenX", "screenY",
+                    "clientX", "clientY", "ctrlKey", "altKey", "shiftKey", "metaKey",
+                    "button", "relatedTarget"},
+            script = "return new MouseEvent(type, {bubbles: canBubble, cancelable: cancelable,"
+                    + " detail: detail, screenX: screenX, screenY: screenY, clientX: clientX,"
+                    + " clientY: clientY, ctrlKey: ctrlKey, altKey: altKey, shiftKey: shiftKey,"
+                    + " metaKey: metaKey, button: button, relatedTarget: relatedTarget});")
+    private static native org.teavm.jso.dom.events.Event newMouseEvent(String type,
+            boolean canBubble, boolean cancelable, int detail, int screenX, int screenY,
+            int clientX, int clientY, boolean ctrlKey, boolean altKey, boolean shiftKey,
+            boolean metaKey, int button, HTMLElement relatedTarget);
 
     public Element createLabel() {
         return createElement("label");

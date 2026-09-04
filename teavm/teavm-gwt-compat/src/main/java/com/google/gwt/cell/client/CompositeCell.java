@@ -91,7 +91,7 @@ public class CompositeCell<C> extends AbstractCell<C> {
     @Override
     public void onBrowserEvent(final Context context, final Element parent, final C value,
             final NativeEvent event, final ValueUpdater<C> valueUpdater) {
-        final Element target = event.getEventTarget();
+        final Element target = Element.as(event.getEventTarget());
         Element child = parent.getFirstChildElement();
         for (final HasCell<C, ?> hasCell : hasCells) {
             if (child != null && target != null && child.isOrHasChild(target)) {

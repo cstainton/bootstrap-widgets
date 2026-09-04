@@ -25,6 +25,7 @@
 package com.google.gwt.user.client;
 
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Element;
 
 /**
  * Browser event wrapper and the {@code ONXXX} bit constants. The library uses the
@@ -71,6 +72,11 @@ public class Event extends NativeEvent {
     /** Wraps a native event, or returns {@code null} for none. */
     public static Event as(final NativeEvent event) {
         return event == null ? null : new Event(event.unwrap());
+    }
+
+    /** Legacy GWT alias for the related mouse-event target. */
+    public Element getRelatedTarget() {
+        return Element.as(getRelatedEventTarget());
     }
 
     /**

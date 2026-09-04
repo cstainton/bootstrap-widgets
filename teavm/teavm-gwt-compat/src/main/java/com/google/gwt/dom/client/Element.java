@@ -24,6 +24,8 @@
  */
 package com.google.gwt.dom.client;
 
+import com.google.gwt.core.client.JavaScriptObject;
+
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.html.HTMLElement;
@@ -44,6 +46,24 @@ public class Element {
     public HTMLElement unwrap() {
         return element;
     }
+
+    /** Narrows an opaque GWT JavaScript value to an element wrapper. */
+    public static Element as(final JavaScriptObject value) {
+        if (value == null) {
+            return null;
+        }
+        if (!is(value)) {
+            throw new IllegalArgumentException("value is not a DOM element");
+        }
+        return new Element((HTMLElement) value.unwrap());
+    }
+
+    public static boolean is(final JavaScriptObject value) {
+        return value != null && isElement(value.unwrap());
+    }
+
+    @JSBody(params = {"value"}, script = "return !!value && value.nodeType === 1;")
+    private static native boolean isElement(JSObject value);
 
     @SuppressWarnings("unchecked")
     public <T extends Element> T cast() {

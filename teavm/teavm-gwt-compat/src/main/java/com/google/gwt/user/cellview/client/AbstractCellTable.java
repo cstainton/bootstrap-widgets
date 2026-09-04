@@ -317,7 +317,7 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
 
     private void onHeaderClick(final org.teavm.jso.dom.events.Event nativeEvent) {
         final NativeEvent event = new NativeEvent(nativeEvent);
-        final Element target = event.getEventTarget();
+        final Element target = Element.as(event.getEventTarget());
         if (target == null) {
             return;
         }
@@ -362,7 +362,7 @@ public abstract class AbstractCellTable<T> extends AbstractHasData<T> {
     /** Routes a browser event to the cell whose {@code td} it landed in. */
     private void dispatch(final org.teavm.jso.dom.events.Event nativeEvent) {
         final NativeEvent event = new NativeEvent(nativeEvent);
-        final Element target = event.getEventTarget();
+        final Element target = Element.as(event.getEventTarget());
         if (target == null) {
             return;
         }

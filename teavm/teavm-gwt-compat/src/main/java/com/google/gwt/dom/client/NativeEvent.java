@@ -58,13 +58,20 @@ public class NativeEvent {
         }
     }
 
-    public Element getEventTarget() {
-        if (!(event instanceof MouseEvent)) {
-            return null;
-        }
-        final org.teavm.jso.dom.html.HTMLElement target =
-                (org.teavm.jso.dom.html.HTMLElement) ((MouseEvent) event).getTarget();
-        return target == null ? null : new Element(target);
+    public EventTarget getEventTarget() {
+        return event == null ? null : wrap(event.getTarget());
+    }
+
+    public EventTarget getCurrentEventTarget() {
+        return event == null ? null : wrap(event.getCurrentTarget());
+    }
+
+    public EventTarget getRelatedEventTarget() {
+        return event instanceof MouseEvent ? wrap(((MouseEvent) event).getRelatedTarget()) : null;
+    }
+
+    private static EventTarget wrap(final org.teavm.jso.dom.events.EventTarget target) {
+        return target == null ? null : new EventTarget(target);
     }
 
     public int getClientX() {

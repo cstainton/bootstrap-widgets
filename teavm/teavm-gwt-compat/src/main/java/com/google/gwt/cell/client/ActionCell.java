@@ -76,7 +76,7 @@ public class ActionCell<C> extends AbstractCell<C> {
 
     /** Guards against clicks that land on the row but outside the button. */
     private static boolean isTargetInside(final Element parent, final NativeEvent event) {
-        final Element target = event.getEventTarget();
+        final Element target = Element.as(event.getEventTarget());
         return target != null && parent.isOrHasChild(target);
     }
 }

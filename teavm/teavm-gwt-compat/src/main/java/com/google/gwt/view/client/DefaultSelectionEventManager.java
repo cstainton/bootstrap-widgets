@@ -105,7 +105,7 @@ public class DefaultSelectionEventManager<T> implements CellPreviewEvent.Handler
             if (!"click".equals(nativeEvent.getType())) {
                 return SelectAction.IGNORE;
             }
-            final Element target = nativeEvent.getEventTarget();
+            final Element target = Element.as(nativeEvent.getEventTarget());
             if (target == null || !"input".equalsIgnoreCase(target.getTagName())) {
                 return SelectAction.IGNORE;
             }

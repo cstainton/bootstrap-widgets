@@ -163,7 +163,7 @@ public class CellList<T> extends AbstractHasData<T> {
 
     private void dispatch(final org.teavm.jso.dom.events.Event nativeEvent) {
         final NativeEvent event = new NativeEvent(nativeEvent);
-        final Element target = event.getEventTarget();
+        final Element target = Element.as(event.getEventTarget());
         if (target == null) {
             return;
         }

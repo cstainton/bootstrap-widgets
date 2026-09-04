@@ -49,14 +49,14 @@ The first executable tranche is now in the repository:
   target/case filtering. The planned Cucumber Tea frame host and
   document-scoped Mockatcha API remain open.
 - Phase 6 has five JVM-safe contracts against real `gwt-user`, four
-  browser-bound contracts through `GWTTestCase`, and all nine contracts against
+  browser-bound contracts through `GWTTestCase`, and ten contracts against
   `teavm-gwt-compat` in Chromium.
 - Phase 9 has an initial deployment gate. CI assembles the four showcases with
   local vendored JavaScript, renders each in Chromium, and passes that exact
   artifact to the Pages workflow for the same successful run.
 
-The current Maven matrix executes 292 tests: 5 processor contracts, 5 JVM
-reference contracts, 4 GWT browser reference contracts, 9 TeaVM compatibility
+The current Maven matrix executes 293 tests: 5 processor contracts, 5 JVM
+reference contracts, 4 GWT browser reference contracts, 10 TeaVM compatibility
 contracts, 128 Bootstrap 3 TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI
 additionally executes 124 compiled-GWT mobile-touch tests. Phase 5, generated
 Cucumber Tea glue, the remaining Phase 3/4/6 work, the expanded behaviour
