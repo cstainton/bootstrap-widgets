@@ -107,6 +107,10 @@
               the seam; this module supplies its own, returning null for every token.
             -->
             <exclude>org/gwtbootstrap3/demo/client/ExtrasPages.java</exclude>
+            <!-- Seam: prettify.js arrives by URL here, not inlined by a ClientBundle. -->
+            <exclude>org/gwtbootstrap3/demo/client/ShowcaseScripts.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/ui/PrettyPre.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/GwtBootstrap3DemoClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/application/extras/**</exclude>
             <exclude>org/gwtbootstrap3/demo/client/application/css/validation/**</exclude>
             <exclude>org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</exclude>
@@ -162,9 +166,9 @@
               <goal>compile</goal>
             </goals>
             <configuration>
-              <mainClass>org.gwtbootstrap3.teavm.demo.Bootstrap3ShowcaseApp</mainClass>
+              <mainClass>org.gwtbootstrap3.teavm.demo.SharedShowcaseApp</mainClass>
               <targetDirectory>${project.build.directory}/teavm</targetDirectory>
-              <targetFileName>teavm-bootstrap3-smoke.js</targetFileName>
+              <targetFileName>teavm-bootstrap3-showcase.js</targetFileName>
               <minifying>true</minifying>
               <sourceMapsGenerated>true</sourceMapsGenerated>
               <sourceFilesCopied>true</sourceFilesCopied>

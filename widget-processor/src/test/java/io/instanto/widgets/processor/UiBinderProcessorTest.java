@@ -220,6 +220,19 @@ public class UiBinderProcessorTest {
                 generated.contains("owner.unheld"));
     }
 
+    @Test
+    public void treatsBackslashSequencesInTemplateTextAsJavaEscapes() throws Exception {
+        // Every code sample in the showcase spells its line breaks this way, and GWT
+        // renders them as line breaks because the text becomes a Java string literal.
+        final Compilation compilation = compile(
+                sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                validTemplate().replace(">Save<", ">first\\nsecond<"));
+
+        assertTrue(compilation.diagnostics(), compilation.success);
+        assertContains(compilation.generated("fixture/Sample_BinderImpl.java"),
+                "button2.setText(\"first\\nsecond\");");
+    }
+
     private Compilation compile(final String owner, final String template) throws Exception {
         final Path workspace = Files.createTempDirectory("uibinder-processor-test-");
         workspaces.add(workspace);

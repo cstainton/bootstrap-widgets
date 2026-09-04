@@ -161,7 +161,24 @@
                   <includes>
                     <include>font-awesome-4.7.0.min.cache.css</include>
                     <include>gwt-bootstrap3.cache.css</include>
+                    <!--
+                      Also here, not only under bootstrap/: StandardThemes builds a theme
+                      URL as the module base plus css/, so this is where the runtime theme
+                      switcher looks for the stylesheet it swaps in.
+                    -->
+                    <include>bootstrap-3.4.1.min.cache.css</include>
+                    <include>bootstrap-theme-3.4.1.min.cache.css</include>
                   </includes>
+                </resource>
+                <!--
+                  The syntax highlighter. GWT compiles it into the output through a
+                  ClientBundle; the TeaVM showcase loads the same file by URL, so the
+                  site has to serve it.
+                -->
+                <resource>
+                  <directory>${project.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/resources/org/gwtbootstrap3/demo/client/resource/js</directory>
+                  <targetPath>js</targetPath>
+                  <includes><include>prettify.js</include></includes>
                 </resource>
                 <resource>
                   <directory>${b3.res}/fonts</directory>
@@ -236,7 +253,7 @@
                     <file>${pages.dir}/fixtures/gwt-bootstrap5/index.html</file>
                     <file>${pages.dir}/teavm.html</file>
                     <file>${pages.dir}/teavm-bootstrap5.html</file>
-                    <file>${pages.dir}/teavm/teavm-bootstrap3-smoke.js</file>
+                    <file>${pages.dir}/teavm/teavm-bootstrap3-showcase.js</file>
                     <file>${pages.dir}/teavm5/teavm-bootstrap5-smoke.js</file>
                     <file>${pages.dir}/vendor/jquery-3.7.1.min.cache.js</file>
                     <file>${pages.dir}/vendor/bootstrap-3.4.1.min.cache.js</file>

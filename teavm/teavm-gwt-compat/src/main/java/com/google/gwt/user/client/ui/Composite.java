@@ -50,6 +50,36 @@ public abstract class Composite extends Widget {
         widget.setParent(this);
     }
 
+    /**
+     * Attaches the wrapped widget, then this one.
+     *
+     * <p>Without this nothing inside a Composite is ever told it has been attached: the
+     * wrapped widget's onLoad does not run, nor does any of its children's, because
+     * attachment stops at the Composite's own boundary. Widgets that do their setup on
+     * attach -- a tooltip binding to its element, a code block asking to be highlighted
+     * -- silently never start. GWT attaches the wrapped widget first and calls its own
+     * onLoad afterwards, so that a Composite sees a fully attached subtree.</p>
+     */
+    @Override
+    protected void onAttach() {
+        if (widget != null && !widget.isAttached()) {
+            widget.onAttach();
+        }
+        super.onAttach();
+    }
+
+    /** Detaches this widget, then the one it wraps, unwinding the order above. */
+    @Override
+    protected void onDetach() {
+        try {
+            super.onDetach();
+        } finally {
+            if (widget != null && widget.isAttached()) {
+                widget.onDetach();
+            }
+        }
+    }
+
     @Override
     public void fireEvent(final GwtEvent<?> event) {
         super.fireEvent(event);

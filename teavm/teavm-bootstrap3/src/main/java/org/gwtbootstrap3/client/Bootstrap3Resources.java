@@ -70,6 +70,11 @@ public final class Bootstrap3Resources {
         link(ID_PREFIX + "library", base + LIBRARY);
     }
 
+    /** Where scripts served alongside the stylesheets live. */
+    public static String scriptBase() {
+        return base.endsWith("css/") ? base.substring(0, base.length() - 4) + "js/" : base;
+    }
+
     private static void link(final String id, final String href) {
         if (Document.get().getElementById(id) != null) {
             return;

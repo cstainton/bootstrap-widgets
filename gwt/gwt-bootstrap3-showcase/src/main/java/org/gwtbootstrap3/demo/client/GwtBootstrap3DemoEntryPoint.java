@@ -21,7 +21,6 @@ package org.gwtbootstrap3.demo.client;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
@@ -51,9 +50,7 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
-        ScriptInjector.fromString(GwtBootstrap3DemoClientBundle.INSTANCE.prettify().getText())
-                .setWindow(ScriptInjector.TOP_WINDOW)
-                .inject();
+        ShowcaseScripts.inject();
 
         shell = new ApplicationView();
         RootPanel.get().add(shell);

@@ -1,17 +1,15 @@
-package org.gwtbootstrap3.demo.client.ui;
-
 /*
  * #%L
- * GwtBootstrap3
+ * GWT Bootstrap
  * %%
- * Copyright (C) 2013 - 2014 GwtBootstrap3
+ * Copyright (C) 2026 Carl Stainton
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +17,19 @@ package org.gwtbootstrap3.demo.client.ui;
  * limitations under the License.
  * #L%
  */
+package org.gwtbootstrap3.demo.client.ui;
 
 import org.gwtbootstrap3.client.ui.Pre;
 import org.gwtbootstrap3.demo.client.ui.constants.Styles;
+import org.teavm.jso.JSBody;
 
 /**
- * @author Sven Jacobs
+ * A {@code pre} the syntax highlighter has run over.
+ *
+ * <p>The TeaVM half of a seam. The GWT file is identical but for the one call into the
+ * page, which it makes through JSNI; this one makes it through JSBody. The highlighter
+ * may not have loaded when a page is built, so a missing prettyPrint is not an error
+ * here -- the script is fetched by URL on this backend rather than compiled in.</p>
  */
 public class PrettyPre extends Pre {
 
@@ -35,19 +40,9 @@ public class PrettyPre extends Pre {
     @Override
     protected void onLoad() {
         super.onLoad();
-
-        // When the widget loads, force the styling of pretty print
         prettyPrint();
     }
 
-    /**
-     * Re-runs the highlighter over the page.
-     *
-     * <p>A seam, like the others here: this reaches the browser through JSNI, which only
-     * GWT compiles, and teavm-bootstrap3 carries a JSBody counterpart. The two do the
-     * same thing by the only route each backend has.</p>
-     */
-    private native void prettyPrint() /*-{
-        $wnd.prettyPrint();
-    }-*/;
+    @JSBody(script = "if (typeof window.prettyPrint === 'function') { window.prettyPrint(); }")
+    private static native void prettyPrint();
 }

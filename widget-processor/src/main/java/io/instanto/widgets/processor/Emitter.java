@@ -721,13 +721,42 @@ final class Emitter {
         return out.toString();
     }
 
+    /**
+     * Escapes template text for a Java string literal.
+     *
+     * <p>A backslash sequence the language already understands is passed through rather
+     * than doubled. GWT writes template text straight into a generated literal, so the
+     * two characters a template spells as {@code \n} become a real newline -- which the
+     * showcase relies on for every code sample it prints. Doubling the backslash instead
+     * puts the characters themselves on the page.</p>
+     */
     private static String escape(final String text) {
-        return text.replace("\\", "\\\\").replace("\"", "\\\"")
-                   .replace("\n", " ").replace("\r", " ");
+        final StringBuilder out = new StringBuilder(text.length());
+        for (int i = 0; i < text.length(); i++) {
+            final char c = text.charAt(i);
+            if (c == '\\' && i + 1 < text.length()
+                    && "ntrbf\"\\'".indexOf(text.charAt(i + 1)) >= 0) {
+                out.append(c).append(text.charAt(++i));
+                continue;
+            }
+            switch (c) {
+                case '\\': out.append("\\\\"); break;
+                case '"': out.append("\\\""); break;
+                // A real line break in the markup is layout, not content, and the
+                // literal being generated has to stay on one line either way.
+                case '\n': case '\r': out.append(' '); break;
+                default: out.append(c); break;
+            }
+        }
+        return out.toString();
     }
 
     /** For attributes and single-value text, where surrounding space is not content. */
     private static String escapeTrimmed(final String text) {
-        return escape(text).trim();
+        // Runs of whitespace collapse to one space, as they do in markup and as GWT does
+        // here: a template indents its content to sit in the file, and that indentation
+        // is not part of the value. The line breaks a template asks for survive it,
+        // because those are written as escapes rather than as actual line breaks.
+        return escape(text.replaceAll("\\s+", " ")).trim();
     }
 }
