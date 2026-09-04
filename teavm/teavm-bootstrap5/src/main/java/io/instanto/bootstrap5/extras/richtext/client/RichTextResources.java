@@ -31,21 +31,9 @@ public final class RichTextResources {
     private static final String STYLESHEET = "quill-snow-2.0.3.cache.css";
     private static final String ID_PREFIX = "bootstrap5-richtext-";
 
-    private static String scriptBase = "js/";
-    private static String stylesheetBase = "css/";
     private static boolean injected;
 
     private RichTextResources() {
-    }
-
-    /** Sets where the script and stylesheet are served from. */
-    public static void setBase(final String jsPath, final String cssPath) {
-        scriptBase = normalise(jsPath);
-        stylesheetBase = normalise(cssPath);
-    }
-
-    private static String normalise(final String path) {
-        return path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
     }
 
     /** Injects the script and stylesheet once; further calls do nothing. */
@@ -54,7 +42,7 @@ public final class RichTextResources {
             return;
         }
         injected = true;
-        Bootstrap5Resources.stylesheet(ID_PREFIX + "css", stylesheetBase + STYLESHEET);
-        Bootstrap5Resources.script(ID_PREFIX + "js", scriptBase + SCRIPT);
+        Bootstrap5Resources.stylesheet(ID_PREFIX + "css", Bootstrap5Resources.cssBase() + STYLESHEET);
+        Bootstrap5Resources.script(ID_PREFIX + "js", Bootstrap5Resources.jsBase() + SCRIPT);
     }
 }

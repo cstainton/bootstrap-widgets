@@ -22,6 +22,8 @@ package io.instanto.bootstrap5.extras.richtext.client.ui;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 
+import io.instanto.bootstrap5.extras.richtext.client.RichTextResources;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
@@ -44,6 +46,12 @@ final class QuillJs {
     }
 
     private QuillJs() {
+    }
+
+
+    /** Fetches the library this seam wraps, once. */
+    static void ensureResources() {
+        RichTextResources.ensureInjected();
     }
 
     /** Whether Quill has finished loading. */

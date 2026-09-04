@@ -115,6 +115,7 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         dropdown.addItem(action);
 
         Button outside = tagged(new Button("Outside"), "behaviour/dropdown/outside");
+        outside.getElement().getStyle().setProperty("marginTop", "80px");
         container.add(dropdown);
         container.add(outside);
         return fixture("Dropdown", container);

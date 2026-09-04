@@ -35,6 +35,11 @@ public final class Markdown {
     private Markdown() {
     }
 
+    /** Fetches the parser and sanitiser, once. */
+    public static void ensureResources() {
+        MarkdownResources.ensureInjected();
+    }
+
     /** Applies the GFM options. Called once the scripts have loaded. */
     @JSBody(script = "if (window.marked && window.marked.setOptions) {"
             + " window.marked.setOptions({ gfm: true, breaks: false }); }")

@@ -37,6 +37,7 @@ import io.instanto.bootstrap5.client.ui.constants.Styles;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.HasDirection.Direction;
@@ -440,14 +441,36 @@ public class RadioButton extends Radio implements HasActive,
      * the widget moved to the btn-check markup.</p>
      */
     private void updatePressedState() {
-        final boolean checked = Boolean.TRUE.equals(getValue());
-        if (checked) {
-            buttonLabel.addClassName("active");
+        if (!isAttached()) {
+            setLabelActive(buttonLabel, Boolean.TRUE.equals(getValue()));
+            return;
+        }
+
+        // Selecting a radio unchecks its peer inputs without dispatching change
+        // events to them. Refresh every same-name label from native input state.
+        final NodeList<com.google.gwt.dom.client.Element> radios = Document.get().getBody()
+                .getElementsByTagName("input");
+        for (int i = 0; i < radios.getLength(); i++) {
+            final com.google.gwt.dom.client.Element radio = radios.getItem(i);
+            if (!"radio".equals(radio.getAttribute("type"))
+                    || !getName().equals(radio.getAttribute("name"))) {
+                continue;
+            }
+            final com.google.gwt.dom.client.Element label = radio.getNextSiblingElement();
+            if (label != null && label.hasClassName(Styles.BTN)) {
+                setLabelActive(label, InputElement.as(radio).isChecked());
+            }
+        }
+    }
+
+    private static void setLabelActive(com.google.gwt.dom.client.Element label, boolean active) {
+        if (active) {
+            label.addClassName("active");
         } else {
-            buttonLabel.removeClassName("active");
+            label.removeClassName("active");
         }
         // aria-pressed is not valid on a label; the input already conveys state.
-        buttonLabel.removeAttribute("aria-pressed");
+        label.removeAttribute("aria-pressed");
     }
 
 }

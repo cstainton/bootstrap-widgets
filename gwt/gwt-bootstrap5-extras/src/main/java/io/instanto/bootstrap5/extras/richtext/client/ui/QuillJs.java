@@ -41,6 +41,16 @@ final class QuillJs {
     private QuillJs() {
     }
 
+
+    /**
+     * Ensures the library this seam wraps has been asked for. On GWT the module's entry
+     * point has already injected it, so this does nothing; the TeaVM implementation of
+     * this class fetches it. Widgets call this rather than the application, so adding a
+     * widget is all it takes to get the widget working.
+     */
+    static void ensureResources() {
+    }
+
     /** Whether Quill has finished loading. */
     static native boolean isReady() /*-{
         return typeof $wnd.Quill !== "undefined";

@@ -34,21 +34,9 @@ public final class SliderResources {
     private static final String STYLESHEET = "nouislider-15.8.1.min.cache.css";
     private static final String ID_PREFIX = "bootstrap5-slider-";
 
-    private static String scriptBase = "js/";
-    private static String stylesheetBase = "css/";
     private static boolean injected;
 
     private SliderResources() {
-    }
-
-    /** Sets where the script and stylesheet are served from. */
-    public static void setBase(final String jsPath, final String cssPath) {
-        scriptBase = normalise(jsPath);
-        stylesheetBase = normalise(cssPath);
-    }
-
-    private static String normalise(final String path) {
-        return path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
     }
 
     /** Injects the script and stylesheet once; further calls do nothing. */
@@ -57,7 +45,7 @@ public final class SliderResources {
             return;
         }
         injected = true;
-        Bootstrap5Resources.stylesheet(ID_PREFIX + "css", stylesheetBase + STYLESHEET);
-        Bootstrap5Resources.script(ID_PREFIX + "js", scriptBase + SCRIPT);
+        Bootstrap5Resources.stylesheet(ID_PREFIX + "css", Bootstrap5Resources.cssBase() + STYLESHEET);
+        Bootstrap5Resources.script(ID_PREFIX + "js", Bootstrap5Resources.jsBase() + SCRIPT);
     }
 }

@@ -24,6 +24,8 @@ import org.teavm.jso.JSObject;
 import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.html.HTMLElement;
 
+import io.instanto.bootstrap5.extras.slider.client.SliderResources;
+
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.dom.client.Element;
 
@@ -46,6 +48,12 @@ final class SliderJs {
     }
 
     private SliderJs() {
+    }
+
+
+    /** Fetches the library this seam wraps, once. */
+    static void ensureResources() {
+        SliderResources.ensureInjected();
     }
 
     /** Whether noUiSlider has finished loading. */

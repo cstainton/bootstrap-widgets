@@ -25,6 +25,7 @@
  */
 package io.instanto.bootstrap5.extras.markdown.client.ui;
 
+import io.instanto.bootstrap5.extras.markdown.client.Markdown;
 import io.instanto.bootstrap5.client.ui.Button;
 import io.instanto.bootstrap5.client.ui.ButtonGroup;
 import io.instanto.bootstrap5.client.ui.Icon;
@@ -85,6 +86,7 @@ public class MarkdownEditor extends Div implements HasEnabled, HasId, HasValue<S
     private boolean helpVisible = true;
 
     public MarkdownEditor() {
+        Markdown.ensureResources();
         addStyleName("gbm-markdown-editor");
 
         toolbar.addStyleName("d-flex flex-wrap align-items-center gap-2 mb-2");

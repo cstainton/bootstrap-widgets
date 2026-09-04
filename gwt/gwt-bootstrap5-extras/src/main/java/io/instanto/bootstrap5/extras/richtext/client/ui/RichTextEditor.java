@@ -84,6 +84,7 @@ public class RichTextEditor extends Div implements HasHTML, HasEnabled, HasId,
     private JavaScriptObject quill;
 
     public RichTextEditor() {
+        QuillJs.ensureResources();
         addStyleName("gbm-richtext");
         add(surface);
     }

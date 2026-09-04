@@ -43,24 +43,51 @@ public final class Bootstrap5Resources {
     private static final String LIBRARY = "gwt-bootstrap5.cache.css";
     private static final String ID_PREFIX = "bootstrap5-resource-";
 
-    private static String base = "css/";
+    /**
+     * Where everything this module ships is served from. The TeaVM build puts its
+     * stylesheets, fonts and vendored scripts under one directory, so a single setting
+     * covers the library and every extra: an application says where the module was
+     * deployed and nothing else has to be told anything.
+     */
+    private static String assetBase = "";
+
     private static boolean injected;
 
     private Bootstrap5Resources() {
     }
 
     /**
-     * Sets where the library's stylesheets are served from, which must be called before
-     * the first mount to have any effect. Defaults to {@code css/}, matching the layout a
-     * GWT build produces.
+     * Sets where this module's assets were deployed, which must be called before the
+     * first mount to have any effect. Everything else is derived from it, so an extra
+     * never needs configuring separately.
      */
-    public static void setBase(final String path) {
-        base = path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
+    public static void setAssetBase(final String path) {
+        assetBase = normalise(path);
     }
 
-    /** The current base path. */
-    public static String getBase() {
-        return base;
+    /** Where this module's assets were deployed. */
+    public static String getAssetBase() {
+        return assetBase;
+    }
+
+    /** The directory stylesheets are served from. */
+    public static String cssBase() {
+        return assetBase + "css/";
+    }
+
+    /** The directory vendored scripts are served from. */
+    public static String jsBase() {
+        return assetBase + "js/";
+    }
+
+    private static String normalise(final String path) {
+        return path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
+    }
+
+    /** @deprecated use {@link #setAssetBase(String)} */
+    @Deprecated
+    public static void setBase(final String path) {
+        setAssetBase(path.endsWith("css/") ? path.substring(0, path.length() - 4) : path);
     }
 
     /** Injects the stylesheets once; further calls do nothing. */
@@ -69,8 +96,8 @@ public final class Bootstrap5Resources {
             return;
         }
         injected = true;
-        link(ID_PREFIX + "icons", base + ICONS);
-        link(ID_PREFIX + "library", base + LIBRARY);
+        link(ID_PREFIX + "icons", cssBase() + ICONS);
+        link(ID_PREFIX + "library", cssBase() + LIBRARY);
     }
 
     /**

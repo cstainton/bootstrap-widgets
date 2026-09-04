@@ -49,6 +49,7 @@ public class MarkdownPanel extends Div {
     private Timer readyTimer;
 
     public MarkdownPanel() {
+        Markdown.ensureResources();
         addStyleName("gbm-markdown");
     }
 

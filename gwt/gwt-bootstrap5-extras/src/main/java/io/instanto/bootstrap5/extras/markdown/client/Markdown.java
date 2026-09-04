@@ -41,6 +41,13 @@ public final class Markdown {
     private Markdown() {
     }
 
+    /**
+     * Ensures the parser and sanitiser have been asked for. On GWT the module's entry
+     * point has already injected them, so this does nothing.
+     */
+    public static void ensureResources() {
+    }
+
     /** Applies the GFM options. Called once by the module's entry point. */
     public static native void configure() /*-{
         if ($wnd.marked && $wnd.marked.setOptions) {

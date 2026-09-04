@@ -39,20 +39,9 @@ public final class MarkdownResources {
     private static final String DOM_PURIFY = "dompurify-3.4.14.min.cache.js";
     private static final String ID_PREFIX = "bootstrap5-markdown-";
 
-    private static String base = "js/";
     private static boolean injected;
 
     private MarkdownResources() {
-    }
-
-    /** Sets where the two scripts are served from. Defaults to {@code js/}. */
-    public static void setBase(final String path) {
-        base = path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
-    }
-
-    /** The current base path. */
-    public static String getBase() {
-        return base;
     }
 
     /** Injects both scripts once; further calls do nothing. */
@@ -61,7 +50,7 @@ public final class MarkdownResources {
             return;
         }
         injected = true;
-        Bootstrap5Resources.script(ID_PREFIX + "marked", base + MARKED);
-        Bootstrap5Resources.script(ID_PREFIX + "dompurify", base + DOM_PURIFY);
+        Bootstrap5Resources.script(ID_PREFIX + "marked", Bootstrap5Resources.jsBase() + MARKED);
+        Bootstrap5Resources.script(ID_PREFIX + "dompurify", Bootstrap5Resources.jsBase() + DOM_PURIFY);
     }
 }

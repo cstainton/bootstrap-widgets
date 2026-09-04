@@ -14,8 +14,9 @@ const pages = resolve(process.env.PAGES_OUTPUT_DIR || join(root, "target/pages")
 const fixtureTargets = [
   { name: "GWT3", generation: 3, path: "/fixtures/gwt-bootstrap3/index.html" },
   { name: "GWT5", generation: 5, path: "/fixtures/gwt-bootstrap5/index.html" },
-];
+].filter((target) => !process.env.BROWSER_TEST_TARGET || target.name === process.env.BROWSER_TEST_TARGET);
 const timeoutMs = Number(process.env.BROWSER_TEST_TIMEOUT_MS || 15000);
+const caseFilter = process.env.BROWSER_TEST_CASE;
 
 function findChrome() {
   const candidates = [
@@ -249,18 +250,33 @@ async function main() {
       assert.ok(await evaluate("navigator.maxTouchPoints > 0"), "Chrome touch emulation was not active");
     }
 
-    async function tap(testId) {
+    async function tap(testId, allowPointerPassThrough = false) {
       const selector = `[data-testid=${JSON.stringify(testId)}]`;
-      const point = await evaluate(`(() => {
+      await evaluate(`new Promise((resolve) => {
         const element = document.querySelector(${JSON.stringify(selector)});
         if (!element) throw new Error('Missing fixture ${testId}');
         element.scrollIntoView({block: 'center', inline: 'center'});
+        requestAnimationFrame(() => resolve(true));
+      })`);
+      const point = await evaluate(`(() => {
+        const element = document.querySelector(${JSON.stringify(selector)});
         const hitTarget = element.matches('button, a, input, label')
           ? element
           : element.querySelector('label, button, a, input') || element;
         const rect = hitTarget.getBoundingClientRect();
-        return {x: rect.left + rect.width / 2, y: rect.top + rect.height / 2};
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const hit = document.elementFromPoint(x, y);
+        return {
+          x,
+          y,
+          hitTestId: hit && hit.closest('[data-testid]')
+            ? hit.closest('[data-testid]').getAttribute('data-testid') : null
+        };
       })()`);
+      if (!allowPointerPassThrough) {
+        assert.equal(point.hitTestId, testId, `Touch point for ${testId} was obscured by ${point.hitTestId}`);
+      }
       await cdp.send("Input.synthesizeTapGesture", {
         x: point.x,
         y: point.y,
@@ -276,7 +292,8 @@ async function main() {
         const input = element && element.querySelector('input');
         return element && {
           active: element.classList.contains('active') || Boolean(element.querySelector('label.active')),
-          open: element.classList.contains('open') || element.classList.contains('show'),
+          open: element.classList.contains('open') || element.classList.contains('show')
+            || Boolean(element.querySelector('.dropdown-toggle.show, .dropdown-menu.show')),
           shown: element.classList.contains('in') || element.classList.contains('show'),
           disabled: element.hasAttribute('disabled'),
           ariaPressed: element.getAttribute('aria-pressed'),
@@ -309,7 +326,7 @@ async function main() {
     });
 
       test("002", "disabled toggle suppresses touch activation", async () => {
-      await tap("behaviour/toggle-button/disabled");
+      await tap("behaviour/toggle-button/disabled", true);
       const result = await state("behaviour/toggle-button/disabled");
       assert.equal(result.active, false);
       assert.equal(result.clickCount, 0);
@@ -373,6 +390,13 @@ async function main() {
     });
 
       test("006", "collapse reports one ordered transition each way", async () => {
+      await evaluate(`(() => {
+        window.__collapseInputEvents = [];
+        const toggle = document.querySelector('[data-testid="behaviour/collapse/toggle"]');
+        for (const event of ['touchstart', 'touchend', 'pointerdown', 'pointerup', 'click']) {
+          toggle.addEventListener(event, () => window.__collapseInputEvents.push(event), true);
+        }
+      })()`);
       await tap("behaviour/collapse/toggle");
       await waitFor(
         "document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') || document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show')",
@@ -383,11 +407,20 @@ async function main() {
       assert.equal(collapse.events, "show,shown");
       assert.equal(toggle.ariaExpanded, "true");
       assert.equal(toggle.clickCount, 1);
+      await new Promise((resolveWait) => setTimeout(resolveWait, 500));
       await tap("behaviour/collapse/toggle");
-      await waitFor(
-        "!document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('collapsing')",
-        "the collapse hide transition",
-      );
+      try {
+        await waitFor(
+          "!document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('in') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('show') && !document.querySelector('[data-testid=\"behaviour/collapse/touch\"]').classList.contains('collapsing')",
+          "the collapse hide transition",
+        );
+      } catch (error) {
+        const failedCollapse = await state("behaviour/collapse/touch");
+        const failedToggle = await state("behaviour/collapse/toggle");
+        const inputEvents = await evaluate("window.__collapseInputEvents");
+        const toggleHtml = await evaluate("document.querySelector('[data-testid=\"behaviour/collapse/toggle\"]').outerHTML");
+        throw new Error(`${error.message}\nCollapse: ${JSON.stringify(failedCollapse)}\nToggle: ${JSON.stringify(failedToggle)}\nInput events: ${JSON.stringify(inputEvents)}\nToggle HTML: ${toggleHtml}`);
+      }
       collapse = await state("behaviour/collapse/touch");
       toggle = await state("behaviour/collapse/toggle");
       assert.equal(collapse.events, "show,shown,hide,hidden");
@@ -415,7 +448,9 @@ async function main() {
     for (const fixtureTarget of fixtureTargets) {
       const fixtureUrl = `http://127.0.0.1:${appPort}${fixtureTarget.path}`;
       const tests = testsFor(fixtureTarget);
-      for (const current of tests) {
+      const selectedTests = caseFilter ? tests.filter((test) => test.name.includes(caseFilter)) : tests;
+      const failuresBeforeTarget = failures;
+      for (const current of selectedTests) {
         total++;
         await freshPage(fixtureUrl, current.name);
         try {
@@ -429,7 +464,8 @@ async function main() {
           if (diagnostics.length) console.error(diagnostics.join("\n"));
         }
       }
-      console.log(`${tests.length - failures}/${tests.length} compiled ${fixtureTarget.name} touch tests passed`);
+      const targetFailures = failures - failuresBeforeTarget;
+      console.log(`${selectedTests.length - targetFailures}/${selectedTests.length} compiled ${fixtureTarget.name} touch tests passed`);
     }
     console.log(`${total - failures}/${total} compiled GWT mobile touch tests passed`);
     if (failures) process.exitCode = 1;

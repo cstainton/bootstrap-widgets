@@ -149,23 +149,17 @@ import io.instanto.bootstrap5.themes.client.BootswatchThemes;
  */
 public final class Bootstrap5ShowcaseApp {
 
-    /** The compiled GWT showcase sits at bootstrap5/, and its stylesheets come with it. */
-    private static final String CSS = "bootstrap5/GwtBootstrap5Showcase/css/";
+    /** Where this page deploys the TeaVM module's assets. One setting covers everything. */
+    private static final String ASSETS = "teavm5/";
 
     private static final Paragraph THEME_STATUS = new Paragraph();
 
     public static void main(final String[] args) {
-        Bootstrap5Resources.setBase(CSS);
-        // The parser and sanitiser ship beside the compiled TeaVM module.
-        MarkdownResources.setBase("teavm5/js/");
-        MarkdownResources.ensureInjected();
-        SliderResources.setBase("teavm5/js/", "teavm5/css/");
-        SliderResources.ensureInjected();
-        RichTextResources.setBase("teavm5/js/", "teavm5/css/");
-        RichTextResources.ensureInjected();
-        Themes.register(StandardThemes.all(CSS));
-        Themes.register(BootswatchThemes.all(CSS));
-        Themes.restore(StandardThemes.bootstrap(CSS));
+        // One setting; the widgets ask for whatever else they need themselves.
+        Bootstrap5Resources.setAssetBase(ASSETS);
+        Themes.register(StandardThemes.all(Bootstrap5Resources.cssBase()));
+        Themes.register(BootswatchThemes.all(Bootstrap5Resources.cssBase()));
+        Themes.restore(StandardThemes.bootstrap(Bootstrap5Resources.cssBase()));
         ColorModes.restore(ColorMode.LIGHT);
 
         final Container container = new Container();

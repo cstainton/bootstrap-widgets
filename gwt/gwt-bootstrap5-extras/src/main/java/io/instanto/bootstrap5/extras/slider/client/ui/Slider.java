@@ -80,6 +80,7 @@ public class Slider extends Div implements HasEnabled, HasId, HasValueChangeHand
     private JavaScriptObject slider;
 
     public Slider() {
+        SliderJs.ensureResources();
         addStyleName("gbm-slider");
         getElement().getStyle().setProperty("margin", "1.5rem 0.5rem");
     }

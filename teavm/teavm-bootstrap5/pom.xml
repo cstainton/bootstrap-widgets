@@ -192,9 +192,36 @@
                     <include>*.css</include>
                   </includes>
                 </resource>
+                <resource>
+                  <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java/io/instanto/bootstrap5/client/resource/css</directory>
+                  <includes>
+                    <include>*.css</include>
+                  </includes>
+                </resource>
+                <resource>
+                  <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java/io/instanto/bootstrap5/themes/client/resource/css</directory>
+                  <includes>
+                    <include>*.css</include>
+                  </includes>
+                </resource>
               </resources>
             </configuration>
           </execution>
+            <execution>
+              <id>copy-icon-fonts</id>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>copy-resources</goal>
+              </goals>
+              <configuration>
+                <outputDirectory>${project.build.directory}/teavm/fonts</outputDirectory>
+                <resources>
+                  <resource>
+                    <directory>${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java/io/instanto/bootstrap5/client/resource/fonts</directory>
+                  </resource>
+                </resources>
+              </configuration>
+            </execution>
         </executions>
       </plugin>
 
