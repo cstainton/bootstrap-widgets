@@ -59,6 +59,7 @@ final class Emitter {
     private final Map<String, String> fields = new LinkedHashMap<>();
     private int counter;
     private String rootType;
+    private final java.util.Set<String> domVars = new java.util.HashSet<>();
 
     Emitter(final ProcessingEnvironment env, final Element owner) {
         this.env = env;
@@ -77,8 +78,7 @@ final class Emitter {
     String emit(final Node element, final String parent) {
         final String uri = element.getNamespaceURI();
         if (uri == null || !uri.startsWith(IMPORT_PREFIX)) {
-            throw new UiBinderProcessor.Failure(
-                    "<" + element.getNodeName() + "> is not from a urn:import namespace", owner);
+            return emitHtml(element, parent);
         }
         final String pkg = uri.substring(IMPORT_PREFIX.length());
         final String simple = element.getLocalName();
@@ -117,25 +117,114 @@ final class Emitter {
             appendSetter(var, type, attr.getKey(), attr.getValue(), simple);
         }
         final String text = directText(element);
-        if (!text.isEmpty()) {
+        if (!text.isEmpty() && !hasElementChildren(element)) {
             body.append("        ").append(var).append(".setText(\"")
-                .append(escape(text)).append("\");\n");
+                .append(escapeTrimmed(text)).append("\");\n");
         }
         if (field != null) {
             fields.put(field, var);
         }
 
+        emitChildren(element, var, hasElementChildren(element));
+        if (parent != null) {
+            attach(parent, var, false);
+        }
+        return var;
+    }
+
+    /**
+     * Emits a plain HTML element.
+     *
+     * <p>GWT wraps markup in an HTMLPanel and slots widgets into placeholders, which is
+     * what makes its implementation large. None of the templates here put a widget inside
+     * an HTML element -- the markup is inline leaves like strong, br, code and a -- so the
+     * element is simply built and appended, and a widget child would be rejected rather
+     * than silently misplaced.</p>
+     */
+    private String emitHtml(final Node element, final String parent) {
+        final String tag = element.getLocalName() == null
+                ? element.getNodeName() : element.getLocalName();
+        final String var = "element" + (++counter);
+        domVars.add(var);
+        body.append("        com.google.gwt.dom.client.Element ").append(var)
+            .append(" = com.google.gwt.dom.client.Document.get().createElement(\"")
+            .append(escape(tag)).append("\");\n");
+        if (rootType == null) {
+            throw new UiBinderProcessor.Failure(
+                    "a template has to start with a widget, not <" + tag + ">", owner);
+        }
+
+        final Map<String, String> attrs = attributes(element);
+        final String field = attrs.remove("$field");
+        for (final Map.Entry<String, String> attr : attrs.entrySet()) {
+            body.append("        ").append(var).append(".setAttribute(\"")
+                .append(escapeTrimmed(attr.getKey())).append("\", \"")
+                .append(escapeTrimmed(attr.getValue())).append("\");\n");
+        }
+        if (field != null) {
+            fields.put(field, var);
+        }
+        emitChildren(element, var, true);
+        if (parent != null) {
+            attach(parent, var, true);
+        }
+        return var;
+    }
+
+    /** Walks children in document order so text and markup keep their sequence. */
+    private void emitChildren(final Node element, final String var, final boolean keepText) {
         final NodeList children = element.getChildNodes();
         for (int i = 0; i < children.getLength(); i++) {
             final Node child = children.item(i);
             if (child.getNodeType() == Node.ELEMENT_NODE) {
                 emit(child, var);
+            } else if (keepText && child.getNodeType() == Node.TEXT_NODE) {
+                // Collapse runs of whitespace but do not trim: the space between
+                // "into" and <strong>ordinary Java</strong> is part of the sentence,
+                // and trimming it runs the words together.
+                final String text = child.getNodeValue().replaceAll("\\s+", " ");
+                if (!text.isBlank() || hasElementSibling(child)) {
+                    final String target = domVars.contains(var) ? var : var + ".getElement()";
+                    body.append("        ").append(target)
+                        .append(".appendChild(com.google.gwt.dom.client.Document.get()")
+                        .append(".createTextNode(\"").append(escape(text)).append("\"));\n");
+                }
             }
         }
-        if (parent != null) {
+    }
+
+    /** Adds a child, which differs depending on whether the parent is a widget. */
+    private void attach(final String parent, final String var, final boolean childIsDom) {
+        final boolean parentIsDom = domVars.contains(parent);
+        if (parentIsDom && !childIsDom) {
+            throw new UiBinderProcessor.Failure(
+                    "a widget inside an HTML element is not supported yet", owner);
+        }
+        if (parentIsDom) {
+            body.append("        ").append(parent).append(".appendChild(").append(var).append(");\n");
+        } else if (childIsDom) {
+            body.append("        ").append(parent).append(".getElement().appendChild(")
+                .append(var).append(");\n");
+        } else {
             body.append("        ").append(parent).append(".add(").append(var).append(");\n");
         }
-        return var;
+    }
+
+    /** Whitespace between two inline elements is content, not indentation. */
+    private static boolean hasElementSibling(final Node text) {
+        return text.getPreviousSibling() != null && text.getNextSibling() != null
+                && text.getPreviousSibling().getNodeType() == Node.ELEMENT_NODE
+                && text.getNextSibling().getNodeType() == Node.ELEMENT_NODE;
+    }
+
+    private static boolean hasElementChildren(final Node element) {
+        final NodeList children = element.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (children.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void appendSetter(final String var, final TypeElement type, final String name,
@@ -326,6 +415,11 @@ final class Emitter {
 
     private static String escape(final String text) {
         return text.replace("\\", "\\\\").replace("\"", "\\\"")
-                   .replace("\n", " ").replace("\r", " ").trim();
+                   .replace("\n", " ").replace("\r", " ");
+    }
+
+    /** For attributes and single-value text, where surrounding space is not content. */
+    private static String escapeTrimmed(final String text) {
+        return escape(text).trim();
     }
 }

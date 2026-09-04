@@ -13,6 +13,11 @@
             <b:FormLabel text="Bound with ui:field"/>
             <b:TextBox ui:field="box" placeholder="the handler writes here"/>
         </b:FormGroup>
-        <b:Alert type="INFO" dismissable="true" text="No template parsing happens in the browser: the build turned this file into ordinary Java."/>
+        <b:Alert type="INFO" dismissable="true">
+            No template parsing happens in the browser: the build turned this file into
+            <strong>ordinary Java</strong>. Mixed content, <i>inline markup</i> and
+            <code data-testid="inline-code">plain elements</code> all come through.<br/>
+            <a href="https://github.com/cstainton/bootstrap-widgets" data-testid="repo-link">The repository</a>
+        </b:Alert>
     </b:PanelBody>
 </ui:UiBinder>
