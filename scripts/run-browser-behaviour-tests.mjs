@@ -341,7 +341,12 @@ async function main() {
         const hitTarget = element.matches('button, a, input, label')
           ? element
           : element.querySelector('label, button, a, input') || element;
-        const rect = hitTarget.getBoundingClientRect();
+        let rect = hitTarget.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight
+            || rect.left < 0 || rect.right > window.innerWidth) {
+          hitTarget.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+          rect = hitTarget.getBoundingClientRect();
+        }
         const x = rect.left + rect.width / 2;
         const y = rect.top + rect.height / 2;
         const hit = document.elementFromPoint(x, y);
@@ -2080,7 +2085,7 @@ async function main() {
     cdp?.close();
     await stopBrowser(browser);
     server.close();
-    rmSync(profile, { recursive: true, force: true });
+    rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     if (process.exitCode && browserStderr) {
       console.error(browserStderr);
     }
