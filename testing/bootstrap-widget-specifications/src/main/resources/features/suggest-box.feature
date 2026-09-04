@@ -1,9 +1,9 @@
-@p1 @gwt3 @teavm3 @gwt5 @teavm5
+@p1 @widget @gwt3 @teavm3 @gwt5 @teavm5
 Feature: Suggest box interaction and lifecycle
   Suggest boxes filter their oracle, support keyboard selection and remove
   transient popup state when detached.
 
-  @api @rendered @functional @dom-contract
+  @browser @layout @style-contract @functional @dom-contract
   Scenario: SUG-001 Entered text filters the visible suggestion popup
     Given fixture "behaviour/suggest-box/basic" is mounted
     Given Bootstrap 3 showcase route "suggestBox" section "Basic" defines the baseline
@@ -12,7 +12,7 @@ Feature: Suggest box interaction and lifecycle
     And the popup width matches the suggest box width
     And the popup is positioned beneath the suggest box
 
-  @api @rendered @functional
+  @browser @functional
   Scenario: SUG-002 Keyboard selection commits one oracle suggestion
     Given fixture "behaviour/suggest-box/basic" is mounted
     Given Bootstrap 3 showcase route "suggestBox" section "Basic" defines the baseline
@@ -22,7 +22,7 @@ Feature: Suggest box interaction and lifecycle
     And one suggestion event is reported with the suggest box as source
     And the suggestion popup is hidden
 
-  @api @rendered @functional @dom-contract
+  @browser @functional @dom-contract
   Scenario: SUG-003 A query without matches closes the suggestion popup
     Given fixture "behaviour/suggest-box/basic" is mounted
     Given Bootstrap 3 showcase route "suggestBox" section "Basic" defines the baseline
@@ -31,7 +31,7 @@ Feature: Suggest box interaction and lifecycle
     Then the suggestion popup is hidden
     And no suggestion event is reported
 
-  @api @rendered @functional @dom-contract
+  @browser @functional @dom-contract
   Scenario: SUG-004 Suggestion popup lifecycle follows its owning widget
     Given fixture "behaviour/suggest-box/lifecycle" is mounted
     Given Bootstrap 3 showcase route "suggestBox" section "Basic" defines the baseline

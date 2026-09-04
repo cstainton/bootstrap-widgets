@@ -1,18 +1,18 @@
-@p1 @gwt3 @teavm3 @gwt5 @teavm5
+@p1 @widget @gwt3 @teavm3 @gwt5 @teavm5
 Feature: Input group composition
   Input groups preserve addon order, control sizing and nested button behaviour
   while using the native structure of their Bootstrap generation.
 
-  @api @rendered @functional @dom-contract
+  @dom-contract
   Scenario: ING-001 Text addons retain their order around the input
-    Given fixture "behaviour/input-group/text-addons" is mounted
+    Given fixture "behaviour/input-group/text-addons" is constructed
     Given Bootstrap 3 showcase route "inputGroups" section "Basic" defines the baseline
-    When the input group is rendered
+    When text addons are added around the control
     Then the prefix addon precedes the text control
     And the suffix addon follows the text control
     And the text control remains editable
 
-  @api @rendered @functional @dom-contract
+  @browser @functional @dom-contract
   Scenario: ING-002 A button addon activates independently of its text control
     Given fixture "behaviour/input-group/button-addon" is mounted
     Given Bootstrap 3 showcase route "inputGroups" section "Button Addons" defines the baseline
@@ -22,7 +22,7 @@ Feature: Input group composition
     And the grouped text control still contains "original"
     And the button remains a child of the button addon
 
-  @rendered @dom-contract
+  @browser @layout @style-contract @dom-contract
   Scenario: ING-003 Grouped segments form one contiguous control
     Given fixture "behaviour/input-group/text-addons" is mounted
     Given Bootstrap 3 showcase route "inputGroups" section "Basic" defines the baseline
@@ -31,9 +31,9 @@ Feature: Input group composition
     And all segments share one vertical extent
     And the text control consumes the remaining group width
 
-  @api @rendered @functional @dom-contract
+  @api-contract @dom-contract
   Scenario: ING-004 Input group size has one reported framework state
-    Given fixture "behaviour/input-group/sizing" is mounted
+    Given fixture "behaviour/input-group/sizing" is constructed
     Given Bootstrap 3 showcase route "inputGroups" section "Basic" defines the baseline
     When the input group size is set to large
     Then the widget reports large as its size

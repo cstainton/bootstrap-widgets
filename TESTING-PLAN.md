@@ -32,8 +32,8 @@ The first executable tranche is now in the repository:
   theme remains open.
 - Phase 1 fixture/API enforcement is complete for the core and Markdown
   exports. The reviewed corpus contains 61 P0 and 8 P1 scenarios with stable
-  IDs, fixture IDs, Bootstrap 3 showcase references, explicit functional/DOM
-  contract classification and a four-target matrix.
+  IDs, fixture IDs, Bootstrap 3 showcase references, explicit subject,
+  contract and execution classification, and a four-target matrix.
 - Phase 2 has a substantial rendered Chromium tranche for both compiled GWT
   generations. One hundred and twenty-four mobile-touch tests execute 66
   canonical scenarios covering buttons, button groups, dropdowns, forms,
@@ -229,46 +229,97 @@ Feature: Toggle buttons
     And one value change is reported
 ```
 
-Initial tags:
+### Tag vocabulary
+
+Tags describe independent axes. A subject tag says what is exercised, a
+contract tag says what is normative, and an execution tag says what machinery
+the assertion genuinely requires. Do not use an execution tag as a synonym
+for a contract.
+
+Subject tags:
 
 | Tag | Meaning |
 | --- | --- |
-| `@functional` | Verifies user-visible behaviour, Java API semantics or event outcomes |
-| `@dom-contract` | Makes rendered markup, classes, ARIA, geometry or document nodes part of the contract |
-| `@api` | Requires access to the Java widget API |
-| `@rendered` | Can run against a completed rendered interface |
-| `@javascript` | Requires Bootstrap JavaScript behaviour |
-| `@layout` | Uses computed style or geometry |
-| `@accessibility` | Checks roles, labels, focus or ARIA |
-| `@compat` | Exercises a `teavm-gwt-compat` contract |
-| `@bootstrap3` | Applies only to the Bootstrap 3 track |
-| `@bootstrap5` | Applies only to the Bootstrap 5 track |
-| `@browser` | Requires a real browser rather than a JVM-only pass |
+| `@widget` | Exercises a widget through the shared fixture/harness vocabulary; portable to another widget library |
+| `@compat` | Exercises a `teavm-gwt-compat` implementation or its conformance with `gwt-user` |
+
+Contract tags:
+
+| Tag | Meaning |
+| --- | --- |
+| `@functional` | Verifies observable runtime behaviour through a mounted fixture, including interaction, event ordering and lifecycle effects |
+| `@api-contract` | Verifies the public programming contract without mounting the widget, such as setters, getters, values or requested event delivery |
+| `@dom-contract` | Makes element structure, ordering, attributes, ARIA, class names or declared inline styles normative |
+| `@style-contract` | Makes stylesheet rules or resolved visual style normative |
+| `@artifact-contract` | Makes a packaged or generated artifact normative, such as a script, stylesheet, source map or service descriptor |
+
+Execution and concern tags:
+
+| Tag | Meaning |
+| --- | --- |
+| `@browser` | Requires a real browser engine rather than a JVM, parser or synthetic DOM |
+| `@javascript` | Requires native Bootstrap JavaScript/plugin behaviour and therefore also declares `@browser` |
+| `@layout` | Requires computed style or geometry and therefore also declares `@browser` |
+| `@accessibility` | Checks an accessibility concern such as roles, labels, focus or ARIA; it does not by itself require a browser |
+
+Scope tags:
+
+| Tag | Meaning |
+| --- | --- |
+| `@gwt3`, `@teavm3`, `@gwt5`, `@teavm5` | Compiler and Bootstrap-generation targets to which the scenario applies |
+| `@bootstrap3`, `@bootstrap5` | Generation-only scope for specifications that are independent of compiler |
+| `@p0`, `@p1`, `@p2`, `@p3` | Execution priority, from release-critical core behaviour to optional extras |
 
 The same feature may have compiler-specific glue where construction differs.
 The assertion-bearing contract classes should remain shared wherever both
 compilers expose the same API.
 
-Every scenario declares `@functional`, `@dom-contract`, or both. These tags
-describe test intent and are independent of executor tags such as `@rendered`
-and `@browser`: DOM may be used to observe a functional result without making
-the exact markup a contract.
+Every scenario declares at least one contract tag. `@api` and `@rendered` are
+deliberately not part of this vocabulary: `@api` conflated API semantics with
+access to a live widget, while `@rendered` overlapped both fixture setup and
+browser execution. The inventory validator rejects both legacy tags and also
+requires `@javascript` and `@layout` scenarios to declare `@browser`.
+
+Markup does not imply a browser. A parser, a JVM DOM implementation or a
+detached widget element can inspect element names, order, classes, attributes,
+ARIA and inline styles under `@dom-contract`. Static inspection of selectors
+and declarations in a CSS asset uses `@style-contract` without `@browser`.
+Computed cascade, inherited values, pseudo-elements and viewport-dependent
+styles add `@browser`; geometry also adds `@layout`. Examples:
+
+| Inspection | Tags |
+| --- | --- |
+| Detached widget emits the expected classes and ARIA | `@widget @dom-contract` |
+| CSS contains the required selector and declaration | `@style-contract` |
+| Source map names source files from the source artifact | `@artifact-contract` |
+| Browser resolves the expected colour or visibility | `@style-contract @browser` |
+| Dropdown width equals its button width | `@widget @functional @dom-contract @style-contract @layout @browser` |
 
 ### Fixture identity
 
 The fixture catalogue is the shared noun used by direct and framed scenarios.
-Each fixture has a stable path and `data-testid`, for example
-`toggle-button/basic`. A scenario says:
+Each fixture has a stable path and, where it is rendered, a stable
+`data-testid`, for example `toggle-button/basic`. Setup wording records the
+required fixture state:
 
 ```gherkin
+Given fixture "toggle-button/basic" is constructed
 Given fixture "toggle-button/basic" is mounted
+Given fixture "resources/source-maps" is selected
 ```
 
-For a direct TeaVM test, this constructs the fixture. For a frame test, this
-navigates to or locates the same fixture in the compiled showcase. Only
-examples selected for frame coverage must use catalogue fixtures. Existing
-narrative showcase sections remain handwritten and may host or reference
-those fixtures rather than being rewritten as generated catalogue views.
+`constructed` creates the subject without attaching it and is required for a
+widget `@api-contract`. It also supports detached `@dom-contract` checks.
+`mounted` attaches the widget to a render-capable harness; this can be a
+synthetic DOM and does not itself imply `@browser`. `selected` identifies a
+non-widget fixture or artifact without implying construction or rendering.
+
+For a direct TeaVM test, the fixture catalogue performs the requested setup.
+For a frame test, `mounted` navigates to or locates the same fixture in the
+compiled showcase. Only examples selected for frame coverage must use
+catalogue fixtures. Existing narrative showcase sections remain handwritten
+and may host or reference those fixtures rather than being rewritten as
+generated catalogue views.
 
 The catalogue is not merely coverage bookkeeping. A static reference from the
 catalogue makes TeaVM's reachability analysis compile and link the widget and

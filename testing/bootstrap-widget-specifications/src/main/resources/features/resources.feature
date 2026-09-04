@@ -3,24 +3,24 @@ Feature: Runtime resources and providers
   Required providers and debug assets fail explicitly rather than remaining
   dormant until a consumer reaches them.
 
-  @api @browser @functional
+  @api-contract @browser
   Scenario: RES-001 Deferred binding resolves every declared fixture provider
-    Given fixture "behaviour/resources/providers" is mounted
+    Given fixture "behaviour/resources/providers" is selected
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline
     When each fixture path that uses deferred binding is constructed
     Then every declared provider resolves to an assignable implementation
     And no provider lookup returns null
 
-  @api @browser @functional
+  @api-contract @browser
   Scenario: RES-002 Missing provider reports its requested contract
-    Given fixture "behaviour/resources/missing-provider" is mounted
+    Given fixture "behaviour/resources/missing-provider" is selected
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline
     When a deliberately unregistered deferred binding contract is requested
     Then construction fails before the fixture is mounted
     And the failure names the requested contract
     And the failure explains that no implementation was registered
 
-  @rendered @browser @functional @dom-contract
+  @artifact-contract @browser
   Scenario: RES-003 Showcase loads all required scripts and styles
     Given fixture "behaviour/resources/showcase-assets" is mounted
     Given Bootstrap 3 showcase route "home" section "Component examples" defines the baseline
@@ -29,9 +29,9 @@ Feature: Runtime resources and providers
     And the expected Bootstrap runtime is available
     And no browser error or unhandled rejection was recorded
 
-  @rendered @browser @dom-contract
+  @artifact-contract
   Scenario: RES-004 Published compiler output includes usable source maps
-    Given fixture "behaviour/resources/source-maps" is mounted
+    Given fixture "behaviour/resources/source-maps" is selected
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline
     When the compiled application and library debug artifacts are inspected
     Then every published JavaScript bundle names an existing source map
