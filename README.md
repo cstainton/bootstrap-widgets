@@ -1,6 +1,6 @@
-# GWT Bootstrap
+# Bootstrap Widgets
 
-GWT Bootstrap is a maintained fork of GwtBootstrap3 with two deliberately separate tracks.
+Bootstrap Widgets is a single Maven reactor for Bootstrap 3 and Bootstrap 5 widget libraries targeting GWT and TeaVM.
 
 1. The Bootstrap 3 track is the drop-in maintenance build for existing GwtBootstrap3 applications. It keeps `org.gwtbootstrap3.*`, the original GWT module names, Bootstrap 3 markup, and Bootstrap 3 widget behaviour, while updating the build to GWT 2.13.1, Bootstrap 3.4.1, and jQuery 3.7.1.
 2. The Bootstrap 5 track is a native migration build. It uses `io.instanto.bootstrap5.*`, Bootstrap 5 resources, Bootstrap 5 class names, Bootstrap 5 data attributes, and breaking API changes where Bootstrap 5 changed or removed Bootstrap 3 concepts.
@@ -34,10 +34,10 @@ The TeaVM builds are **separate artifactIds, not a `teavm` classifier**, because
 
 ## Showcases
 
-- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/gwtbootstrap/)
-- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/gwtbootstrap/bootstrap5/)
-- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/gwtbootstrap/teavm.html)
-- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html)
+- [Bootstrap 3-compatible GWT showcase](https://cstainton.github.io/bootstrap-widgets/)
+- [Bootstrap 5-native GWT showcase](https://cstainton.github.io/bootstrap-widgets/bootstrap5/)
+- [TeaVM Bootstrap 3 smoke page](https://cstainton.github.io/bootstrap-widgets/teavm.html)
+- [TeaVM Bootstrap 5 smoke page](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
 
 ## Status
 
@@ -47,14 +47,14 @@ The Bootstrap 3 compatibility build and original showcase compile with GWT 2.13.
 
 ## Migration Paths
 
-Snapshots are published to GitHub Packages from the root `gwtbootstrap-parent`
+Snapshots are published to GitHub Packages from the root `bootstrap-widgets`
 reactor. Add the package repository to the consuming build before declaring a
 dependency:
 
 ```xml
 <repository>
   <id>github</id>
-  <url>https://maven.pkg.github.com/cstainton/gwtbootstrap</url>
+  <url>https://maven.pkg.github.com/cstainton/bootstrap-widgets</url>
   <snapshots>
     <enabled>true</enabled>
   </snapshots>
@@ -112,22 +112,22 @@ TeaVM Bootstrap 5 experiment:
 
 ## Modules
 
-- `gwt-bootstrap3`: GwtBootstrap3-compatible core widgets backed by Bootstrap 3.4.1 and jQuery 3.7.1.
-- `gwt-bootstrap3-extras`: GwtBootstrap3-compatible extras widgets and third-party integrations.
-- `gwt-bootstrap3-showcase`: original GWT showcase used for visual and compile testing of the Bootstrap 3 compatibility modules.
-- `gwt-bootstrap5`: Bootstrap 5-native GWT widgets and resources under `io.instanto.bootstrap5.*`.
-- `gwt-bootstrap5-showcase`: Bootstrap 5-native GWT showcase.
-- `teavm-gwt-compat`: shared minimal GWT client API subset backed by TeaVM DOM APIs.
-- `teavm-bootstrap3`: experimental Bootstrap 3-compatible TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
-- `teavm-bootstrap5`: experimental Bootstrap 5-native TeaVM widget backend using `teavm-gwt-compat`, without UiBinder.
+The root reactor contains two independently addressable sub-reactors:
 
-Planned module:
+- `gwt/`: GWT libraries, extras, themes, and showcases for Bootstrap 3 and Bootstrap 5.
+- `teavm/`: the shared GWT compatibility layer and TeaVM Bootstrap 3 and Bootstrap 5 libraries/showcases.
 
-- `teavm-bootstrap5-showcase`: fuller TeaVM showcase for the Bootstrap 5-native widget set.
+The GWT modules are `gwt-bootstrap3`, `gwt-bootstrap3-extras`, `gwt-bootstrap3-themes`, `gwt-bootstrap3-showcase`, `gwt-bootstrap5`, `gwt-bootstrap5-extras`, `gwt-bootstrap5-themes`, and `gwt-bootstrap5-showcase`.
+
+The TeaVM modules are `teavm-gwt-compat`, `teavm-bootstrap3`, and `teavm-bootstrap5`. The version-specific modules include their TeaVM showcase entry points.
+
+All published library artifacts include a `-sources.jar`. The GWT and TeaVM
+showcases publish their JavaScript source maps together with the mapped Java
+source trees.
 
 ## Bootstrap 5 Coverage
 
-`BOOTSTRAP5-PORTING.md` tracks Bootstrap 5 coverage against the current GwtBootstrap3 top-level widget catalogue. The Bootstrap 5 module now represents the current GwtBootstrap3 top-level widget catalogue, plus Bootstrap 5-specific helper classes. The showcase provides visible coverage for common content, status, navigation, overlay, dropdown, progress, basic form, value, radio group, media, image, tab, collapse, tooltip, popover, carousel and pagination widgets. The compatibility story belongs to Bootstrap 3; Bootstrap 5 keeps native markup and behaviour.
+`BOOTSTRAP5-PORTING.md` tracks the Bootstrap 5-native implementation. It draws on familiar GwtBootstrap3 widget concepts where that helps migration, but Bootstrap 5 has its own public API and may diverge where the underlying framework differs. The showcase provides visible coverage for common content, status, navigation, overlay, dropdown, progress, basic form, value, radio group, media, image, tab, collapse, tooltip, popover, carousel and pagination widgets. The compatibility story belongs to Bootstrap 3; Bootstrap 5 keeps native markup and behaviour.
 
 The Bootstrap 5 migration path is widget-by-widget: port the Bootstrap 3 widget concept, replace Bootstrap 3 styles and markup with Bootstrap 5 equivalents, and replace jQuery plugin behaviour with Bootstrap 5 JavaScript APIs or direct DOM behaviour.
 
@@ -142,44 +142,44 @@ mvn -f pom.xml -DskipTests install
 Compile the Bootstrap 3 compatibility showcase:
 
 ```bash
-mvn -f gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+mvn -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 ```
 
 Compile the Bootstrap 5-native showcase:
 
 ```bash
-mvn -f gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+mvn -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 ```
 
 Compile the TeaVM Bootstrap 3 smoke target:
 
 ```bash
-mvn -f teavm-bootstrap3/pom.xml -DskipTests package
+mvn -f teavm/teavm-bootstrap3/pom.xml -DskipTests package
 ```
 
 Compile the TeaVM Bootstrap 5 smoke target:
 
 ```bash
-mvn -f teavm-bootstrap5/pom.xml -DskipTests package
+mvn -f teavm/teavm-bootstrap5/pom.xml -DskipTests package
 ```
 
 ## Showcase Details
 
 GitHub Pages serves the Bootstrap 3-compatible showcase:
 
-[https://cstainton.github.io/gwtbootstrap/](https://cstainton.github.io/gwtbootstrap/)
+[https://cstainton.github.io/bootstrap-widgets/](https://cstainton.github.io/bootstrap-widgets/)
 
 The Bootstrap 5-native GWT showcase is published at:
 
-[https://cstainton.github.io/gwtbootstrap/bootstrap5/](https://cstainton.github.io/gwtbootstrap/bootstrap5/)
+[https://cstainton.github.io/bootstrap-widgets/bootstrap5/](https://cstainton.github.io/bootstrap-widgets/bootstrap5/)
 
 The TeaVM Bootstrap 3 smoke page is published at:
 
-[https://cstainton.github.io/gwtbootstrap/teavm.html](https://cstainton.github.io/gwtbootstrap/teavm.html)
+[https://cstainton.github.io/bootstrap-widgets/teavm.html](https://cstainton.github.io/bootstrap-widgets/teavm.html)
 
 The TeaVM Bootstrap 5 smoke page is published at:
 
-[https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html](https://cstainton.github.io/gwtbootstrap/teavm-bootstrap5.html)
+[https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
 
 ## Notes
 

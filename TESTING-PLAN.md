@@ -130,7 +130,9 @@ queries and interactions to a same-origin child document. No
 These can begin as fewer integration-test modules and be split only when build
 ordering or dependency isolation requires it. In particular, GWT and TeaVM
 must never see both `gwt-user` and `teavm-gwt-compat` implementations of the
-same `com.google.gwt.*` classes on one compiler classpath.
+same `com.google.gwt.*` classes on one compiler classpath. The `teavm/`
+sub-reactor enforces this by banning both the current `org.gwtproject` and
+legacy `com.google.gwt` coordinates for `gwt-user` and `gwt-dev`.
 
 ## Shared Feature Corpus
 
@@ -207,18 +209,18 @@ checks, never as the executable reachability suite.
 
 ### Authoritative widget inventory
 
-Generate the expected fixture list from each module's exported public API.
-Extend `scripts/audit-bootstrap5-api.py` or extract its class-discovery logic so
-the build can compare:
+Generate the expected fixture list independently from each module's exported
+public API so Bootstrap 3 and Bootstrap 5 can evolve without being treated as
+contract-equivalent. The build compares:
 
 ```text
 exported widgets - registered fixtures = uncovered widgets
 registered fixtures - exported widgets = stale fixtures
 ```
 
-Run the same check for Bootstrap 3, Bootstrap 5, extras and themes. A newly
-exported widget without a fixture fails the build. The coverage report is a
-view of this enforced inventory, not a manually maintained list.
+Run the check for Bootstrap 3, Bootstrap 5, extras and themes. A newly exported
+widget without a fixture fails the build. The coverage report is a view of
+this enforced inventory, not a manually maintained cross-version parity list.
 
 ## GWT Compatibility Reference Support
 
@@ -834,7 +836,7 @@ Tea, frame or external-repository change is required to run it.
 
 1. Move the initial registry behind stable fixture IDs and `data-testid`
    values.
-2. Generate the exported-widget inventory from the public API audit.
+2. Generate each module's exported-widget inventory directly from its compiled public API.
 3. Fail on uncovered exports and stale fixtures.
 4. Extract the Bootstrap 3 showcase behaviour inventory and write the complete
    prioritized feature corpus and four-target applicability matrix.

@@ -24,11 +24,11 @@ import re
 import sys
 from collections import Counter
 
-VIEWS = 'gwt-bootstrap3-showcase/src/main/java/**/*.ui.xml'
+VIEWS = 'gwt/gwt-bootstrap3-showcase/src/main/java/**/*.ui.xml'
 WIDGET_ROOTS = [
-    'gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/ui',
-    'gwt-bootstrap3-extras/src/main/java',
-    'gwt-bootstrap3-showcase/src/main/java/org/gwtbootstrap3/demo/client/ui',
+    'gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/ui',
+    'gwt/gwt-bootstrap3-extras/src/main/java',
+    'gwt/gwt-bootstrap3-showcase/src/main/java/org/gwtbootstrap3/demo/client/ui',
 ]
 
 

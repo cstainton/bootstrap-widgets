@@ -30,6 +30,6 @@ jobs:
           server-password: GITHUB_TOKEN
 
       - name: Publish parent and library modules
-        run: mvn -B -DskipTests -pl gwt-bootstrap3,gwt-bootstrap3-extras,gwt-bootstrap3-themes,gwt-bootstrap5,gwt-bootstrap5-extras,gwt-bootstrap5-themes,teavm-gwt-compat,teavm-bootstrap3,teavm-bootstrap5 -am deploy
+        run: mvn -B -DskipTests -pl gwt/gwt-bootstrap3,gwt/gwt-bootstrap3-extras,gwt/gwt-bootstrap3-themes,gwt/gwt-bootstrap5,gwt/gwt-bootstrap5-extras,gwt/gwt-bootstrap5-themes,teavm/teavm-gwt-compat,teavm/teavm-bootstrap3,teavm/teavm-bootstrap5 -am deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

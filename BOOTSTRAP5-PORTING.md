@@ -18,9 +18,9 @@ The Bootstrap 5 module should aim for broad functional coverage of the GwtBootst
 - `ScrollSpy`, dropdowns, collapse, carousel, popover, tooltip, modal, and tabs use Bootstrap 5 `data-bs-*` attributes and JavaScript APIs rather than jQuery plugins.
 - `CheckBoxButton` preserves the button-toggle concept with explicit `active`/`aria-pressed` state rather than relying on the removed Bootstrap 3 button plugin loading/toggle API.
 
-## Parity Workstream
+## Native Workstream
 
-- Class-presence checkboxes below track inventory only. Public API parity is measured separately in `BOOTSTRAP5-API-CONTRACTS.md` by `scripts/audit-bootstrap5-api.py`.
+- Class-presence checkboxes below record the Bootstrap 5-native implementation only; they do not impose Bootstrap 3 API parity.
 - Prefer widening the Bootstrap 5 widgets to match GwtBootstrap3-style constructors and methods before asking application code to change.
 - Anchor-backed widgets should compose children into the clickable anchor element.
 - Value widgets should implement GWT value-change semantics where the Bootstrap 3 widget did.

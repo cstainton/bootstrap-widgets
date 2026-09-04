@@ -25,20 +25,26 @@ jobs:
       - name: Check showcase code samples
         run: python3 scripts/check-showcase-samples.py
 
+      - name: Check module layout and shared-source seams
+        run: python3 scripts/check-module-layout.py
+
       - name: Build and install reactor artifacts
         run: mvn -B -DskipTests install
 
       - name: Compile showcase with GWT
-        run: mvn -B -f gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
       - name: Compile Bootstrap 5 showcase with GWT
-        run: mvn -B -f gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
+      - name: Verify published source maps and source JARs
+        run: python3 scripts/prepare-showcase-debug-artifacts.py
 
       - name: Verify TeaVM backend compile
-        run: test -s teavm-bootstrap3/target/teavm/teavm-bootstrap3-smoke.js
+        run: test -s teavm/teavm-bootstrap3/target/teavm/teavm-bootstrap3-smoke.js
 
       - name: Verify Bootstrap 5 TeaVM backend compile
-        run: test -s teavm-bootstrap5/target/teavm/teavm-bootstrap5-smoke.js
+        run: test -s teavm/teavm-bootstrap5/target/teavm/teavm-bootstrap5-smoke.js
 
       - name: Dependency audit
         run: mvn -B -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify

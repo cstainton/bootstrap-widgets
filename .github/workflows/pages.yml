@@ -34,39 +34,42 @@ jobs:
         run: mvn -B -DskipTests install
 
       - name: Compile showcase
-        run: mvn -B -f gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
       - name: Compile Bootstrap 5 showcase
-        run: mvn -B -f gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+        run: mvn -B -f gwt/gwt-bootstrap5-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
+
+      - name: Prepare source maps
+        run: python3 scripts/prepare-showcase-debug-artifacts.py
 
       - name: Prepare Pages artifact
         shell: bash
         run: |
           set -euo pipefail
-          showcase_dir="$(find gwt-bootstrap3-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap3-showcase-*' | head -1)"
-          bootstrap5_showcase_dir="$(find gwt-bootstrap5-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap5-showcase-*' | head -1)"
+          showcase_dir="$(find gwt/gwt-bootstrap3-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap3-showcase-*' | head -1)"
+          bootstrap5_showcase_dir="$(find gwt/gwt-bootstrap5-showcase/target -maxdepth 1 -type d -name 'gwt-bootstrap5-showcase-*' | head -1)"
           mkdir -p public
           cp -R "${showcase_dir}/"* public/
           if [ -f public/GwtBootstrap3Demo.html ]; then cp public/GwtBootstrap3Demo.html public/showcase.html; fi
           mkdir -p public/bootstrap5
           cp -R "${bootstrap5_showcase_dir}/"* public/bootstrap5/
           mkdir -p public/teavm
-          cp -R teavm-bootstrap3/target/teavm/* public/teavm/
-          cp teavm-bootstrap3/src/main/resources/teavm.html public/teavm.html
+          cp -R teavm/teavm-bootstrap3/target/teavm/* public/teavm/
+          cp teavm/teavm-bootstrap3/src/main/resources/teavm.html public/teavm.html
           # teavm.html is served from the site root, so the stylesheets its theme
           # switcher names ("bootstrap/", "themes/") have to exist there too. The
           # ../fonts/ references inside both sets resolve to public/fonts/.
-          b3_res="gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/resource"
+          b3_res="gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/resource"
           mkdir -p public/bootstrap public/themes public/fonts public/css
           cp "${b3_res}/css/bootstrap-3.4.1.min.cache.css" public/bootstrap/
           cp "${b3_res}/css/bootstrap-theme-3.4.1.min.cache.css" public/bootstrap/
           cp "${b3_res}/css/font-awesome-4.7.0.min.cache.css" public/css/
           cp "${b3_res}/css/gwt-bootstrap3.cache.css" public/css/
           cp "${b3_res}"/fonts/* public/fonts/
-          cp gwt-bootstrap3-themes/src/main/java/org/gwtbootstrap3/themes/client/resource/css/bootswatch-*.css public/themes/
+          cp gwt/gwt-bootstrap3-themes/src/main/java/org/gwtbootstrap3/themes/client/resource/css/bootswatch-*.css public/themes/
           mkdir -p public/teavm5
-          cp -R teavm-bootstrap5/target/teavm/* public/teavm5/
-          cp teavm-bootstrap5/src/main/resources/teavm-bootstrap5.html public/teavm-bootstrap5.html
+          cp -R teavm/teavm-bootstrap5/target/teavm/* public/teavm5/
+          cp teavm/teavm-bootstrap5/src/main/resources/teavm-bootstrap5.html public/teavm-bootstrap5.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
