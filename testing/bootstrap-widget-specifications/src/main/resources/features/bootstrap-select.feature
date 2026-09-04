@@ -1,4 +1,4 @@
-@p0 @widget @gwt3 @unsupported-teavm3 @unsupported-gwt5 @unsupported-teavm5
+@p0 @widget @gwt3
 Feature: Bootstrap 3 select enhancement
   Bootstrap Select remains a Bootstrap 3 optional extra until an equivalent
   widget is deliberately supplied for the other targets.

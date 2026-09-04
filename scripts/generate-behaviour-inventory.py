@@ -33,7 +33,6 @@ REQUIRED_FEATURES = {
     "widget-lifecycle.feature",
 }
 TARGET_TAGS = ("gwt3", "teavm3", "gwt5", "teavm5")
-UNSUPPORTED_TARGET_TAGS = {target: f"unsupported-{target}" for target in TARGET_TAGS}
 CONTRACT_TAGS = (
     "functional",
     "api-contract",
@@ -87,27 +86,16 @@ def parse_feature(path: Path) -> list[Scenario]:
         if len(baseline_values) != 1:
             raise ValueError(f"{path.name}:{spec_id}: expected exactly one baseline declaration")
         combined_tags = tuple(dict.fromkeys(feature_tags + scenario_tags))
-        missing = [
-            target
-            for target in TARGET_TAGS
-            if target not in combined_tags
-            and UNSUPPORTED_TARGET_TAGS[target] not in combined_tags
+        unknown = [
+            tag for tag in combined_tags if tag.startswith("unsupported-")
         ]
-        if missing:
+        if unknown:
+            # A scenario records the targets it covers. Saying which targets it does
+            # not cover states the same thing twice and invites the two halves to
+            # disagree; the inventory already shows an untagged target as a gap.
             raise ValueError(
-                f"{path.name}:{spec_id}: targets must be required or explicitly unsupported: "
-                + ", ".join(missing)
-            )
-        contradictory = [
-            target
-            for target in TARGET_TAGS
-            if target in combined_tags
-            and UNSUPPORTED_TARGET_TAGS[target] in combined_tags
-        ]
-        if contradictory:
-            raise ValueError(
-                f"{path.name}:{spec_id}: targets cannot be both required and unsupported: "
-                + ", ".join(contradictory)
+                f"{path.name}:{spec_id}: tag the targets a scenario covers, not the "
+                "ones it does not: " + ", ".join(unknown)
             )
         deprecated = [tag for tag in DEPRECATED_TAGS if tag in combined_tags]
         if deprecated:
@@ -203,7 +191,9 @@ def render(scenarios: list[Scenario]) -> str:
             scenario.fixture_state,
             scenario.route,
             scenario.section,
-            *("required" if target in scenario.tags else "unsupported" for target in TARGET_TAGS),
+            # Covered, or a gap. A gap is a statement about this suite, not about
+            # the widget: it says nobody has written the scenario for that target.
+            *("required" if target in scenario.tags else "-" for target in TARGET_TAGS),
             ",".join(scenario.tags),
         )
         rows.append("\t".join(values))

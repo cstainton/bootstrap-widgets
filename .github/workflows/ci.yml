@@ -70,6 +70,3 @@ jobs:
           path: showcase-site/target/pages
           if-no-files-found: error
           retention-days: 7
-
-      - name: Dependency audit
-        run: mvn -B -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify

@@ -126,6 +126,11 @@
             <configuration>
               <nvdApiKey>${nvdApiKey}</nvdApiKey>
               <failBuildOnCVSS>11</failBuildOnCVSS>
+              <formats>
+                <format>HTML</format>
+                <format>JSON</format>
+                <format>SARIF</format>
+              </formats>
               <ossindexAnalyzerEnabled>false</ossindexAnalyzerEnabled>
               <skipProvidedScope>true</skipProvidedScope>
               <skipTestScope>true</skipTestScope>
