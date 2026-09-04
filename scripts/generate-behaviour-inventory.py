@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate P0 Gherkin metadata and generate its reviewable target matrix."""
+"""Validate Gherkin metadata and generate its reviewable target matrix."""
 
 from __future__ import annotations
 
@@ -23,13 +23,16 @@ REQUIRED_FEATURES = {
     "collapse.feature",
     "dropdowns.feature",
     "forms.feature",
+    "input-groups.feature",
     "overlays.feature",
     "resources.feature",
+    "suggest-box.feature",
     "tabs.feature",
     "themes.feature",
     "widget-lifecycle.feature",
 }
 TARGET_TAGS = ("gwt3", "teavm3", "gwt5", "teavm5")
+TEST_FAMILY_TAGS = ("functional", "dom-contract")
 SCENARIO_RE = re.compile(r"^\s*Scenario:\s+([A-Z]+-[0-9]{3})\s+(.+?)\s*$")
 FIXTURE_RE = re.compile(r'^\s*Given fixture "([^"]+)" is mounted\s*$')
 BASELINE_RE = re.compile(
@@ -76,6 +79,10 @@ def parse_feature(path: Path) -> list[Scenario]:
         missing = [target for target in TARGET_TAGS if target not in combined_tags]
         if missing:
             raise ValueError(f"{path.name}:{spec_id}: missing target tags {', '.join(missing)}")
+        if not any(family in combined_tags for family in TEST_FAMILY_TAGS):
+            raise ValueError(
+                f"{path.name}:{spec_id}: expected @functional, @dom-contract, or both"
+            )
         route, section = baseline_values[0]
         records.append(
             Scenario(spec_id, path.name, name, fixture_values[0], route, section, combined_tags)
@@ -108,7 +115,7 @@ def read_scenarios() -> list[Scenario]:
     names = {path.name for path in paths}
     missing = sorted(REQUIRED_FEATURES - names)
     if missing:
-        raise ValueError("missing required P0 features: " + ", ".join(missing))
+        raise ValueError("missing required behaviour features: " + ", ".join(missing))
     scenarios = [scenario for path in paths for scenario in parse_feature(path)]
     ids = [scenario.spec_id for scenario in scenarios]
     duplicates = sorted({spec_id for spec_id in ids if ids.count(spec_id) > 1})
@@ -155,7 +162,7 @@ def main() -> int:
             raise ValueError(
                 "behaviour inventory is stale; run scripts/generate-behaviour-inventory.py --write"
             )
-        print(f"P0 behaviour inventory is current: {len(scenarios)} scenarios")
+        print(f"Behaviour inventory is current: {len(scenarios)} scenarios")
         return 0
     except ValueError as error:
         print(error, file=sys.stderr)

@@ -13,6 +13,8 @@ SOURCE_MAP_URL = re.compile(rb"sourceMappingURL=([^\s]+)")
 GWT_SHOWCASES = (
     ("gwt/gwt-bootstrap3-showcase", "GwtBootstrap3Demo"),
     ("gwt/gwt-bootstrap5-showcase", "GwtBootstrap5Showcase"),
+    ("gwt/gwt-bootstrap3-browser-fixtures", "Bootstrap3BrowserFixtures"),
+    ("gwt/gwt-bootstrap5-browser-fixtures", "Bootstrap5BrowserFixtures"),
 )
 
 SOURCE_MODULES = (

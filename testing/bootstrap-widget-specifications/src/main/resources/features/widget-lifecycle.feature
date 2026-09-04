@@ -3,7 +3,7 @@ Feature: Widget lifecycle
   Every exported widget must support predictable parent, attachment and
   handler lifecycle across repeated use.
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: LIF-001 Widget mounts with one parent and one DOM parent
     Given fixture "behaviour/lifecycle/basic" is mounted
     Given Bootstrap 3 showcase route "home" section "Component examples" defines the baseline
@@ -12,7 +12,7 @@ Feature: Widget lifecycle
     And its element has exactly one DOM parent
     And its stable fixture id is present
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: LIF-002 Widget detaches cleanly
     Given fixture "behaviour/lifecycle/basic" is mounted
     Given Bootstrap 3 showcase route "home" section "Component examples" defines the baseline
@@ -21,7 +21,7 @@ Feature: Widget lifecycle
     And the widget reports itself detached
     And its element has no DOM parent
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: LIF-003 Widget can be mounted again after detach
     Given fixture "behaviour/lifecycle/remount" is mounted
     Given Bootstrap 3 showcase route "home" section "Component examples" defines the baseline
@@ -30,7 +30,7 @@ Feature: Widget lifecycle
     And one new attach event is reported
     And the previous host remains empty
 
-  @api @rendered
+  @api @rendered @functional
   Scenario: LIF-004 Repeated mounting does not duplicate handlers
     Given fixture "behaviour/lifecycle/handlers" is mounted
     Given Bootstrap 3 showcase route "buttons" section "Options" defines the baseline
@@ -39,7 +39,7 @@ Feature: Widget lifecycle
     Then its action handler runs exactly once
     And no detached host receives an event
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional @dom-contract
   Scenario: LIF-005 Plugin widget disposes document elements on detach
     Given fixture "behaviour/lifecycle/plugin" is mounted
     Given Bootstrap 3 showcase route "tooltips" section "Four directions" defines the baseline

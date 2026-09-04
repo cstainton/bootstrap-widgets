@@ -26,6 +26,7 @@ import org.gwtbootstrap3.client.ui.constants.HeadingSize;
 import org.gwtbootstrap3.client.ui.constants.Styles;
 import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -42,9 +43,14 @@ public class ModalHeader extends FlowPanel implements ModalComponent, IsClosable
         setStyleName(Styles.MODAL_HEADER);
 
         heading.setStyleName(Styles.MODAL_TITLE);
+        heading.getElement().setId(Document.get().createUniqueId());
         closeButton.setDataDismiss(ButtonDismiss.MODAL);
 
         add(closeButton);
+    }
+
+    public String getTitleId() {
+        return heading.getElement().getId();
     }
 
     @Override

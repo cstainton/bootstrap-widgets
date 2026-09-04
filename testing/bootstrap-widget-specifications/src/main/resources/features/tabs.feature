@@ -3,7 +3,7 @@ Feature: Tab selection and events
   Tabs synchronize the selected list item, pane visibility and accessibility
   state for both user and programmatic selection.
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: TAB-001 Activating a tab selects its pane
     Given fixture "behaviour/tabs/basic" is mounted
     Given Bootstrap 3 showcase route "tabs" section "Basic" defines the baseline
@@ -14,7 +14,7 @@ Feature: Tab selection and events
     And the second tab has aria-selected "true"
     And the first tab has aria-selected "false"
 
-  @rendered @javascript
+  @rendered @javascript @functional
   Scenario: TAB-002 Disabled tab cannot be selected
     Given fixture "behaviour/tabs/disabled" is mounted
     Given Bootstrap 3 showcase route "tabs" section "Basic" defines the baseline
@@ -23,7 +23,7 @@ Feature: Tab selection and events
     And the first pane remains visible
     And no tab transition event is reported
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional
   Scenario: TAB-003 Programmatic tab selection matches user selection
     Given fixture "behaviour/tabs/programmatic" is mounted
     Given Bootstrap 3 showcase route "tabs" section "Force Show Tabs" defines the baseline
@@ -31,7 +31,7 @@ Feature: Tab selection and events
     Then only the second tab and pane are active
     And the same hide show hidden and shown event sequence is reported as for user activation
 
-  @rendered @javascript
+  @rendered @javascript @functional @dom-contract
   Scenario: TAB-004 Fading pane becomes visible after transition
     Given fixture "behaviour/tabs/fade" is mounted
     Given Bootstrap 3 showcase route "tabs" section "Fading Content In/Out" defines the baseline
@@ -39,7 +39,7 @@ Feature: Tab selection and events
     Then the second pane receives its fade and visible state classes
     And the first pane is not visible after the transition completes
 
-  @rendered @javascript @layout
+  @rendered @javascript @layout @functional @dom-contract
   Scenario: TAB-005 Positioned tab sets preserve pane association
     Given fixture "behaviour/tabs/positions" is mounted
     Given Bootstrap 3 showcase route "tabs" section "Positions" defines the baseline

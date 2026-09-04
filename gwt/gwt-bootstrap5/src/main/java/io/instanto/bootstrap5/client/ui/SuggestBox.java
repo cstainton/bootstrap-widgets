@@ -105,9 +105,13 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
             final com.google.gwt.dom.client.NodeList<com.google.gwt.dom.client.Element> items =
                     popup.getElementsByTagName("td");
             for (int i = 0; i < items.getLength(); i++) {
-                items.getItem(i).addClassName("dropdown-item");
+                if (items.getItem(i).hasClassName("item")) {
+                    items.getItem(i).addClassName("dropdown-item");
+                }
             }
-            getPopupPanel().setWidth(suggestBox.getOffsetWidth() + "px");
+            popup.getStyle().setProperty("boxSizing", "border-box");
+            popup.getStyle().setWidth(suggestBox.getOffsetWidth(),
+                    com.google.gwt.dom.client.Style.Unit.PX);
         }
     }
 

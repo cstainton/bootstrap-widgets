@@ -57,6 +57,9 @@ public class Modal extends ElementPanel implements IsClosable {
     public Modal() {
         super("div");
         addStyleName("modal");
+        getElement().setAttribute("role", "dialog");
+        getElement().setAttribute("aria-modal", "true");
+        getElement().setAttribute("aria-labelledby", header.getTitleId());
         getElement().setAttribute("tabindex", "-1");
         dialog.addStyleName("modal-dialog");
         content.addStyleName("modal-content");
@@ -113,6 +116,7 @@ public class Modal extends ElementPanel implements IsClosable {
     public void addHeader(ModalHeader header) {
         this.header.removeFromParent();
         this.header = header == null ? new ModalHeader() : header;
+        getElement().setAttribute("aria-labelledby", this.header.getTitleId());
         content.insert(this.header, 0);
     }
 

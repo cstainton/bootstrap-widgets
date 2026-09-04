@@ -230,6 +230,15 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
             onInserted(evt);
         });
     }
+
+    protected void unbindJavaScriptEvents(final Element e) {
+        JQuery tooltip = JQuery.jQuery(e);
+        tooltip.off("show." + dataTarget);
+        tooltip.off("shown." + dataTarget);
+        tooltip.off("hide." + dataTarget);
+        tooltip.off("hidden." + dataTarget);
+        tooltip.off("inserted." + dataTarget);
+    }
     
     protected abstract void call(final String arg);
 
@@ -265,8 +274,13 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
      * Force the Tooltip to be destroyed
      */
     public void destroy() {
+        if (!initialized || widget == null) {
+            return;
+        }
+        unbindJavaScriptEvents(widget.getElement());
         call(DESTROY);
         setInitialized(false);
+        showing = false;
     }
 
     /**
@@ -798,7 +812,11 @@ public abstract class AbstractTooltip implements IsWidget, HasWidgets, HasOneWid
 
             @Override
             public void onAttachOrDetach(final AttachEvent event) {
-                init();
+                if (event.isAttached()) {
+                    init();
+                } else {
+                    destroy();
+                }
             }
         });
     }

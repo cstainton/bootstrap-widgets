@@ -2,7 +2,7 @@
 Feature: Collapse and accordion behaviour
   Collapsible content exposes stable events and accessible expanded state.
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: COL-001 Collapse opens from its target control
     Given fixture "behaviour/collapse/basic" is mounted
     Given Bootstrap 3 showcase route "collapse" section "Collapse via Button target" defines the baseline
@@ -12,7 +12,7 @@ Feature: Collapse and accordion behaviour
     And the target has aria-expanded "true"
     And the target aria-controls names the collapse id
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: COL-002 Collapse closes from its target control
     Given fixture "behaviour/collapse/basic" is mounted
     Given Bootstrap 3 showcase route "collapse" section "Collapse via Button target" defines the baseline
@@ -21,7 +21,7 @@ Feature: Collapse and accordion behaviour
     Then the collapse is hidden
     And the target has aria-expanded "false"
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional
   Scenario: COL-003 Collapse reports ordered transition events
     Given fixture "behaviour/collapse/events" is mounted
     Given Bootstrap 3 showcase route "collapse" section "Collapse via Button target" defines the baseline
@@ -30,7 +30,7 @@ Feature: Collapse and accordion behaviour
     And hide occurs before hidden
     And each transition event is reported exactly once with the collapse as source
 
-  @rendered @javascript
+  @rendered @javascript @functional @dom-contract
   Scenario: COL-004 Accordion keeps only one panel open
     Given fixture "behaviour/collapse/accordion" is mounted
     Given Bootstrap 3 showcase route "collapse" section "Accordion Example using PanelCollapse" defines the baseline
@@ -40,7 +40,7 @@ Feature: Collapse and accordion behaviour
     And the first accordion panel is closed
     And the third accordion panel remains closed
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional
   Scenario: COL-005 Detached collapse removes transition handlers
     Given fixture "behaviour/collapse/detach" is mounted
     Given Bootstrap 3 showcase route "collapse" section "Collapse via Button target" defines the baseline

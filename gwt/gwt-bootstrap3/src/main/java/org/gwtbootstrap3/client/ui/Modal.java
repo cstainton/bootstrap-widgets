@@ -104,6 +104,9 @@ public class Modal extends Div implements IsClosable {
 
     public Modal() {
         setStyleName(Styles.MODAL);
+        getElement().setAttribute(Attributes.ROLE, "dialog");
+        getElement().setAttribute("aria-modal", "true");
+        getElement().setAttribute("aria-labelledby", header.getTitleId());
         
         // Set the z-index to match bootstrap's .modal
         getElement().getStyle().setZIndex(1050);
@@ -141,6 +144,7 @@ public class Modal extends Div implements IsClosable {
         if (w instanceof ModalHeader) {
             header.removeFromParent();
             header = (ModalHeader) w;
+            getElement().setAttribute("aria-labelledby", header.getTitleId());
         }
 
         if (w instanceof ModalComponent) {

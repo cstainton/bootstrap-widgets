@@ -3,7 +3,7 @@ Feature: Button group composition
   Button groups preserve child ownership and group-level state while using the
   native layout idioms of each Bootstrap generation.
 
-  @api @rendered
+  @api @rendered @dom-contract
   Scenario: BGR-001 Button group preserves insertion order
     Given fixture "behaviour/button-group/basic" is mounted
     Given Bootstrap 3 showcase route "buttonGroups" section "Basic example" defines the baseline
@@ -11,7 +11,7 @@ Feature: Button group composition
     Then the group contains three children in insertion order
     And the rendered buttons appear in the same order
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: BGR-002 Group size is applied without changing child values
     Given fixture "behaviour/button-group/sizes" is mounted
     Given Bootstrap 3 showcase route "buttonGroups" section "Sizing" defines the baseline
@@ -19,7 +19,7 @@ Feature: Button group composition
     Then only the small group size class is present
     And every child button retains its value
 
-  @api @rendered @layout
+  @api @rendered @layout @dom-contract
   Scenario: BGR-003 Vertical group stacks its buttons
     Given fixture "behaviour/button-group/vertical" is mounted
     Given Bootstrap 3 showcase route "buttonGroups" section "Vertical variation" defines the baseline
@@ -27,7 +27,7 @@ Feature: Button group composition
     Then the vertical group class is present
     And each button starts below the preceding button
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: BGR-004 Nested dropdown remains a child of its group
     Given fixture "behaviour/button-group/nested-dropdown" is mounted
     Given Bootstrap 3 showcase route "buttonGroups" section "Nesting" defines the baseline
@@ -36,7 +36,7 @@ Feature: Button group composition
     And the dropdown remains inside the owning button group
     And sibling buttons remain actionable
 
-  @api @rendered
+  @api @rendered @functional @dom-contract
   Scenario: BGR-005 Removing a grouped button removes its rendered element
     Given fixture "behaviour/button-group/removal" is mounted
     Given Bootstrap 3 showcase route "buttonGroups" section "Basic example" defines the baseline

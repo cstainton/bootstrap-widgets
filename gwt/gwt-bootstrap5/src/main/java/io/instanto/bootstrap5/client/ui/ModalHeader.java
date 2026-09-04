@@ -30,6 +30,7 @@ import io.instanto.bootstrap5.client.ui.base.mixin.DataSpyMixin;
 import io.instanto.bootstrap5.client.ui.constants.Spy;
 
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.ui.HTML;
 
 public class ModalHeader extends ElementPanel implements HasDataSpy {
@@ -41,6 +42,7 @@ public class ModalHeader extends ElementPanel implements HasDataSpy {
         super("div");
         addStyleName("modal-header");
         titleWidget.addStyleName("modal-title h5");
+        titleWidget.getElement().setId(Document.get().createUniqueId());
         add(titleWidget);
     }
 
@@ -52,6 +54,10 @@ public class ModalHeader extends ElementPanel implements HasDataSpy {
 
     public void setTitle(String title) {
         titleWidget.setHTML(escape(title));
+    }
+
+    public String getTitleId() {
+        return titleWidget.getElement().getId();
     }
 
     public void addCloseButton() {

@@ -3,7 +3,7 @@ Feature: Modal tooltip and popover overlays
   Overlay widgets preserve event order, focus and disposal while delegating
   visible behaviour to the native Bootstrap plugin implementation.
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: OVL-001 Modal opens with an accessible dialog
     Given fixture "behaviour/modal/basic" is mounted
     Given Bootstrap 3 showcase route "modals" section "Basic" defines the baseline
@@ -13,7 +13,7 @@ Feature: Modal tooltip and popover overlays
     And the modal label points to its visible title
     And one show event occurs before one shown event
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: OVL-002 Modal closes from its dismiss button and restores focus
     Given fixture "behaviour/modal/basic" is mounted
     Given Bootstrap 3 showcase route "modals" section "Basic" defines the baseline
@@ -23,7 +23,7 @@ Feature: Modal tooltip and popover overlays
     And one hide event occurs before one hidden event
     And the modal target owns document focus
 
-  @rendered @javascript @accessibility
+  @rendered @javascript @accessibility @functional @dom-contract
   Scenario: OVL-003 Keyboard-enabled modal closes on Escape
     Given fixture "behaviour/modal/keyboard" is mounted
     Given Bootstrap 3 showcase route "modals" section "Basic" defines the baseline
@@ -32,7 +32,7 @@ Feature: Modal tooltip and popover overlays
     Then the modal is hidden
     And the modal backdrop is removed
 
-  @rendered @javascript
+  @rendered @javascript @functional @dom-contract
   Scenario: OVL-004 Opening an exclusive modal hides the previous modal
     Given fixture "behaviour/modal/exclusive" is mounted
     Given Bootstrap 3 showcase route "modals" section "Only One Modal Active" defines the baseline
@@ -42,7 +42,7 @@ Feature: Modal tooltip and popover overlays
     And the first modal is hidden
     And only one modal backdrop remains
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional @dom-contract
   Scenario: OVL-005 Tooltip honours trigger placement and delays
     Given fixture "behaviour/tooltip/options" is mounted
     Given Bootstrap 3 showcase route "tooltips" section "Four directions" defines the baseline
@@ -52,7 +52,7 @@ Feature: Modal tooltip and popover overlays
     And the tooltip content matches its configured title
     And one show event occurs before one shown event
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional @dom-contract
   Scenario: OVL-006 Tooltip disposal removes generated markup and handlers
     Given fixture "behaviour/tooltip/disposal" is mounted
     Given Bootstrap 3 showcase route "tooltips" section "Four directions" defines the baseline
@@ -62,7 +62,7 @@ Feature: Modal tooltip and popover overlays
     When the target is mounted and activated again
     Then no stale tooltip handler runs
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional @dom-contract
   Scenario: OVL-007 Popover renders title and HTML content
     Given fixture "behaviour/popover/html" is mounted
     Given Bootstrap 3 showcase route "popover" section "Four directions" defines the baseline
@@ -72,7 +72,7 @@ Feature: Modal tooltip and popover overlays
     And its trusted HTML content is rendered as HTML
     And one show event occurs before one shown event
 
-  @api @rendered @javascript
+  @api @rendered @javascript @functional @dom-contract
   Scenario: OVL-008 Popover can be shown hidden and toggled through the API
     Given fixture "behaviour/popover/programmatic" is mounted
     Given Bootstrap 3 showcase route "popover" section "Four directions" defines the baseline

@@ -13,22 +13,43 @@ import org.gwtbootstrap3.client.ui.Form;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.FormLabel;
 import org.gwtbootstrap3.client.ui.HelpBlock;
+import org.gwtbootstrap3.client.ui.InputGroup;
+import org.gwtbootstrap3.client.ui.InputGroupAddon;
+import org.gwtbootstrap3.client.ui.InputGroupButton;
 import org.gwtbootstrap3.client.ui.ListBox;
+import org.gwtbootstrap3.client.ui.Modal;
+import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.NavTabs;
+import org.gwtbootstrap3.client.ui.Panel;
+import org.gwtbootstrap3.client.ui.PanelBody;
+import org.gwtbootstrap3.client.ui.PanelCollapse;
+import org.gwtbootstrap3.client.ui.PanelGroup;
+import org.gwtbootstrap3.client.ui.PanelHeader;
+import org.gwtbootstrap3.client.ui.Popover;
 import org.gwtbootstrap3.client.ui.Radio;
 import org.gwtbootstrap3.client.ui.RadioButton;
 import org.gwtbootstrap3.client.ui.TabContent;
 import org.gwtbootstrap3.client.ui.TabListItem;
 import org.gwtbootstrap3.client.ui.TabPane;
 import org.gwtbootstrap3.client.ui.TabPanel;
+import org.gwtbootstrap3.client.ui.SuggestBox;
 import org.gwtbootstrap3.client.ui.TextBox;
+import org.gwtbootstrap3.client.ui.Tooltip;
 import org.gwtbootstrap3.client.ui.VerticalButtonGroup;
+import org.gwtbootstrap3.client.ui.constants.ButtonDismiss;
 import org.gwtbootstrap3.client.ui.constants.ButtonGroupSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
+import org.gwtbootstrap3.client.ui.constants.InputGroupSize;
+import org.gwtbootstrap3.client.ui.constants.Placement;
 import org.gwtbootstrap3.client.ui.constants.TabPosition;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
+import org.gwtbootstrap3.client.ui.constants.Trigger;
 import org.gwtbootstrap3.client.ui.form.validator.BlankValidator;
+import org.gwtbootstrap3.client.ui.theme.StandardThemes;
+import org.gwtbootstrap3.client.ui.theme.Theme;
+import org.gwtbootstrap3.client.ui.theme.Themes;
+import org.gwtbootstrap3.themes.client.BootswatchThemes;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
@@ -36,6 +57,7 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -47,6 +69,7 @@ public final class Bootstrap3BrowserFixturesEntryPoint implements EntryPoint {
     @Override
     public void onModuleLoad() {
         RootPanel root = RootPanel.get("fixtures");
+        initializeThemes();
         root.add(new HTML("<h1>GWT Bootstrap 3 interaction fixtures</h1>"));
         root.add(toggleFixture());
         root.add(disabledToggleFixture());
@@ -66,6 +89,27 @@ public final class Bootstrap3BrowserFixturesEntryPoint implements EntryPoint {
         root.add(radioGroupFixture());
         root.add(formSubmissionFixture());
         root.add(collapseFixture());
+        root.add(accordionFixture());
+        root.add(detachedCollapseFixture());
+        root.add(basicLifecycleFixture());
+        root.add(remountLifecycleFixture());
+        root.add(handlerLifecycleFixture());
+        root.add(textInputGroupFixture());
+        root.add(buttonInputGroupFixture());
+        root.add(sizingInputGroupFixture());
+        root.add(basicSuggestBoxFixture());
+        root.add(suggestBoxLifecycleFixture());
+        root.add(themeSwitcherFixture());
+        root.add(darkThemeFixture());
+        root.add(themePersistenceFixture());
+        root.add(basicModalFixture());
+        root.add(keyboardModalFixture());
+        root.add(exclusiveModalFixture());
+        root.add(tooltipOptionsFixture());
+        root.add(tooltipDisposalFixture());
+        root.add(popoverHtmlFixture());
+        root.add(popoverProgrammaticFixture());
+        root.add(pluginLifecycleFixture());
         root.add(basicTabsFixture());
         root.add(disabledTabsFixture());
         root.add(programmaticTabsFixture());
@@ -399,6 +443,492 @@ public final class Bootstrap3BrowserFixturesEntryPoint implements EntryPoint {
         container.add(target);
         container.add(collapse);
         return fixture("Collapse", container);
+    }
+
+    private Widget accordionFixture() {
+        PanelGroup accordion = tagged(new PanelGroup(), "behaviour/collapse/accordion");
+        accordion.getElement().setId("behaviour-collapse-accordion");
+        accordion.add(accordionItem("first", true));
+        accordion.add(accordionItem("second", false));
+        accordion.add(accordionItem("third", false));
+        return fixture("Accordion", accordion);
+    }
+
+    private Widget accordionItem(String name, boolean open) {
+        String collapseId = "behaviour-accordion-" + name;
+        Panel panel = new Panel();
+        PanelHeader header = new PanelHeader();
+        Anchor toggle = tagged(new Anchor(capitalize(name), "#" + collapseId),
+                "behaviour/collapse/accordion/" + name + "-toggle");
+        toggle.setDataToggle(Toggle.COLLAPSE);
+        toggle.setDataParent("#behaviour-collapse-accordion");
+        toggle.getElement().setAttribute("aria-controls", collapseId);
+        toggle.getElement().setAttribute("aria-expanded", Boolean.toString(open));
+        header.add(toggle);
+
+        PanelCollapse collapse = tagged(new PanelCollapse(),
+                "behaviour/collapse/accordion/" + name + "-panel");
+        collapse.getElement().setId(collapseId);
+        collapse.setIn(open);
+        PanelBody body = new PanelBody();
+        body.add(new HTML("<p>" + capitalize(name) + " accordion content</p>"));
+        collapse.add(body);
+        panel.add(header);
+        panel.add(collapse);
+        return panel;
+    }
+
+    private Widget detachedCollapseFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/collapse/detach");
+        FlowPanel host = tagged(new FlowPanel(), "behaviour/collapse/detach/host");
+        Collapse collapse = tagged(new Collapse(), "behaviour/collapse/detach/panel");
+        collapse.getElement().setId("behaviour-collapse-detach-panel");
+        collapse.setToggle(false);
+        collapse.getElement().setAttribute("data-event-order", "");
+        collapse.addShowHandler(event -> appendEvent(collapse.getElement(), "show"));
+        collapse.addShownHandler(event -> appendEvent(collapse.getElement(), "shown"));
+        collapse.add(new HTML("<p>Remounted collapse content</p>"));
+        host.add(collapse);
+
+        Button remount = tagged(new Button("Remount collapse"),
+                "behaviour/collapse/detach/remount");
+        remount.addClickHandler(event -> {
+            host.remove(collapse);
+            host.add(collapse);
+            state.getElement().setAttribute("data-remounted", "true");
+        });
+        Button toggle = tagged(new Button("Open remounted collapse"),
+                "behaviour/collapse/detach/toggle");
+        toggle.setDataToggle(Toggle.COLLAPSE);
+        toggle.setDataTargetWidget(collapse);
+        state.add(remount);
+        state.add(toggle);
+        state.add(host);
+        return fixture("Detached collapse", state);
+    }
+
+    private Widget basicLifecycleFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/lifecycle/basic");
+        FlowPanel host = tagged(new FlowPanel(), "behaviour/lifecycle/basic/host");
+        Button widget = tagged(new Button("Lifecycle widget"),
+                "behaviour/lifecycle/basic/widget");
+        widget.addAttachHandler(event -> recordLifecycle(state, host, widget));
+        host.add(widget);
+        Button remove = tagged(new Button("Remove widget"),
+                "behaviour/lifecycle/basic/remove");
+        remove.addClickHandler(event -> {
+            host.remove(widget);
+            recordLifecycle(state, host, widget);
+        });
+        state.add(remove);
+        state.add(host);
+        return fixture("Basic widget lifecycle", state);
+    }
+
+    private Widget remountLifecycleFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/lifecycle/remount");
+        FlowPanel oldHost = tagged(new FlowPanel(), "behaviour/lifecycle/remount/old-host");
+        FlowPanel freshHost = tagged(new FlowPanel(), "behaviour/lifecycle/remount/fresh-host");
+        Button widget = tagged(new Button("Remountable widget"),
+                "behaviour/lifecycle/remount/widget");
+        initializeCounter(widget.getElement(), "data-attach-count");
+        widget.addAttachHandler(event -> {
+            if (event.isAttached()) {
+                increment(widget.getElement(), "data-attach-count");
+            }
+        });
+        oldHost.add(widget);
+        Button remount = tagged(new Button("Move to fresh host"),
+                "behaviour/lifecycle/remount/action");
+        remount.addClickHandler(event -> {
+            oldHost.remove(widget);
+            freshHost.add(widget);
+            state.getElement().setAttribute("data-parent-match",
+                    Boolean.toString(widget.getParent() == freshHost));
+            state.getElement().setAttribute("data-new-attach-count",
+                    Integer.toString(Integer.parseInt(widget.getElement()
+                            .getAttribute("data-attach-count")) - 1));
+        });
+        state.add(remount);
+        state.add(oldHost);
+        state.add(freshHost);
+        return fixture("Widget remount", state);
+    }
+
+    private Widget handlerLifecycleFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/lifecycle/handlers");
+        FlowPanel firstHost = tagged(new FlowPanel(), "behaviour/lifecycle/handlers/first-host");
+        FlowPanel secondHost = tagged(new FlowPanel(), "behaviour/lifecycle/handlers/second-host");
+        Button widget = tagged(new Button("Activate after remounts"),
+                "behaviour/lifecycle/handlers/widget");
+        countClicks(widget, widget);
+        firstHost.add(widget);
+        final FlowPanel[] currentHost = {firstHost};
+        Button remount = tagged(new Button("Remount three times"),
+                "behaviour/lifecycle/handlers/remount");
+        remount.addClickHandler(event -> {
+            for (int i = 0; i < 3; i++) {
+                FlowPanel nextHost = currentHost[0] == firstHost ? secondHost : firstHost;
+                currentHost[0].remove(widget);
+                nextHost.add(widget);
+                currentHost[0] = nextHost;
+            }
+            state.getElement().setAttribute("data-current-host",
+                    currentHost[0] == firstHost ? "first" : "second");
+        });
+        state.add(remount);
+        state.add(firstHost);
+        state.add(secondHost);
+        return fixture("Repeated widget remount", state);
+    }
+
+    private void recordLifecycle(FlowPanel state, FlowPanel host, Widget widget) {
+        state.getElement().setAttribute("data-parent-match",
+                Boolean.toString(widget.getParent() == host));
+        state.getElement().setAttribute("data-attached", Boolean.toString(widget.isAttached()));
+        state.getElement().setAttribute("data-dom-parent",
+                Boolean.toString(widget.getElement().getParentElement() == host.getElement()));
+    }
+
+    private Widget textInputGroupFixture() {
+        InputGroup group = tagged(new InputGroup(), "behaviour/input-group/text-addons");
+        InputGroupAddon prefix = tagged(new InputGroupAddon(),
+                "behaviour/input-group/text-addons/prefix");
+        prefix.setText("Prefix");
+        TextBox control = tagged(new TextBox(), "behaviour/input-group/text-addons/control");
+        control.setPlaceholder("Grouped value");
+        InputGroupAddon suffix = tagged(new InputGroupAddon(),
+                "behaviour/input-group/text-addons/suffix");
+        suffix.setText("Suffix");
+        group.add(prefix);
+        group.add(control);
+        group.add(suffix);
+        return fixture("Text input group", group);
+    }
+
+    private Widget buttonInputGroupFixture() {
+        InputGroup group = tagged(new InputGroup(), "behaviour/input-group/button-addon");
+        InputGroupButton addon = tagged(new InputGroupButton(),
+                "behaviour/input-group/button-addon/container");
+        Button button = tagged(new Button("Apply"), "behaviour/input-group/button-addon/action");
+        countClicks(button, button);
+        addon.add(button);
+        TextBox control = tagged(new TextBox(), "behaviour/input-group/button-addon/control");
+        control.setValue("original");
+        group.add(addon);
+        group.add(control);
+        return fixture("Button input group", group);
+    }
+
+    private Widget sizingInputGroupFixture() {
+        FlowPanel state = new FlowPanel();
+        InputGroup group = tagged(new InputGroup(), "behaviour/input-group/sizing");
+        group.add(new InputGroupAddon());
+        group.add(new TextBox());
+        Button large = tagged(new Button("Large"), "behaviour/input-group/sizing/large");
+        large.addClickHandler(event -> {
+            group.setSize(InputGroupSize.LARGE);
+            group.getElement().setAttribute("data-reported-size", group.getSize().name());
+        });
+        Button reset = tagged(new Button("Default"), "behaviour/input-group/sizing/default");
+        reset.addClickHandler(event -> {
+            group.setSize(InputGroupSize.DEFAULT);
+            group.getElement().setAttribute("data-reported-size", group.getSize().name());
+        });
+        state.add(group);
+        state.add(large);
+        state.add(reset);
+        return fixture("Input group sizing", state);
+    }
+
+    private Widget basicSuggestBoxFixture() {
+        MultiWordSuggestOracle oracle = countryOracle();
+        SuggestBox suggestBox = tagged(new SuggestBox(oracle), "behaviour/suggest-box/basic");
+        suggestBox.setPlaceholder("Country");
+        recordSuggestions(suggestBox);
+        return fixture("Basic suggest box", suggestBox);
+    }
+
+    private Widget suggestBoxLifecycleFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/suggest-box/lifecycle");
+        FlowPanel host = tagged(new FlowPanel(), "behaviour/suggest-box/lifecycle/host");
+        SuggestBox suggestBox = tagged(new SuggestBox(countryOracle()),
+                "behaviour/suggest-box/lifecycle/control");
+        recordSuggestions(suggestBox);
+        host.add(suggestBox);
+        Button detach = tagged(new Button("Detach"), "behaviour/suggest-box/lifecycle/detach");
+        detach.addClickHandler(event -> host.remove(suggestBox));
+        Button remount = tagged(new Button("Remount"), "behaviour/suggest-box/lifecycle/remount");
+        remount.addClickHandler(event -> host.add(suggestBox));
+        state.add(detach);
+        state.add(remount);
+        state.add(host);
+        return fixture("Suggest box lifecycle", state);
+    }
+
+    private MultiWordSuggestOracle countryOracle() {
+        MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
+        oracle.add("United Kingdom");
+        oracle.add("United States");
+        oracle.add("France");
+        oracle.add("Germany");
+        return oracle;
+    }
+
+    private void recordSuggestions(SuggestBox suggestBox) {
+        initializeCounter(suggestBox.getElement(), "data-suggestion-count");
+        suggestBox.addSelectionHandler(event -> {
+            increment(suggestBox.getElement(), "data-suggestion-count");
+            suggestBox.getElement().setAttribute("data-selected-value",
+                    event.getSelectedItem().getReplacementString());
+            suggestBox.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == suggestBox));
+        });
+    }
+
+    private void initializeThemes() {
+        Themes.register(StandardThemes.all());
+        Themes.register(BootswatchThemes.all());
+        Themes.restore(Themes.get(StandardThemes.BOOTSTRAP));
+    }
+
+    private Widget themeSwitcherFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/themes/switcher");
+        Button standard = tagged(new Button("Bootstrap"),
+                "behaviour/themes/switcher/standard");
+        standard.addClickHandler(event -> {
+            Themes.apply(StandardThemes.BOOTSTRAP);
+            recordTheme(state);
+        });
+        Button flatly = tagged(new Button("Flatly"), "behaviour/themes/switcher/flatly");
+        flatly.addClickHandler(event -> {
+            Themes.apply("flatly");
+            recordTheme(state);
+        });
+        state.add(standard);
+        state.add(flatly);
+        recordTheme(state);
+        return fixture("Theme switcher", state);
+    }
+
+    private Widget darkThemeFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/themes/dark");
+        Button darkly = tagged(new Button("Darkly"), "behaviour/themes/dark/darkly");
+        darkly.addClickHandler(event -> {
+            Themes.apply("darkly");
+            recordTheme(state);
+        });
+        Button flatly = tagged(new Button("Flatly"), "behaviour/themes/dark/flatly");
+        flatly.addClickHandler(event -> {
+            Themes.apply("flatly");
+            recordTheme(state);
+        });
+        state.add(darkly);
+        state.add(flatly);
+        recordTheme(state);
+        return fixture("Dark theme reporting", state);
+    }
+
+    private Widget themePersistenceFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/themes/persistence");
+        Button united = tagged(new Button("United"), "behaviour/themes/persistence/united");
+        united.addClickHandler(event -> {
+            Themes.apply("united");
+            recordTheme(state);
+        });
+        state.add(united);
+        recordTheme(state);
+        return fixture("Theme persistence", state);
+    }
+
+    private void recordTheme(FlowPanel state) {
+        Theme current = Themes.getCurrent();
+        Element link = Document.get().getElementById(Themes.LINK_ID);
+        state.getElement().setAttribute("data-current-theme",
+                current == null ? "" : current.getName());
+        state.getElement().setAttribute("data-dark", Boolean.toString(Themes.isDark()));
+        state.getElement().setAttribute("data-theme-url",
+                link == null ? "" : link.getAttribute("href"));
+    }
+
+    private Widget basicModalFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/modal/basic");
+        Modal modal = tagged(new Modal(), "behaviour/modal/basic/dialog");
+        modal.getElement().setId("behaviour-basic-modal");
+        modal.setTitle("Basic modal title");
+        modal.setClosable(false);
+        modal.add(new HTML("<p>Basic modal content</p>"));
+        modal.getElement().setAttribute("data-event-order", "");
+        modal.addShowHandler(event -> appendEvent(modal.getElement(), "show"));
+        modal.addShownHandler(event -> appendEvent(modal.getElement(), "shown"));
+        modal.addHideHandler(event -> appendEvent(modal.getElement(), "hide"));
+        modal.addHiddenHandler(event -> appendEvent(modal.getElement(), "hidden"));
+        ModalFooter footer = new ModalFooter();
+        Button dismiss = tagged(new Button("Close"), "behaviour/modal/basic/dismiss");
+        dismiss.setDataDismiss(ButtonDismiss.MODAL);
+        footer.add(dismiss);
+        modal.add(footer);
+
+        Button target = tagged(new Button("Open basic modal"), "behaviour/modal/basic/target");
+        target.setDataToggle(Toggle.MODAL);
+        target.setDataTargetWidget(modal);
+        state.add(target);
+        state.add(modal);
+        return fixture("Basic modal", state);
+    }
+
+    private Widget keyboardModalFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/modal/keyboard");
+        Modal modal = tagged(new Modal(), "behaviour/modal/keyboard/dialog");
+        modal.getElement().setId("behaviour-keyboard-modal");
+        modal.setTitle("Keyboard modal");
+        modal.setDataKeyboard(true);
+        modal.add(new HTML("<p>Press Escape to close</p>"));
+        Button target = tagged(new Button("Open keyboard modal"),
+                "behaviour/modal/keyboard/target");
+        target.setDataToggle(Toggle.MODAL);
+        target.setDataTargetWidget(modal);
+        state.add(target);
+        state.add(modal);
+        return fixture("Keyboard modal", state);
+    }
+
+    private Widget exclusiveModalFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/modal/exclusive");
+        Modal first = tagged(new Modal(), "behaviour/modal/exclusive/first");
+        first.getElement().setId("behaviour-exclusive-first");
+        first.setTitle("First modal");
+        Modal second = tagged(new Modal(), "behaviour/modal/exclusive/second");
+        second.getElement().setId("behaviour-exclusive-second");
+        second.setTitle("Second modal");
+        second.setHideOtherModals(true);
+
+        ModalFooter firstFooter = new ModalFooter();
+        Button openSecond = tagged(new Button("Open second modal"),
+                "behaviour/modal/exclusive/open-second");
+        openSecond.addClickHandler(event -> second.show());
+        firstFooter.add(openSecond);
+        first.add(firstFooter);
+        second.add(new HTML("<p>Exclusive modal content</p>"));
+
+        Button target = tagged(new Button("Open first modal"),
+                "behaviour/modal/exclusive/open-first");
+        target.setDataToggle(Toggle.MODAL);
+        target.setDataTargetWidget(first);
+        state.add(target);
+        state.add(first);
+        state.add(second);
+        return fixture("Exclusive modals", state);
+    }
+
+    private Widget tooltipOptionsFixture() {
+        Button target = tagged(new Button("Show delayed tooltip"),
+                "behaviour/tooltip/options");
+        target.getElement().setAttribute("data-event-order", "");
+        Tooltip tooltip = new Tooltip(target, "Delayed bottom tooltip");
+        tooltip.setTrigger(Trigger.CLICK);
+        tooltip.setPlacement(Placement.BOTTOM);
+        tooltip.setShowDelayMs(100);
+        tooltip.setHideDelayMs(100);
+        tooltip.setContainer("body");
+        tooltip.addShowHandler(event -> appendEvent(target.getElement(), "show"));
+        tooltip.addShownHandler(event -> appendEvent(target.getElement(), "shown"));
+        return fixture("Tooltip options", tooltip.asWidget());
+    }
+
+    private Widget tooltipDisposalFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/tooltip/disposal");
+        FlowPanel host = tagged(new FlowPanel(), "behaviour/tooltip/disposal/host");
+        Button target = tagged(new Button("Disposable tooltip"),
+                "behaviour/tooltip/disposal/target");
+        target.getElement().setAttribute("data-event-order", "");
+        Tooltip tooltip = new Tooltip(target, "Disposable tooltip content");
+        tooltip.setTrigger(Trigger.CLICK);
+        tooltip.setPlacement(Placement.BOTTOM);
+        tooltip.setContainer("body");
+        tooltip.addShowHandler(event -> appendEvent(target.getElement(), "show"));
+        tooltip.addShownHandler(event -> appendEvent(target.getElement(), "shown"));
+        host.add(tooltip.asWidget());
+
+        Button destroy = tagged(new Button("Destroy and detach"),
+                "behaviour/tooltip/disposal/destroy");
+        destroy.addClickHandler(event -> {
+            tooltip.destroy();
+            host.remove(target);
+            state.getElement().setAttribute("data-destroyed", "true");
+        });
+        Button remount = tagged(new Button("Remount"),
+                "behaviour/tooltip/disposal/remount");
+        remount.addClickHandler(event -> host.add(target));
+        state.add(destroy);
+        state.add(remount);
+        state.add(host);
+        return fixture("Tooltip disposal", state);
+    }
+
+    private Widget popoverHtmlFixture() {
+        Button target = tagged(new Button("Show HTML popover"), "behaviour/popover/html");
+        target.getElement().setAttribute("data-event-order", "");
+        Popover popover = new Popover(target, "Trusted title",
+                "<strong data-popover-content=\"trusted\">Trusted content</strong>");
+        popover.setTrigger(Trigger.CLICK);
+        popover.setPlacement(Placement.RIGHT);
+        popover.setIsHtml(true);
+        popover.setContainer("body");
+        popover.addShowHandler(event -> appendEvent(target.getElement(), "show"));
+        popover.addShownHandler(event -> appendEvent(target.getElement(), "shown"));
+        return fixture("HTML popover", popover.asWidget());
+    }
+
+    private Widget popoverProgrammaticFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/popover/programmatic");
+        Button target = tagged(new Button("Programmatic popover target"),
+                "behaviour/popover/programmatic/target");
+        Popover popover = new Popover(target, "Programmatic", "Popover content");
+        popover.setTrigger(Trigger.MANUAL);
+        popover.setContainer("body");
+        Button show = tagged(new Button("Show"), "behaviour/popover/programmatic/show");
+        show.addClickHandler(event -> popover.show());
+        Button toggle = tagged(new Button("Toggle"), "behaviour/popover/programmatic/toggle");
+        toggle.addClickHandler(event -> popover.toggle());
+        Button showHide = tagged(new Button("Show then hide"),
+                "behaviour/popover/programmatic/show-hide");
+        showHide.addClickHandler(event -> {
+            popover.show();
+            popover.hide();
+        });
+        state.add(popover.asWidget());
+        state.add(show);
+        state.add(toggle);
+        state.add(showHide);
+        return fixture("Programmatic popover", state);
+    }
+
+    private Widget pluginLifecycleFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/lifecycle/plugin");
+        FlowPanel host = tagged(new FlowPanel(), "behaviour/lifecycle/plugin/host");
+        Button target = tagged(new Button("Lifecycle tooltip"),
+                "behaviour/lifecycle/plugin/target");
+        Tooltip tooltip = new Tooltip(target, "Lifecycle tooltip content");
+        tooltip.setTrigger(Trigger.MANUAL);
+        tooltip.setContainer("body");
+        host.add(tooltip.asWidget());
+        Button show = tagged(new Button("Show tooltip"), "behaviour/lifecycle/plugin/show");
+        show.addClickHandler(event -> tooltip.show());
+        Button detach = tagged(new Button("Detach tooltip"),
+                "behaviour/lifecycle/plugin/detach");
+        detach.addClickHandler(event -> host.remove(target));
+        Button remount = tagged(new Button("Remount tooltip"),
+                "behaviour/lifecycle/plugin/remount");
+        remount.addClickHandler(event -> {
+            host.add(target);
+            tooltip.show();
+        });
+        state.add(show);
+        state.add(detach);
+        state.add(remount);
+        state.add(host);
+        return fixture("Plugin lifecycle", state);
     }
 
     private Widget basicTabsFixture() {

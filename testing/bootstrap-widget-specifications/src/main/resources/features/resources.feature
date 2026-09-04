@@ -3,7 +3,7 @@ Feature: Runtime resources and providers
   Required providers and debug assets fail explicitly rather than remaining
   dormant until a consumer reaches them.
 
-  @api @browser
+  @api @browser @functional
   Scenario: RES-001 Deferred binding resolves every declared fixture provider
     Given fixture "behaviour/resources/providers" is mounted
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline
@@ -11,7 +11,7 @@ Feature: Runtime resources and providers
     Then every declared provider resolves to an assignable implementation
     And no provider lookup returns null
 
-  @api @browser
+  @api @browser @functional
   Scenario: RES-002 Missing provider reports its requested contract
     Given fixture "behaviour/resources/missing-provider" is mounted
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline
@@ -20,7 +20,7 @@ Feature: Runtime resources and providers
     And the failure names the requested contract
     And the failure explains that no implementation was registered
 
-  @rendered @browser
+  @rendered @browser @functional @dom-contract
   Scenario: RES-003 Showcase loads all required scripts and styles
     Given fixture "behaviour/resources/showcase-assets" is mounted
     Given Bootstrap 3 showcase route "home" section "Component examples" defines the baseline
@@ -29,7 +29,7 @@ Feature: Runtime resources and providers
     And the expected Bootstrap runtime is available
     And no browser error or unhandled rejection was recorded
 
-  @rendered @browser
+  @rendered @browser @dom-contract
   Scenario: RES-004 Published compiler output includes usable source maps
     Given fixture "behaviour/resources/source-maps" is mounted
     Given Bootstrap 3 showcase route "setup" section "Requirements" defines the baseline

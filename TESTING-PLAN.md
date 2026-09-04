@@ -31,13 +31,15 @@ The first executable tranche is now in the repository:
   fixtures. Extending the same enforcement across every optional extra and
   theme remains open.
 - Phase 1 fixture/API enforcement is complete for the core and Markdown
-  exports. The reviewed P0 corpus contains 61 scenarios with stable IDs,
-  fixture IDs, Bootstrap 3 showcase references and a four-target matrix.
-- Phase 2 has an initial rendered Chromium tranche for both compiled GWT
-  generations. Sixty-eight mobile-touch tests execute 38 canonical scenarios:
-  BTN-001 through BTN-009, BGR-001 through BGR-005, DRP-001 through DRP-007,
-  FRM-001 through FRM-009, COL-001 through COL-003 and TAB-001 through TAB-005.
-  The same P0 feature text is not yet Cucumber Tea executable.
+  exports. The reviewed corpus contains 61 P0 and 8 P1 scenarios with stable
+  IDs, fixture IDs, Bootstrap 3 showcase references, explicit functional/DOM
+  contract classification and a four-target matrix.
+- Phase 2 has a substantial rendered Chromium tranche for both compiled GWT
+  generations. One hundred and twenty-four mobile-touch tests execute 66
+  canonical scenarios covering buttons, button groups, dropdowns, forms,
+  collapse/accordion, lifecycle, input groups, SuggestBox, overlays, tabs,
+  required runtime assets and themes. Source-map integrity is enforced by the
+  build. The same feature text is not yet Cucumber Tea executable.
 - Phase 3 is partial. Dedicated Bootstrap 3 and Bootstrap 5 GWT fixture
   applications expose those canonical fixture IDs and readiness markers;
   equivalent TeaVM fixture hosts and integration into all four narrative
@@ -56,18 +58,18 @@ The first executable tranche is now in the repository:
 The current Maven matrix executes 292 tests: 5 processor contracts, 5 JVM
 reference contracts, 4 GWT browser reference contracts, 9 TeaVM compatibility
 contracts, 128 Bootstrap 3 TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI
-additionally executes 68 compiled-GWT mobile-touch tests. Phase 5, generated
+additionally executes 124 compiled-GWT mobile-touch tests. Phase 5, generated
 Cucumber Tea glue, the remaining Phase 3/4/6 work, the expanded behaviour
 matrix, pinned Chrome for Testing, structural snapshots and accessibility
 gating remain open.
 
-Current P0 rendered-browser coverage follows the priorities below:
+Current rendered-browser coverage follows the priorities below:
 
 | Area | Executable against compiled GWT 3 and 5 | Highest-priority gaps |
 | --- | --- | --- |
-| Controls | All nine button, five button-group and nine form scenarios, including labels, focus, values, validation, selection and cancelled submission | Input-group composition and SuggestBox interaction |
-| Bootstrap JavaScript | All seven dropdown scenarios, ordered collapse open/close events and all five tab scenarios | Accordion/detach and overlays |
-| Lifecycle/resources | Fixture startup, local assets, browser exceptions and failed network requests | Detach/remount cleanup, missing bindings, source maps and theme replacement/persistence |
+| Controls | All button, button-group, form, input-group and SuggestBox scenarios, including labels, focus, values, validation, selection and cancelled submission | Equivalent TeaVM execution and remaining P1 widget families |
+| Bootstrap JavaScript | All dropdown, collapse/accordion, overlay and tab scenarios, including event order, disposal and detach/remount | Carousel and optional-extras behaviour |
+| Lifecycle/resources | All lifecycle scenarios, required runtime assets, source maps and theme replacement/dark-state/persistence | Missing-provider execution and equivalent TeaVM fixture hosts |
 
 ## Decisions
 
@@ -231,6 +233,8 @@ Initial tags:
 
 | Tag | Meaning |
 | --- | --- |
+| `@functional` | Verifies user-visible behaviour, Java API semantics or event outcomes |
+| `@dom-contract` | Makes rendered markup, classes, ARIA, geometry or document nodes part of the contract |
 | `@api` | Requires access to the Java widget API |
 | `@rendered` | Can run against a completed rendered interface |
 | `@javascript` | Requires Bootstrap JavaScript behaviour |
@@ -244,6 +248,11 @@ Initial tags:
 The same feature may have compiler-specific glue where construction differs.
 The assertion-bearing contract classes should remain shared wherever both
 compilers expose the same API.
+
+Every scenario declares `@functional`, `@dom-contract`, or both. These tags
+describe test intent and are independent of executor tags such as `@rendered`
+and `@browser`: DOM may be used to observe a functional result without making
+the exact markup a contract.
 
 ### Fixture identity
 

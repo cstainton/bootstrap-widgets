@@ -36,6 +36,11 @@
       <artifactId>gwt-bootstrap5</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gwt-bootstrap5-themes</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

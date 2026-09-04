@@ -192,7 +192,13 @@ async function main() {
     await cdp.connect();
     const diagnostics = [];
     cdp.on("Runtime.exceptionThrown", ({ exceptionDetails }) => {
-      diagnostics.push(`Uncaught exception: ${exceptionDetails?.text || "unknown"}`);
+      const exception = exceptionDetails?.exception;
+      const frames = exceptionDetails?.stackTrace?.callFrames || [];
+      const stack = frames.map((frame) =>
+        `${frame.functionName || "<anonymous>"} (${frame.url}:${frame.lineNumber + 1}:${frame.columnNumber + 1})`
+      ).join("\n  at ");
+      diagnostics.push(`Uncaught exception: ${exception?.description || exception?.value
+        || exceptionDetails?.text || "unknown"}${stack ? `\n  at ${stack}` : ""}`);
     });
     cdp.on("Log.entryAdded", ({ entry }) => {
       if (entry?.level === "error") diagnostics.push(`Browser log: ${entry.text}`);
@@ -242,6 +248,7 @@ async function main() {
 
     async function freshPage(fixtureUrl, name) {
       diagnostics.length = 0;
+      await evaluate("localStorage.clear()");
       await cdp.send("Page.navigate", { url: `${fixtureUrl}?case=${encodeURIComponent(name)}&t=${Date.now()}` });
       await waitFor(
         "document.body && document.body.dataset.fixturesReady === 'true' && window.__bootstrapWidgetFixturesReady === true",
@@ -332,6 +339,25 @@ async function main() {
         ${JSON.stringify(JSON.stringify(testId))} + ']').select()`);
       await cdp.send("Input.insertText", { text: value });
       await pressKey("Tab", "Tab", 9);
+    }
+
+    async function enterSuggestQuery(testId, value) {
+      await tap(testId);
+      await evaluate(`(() => {
+        const input = document.querySelector('[data-testid=' +
+          ${JSON.stringify(JSON.stringify(testId))} + ']');
+        input.value = ${JSON.stringify(value)};
+        const event = new KeyboardEvent('keyup', {
+          key: ${JSON.stringify(value.slice(-1) || "Backspace")},
+          code: 'KeyU',
+          bubbles: true,
+          cancelable: true
+        });
+        Object.defineProperty(event, 'keyCode', {value: ${value ? 85 : 8}});
+        Object.defineProperty(event, 'which', {value: ${value ? 85 : 8}});
+        input.dispatchEvent(event);
+      })()`);
+      await new Promise((resolveWait) => setTimeout(resolveWait, 150));
     }
 
     async function state(testId) {
@@ -796,6 +822,741 @@ async function main() {
       assert.equal(toggle.ariaExpanded, "false");
       assert.equal(toggle.clickCount, 2);
     });
+
+      test("COL-004", "accordion keeps only one panel open", async () => {
+        await tap("behaviour/collapse/accordion/second-toggle");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/collapse/accordion/second-panel"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the second accordion panel to open",
+        );
+        await waitFor(
+          `(() => {
+            const panel = document.querySelector(
+              '[data-testid="behaviour/collapse/accordion/first-panel"]'
+            );
+            return !panel.classList.contains('in')
+              && !panel.classList.contains('show')
+              && !panel.classList.contains('collapsing');
+          })()`,
+          "the first accordion panel to close",
+        );
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector(
+            '[data-testid="behaviour/collapse/accordion"]'
+          );
+          const shown = (name) => {
+            const panel = fixture.querySelector(
+              '[data-testid="behaviour/collapse/accordion/' + name + '-panel"]'
+            );
+            return panel.classList.contains('in') || panel.classList.contains('show');
+          };
+          return {
+            first: shown('first'),
+            second: shown('second'),
+            third: shown('third'),
+            firstExpanded: fixture.querySelector(
+              '[data-testid="behaviour/collapse/accordion/first-toggle"]'
+            ).getAttribute('aria-expanded'),
+            secondExpanded: fixture.querySelector(
+              '[data-testid="behaviour/collapse/accordion/second-toggle"]'
+            ).getAttribute('aria-expanded')
+          };
+        })()`);
+        assert.equal(result.first, false);
+        assert.equal(result.second, true);
+        assert.equal(result.third, false);
+        assert.equal(result.firstExpanded, "false");
+        assert.equal(result.secondExpanded, "true");
+      });
+
+      test("COL-005", "detached collapse does not retain transition handlers", async () => {
+        await tap("behaviour/collapse/detach/remount");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/collapse/detach"]'
+        ).dataset.remounted`), "true");
+        await tap("behaviour/collapse/detach/toggle");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/collapse/detach/panel"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the remounted collapse to open",
+        );
+        const result = await state("behaviour/collapse/detach/panel");
+        assert.equal(result.events, "show,shown");
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/collapse/detach/panel"]'
+        ).parentElement.dataset.testid`), "behaviour/collapse/detach/host");
+      });
+
+      test("LIF-001", "widget mounts with one framework and DOM parent", async () => {
+        const result = await evaluate(`(() => {
+          const state = document.querySelector('[data-testid="behaviour/lifecycle/basic"]');
+          const host = state.querySelector('[data-testid="behaviour/lifecycle/basic/host"]');
+          const widget = host.querySelector('[data-testid="behaviour/lifecycle/basic/widget"]');
+          return {
+            parentMatch: state.dataset.parentMatch,
+            attached: state.dataset.attached,
+            domParent: state.dataset.domParent,
+            stableId: widget && widget.dataset.testid,
+            hostChildren: host.children.length
+          };
+        })()`);
+        assert.equal(result.parentMatch, "true");
+        assert.equal(result.attached, "true");
+        assert.equal(result.domParent, "true");
+        assert.equal(result.stableId, "behaviour/lifecycle/basic/widget");
+        assert.equal(result.hostChildren, 1);
+      });
+
+      test("LIF-002", "widget detaches cleanly", async () => {
+        await tap("behaviour/lifecycle/basic/remove");
+        const result = await evaluate(`(() => {
+          const state = document.querySelector('[data-testid="behaviour/lifecycle/basic"]');
+          const host = state.querySelector('[data-testid="behaviour/lifecycle/basic/host"]');
+          return {
+            parentMatch: state.dataset.parentMatch,
+            attached: state.dataset.attached,
+            domParent: state.dataset.domParent,
+            mountedWidget: document.querySelector(
+              '[data-testid="behaviour/lifecycle/basic/widget"]'
+            ),
+            hostChildren: host.children.length
+          };
+        })()`);
+        assert.equal(result.parentMatch, "false");
+        assert.equal(result.attached, "false");
+        assert.equal(result.domParent, "false");
+        assert.equal(result.mountedWidget, null);
+        assert.equal(result.hostChildren, 0);
+      });
+
+      test("LIF-003", "widget remounts in a fresh host with one new attach", async () => {
+        await tap("behaviour/lifecycle/remount/action");
+        const result = await evaluate(`(() => {
+          const state = document.querySelector('[data-testid="behaviour/lifecycle/remount"]');
+          const oldHost = state.querySelector(
+            '[data-testid="behaviour/lifecycle/remount/old-host"]'
+          );
+          const freshHost = state.querySelector(
+            '[data-testid="behaviour/lifecycle/remount/fresh-host"]'
+          );
+          const widget = freshHost.querySelector(
+            '[data-testid="behaviour/lifecycle/remount/widget"]'
+          );
+          return {
+            parentMatch: state.dataset.parentMatch,
+            newAttachCount: state.dataset.newAttachCount,
+            oldHostChildren: oldHost.children.length,
+            freshHostChildren: freshHost.children.length,
+            widgetPresent: Boolean(widget)
+          };
+        })()`);
+        assert.equal(result.parentMatch, "true");
+        assert.equal(result.newAttachCount, "1");
+        assert.equal(result.oldHostChildren, 0);
+        assert.equal(result.freshHostChildren, 1);
+        assert.equal(result.widgetPresent, true);
+      });
+
+      test("LIF-004", "repeated mounting preserves one action and current host", async () => {
+        await evaluate(`(() => {
+          window.__lifecycleHostClicks = {first: 0, second: 0};
+          document.querySelector('[data-testid="behaviour/lifecycle/handlers/first-host"]')
+            .addEventListener('click', () => window.__lifecycleHostClicks.first++);
+          document.querySelector('[data-testid="behaviour/lifecycle/handlers/second-host"]')
+            .addEventListener('click', () => window.__lifecycleHostClicks.second++);
+        })()`);
+        await tap("behaviour/lifecycle/handlers/remount");
+        await tap("behaviour/lifecycle/handlers/widget");
+        const result = await evaluate(`(() => {
+          const state = document.querySelector('[data-testid="behaviour/lifecycle/handlers"]');
+          const firstHost = state.querySelector(
+            '[data-testid="behaviour/lifecycle/handlers/first-host"]'
+          );
+          const secondHost = state.querySelector(
+            '[data-testid="behaviour/lifecycle/handlers/second-host"]'
+          );
+          const widget = state.querySelector('[data-testid="behaviour/lifecycle/handlers/widget"]');
+          return {
+            clickCount: widget.dataset.clickCount,
+            currentHost: state.dataset.currentHost,
+            firstHostChildren: firstHost.children.length,
+            secondHostContainsWidget: secondHost.contains(widget),
+            hostClicks: window.__lifecycleHostClicks
+          };
+        })()`);
+        assert.equal(result.clickCount, "1");
+        assert.equal(result.currentHost, "second");
+        assert.equal(result.firstHostChildren, 0);
+        assert.equal(result.secondHostContainsWidget, true);
+        assert.deepEqual(result.hostClicks, {first: 0, second: 1});
+      });
+
+      test("LIF-005", "plugin markup is disposed and recreated once after remount", async () => {
+        await tap("behaviour/lifecycle/plugin/show");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 1",
+          "the lifecycle tooltip to open",
+        );
+        await tap("behaviour/lifecycle/plugin/detach");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 0",
+          "the detached tooltip markup to be removed",
+        );
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/lifecycle/plugin/target"]'
+        )`), null);
+        await tap("behaviour/lifecycle/plugin/remount");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 1",
+          "one replacement tooltip to open",
+        );
+        assert.equal(await evaluate("document.querySelectorAll('.tooltip').length"), 1);
+      });
+
+      test("ING-001", "text addons retain order around an editable input", async () => {
+        await replaceText("behaviour/input-group/text-addons/control", "editable");
+        const result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/input-group/text-addons"]');
+          return {
+            children: Array.from(group.children).map((child) => child.dataset.testid),
+            value: group.querySelector(
+              '[data-testid="behaviour/input-group/text-addons/control"]'
+            ).value
+          };
+        })()`);
+        assert.deepEqual(result.children, [
+          "behaviour/input-group/text-addons/prefix",
+          "behaviour/input-group/text-addons/control",
+          "behaviour/input-group/text-addons/suffix",
+        ]);
+        assert.equal(result.value, "editable");
+      });
+
+      test("ING-002", "button addon activates independently of its input", async () => {
+        await tap("behaviour/input-group/button-addon/action");
+        const result = await evaluate(`(() => {
+          const action = document.querySelector(
+            '[data-testid="behaviour/input-group/button-addon/action"]'
+          );
+          const addon = document.querySelector(
+            '[data-testid="behaviour/input-group/button-addon/container"]'
+          );
+          const control = document.querySelector(
+            '[data-testid="behaviour/input-group/button-addon/control"]'
+          );
+          return {
+            clicks: action.dataset.clickCount,
+            value: control.value,
+            child: action.parentElement === addon
+          };
+        })()`);
+        assert.equal(result.clicks, "1");
+        assert.equal(result.value, "original");
+        assert.equal(result.child, true);
+      });
+
+      test("ING-003", "input-group segments render as one contiguous control", async () => {
+        const result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/input-group/text-addons"]');
+          const prefix = group.children[0].getBoundingClientRect();
+          const control = group.children[1].getBoundingClientRect();
+          const suffix = group.children[2].getBoundingClientRect();
+          const groupRect = group.getBoundingClientRect();
+          return {
+            prefixGap: Math.abs(prefix.right - control.left),
+            suffixGap: Math.abs(control.right - suffix.left),
+            topSpread: Math.max(prefix.top, control.top, suffix.top)
+              - Math.min(prefix.top, control.top, suffix.top),
+            bottomSpread: Math.max(prefix.bottom, control.bottom, suffix.bottom)
+              - Math.min(prefix.bottom, control.bottom, suffix.bottom),
+            controlWidth: control.width,
+            consumedWidth: prefix.width + control.width + suffix.width,
+            groupWidth: groupRect.width
+          };
+        })()`);
+        assert.ok(result.prefixGap <= 1, JSON.stringify(result));
+        assert.ok(result.suffixGap <= 1, JSON.stringify(result));
+        assert.ok(result.topSpread <= 1, JSON.stringify(result));
+        assert.ok(result.bottomSpread <= 1, JSON.stringify(result));
+        assert.ok(result.controlWidth > 0, JSON.stringify(result));
+        assert.ok(Math.abs(result.consumedWidth - result.groupWidth) <= 2, JSON.stringify(result));
+      });
+
+      test("ING-004", "input-group size reports and removes one framework state", async () => {
+        await tap("behaviour/input-group/sizing/large");
+        let result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/input-group/sizing"]');
+          return {
+            reported: group.dataset.reportedSize,
+            largeClasses: Array.from(group.classList).filter(
+              (name) => name === 'input-group-lg'
+            ).length
+          };
+        })()`);
+        assert.equal(result.reported, "LARGE");
+        assert.equal(result.largeClasses, 1);
+        await tap("behaviour/input-group/sizing/default");
+        result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/input-group/sizing"]');
+          return {
+            reported: group.dataset.reportedSize,
+            large: group.classList.contains('input-group-lg')
+          };
+        })()`);
+        assert.equal(result.reported, "DEFAULT");
+        assert.equal(result.large, false);
+      });
+
+      test("SUG-001", "suggest box filters and positions matching suggestions", async () => {
+        await enterSuggestQuery("behaviour/suggest-box/basic", "Uni");
+        await waitFor(
+          `Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "the matching suggestion popup",
+        );
+        const result = await evaluate(`(() => {
+          const input = document.querySelector('[data-testid="behaviour/suggest-box/basic"]');
+          const popup = Array.from(document.querySelectorAll('.dropdown-menu')).find((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'));
+          const inputRect = input.getBoundingClientRect();
+          const popupRect = popup.getBoundingClientRect();
+          const popupStyle = getComputedStyle(popup);
+          const items = Array.from(popup.querySelectorAll(
+            ${target.generation === 5 ? "'.dropdown-item'" : "'.item'"}
+          ))
+            .map((item) => item.textContent.trim()).filter(Boolean);
+          return {
+            items,
+            widthDifference: Math.abs(inputRect.width - popupRect.width),
+            beneath: popupRect.top >= inputRect.bottom - 2,
+            boxSizing: popupStyle.boxSizing,
+            declaredWidth: popup.style.width,
+            horizontalPadding: parseFloat(popupStyle.paddingLeft)
+              + parseFloat(popupStyle.paddingRight),
+            horizontalBorder: parseFloat(popupStyle.borderLeftWidth)
+              + parseFloat(popupStyle.borderRightWidth),
+            popupTag: popup.tagName,
+            popupClass: popup.className,
+            parentTag: popup.parentElement && popup.parentElement.tagName,
+            parentClass: popup.parentElement && popup.parentElement.className,
+            parentWidth: popup.parentElement && popup.parentElement.style.width,
+            grandparentWidth: popup.parentElement && popup.parentElement.parentElement
+              && popup.parentElement.parentElement.style.width
+          };
+        })()`);
+        assert.deepEqual(result.items, ["United Kingdom", "United States"]);
+        assert.ok(result.widthDifference <= 3, JSON.stringify(result));
+        assert.equal(result.beneath, true);
+      });
+
+      test("SUG-002", "keyboard selection commits one oracle suggestion", async () => {
+        await enterSuggestQuery("behaviour/suggest-box/basic", "Uni");
+        await waitFor(
+          `Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "suggestions before keyboard selection",
+        );
+        await pressKey("Enter", "Enter", 13);
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/suggest-box/basic"]')
+            .dataset.suggestionCount === '1'`,
+          "one suggestion event",
+        );
+        const result = await evaluate(`(() => {
+          const input = document.querySelector('[data-testid="behaviour/suggest-box/basic"]');
+          return {
+            value: input.value,
+            selected: input.dataset.selectedValue,
+            count: input.dataset.suggestionCount,
+            sourceMatch: input.dataset.sourceMatch,
+            visiblePopups: Array.from(document.querySelectorAll('.dropdown-menu')).filter((menu) =>
+              menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item')
+            ).length
+          };
+        })()`);
+        assert.equal(result.value, "United Kingdom");
+        assert.equal(result.selected, "United Kingdom");
+        assert.equal(result.count, "1");
+        assert.equal(result.sourceMatch, "true");
+        assert.equal(result.visiblePopups, 0);
+      });
+
+      test("SUG-003", "query without matches closes the suggestion popup", async () => {
+        await enterSuggestQuery("behaviour/suggest-box/basic", "Uni");
+        await waitFor(
+          `Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "matching suggestions before the no-match query",
+        );
+        await enterSuggestQuery("behaviour/suggest-box/basic", "zzzz");
+        await waitFor(
+          `!Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "the no-match query to close suggestions",
+        );
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/suggest-box/basic"]'
+        ).dataset.suggestionCount`), "0");
+      });
+
+      test("SUG-004", "suggestion popup follows detach and remount lifecycle", async () => {
+        await enterSuggestQuery("behaviour/suggest-box/lifecycle/control", "United K");
+        await waitFor(
+          `Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "the lifecycle suggestion popup",
+        );
+        await tap("behaviour/suggest-box/lifecycle/detach");
+        await waitFor(
+          `!Array.from(document.querySelectorAll('.dropdown-menu')).some((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item'))`,
+          "detaching the suggest box to remove its popup",
+        );
+        await tap("behaviour/suggest-box/lifecycle/remount");
+        await enterSuggestQuery("behaviour/suggest-box/lifecycle/control", "Uni");
+        await waitFor(
+          `Array.from(document.querySelectorAll('.dropdown-menu')).filter((menu) =>
+            menu.getClientRects().length > 0 && menu.querySelector('.item, .dropdown-item')
+          ).length === 1`,
+          "one suggestion popup after remount",
+        );
+        await pressKey("Enter", "Enter", 13);
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/suggest-box/lifecycle/control"]')
+            .dataset.suggestionCount === '1'`,
+          "one suggestion event after remount",
+        );
+      });
+
+      test("RES-003", "compiled fixture loads its Bootstrap scripts and styles", async () => {
+        const result = await evaluate(`(() => ({
+          bootstrapRuntime: ${target.generation === 3
+            ? "Boolean(window.jQuery && window.jQuery.fn && window.jQuery.fn.modal)"
+            : "Boolean(window.bootstrap && window.bootstrap.Modal)"},
+          themeLinks: document.querySelectorAll('#${target.generation === 3
+            ? "gwtbootstrap3-theme"
+            : "bootstrap5-theme"}').length,
+          themeLoaded: Array.from(document.styleSheets).some((sheet) =>
+            sheet.ownerNode && sheet.ownerNode.id === '${target.generation === 3
+              ? "gwtbootstrap3-theme"
+              : "bootstrap5-theme"}')
+        }))()`);
+        assert.equal(result.bootstrapRuntime, true);
+        assert.equal(result.themeLinks, 1);
+        assert.equal(result.themeLoaded, true);
+      });
+
+      test("THM-001", "standard theme replaces the previous stylesheet", async () => {
+        const linkId = target.generation === 3 ? "gwtbootstrap3-theme" : "bootstrap5-theme";
+        await tap("behaviour/themes/switcher/flatly");
+        const previousUrl = await evaluate(`document.getElementById('${linkId}').href`);
+        assert.match(previousUrl, /bootswatch-flatly/);
+
+        await tap("behaviour/themes/switcher/standard");
+        const result = await evaluate(`(() => {
+          const links = Array.from(document.querySelectorAll('#${linkId}'));
+          return {
+            count: links.length,
+            href: links[0] && links[0].href,
+            previousPresent: Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+              .some((link) => link.href === ${JSON.stringify(previousUrl)})
+          };
+        })()`);
+        assert.equal(result.count, 1);
+        assert.match(result.href, new RegExp(`bootstrap-${target.generation === 3 ? "3\\.4\\.1" : "5\\.3\\.8"}`));
+        assert.equal(result.previousPresent, false);
+      });
+
+      test("THM-002", "Bootswatch selection updates current theme metadata", async () => {
+        await tap("behaviour/themes/switcher/flatly");
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/themes/switcher"]');
+          const link = document.getElementById('${target.generation === 3
+            ? "gwtbootstrap3-theme"
+            : "bootstrap5-theme"}');
+          return {
+            current: fixture.dataset.currentTheme,
+            recordedUrl: fixture.dataset.themeUrl,
+            href: link && link.href
+          };
+        })()`);
+        assert.equal(result.current, "flatly");
+        assert.match(result.href, /bootswatch-flatly/);
+        assert.equal(result.recordedUrl, result.href);
+      });
+
+      test("THM-003", "dark theme reporting follows the selected stylesheet", async () => {
+        await tap("behaviour/themes/dark/darkly");
+        let result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/themes/dark"]');
+          return {
+            current: fixture.dataset.currentTheme,
+            dark: fixture.dataset.dark,
+            colorMode: document.documentElement.getAttribute('data-bs-theme')
+          };
+        })()`);
+        assert.equal(result.current, "darkly");
+        assert.equal(result.dark, "true");
+        if (target.generation === 5) assert.equal(result.colorMode, "dark");
+
+        await tap("behaviour/themes/dark/flatly");
+        result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/themes/dark"]');
+          return {
+            current: fixture.dataset.currentTheme,
+            dark: fixture.dataset.dark,
+            colorMode: document.documentElement.getAttribute('data-bs-theme')
+          };
+        })()`);
+        assert.equal(result.current, "flatly");
+        assert.equal(result.dark, "false");
+        if (target.generation === 5) assert.equal(result.colorMode, "light");
+      });
+
+      test("THM-004", "theme selection survives an application reload", async () => {
+        const linkId = target.generation === 3 ? "gwtbootstrap3-theme" : "bootstrap5-theme";
+        await tap("behaviour/themes/persistence/united");
+        await cdp.send("Page.reload", { ignoreCache: true });
+        await waitFor(
+          "document.body && document.body.dataset.fixturesReady === 'true' && window.__bootstrapWidgetFixturesReady === true",
+          "the reloaded theme fixture",
+        );
+        const result = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/themes/persistence"]');
+          const links = Array.from(document.querySelectorAll('#${linkId}'));
+          return {
+            current: fixture.dataset.currentTheme,
+            count: links.length,
+            href: links[0] && links[0].href
+          };
+        })()`);
+        assert.equal(result.current, "united");
+        assert.equal(result.count, 1);
+        assert.match(result.href, /bootswatch-united/);
+      });
+
+      test("OVL-001", "modal opens with semantics and ordered events", async () => {
+        await tap("behaviour/modal/basic/target");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/modal/basic/dialog"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the basic modal to open",
+        );
+        const result = await evaluate(`(() => {
+          const modal = document.querySelector('[data-testid="behaviour/modal/basic/dialog"]');
+          const title = modal.querySelector('.modal-title');
+          const labelledBy = modal.getAttribute('aria-labelledby');
+          return {
+            visible: getComputedStyle(modal).display !== 'none',
+            role: modal.getAttribute('role'),
+            labelledBy,
+            titleId: title && title.id,
+            titleVisible: Boolean(title && title.getClientRects().length),
+            events: modal.dataset.eventOrder,
+            backdrops: document.querySelectorAll('.modal-backdrop').length
+          };
+        })()`);
+        assert.equal(result.visible, true);
+        assert.equal(result.role, "dialog");
+        assert.ok(result.titleId);
+        assert.equal(result.labelledBy, result.titleId);
+        assert.equal(result.titleVisible, true);
+        assert.equal(result.events, "show,shown");
+        assert.equal(result.backdrops, 1);
+      });
+
+      test("OVL-002", "modal dismiss restores target focus and cleans its backdrop", async () => {
+        await tap("behaviour/modal/basic/target");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/modal/basic/dialog"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the modal to open before dismissal",
+        );
+        await tap("behaviour/modal/basic/dismiss");
+        await waitFor(
+          `(() => {
+            const modal = document.querySelector(
+              '[data-testid="behaviour/modal/basic/dialog"]'
+            );
+            return !modal.classList.contains('in')
+              && !modal.classList.contains('show')
+              && document.querySelectorAll('.modal-backdrop').length === 0;
+          })()`,
+          "the modal and backdrop to close",
+        );
+        const result = await evaluate(`(() => {
+          const modal = document.querySelector('[data-testid="behaviour/modal/basic/dialog"]');
+          const target = document.querySelector('[data-testid="behaviour/modal/basic/target"]');
+          return {
+            visible: getComputedStyle(modal).display !== 'none',
+            events: modal.dataset.eventOrder,
+            focused: document.activeElement === target,
+            bodyModalOpen: document.body.classList.contains('modal-open')
+          };
+        })()`);
+        assert.equal(result.visible, false);
+        assert.equal(result.events, "show,shown,hide,hidden");
+        assert.equal(result.focused, true);
+        assert.equal(result.bodyModalOpen, false);
+      });
+
+      test("OVL-003", "keyboard-enabled modal closes on Escape", async () => {
+        await tap("behaviour/modal/keyboard/target");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/modal/keyboard/dialog"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the keyboard modal to open",
+        );
+        await pressKey("Escape", "Escape", 27);
+        await waitFor(
+          `(() => {
+            const modal = document.querySelector(
+              '[data-testid="behaviour/modal/keyboard/dialog"]'
+            );
+            return !modal.classList.contains('in')
+              && !modal.classList.contains('show')
+              && document.querySelectorAll('.modal-backdrop').length === 0;
+          })()`,
+          "Escape to close the modal and remove its backdrop",
+        );
+      });
+
+      test("OVL-004", "exclusive modal hides the previous modal", async () => {
+        await tap("behaviour/modal/exclusive/open-first");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/modal/exclusive/first"]')
+            .classList.contains(${target.generation === 3 ? "'in'" : "'show'"})`,
+          "the first exclusive modal to open",
+        );
+        await tap("behaviour/modal/exclusive/open-second");
+        await waitFor(
+          `(() => {
+            const first = document.querySelector(
+              '[data-testid="behaviour/modal/exclusive/first"]'
+            );
+            const second = document.querySelector(
+              '[data-testid="behaviour/modal/exclusive/second"]'
+            );
+            return !first.classList.contains('in')
+              && !first.classList.contains('show')
+              && (second.classList.contains('in') || second.classList.contains('show'));
+          })()`,
+          "the exclusive modal transition",
+        );
+        assert.equal(await evaluate("document.querySelectorAll('.modal-backdrop').length"), 1);
+      });
+
+      test("OVL-005", "tooltip honours click trigger, bottom placement and delay", async () => {
+        const started = Date.now();
+        await tap("behaviour/tooltip/options");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 1",
+          "the delayed tooltip to open",
+        );
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/tooltip/options"]')
+            .dataset.eventOrder === 'show,shown'`,
+          "the delayed tooltip shown event",
+        );
+        const elapsed = Date.now() - started;
+        const result = await evaluate(`(() => {
+          const target = document.querySelector('[data-testid="behaviour/tooltip/options"]');
+          const tooltip = document.querySelector('.tooltip.in, .tooltip.show');
+          const targetRect = target.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+          return {
+            content: tooltip.querySelector('.tooltip-inner').textContent.trim(),
+            below: tooltipRect.top >= targetRect.bottom - 2,
+            events: target.dataset.eventOrder,
+            describedBy: target.getAttribute('aria-describedby'),
+            tooltipId: tooltip.id
+          };
+        })()`);
+        assert.ok(elapsed >= 80, `Tooltip appeared too early after ${elapsed}ms`);
+        assert.equal(result.content, "Delayed bottom tooltip");
+        assert.equal(result.below, true);
+        assert.equal(result.events, "show,shown");
+        assert.ok(result.tooltipId);
+        assert.equal(result.describedBy, result.tooltipId);
+      });
+
+      test("OVL-006", "tooltip disposal removes generated markup and stale handlers", async () => {
+        await tap("behaviour/tooltip/disposal/target");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 1",
+          "the disposable tooltip to open",
+        );
+        await tap("behaviour/tooltip/disposal/destroy");
+        await waitFor(
+          "document.querySelectorAll('.tooltip').length === 0",
+          "tooltip destruction to remove generated markup",
+        );
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/tooltip/disposal/target"]'
+        )`), null);
+        await tap("behaviour/tooltip/disposal/remount");
+        await tap("behaviour/tooltip/disposal/target");
+        await waitFor(
+          "document.querySelectorAll('.tooltip.in, .tooltip.show').length === 1",
+          "the remounted tooltip to open",
+        );
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/tooltip/disposal/target"]')
+            .dataset.eventOrder === 'show,shown,show,shown'`,
+          "the remounted tooltip shown event",
+        );
+        const result = await state("behaviour/tooltip/disposal/target");
+        assert.equal(result.events, "show,shown,show,shown");
+        assert.equal(await evaluate("document.querySelectorAll('.tooltip').length"), 1);
+      });
+
+      test("OVL-007", "popover renders text title and trusted HTML content", async () => {
+        await tap("behaviour/popover/html");
+        await waitFor(
+          "document.querySelectorAll('.popover.in, .popover.show').length === 1",
+          "the HTML popover to open",
+        );
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/popover/html"]')
+            .dataset.eventOrder === 'show,shown'`,
+          "the HTML popover shown event",
+        );
+        const result = await evaluate(`(() => {
+          const target = document.querySelector('[data-testid="behaviour/popover/html"]');
+          const popover = document.querySelector('.popover.in, .popover.show');
+          const title = popover.querySelector('.popover-title, .popover-header');
+          const body = popover.querySelector('.popover-content, .popover-body');
+          return {
+            title: title && title.textContent.trim(),
+            body: body && body.textContent.trim(),
+            trustedElement: Boolean(body && body.querySelector('strong')),
+            events: target.dataset.eventOrder
+          };
+        })()`);
+        assert.equal(result.title, "Trusted title");
+        assert.equal(result.body, "Trusted content");
+        assert.equal(result.trustedElement, true);
+        assert.equal(result.events, "show,shown");
+      });
+
+      test("OVL-008", "popover supports show, toggle and hide through its API", async () => {
+        await tap("behaviour/popover/programmatic/show");
+        await waitFor(
+          "document.querySelectorAll('.popover.in, .popover.show').length === 1",
+          "the programmatic popover to show",
+        );
+        await tap("behaviour/popover/programmatic/toggle");
+        await waitFor(
+          "document.querySelectorAll('.popover.in, .popover.show').length === 0",
+          "the programmatic popover to hide after toggle",
+        );
+        await tap("behaviour/popover/programmatic/show-hide");
+        await waitFor(
+          "document.querySelectorAll('.popover.in, .popover.show').length === 0",
+          "the final programmatic popover state to be hidden",
+        );
+      });
 
       test("TAB-001", "touch activation selects one tab and its associated pane", async () => {
         await tap("behaviour/tabs/basic/second-tab");
