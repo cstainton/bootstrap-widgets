@@ -28,6 +28,7 @@ import org.gwtbootstrap3.client.ui.base.ValueBoxBase;
 import org.gwtbootstrap3.client.ui.constants.ValidationState;
 
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -85,6 +86,8 @@ public class DefaultErrorHandler implements ErrorHandler {
     /** {@inheritDoc} */
     @Override
     public void clearErrors() {
+        inputWidget.getElement().removeAttribute("aria-invalid");
+        removeValidationDescription();
         if (validationStateParent == null) { return; }
         validationStateParent.setValidationState(ValidationState.NONE);
         if (validationStateHelpBlock != null) { validationStateHelpBlock.clearError(); }
@@ -146,6 +149,55 @@ public class DefaultErrorHandler implements ErrorHandler {
         }
         if (validationStateHelpBlock != null) {
             validationStateHelpBlock.setError(errorMsg);
+        }
+        if (errors != null && !errors.isEmpty()) {
+            inputWidget.getElement().setAttribute("aria-invalid", "true");
+            associateValidationDescription();
+        } else {
+            inputWidget.getElement().removeAttribute("aria-invalid");
+            removeValidationDescription();
+        }
+    }
+
+    private void associateValidationDescription() {
+        if (validationStateHelpBlock == null) {
+            return;
+        }
+        String messageId = validationStateHelpBlock.getElement().getId();
+        if (messageId == null || messageId.isEmpty()) {
+            messageId = Document.get().createUniqueId();
+            validationStateHelpBlock.getElement().setId(messageId);
+        }
+        String describedBy = inputWidget.getElement().getAttribute("aria-describedby");
+        if (!(" " + describedBy + " ").contains(" " + messageId + " ")) {
+            inputWidget.getElement().setAttribute("aria-describedby",
+                    describedBy == null || describedBy.trim().isEmpty()
+                            ? messageId : describedBy.trim() + " " + messageId);
+        }
+    }
+
+    private void removeValidationDescription() {
+        if (validationStateHelpBlock == null) {
+            return;
+        }
+        String messageId = validationStateHelpBlock.getElement().getId();
+        String describedBy = inputWidget.getElement().getAttribute("aria-describedby");
+        if (messageId == null || messageId.isEmpty() || describedBy == null || describedBy.isEmpty()) {
+            return;
+        }
+        StringBuilder remaining = new StringBuilder();
+        for (String id : describedBy.trim().split("\\s+")) {
+            if (!messageId.equals(id)) {
+                if (remaining.length() > 0) {
+                    remaining.append(' ');
+                }
+                remaining.append(id);
+            }
+        }
+        if (remaining.length() == 0) {
+            inputWidget.getElement().removeAttribute("aria-describedby");
+        } else {
+            inputWidget.getElement().setAttribute("aria-describedby", remaining.toString());
         }
     }
 

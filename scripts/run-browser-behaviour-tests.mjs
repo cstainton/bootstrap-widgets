@@ -326,6 +326,14 @@ async function main() {
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
     }
 
+    async function replaceText(testId, value) {
+      await tap(testId);
+      await evaluate(`document.querySelector('[data-testid=' +
+        ${JSON.stringify(JSON.stringify(testId))} + ']').select()`);
+      await cdp.send("Input.insertText", { text: value });
+      await pressKey("Tab", "Tab", 9);
+    }
+
     async function state(testId) {
       return evaluate(`(() => {
         const element = document.querySelector('[data-testid=' + ${JSON.stringify(JSON.stringify(testId))} + ']');
@@ -485,6 +493,250 @@ async function main() {
         const disabled = await state("behaviour/dropdown/disabled-item");
         assert.equal(disabled.clickCount, 0);
         assert.equal(await evaluate("window.location.href"), locationBefore);
+      });
+
+      test("DRP-005", "split dropdown keeps its primary action independent", async () => {
+        await tap("behaviour/dropdown/split-primary");
+        const primary = await state("behaviour/dropdown/split-primary");
+        assert.equal(primary.clickCount, 1);
+        assert.equal(await evaluate(`getComputedStyle(document.querySelector(
+          '[data-testid="behaviour/dropdown/split-menu"]'
+        )).display`), "none");
+
+        await tap("behaviour/dropdown/split-toggle");
+        await waitFor(
+          `getComputedStyle(document.querySelector(
+            '[data-testid="behaviour/dropdown/split-menu"]'
+          )).display !== 'none'`,
+          "the split dropdown menu to open",
+        );
+        assert.equal((await state("behaviour/dropdown/split-primary")).clickCount, 1);
+      });
+
+      test("DRP-006", "dropup menu is positioned above its toggle", async () => {
+        await tap("behaviour/dropdown/dropup-toggle");
+        await waitFor(
+          `getComputedStyle(document.querySelector(
+            '[data-testid="behaviour/dropdown/dropup-menu"]'
+          )).display !== 'none'`,
+          "the dropup menu to open",
+        );
+        const geometry = await evaluate(`(() => {
+          const toggle = document.querySelector('[data-testid="behaviour/dropdown/dropup-toggle"]')
+            .getBoundingClientRect();
+          const menu = document.querySelector('[data-testid="behaviour/dropdown/dropup-menu"]')
+            .getBoundingClientRect();
+          return {menuBottom: menu.bottom, toggleTop: toggle.top};
+        })()`);
+        assert.ok(geometry.menuBottom <= geometry.toggleTop + 1, JSON.stringify(geometry));
+      });
+
+      test("DRP-007", "constrained dropdown menu matches its owning group", async () => {
+        await tap("behaviour/dropdown/aligned-width-toggle");
+        await waitFor(
+          `getComputedStyle(document.querySelector(
+            '[data-testid="behaviour/dropdown/aligned-width-menu"]'
+          )).display !== 'none'`,
+          "the constrained dropdown menu to open",
+        );
+        const geometry = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/dropdown/aligned-width"]')
+            .getBoundingClientRect();
+          const menuElement = document.querySelector(
+            '[data-testid="behaviour/dropdown/aligned-width-menu"]'
+          );
+          const menu = menuElement.getBoundingClientRect();
+          return {
+            groupWidth: group.width,
+            menuWidth: menu.width,
+            overflow: Array.from(menuElement.children).some(
+              (item) => item.scrollWidth > item.clientWidth + 1
+            )
+          };
+        })()`);
+        assert.ok(Math.abs(geometry.menuWidth - geometry.groupWidth) <= 1, JSON.stringify(geometry));
+        assert.equal(geometry.overflow, false);
+      });
+
+      test("FRM-001", "checkbox label toggles its input once", async () => {
+        await tap("behaviour/form/checkbox-label");
+        const result = await state("behaviour/form/checkbox-label");
+        assert.equal(result.checked, true);
+        assert.equal(result.value, "true");
+        assert.equal(result.changeCount, 1);
+        const semantics = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/form/checkbox-label"]');
+          const input = fixture.querySelector('input');
+          const label = fixture.querySelector('label');
+          return {
+            associated: label.contains(input) || (Boolean(input.id) && label.htmlFor === input.id),
+            sourceMatch: fixture.dataset.sourceMatch
+          };
+        })()`);
+        assert.equal(semantics.associated, true);
+        assert.equal(semantics.sourceMatch, "true");
+      });
+
+      test("FRM-002", "radio label selects its input once", async () => {
+        await tap("behaviour/form/radio-label");
+        const result = await state("behaviour/form/radio-label");
+        assert.equal(result.checked, true);
+        assert.equal(result.value, "true");
+        assert.equal(result.changeCount, 1);
+        const semantics = await evaluate(`(() => {
+          const fixture = document.querySelector('[data-testid="behaviour/form/radio-label"]');
+          const input = fixture.querySelector('input');
+          const label = fixture.querySelector('label');
+          return {
+            associated: label.contains(input) || (Boolean(input.id) && label.htmlFor === input.id),
+            sourceMatch: fixture.dataset.sourceMatch
+          };
+        })()`);
+        assert.equal(semantics.associated, true);
+        assert.equal(semantics.sourceMatch, "true");
+      });
+
+      test("FRM-003", "text field label transfers focus to its control", async () => {
+        await tap("behaviour/form/text-label/label");
+        const result = await evaluate(`(() => {
+          const label = document.querySelector('[data-testid="behaviour/form/text-label/label"]');
+          const control = document.querySelector('[data-testid="behaviour/form/text-label/control"]');
+          return {
+            focused: document.activeElement === control,
+            labelFor: label.htmlFor,
+            controlId: control.id
+          };
+        })()`);
+        assert.equal(result.focused, true);
+        assert.ok(result.controlId);
+        assert.equal(result.labelFor, result.controlId);
+      });
+
+      test("FRM-004", "committed user text reports one widget value event", async () => {
+        await replaceText("behaviour/form/text-value", "updated");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/form/text-value"]')
+            .dataset.changeCount === '1'`,
+          "the text value-change event",
+        );
+        const result = await evaluate(`(() => {
+          const input = document.querySelector('[data-testid="behaviour/form/text-value"]');
+          return {
+            inputValue: input.value,
+            reportedValue: input.dataset.value,
+            changeCount: input.dataset.changeCount,
+            sourceMatch: input.dataset.sourceMatch
+          };
+        })()`);
+        assert.equal(result.inputValue, "updated");
+        assert.equal(result.reportedValue, "updated");
+        assert.equal(result.changeCount, "1");
+        assert.equal(result.sourceMatch, "true");
+      });
+
+      test("FRM-005", "programmatic text assignment honours the fire-events flag", async () => {
+        await tap("behaviour/form/values/set-silent");
+        let result = await state("behaviour/form/values");
+        assert.equal(result.value, "silent");
+        assert.equal(result.changeCount, 0);
+
+        await tap("behaviour/form/values/set-firing");
+        result = await state("behaviour/form/values");
+        assert.equal(result.value, "firing");
+        assert.equal(result.changeCount, 1);
+        assert.equal(await evaluate(`document.querySelector(
+          '[data-testid="behaviour/form/values"]'
+        ).dataset.sourceMatch`), "true");
+      });
+
+      test("FRM-006", "validation state message and ARIA state agree", async () => {
+        await tap("behaviour/form/validation/action");
+        await waitFor(
+          `document.querySelector('[data-testid="behaviour/form/validation/message"]')
+            .textContent.trim() === 'Required'`,
+          "the validation message",
+        );
+        const result = await evaluate(`(() => {
+          const group = document.querySelector('[data-testid="behaviour/form/validation"]');
+          const control = document.querySelector('[data-testid="behaviour/form/validation/control"]');
+          const message = document.querySelector('[data-testid="behaviour/form/validation/message"]');
+          return {
+            invalidClass: group.classList.contains('has-error') || control.classList.contains('is-invalid'),
+            ariaInvalid: control.getAttribute('aria-invalid'),
+            describedBy: (control.getAttribute('aria-describedby') || '').split(/\\s+/).filter(Boolean),
+            messageId: message.id,
+            messageVisible: message.getClientRects().length > 0,
+            valid: group.dataset.validationResult
+          };
+        })()`);
+        assert.equal(result.invalidClass, true);
+        assert.equal(result.ariaInvalid, "true");
+        assert.ok(result.messageId);
+        assert.ok(result.describedBy.includes(result.messageId), JSON.stringify(result));
+        assert.equal(result.messageVisible, true);
+        assert.equal(result.valid, "false");
+      });
+
+      test("FRM-007", "list selection exposes one selected value", async () => {
+        await evaluate(`(() => {
+          const select = document.querySelector('[data-testid="behaviour/form/list-selection"]');
+          select.selectedIndex = 1;
+          select.dispatchEvent(new Event('change', {bubbles: true}));
+        })()`);
+        const result = await evaluate(`(() => {
+          const select = document.querySelector('[data-testid="behaviour/form/list-selection"]');
+          return {
+            value: select.dataset.value,
+            selected: Array.from(select.options).filter((option) => option.selected).length,
+            changeCount: select.dataset.changeCount,
+            sourceMatch: select.dataset.sourceMatch
+          };
+        })()`);
+        assert.equal(result.value, "Germany");
+        assert.equal(result.selected, 1);
+        assert.equal(result.changeCount, "1");
+        assert.equal(result.sourceMatch, "true");
+      });
+
+      test("FRM-008", "radio controls with one name remain exclusive", async () => {
+        await tap("behaviour/form/radio-group/first");
+        await tap("behaviour/form/radio-group/second");
+        const first = await state("behaviour/form/radio-group/first");
+        const second = await state("behaviour/form/radio-group/second");
+        const group = await state("behaviour/form/radio-group");
+        assert.equal(first.checked, false);
+        assert.equal(second.checked, true);
+        assert.equal(group.value, "second");
+      });
+
+      test("FRM-009", "cancelled form submission reports once without navigating", async () => {
+        const before = await evaluate(`(() => {
+          const form = document.querySelector('[data-testid="behaviour/form/submission"]');
+          const frameName = form.dataset.frameName;
+          return {
+            url: window.location.href,
+            frameName,
+            frameAttached: Array.from(document.querySelectorAll('iframe'))
+              .some((frame) => frame.name === frameName)
+          };
+        })()`);
+        assert.ok(before.frameName);
+        assert.equal(before.frameAttached, true);
+        await tap("behaviour/form/submission/action");
+        const after = await evaluate(`(() => {
+          const form = document.querySelector('[data-testid="behaviour/form/submission"]');
+          return {
+            url: window.location.href,
+            submitCount: form.dataset.submitCount,
+            sourceMatch: form.dataset.sourceMatch,
+            frameAttached: Array.from(document.querySelectorAll('iframe'))
+              .some((frame) => frame.name === form.dataset.frameName)
+          };
+        })()`);
+        assert.equal(after.url, before.url);
+        assert.equal(after.submitCount, "1");
+        assert.equal(after.sourceMatch, "true");
+        assert.equal(after.frameAttached, true);
       });
 
       test("COL-001/002/003", "collapse reports one ordered transition each way", async () => {

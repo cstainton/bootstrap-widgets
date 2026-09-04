@@ -27,6 +27,7 @@ import io.instanto.bootstrap5.client.ui.base.HasValidationState;
 import io.instanto.bootstrap5.client.ui.constants.ValidationState;
 
 import com.google.gwt.editor.client.EditorError;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.AttachEvent;
 import com.google.gwt.event.logical.shared.AttachEvent.Handler;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -84,6 +85,8 @@ public class DefaultErrorHandler implements ErrorHandler {
 
     @Override
     public void clearErrors() {
+        inputWidget.getElement().removeAttribute("aria-invalid");
+        removeValidationDescription();
         if (validationStateParent != null) {
             validationStateParent.setValidationState(ValidationState.NONE);
         }
@@ -120,6 +123,8 @@ public class DefaultErrorHandler implements ErrorHandler {
         if (feedback != null) {
             feedback.setError(message.toString());
         }
+        inputWidget.getElement().setAttribute("aria-invalid", "true");
+        associateValidationDescription();
     }
 
     /**
@@ -177,5 +182,47 @@ public class DefaultErrorHandler implements ErrorHandler {
             }
         }
         return null;
+    }
+
+    private void associateValidationDescription() {
+        if (feedback == null) {
+            return;
+        }
+        String messageId = feedback.getElement().getId();
+        if (messageId == null || messageId.isEmpty()) {
+            messageId = Document.get().createUniqueId();
+            feedback.getElement().setId(messageId);
+        }
+        String describedBy = inputWidget.getElement().getAttribute("aria-describedby");
+        if (!(" " + describedBy + " ").contains(" " + messageId + " ")) {
+            inputWidget.getElement().setAttribute("aria-describedby",
+                    describedBy == null || describedBy.trim().isEmpty()
+                            ? messageId : describedBy.trim() + " " + messageId);
+        }
+    }
+
+    private void removeValidationDescription() {
+        if (feedback == null) {
+            return;
+        }
+        String messageId = feedback.getElement().getId();
+        String describedBy = inputWidget.getElement().getAttribute("aria-describedby");
+        if (messageId == null || messageId.isEmpty() || describedBy == null || describedBy.isEmpty()) {
+            return;
+        }
+        StringBuilder remaining = new StringBuilder();
+        for (String id : describedBy.trim().split("\\s+")) {
+            if (!messageId.equals(id)) {
+                if (remaining.length() > 0) {
+                    remaining.append(' ');
+                }
+                remaining.append(id);
+            }
+        }
+        if (remaining.length() == 0) {
+            inputWidget.getElement().removeAttribute("aria-describedby");
+        } else {
+            inputWidget.getElement().setAttribute("aria-describedby", remaining.toString());
+        }
     }
 }

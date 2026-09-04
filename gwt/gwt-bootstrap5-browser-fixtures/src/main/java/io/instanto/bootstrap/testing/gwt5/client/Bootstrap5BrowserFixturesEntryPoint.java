@@ -2,17 +2,26 @@ package io.instanto.bootstrap.testing.gwt5.client;
 
 import io.instanto.bootstrap5.client.ui.Button;
 import io.instanto.bootstrap5.client.ui.ButtonGroup;
+import io.instanto.bootstrap5.client.ui.CheckBox;
 import io.instanto.bootstrap5.client.ui.CheckBoxButton;
 import io.instanto.bootstrap5.client.ui.Collapse;
 import io.instanto.bootstrap5.client.ui.DropDown;
 import io.instanto.bootstrap5.client.ui.DropDownItem;
 import io.instanto.bootstrap5.client.ui.DropDownMenu;
+import io.instanto.bootstrap5.client.ui.Form;
+import io.instanto.bootstrap5.client.ui.FormGroup;
+import io.instanto.bootstrap5.client.ui.FormLabel;
+import io.instanto.bootstrap5.client.ui.HelpBlock;
+import io.instanto.bootstrap5.client.ui.ListBox;
+import io.instanto.bootstrap5.client.ui.Radio;
 import io.instanto.bootstrap5.client.ui.RadioButton;
+import io.instanto.bootstrap5.client.ui.TextBox;
 import io.instanto.bootstrap5.client.ui.VerticalButtonGroup;
 import io.instanto.bootstrap5.client.ui.constants.ButtonGroupSize;
 import io.instanto.bootstrap5.client.ui.constants.ButtonSize;
 import io.instanto.bootstrap5.client.ui.constants.ButtonType;
 import io.instanto.bootstrap5.client.ui.constants.Toggle;
+import io.instanto.bootstrap5.client.ui.form.validator.BlankValidator;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Timer;
@@ -38,6 +47,18 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         root.add(checkboxFixture());
         root.add(radioFixture());
         root.add(dropdownFixture());
+        root.add(splitDropdownFixture());
+        root.add(dropupFixture());
+        root.add(alignedDropdownFixture());
+        root.add(checkboxLabelFixture());
+        root.add(radioLabelFixture());
+        root.add(textLabelFixture());
+        root.add(textValueFixture());
+        root.add(programmaticTextValueFixture());
+        root.add(validationFixture());
+        root.add(listSelectionFixture());
+        root.add(radioGroupFixture());
+        root.add(formSubmissionFixture());
         root.add(collapseFixture());
         root.add(loadingFixture());
         root.add(programmaticCheckboxFixture());
@@ -132,6 +153,204 @@ public final class Bootstrap5BrowserFixturesEntryPoint implements EntryPoint {
         container.add(dropdown);
         container.add(outside);
         return fixture("Dropdown", container);
+    }
+
+    private Widget splitDropdownFixture() {
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/dropdown/split-button");
+        Button primary = tagged(new Button("Primary action"), "behaviour/dropdown/split-primary");
+        countClicks(primary, primary);
+        Button toggle = tagged(new Button(), "behaviour/dropdown/split-toggle");
+        toggle.setDataToggle(Toggle.DROPDOWN);
+        toggle.addStyleName("dropdown-toggle-split");
+        toggle.getElement().setAttribute("aria-label", "Primary action menu");
+        DropDownMenu menu = tagged(new DropDownMenu(), "behaviour/dropdown/split-menu");
+        menu.add(new DropDownItem("Menu action", "#"));
+        group.add(primary);
+        group.add(toggle);
+        group.add(menu);
+        return fixture("Split dropdown", group);
+    }
+
+    private Widget dropupFixture() {
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/dropdown/dropup");
+        group.setDropUp(true);
+        Button toggle = tagged(new Button("Open upward"), "behaviour/dropdown/dropup-toggle");
+        toggle.setDataToggle(Toggle.DROPDOWN);
+        DropDownMenu menu = tagged(new DropDownMenu(), "behaviour/dropdown/dropup-menu");
+        menu.add(new DropDownItem("First action", "#"));
+        menu.add(new DropDownItem("Second action", "#"));
+        group.add(toggle);
+        group.add(menu);
+        return fixture("Dropup", group);
+    }
+
+    private Widget alignedDropdownFixture() {
+        ButtonGroup group = tagged(new ButtonGroup(), "behaviour/dropdown/aligned-width");
+        group.setWidth("220px");
+        Button toggle = tagged(new Button("Constrained menu"),
+                "behaviour/dropdown/aligned-width-toggle");
+        toggle.setDataToggle(Toggle.DROPDOWN);
+        toggle.setWidth("100%");
+        DropDownMenu menu = tagged(new DropDownMenu(),
+                "behaviour/dropdown/aligned-width-menu");
+        menu.setWidth("100%");
+        menu.add(new DropDownItem("Aligned menu item", "#"));
+        group.add(toggle);
+        group.add(menu);
+        return fixture("Aligned dropdown width", group);
+    }
+
+    private Widget checkboxLabelFixture() {
+        CheckBox checkbox = tagged(new CheckBox("Accept"), "behaviour/form/checkbox-label");
+        initializeCounter(checkbox.getElement(), CHANGE_COUNT);
+        initializeValue(checkbox, false);
+        checkbox.addValueChangeHandler(event -> {
+            increment(checkbox.getElement(), CHANGE_COUNT);
+            initializeValue(checkbox, event.getValue());
+            checkbox.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == checkbox));
+        });
+        return fixture("Checkbox label", checkbox);
+    }
+
+    private Widget radioLabelFixture() {
+        Radio radio = tagged(new Radio("form-radio-label", "Select"),
+                "behaviour/form/radio-label");
+        initializeCounter(radio.getElement(), CHANGE_COUNT);
+        initializeValue(radio, false);
+        radio.addValueChangeHandler(event -> {
+            increment(radio.getElement(), CHANGE_COUNT);
+            initializeValue(radio, event.getValue());
+            radio.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == radio));
+        });
+        return fixture("Radio label", radio);
+    }
+
+    private Widget textLabelFixture() {
+        FormGroup group = tagged(new FormGroup(), "behaviour/form/text-label");
+        FormLabel label = tagged(new FormLabel("Account name"),
+                "behaviour/form/text-label/label");
+        TextBox textBox = tagged(new TextBox(), "behaviour/form/text-label/control");
+        group.add(label);
+        group.add(textBox);
+        return fixture("Text field label", group);
+    }
+
+    private Widget textValueFixture() {
+        TextBox textBox = tagged(new TextBox(), "behaviour/form/text-value");
+        textBox.setValue("initial");
+        initializeCounter(textBox.getElement(), CHANGE_COUNT);
+        textBox.getElement().setAttribute("data-value", textBox.getValue());
+        textBox.addValueChangeHandler(event -> {
+            increment(textBox.getElement(), CHANGE_COUNT);
+            textBox.getElement().setAttribute("data-value", event.getValue());
+            textBox.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == textBox));
+        });
+        return fixture("Text field value", textBox);
+    }
+
+    private Widget programmaticTextValueFixture() {
+        FlowPanel container = new FlowPanel();
+        TextBox textBox = tagged(new TextBox(), "behaviour/form/values");
+        textBox.setValue("initial");
+        initializeCounter(textBox.getElement(), CHANGE_COUNT);
+        textBox.getElement().setAttribute("data-value", textBox.getValue());
+        textBox.addValueChangeHandler(event -> {
+            increment(textBox.getElement(), CHANGE_COUNT);
+            textBox.getElement().setAttribute("data-value", event.getValue());
+            textBox.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == textBox));
+        });
+        Button silent = tagged(new Button("Set silently"), "behaviour/form/values/set-silent");
+        silent.addClickHandler(event -> {
+            textBox.setValue("silent", false);
+            textBox.getElement().setAttribute("data-value", textBox.getValue());
+        });
+        Button firing = tagged(new Button("Set with event"), "behaviour/form/values/set-firing");
+        firing.addClickHandler(event -> {
+            textBox.setValue("firing", true);
+            textBox.getElement().setAttribute("data-value", textBox.getValue());
+        });
+        container.add(textBox);
+        container.add(silent);
+        container.add(firing);
+        return fixture("Programmatic text values", container);
+    }
+
+    private Widget validationFixture() {
+        FormGroup group = tagged(new FormGroup(), "behaviour/form/validation");
+        FormLabel label = new FormLabel("Required value");
+        TextBox textBox = tagged(new TextBox(), "behaviour/form/validation/control");
+        textBox.setValidators(new BlankValidator<String>("Required"));
+        HelpBlock message = tagged(new HelpBlock(), "behaviour/form/validation/message");
+        message.getElement().setId("form-validation-message");
+        Button validate = tagged(new Button("Validate"), "behaviour/form/validation/action");
+        validate.addClickHandler(event -> group.getElement().setAttribute(
+                "data-validation-result", Boolean.toString(textBox.validate(true))));
+        group.add(label);
+        group.add(textBox);
+        group.add(message);
+        group.add(validate);
+        return fixture("Validation", group);
+    }
+
+    private Widget formSubmissionFixture() {
+        Form form = tagged(new Form(), "behaviour/form/submission");
+        initializeCounter(form.getElement(), "data-submit-count");
+        form.addSubmitHandler(event -> {
+            increment(form.getElement(), "data-submit-count");
+            form.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == form));
+            event.cancel();
+        });
+        Button submit = tagged(new Button("Submit"), "behaviour/form/submission/action");
+        submit.addClickHandler(event -> form.submit());
+        form.add(submit);
+        form.getElement().setAttribute("data-frame-name", form.getTarget());
+        return fixture("Cancelled form submission", form);
+    }
+
+    private Widget listSelectionFixture() {
+        ListBox listBox = tagged(new ListBox(), "behaviour/form/list-selection");
+        listBox.addItem("France");
+        listBox.addItem("Germany");
+        listBox.addItem("Spain");
+        initializeCounter(listBox.getElement(), CHANGE_COUNT);
+        listBox.getElement().setAttribute("data-value", listBox.getItemText(0));
+        listBox.addChangeHandler(event -> {
+            increment(listBox.getElement(), CHANGE_COUNT);
+            listBox.getElement().setAttribute("data-value",
+                    listBox.getItemText(listBox.getSelectedIndex()));
+            listBox.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == listBox));
+        });
+        return fixture("List selection", listBox);
+    }
+
+    private Widget radioGroupFixture() {
+        FlowPanel group = tagged(new FlowPanel(), "behaviour/form/radio-group");
+        Radio first = tagged(new Radio("form-radio-group", "First"),
+                "behaviour/form/radio-group/first");
+        first.setFormValue("first");
+        Radio second = tagged(new Radio("form-radio-group", "Second"),
+                "behaviour/form/radio-group/second");
+        second.setFormValue("second");
+        group.getElement().setAttribute("data-value", "");
+        first.addValueChangeHandler(event -> recordRadioGroupValue(group, first, second));
+        second.addValueChangeHandler(event -> recordRadioGroupValue(group, first, second));
+        group.add(first);
+        group.add(second);
+        return fixture("Radio group", group);
+    }
+
+    private void recordRadioGroupValue(FlowPanel group, Radio first, Radio second) {
+        if (first.getValue()) {
+            group.getElement().setAttribute("data-value", first.getFormValue());
+        } else if (second.getValue()) {
+            group.getElement().setAttribute("data-value", second.getFormValue());
+        }
     }
 
     private Widget collapseFixture() {
