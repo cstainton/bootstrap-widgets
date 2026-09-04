@@ -90,6 +90,25 @@ public abstract class UIObject {
         }
     }
 
+    public void addStyleDependentName(final String styleSuffix) {
+        setStyleDependentName(styleSuffix, true);
+    }
+
+    public void removeStyleDependentName(final String styleSuffix) {
+        setStyleDependentName(styleSuffix, false);
+    }
+
+    public void setStyleDependentName(final String styleSuffix, final boolean add) {
+        if (styleSuffix == null || styleSuffix.isEmpty()) {
+            return;
+        }
+        final String primary = getStylePrimaryName();
+        if (primary == null || primary.isEmpty()) {
+            throw new IllegalStateException("A primary style name is required before adding a dependent style");
+        }
+        setStyleName(primary + "-" + styleSuffix, add);
+    }
+
     public void setStylePrimaryName(final String styleName) {
         if (primaryStyleName != null && !primaryStyleName.isEmpty()) {
             removeStyleName(primaryStyleName);

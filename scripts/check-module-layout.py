@@ -16,7 +16,9 @@ TRACKS = {
         "sources": {
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java",
         },
-        "source_root": ROOT / "gwt/gwt-bootstrap3/src/main/java",
+        "source_roots": (
+            ROOT / "gwt/gwt-bootstrap3/src/main/java",
+        ),
         "excludes": {
             "org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java",
             "org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java",
@@ -37,19 +39,33 @@ TRACKS = {
         "sources": {
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java",
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java",
+            "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java",
         },
-        "source_root": ROOT / "gwt/gwt-bootstrap5/src/main/java",
+        "source_roots": (
+            ROOT / "gwt/gwt-bootstrap5/src/main/java",
+            ROOT / "gwt/gwt-bootstrap5-themes/src/main/java",
+            ROOT / "gwt/gwt-bootstrap5-extras/src/main/java",
+        ),
         "excludes": {
             "io/instanto/bootstrap5/client/GwtBootstrap5EntryPoint.java",
             "io/instanto/bootstrap5/client/ui/base/BootstrapEventBridge.java",
             "io/instanto/bootstrap5/client/ui/base/BootstrapComponent.java",
             "io/instanto/bootstrap5/client/ui/base/InputEvents.java",
+            "io/instanto/bootstrap5/extras/datepicker/**",
+            "io/instanto/bootstrap5/extras/markdown/client/Markdown.java",
+            "io/instanto/bootstrap5/extras/markdown/client/MarkdownClientBundle.java",
+            "io/instanto/bootstrap5/extras/markdown/client/MarkdownEntryPoint.java",
+            "io/instanto/bootstrap5/extras/markdown/client/ui/TextAreaSelection.java",
+            "io/instanto/bootstrap5/extras/richtext/**",
+            "io/instanto/bootstrap5/extras/slider/**",
         },
         "replacements": {
             "io/instanto/bootstrap5/client/TeaVmBootstrap5EntryPoint.java",
             "io/instanto/bootstrap5/client/ui/base/BootstrapEventBridge.java",
             "io/instanto/bootstrap5/client/ui/base/BootstrapComponent.java",
             "io/instanto/bootstrap5/client/ui/base/InputEvents.java",
+            "io/instanto/bootstrap5/extras/markdown/client/Markdown.java",
+            "io/instanto/bootstrap5/extras/markdown/client/ui/TextAreaSelection.java",
         },
     },
 }
@@ -71,7 +87,12 @@ def check_track(name, track):
         problems.append(f"{name} compiler exclusions are {sorted(excludes)}, expected {sorted(track['excludes'])}")
 
     for relative in sorted(track["excludes"]):
-        if not (track["source_root"] / relative).is_file():
+        found = any(
+            any(source_root.glob(relative)) if "*" in relative
+            else (source_root / relative).is_file()
+            for source_root in track["source_roots"]
+        )
+        if not found:
             problems.append(f"{name} excluded GWT source is missing: {relative}")
 
     replacement_root = track["pom"].parent / "src/main/java"

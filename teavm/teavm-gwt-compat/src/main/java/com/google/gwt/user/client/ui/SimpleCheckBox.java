@@ -34,7 +34,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 /** A checkbox with no label of its own. */
 public class SimpleCheckBox extends FocusWidget implements HasName, HasValue<Boolean> {
 
-    private boolean valueChangeBridged;
+    private boolean valueChangeHandlerInitialized;
 
     public SimpleCheckBox() {
         this(Document.get().createCheckInputElement());
@@ -42,13 +42,6 @@ public class SimpleCheckBox extends FocusWidget implements HasName, HasValue<Boo
 
     protected SimpleCheckBox(final Element element) {
         super(element);
-    }
-
-    /**
-     * Hook for subclasses to attach their DOM handlers. GWT calls this once, lazily;
-     * here handlers bind on registration, so the default does nothing.
-     */
-    protected void ensureDomEventHandlers() {
     }
 
     protected InputElement getInputElement() {
@@ -103,16 +96,15 @@ public class SimpleCheckBox extends FocusWidget implements HasName, HasValue<Boo
 
     @Override
     public HandlerRegistration addValueChangeHandler(final ValueChangeHandler<Boolean> handler) {
-        bridgeValueChange();
+        if (!valueChangeHandlerInitialized) {
+            ensureDomEventHandlers();
+            valueChangeHandlerInitialized = true;
+        }
         return addHandler(handler, ValueChangeEvent.<Boolean>getType());
     }
 
     /** Turns the browser click into the logical value-change event. */
-    private void bridgeValueChange() {
-        if (valueChangeBridged) {
-            return;
-        }
-        valueChangeBridged = true;
+    protected void ensureDomEventHandlers() {
         addClickHandler(event -> ValueChangeEvent.fire(this, getValue()));
     }
 }

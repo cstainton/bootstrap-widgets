@@ -17,6 +17,33 @@ deliberately deferred. Frames test already rendered applications in Chromium;
 they are the primary behavioural test path for GWT widgets and Bootstrap
 JavaScript.
 
+### Implementation status
+
+The first executable tranche is now in the repository:
+
+- Phase 0 is complete. Generated source contains a direct construction path
+  and an independently reported TeaVM test for every exported widget: 121
+  Bootstrap 3 fixtures and 131 Bootstrap 5 fixtures.
+- Phase 1 fixture/API enforcement is complete for the core and Markdown
+  exports. The reviewed P0 corpus contains 61 scenarios with stable IDs,
+  fixture IDs, Bootstrap 3 showcase references and a four-target matrix.
+- Phase 2 has an initial direct Chromium tranche for toggle, disabled,
+  checkbox-button, radio-button and loading-state behaviour on both Bootstrap
+  generations. The P0 feature text is not yet Cucumber Tea executable.
+- Phase 6 has five JVM-safe contracts against real `gwt-user`, four
+  browser-bound contracts through `GWTTestCase`, and all nine contracts against
+  `teavm-gwt-compat` in Chromium.
+- Phase 9 has an initial deployment gate. CI assembles the four showcases with
+  local vendored JavaScript, renders each in Chromium, and passes that exact
+  artifact to the Pages workflow for the same successful run.
+
+The current matrix executes 287 tests: 5 JVM reference contracts, 4 GWT
+browser reference contracts, 9 TeaVM compatibility contracts, 128 Bootstrap 3
+TeaVM tests and 141 Bootstrap 5 TeaVM tests. Phases 3-5, generated Cucumber Tea
+glue, the remaining Phase 6 contract areas, the expanded behaviour matrix,
+browser-version pinning, console capture, structural snapshots and
+accessibility gating remain open.
+
 ## Decisions
 
 1. Gherkin feature files describe shared widget behaviour.
@@ -125,7 +152,8 @@ The repository layout is part of the test isolation model:
 | `teavm/pom.xml` | TeaVM compatibility runtime, TeaVM widget builds and TeaVM-only tests |
 | `testing/pom.xml` | Future cross-target specifications, fixture metadata and assembled-site tests |
 
-The root reactor will add `testing/` when its first module is implemented.
+The root reactor includes `testing/` for the shared specifications, fixture
+metadata and compatibility contracts.
 Compiler-bound tests stay in their compiler sub-reactor; no test module may
 bridge `gwt/` and `teavm/` by putting both runtime implementations on one
 classpath.

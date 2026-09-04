@@ -1,0 +1,4 @@
+<module rename-to="BootstrapWidgetContractsTest">
+  <inherits name="io.instanto.bootstrap.testing.contracts.BootstrapWidgetContracts"/>
+  <source path=""/>
+</module>

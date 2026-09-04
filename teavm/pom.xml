@@ -18,6 +18,8 @@
     <module>teavm-gwt-compat</module>
     <module>teavm-bootstrap3</module>
     <module>teavm-bootstrap5</module>
+    <module>teavm-bootstrap-widget-tests</module>
+    <module>teavm-gwt-compat-contracts</module>
   </modules>
 
   <build>

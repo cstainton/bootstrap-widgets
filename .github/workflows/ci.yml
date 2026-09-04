@@ -31,6 +31,9 @@ jobs:
       - name: Build and install reactor artifacts
         run: mvn -B -DskipTests install
 
+      - name: Run compatibility and widget browser tests
+        run: mvn -B -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-gwt-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests -am test
+
       - name: Compile showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
 
@@ -40,11 +43,19 @@ jobs:
       - name: Verify published source maps and source JARs
         run: python3 scripts/prepare-showcase-debug-artifacts.py
 
-      - name: Verify TeaVM backend compile
-        run: test -s teavm/teavm-bootstrap3/target/teavm/teavm-bootstrap3-smoke.js
+      - name: Assemble verified showcase site
+        run: bash scripts/assemble-pages.sh
 
-      - name: Verify Bootstrap 5 TeaVM backend compile
-        run: test -s teavm/teavm-bootstrap5/target/teavm/teavm-bootstrap5-smoke.js
+      - name: Smoke-test assembled showcases in Chromium
+        run: bash scripts/smoke-showcase-pages.sh
+
+      - name: Upload verified showcase site
+        uses: actions/upload-artifact@v4
+        with:
+          name: showcase-pages
+          path: target/pages
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Dependency audit
         run: mvn -B -Pdependency-audit -Dmaven.test.skip=true -DskipTests verify

@@ -44,7 +44,7 @@ public class CheckBox extends ButtonBase implements HasName, HasValue<Boolean>,
     private final InputElement inputElem;
     private final LabelElement labelElem;
     private final DirectionalTextHelper directionalTextHelper;
-    private boolean valueChangeBridged;
+    private boolean valueChangeHandlerInitialized;
 
     public CheckBox() {
         this(Document.get().createCheckInputElement());
@@ -182,15 +182,14 @@ public class CheckBox extends ButtonBase implements HasName, HasValue<Boolean>,
 
     @Override
     public HandlerRegistration addValueChangeHandler(final ValueChangeHandler<Boolean> handler) {
-        bridgeValueChange();
+        if (!valueChangeHandlerInitialized) {
+            ensureDomEventHandlers();
+            valueChangeHandlerInitialized = true;
+        }
         return addHandler(handler, ValueChangeEvent.<Boolean>getType());
     }
 
-    private void bridgeValueChange() {
-        if (valueChangeBridged) {
-            return;
-        }
-        valueChangeBridged = true;
+    protected void ensureDomEventHandlers() {
         addClickHandler(event -> ValueChangeEvent.fire(this, getValue()));
     }
 }

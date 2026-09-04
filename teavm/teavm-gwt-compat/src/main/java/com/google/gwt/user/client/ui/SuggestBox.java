@@ -44,10 +44,12 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
     /** Renders the suggestion list and reports the user's choice. */
     public static class SuggestionDisplay {
 
-        private final FlowPanel popup = new FlowPanel();
+        private final FlowPanel suggestionItems = new FlowPanel();
+        private final PopupPanel popup = new PopupPanel(true);
         private SuggestBox owner;
 
         protected SuggestionDisplay() {
+            popup.setWidget(suggestionItems);
             popup.setStyleName("dropdown-menu");
             popup.getElement().getStyle().setProperty("position", "absolute");
             hideSuggestions();
@@ -65,7 +67,7 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
                 final java.util.Collection<? extends SuggestOracle.Suggestion> suggestions,
                 final boolean isDisplayStringHTML, final boolean isAutoSelectEnabled,
                 final SuggestionCallback callback) {
-            popup.clear();
+            suggestionItems.clear();
             if (suggestions.isEmpty()) {
                 hideSuggestions();
                 return;
@@ -78,7 +80,7 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
                     event.preventDefault();
                     callback.onSuggestionSelected(suggestion);
                 });
-                popup.add(item);
+                suggestionItems.add(item);
             }
             popup.addStyleName("show");
             popup.setVisible(true);
@@ -120,7 +122,7 @@ public class SuggestBox extends Composite implements HasValue<String>, HasEnable
         /** GWT exposes the popup so callers can restyle or reposition it. */
         @Override
         public PopupPanel getPopupPanel() {
-            return null;
+            return (PopupPanel) super.getPopupPanel();
         }
 
         public void hideSuggestions() {
