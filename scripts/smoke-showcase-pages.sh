@@ -66,8 +66,8 @@ smoke_page gwt-bootstrap3 "showcase.html" "<h1>GWT Bootstrap Showcase"
 smoke_page gwt-bootstrap3-fixtures "fixtures/gwt-bootstrap3/index.html" "data-fixtures-ready=\"true\""
 smoke_page gwt-bootstrap5 "bootstrap5/index.html" "<h1>GWT Bootstrap Showcase"
 smoke_page gwt-bootstrap5-fixtures "fixtures/gwt-bootstrap5/index.html" "data-fixtures-ready=\"true\""
-smoke_page teavm-bootstrap3 "teavm.html" "<h1>Bootstrap 3 on TeaVM"
-smoke_page teavm-bootstrap5 "teavm-bootstrap5.html" "Bootstrap 5 on TeaVM<small"
+smoke_page teavm-bootstrap3 "teavm.html" "<h1>GWT Bootstrap Showcase"
+smoke_page teavm-bootstrap5 "teavm-bootstrap5.html" "<h1>GWT Bootstrap Showcase"
 
 if grep -Eq '" [45][0-9][0-9] -$' "${server_log}"; then
   echo "A showcase requested an asset that returned an HTTP error" >&2

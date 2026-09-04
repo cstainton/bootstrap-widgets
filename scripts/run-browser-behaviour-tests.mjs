@@ -259,11 +259,10 @@ async function main() {
       await new Promise((resolveWait) => setTimeout(resolveWait, 400));
     }
 
-    async function tap(testId, allowPointerPassThrough = false) {
-      const selector = `[data-testid=${JSON.stringify(testId)}]`;
+    async function tapSelector(selector, description, allowPointerPassThrough = false) {
       await evaluate(`new Promise((resolve) => {
         const element = document.querySelector(${JSON.stringify(selector)});
-        if (!element) throw new Error('Missing fixture ${testId}');
+        if (!element) throw new Error(${JSON.stringify(`Missing ${description}`)});
         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
         requestAnimationFrame(() => {
           const rect = element.getBoundingClientRect();
@@ -282,6 +281,9 @@ async function main() {
         const x = rect.left + rect.width / 2;
         const y = rect.top + rect.height / 2;
         const hit = document.elementFromPoint(x, y);
+        const expectedTestId = element.getAttribute('data-testid');
+        const hitTestId = hit && hit.closest('[data-testid]')
+          ? hit.closest('[data-testid]').getAttribute('data-testid') : null;
         return {
           x,
           y,
@@ -293,13 +295,16 @@ async function main() {
             className: candidate.className,
             testId: candidate.getAttribute && candidate.getAttribute('data-testid')
           })),
-          hitTestId: hit && hit.closest('[data-testid]')
-            ? hit.closest('[data-testid]').getAttribute('data-testid') : null
+          selectedTargetHit: Boolean(hit && (
+            hit === hitTarget || hitTarget.contains(hit) || hit.contains(hitTarget)
+              || (expectedTestId && expectedTestId === hitTestId)
+          )),
+          hitTestId
         };
       })()`);
       if (!allowPointerPassThrough) {
-        assert.equal(point.hitTestId, testId,
-          `Touch point for ${testId} was obscured: ${JSON.stringify(point)}`);
+        assert.equal(point.selectedTargetHit, true,
+          `Touch point for ${description} was obscured: ${JSON.stringify(point)}`);
       }
       await cdp.send("Input.synthesizeTapGesture", {
         x: point.x,
@@ -308,6 +313,11 @@ async function main() {
         gestureSourceType: "touch",
       });
       await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+    }
+
+    async function tap(testId, allowPointerPassThrough = false) {
+      const selector = `[data-testid=${JSON.stringify(testId)}]`;
+      await tapSelector(selector, `fixture ${testId}`, allowPointerPassThrough);
     }
 
     async function tapOutside() {
@@ -1891,6 +1901,92 @@ async function main() {
         assert.equal(result.removedPresent, false);
         assert.equal(result.parentNull, "true");
       });
+
+      if (target.generation === 3) {
+        test("SEL-001", "Bootstrap Select initializes in Bootstrap 3 mode", async () => {
+          const result = await evaluate(`(() => {
+            const select = document.querySelector(
+              '[data-testid="behaviour/bootstrap-select/basic/control"]'
+            );
+            const plugin = select && select.closest('.bootstrap-select');
+            const toggle = plugin && plugin.querySelector('.dropdown-toggle');
+            return {
+              pluginRegistered: Boolean(window.jQuery && window.jQuery.fn.selectpicker),
+              bootstrapVersion: window.jQuery.fn.dropdown.Constructor.VERSION,
+              containers: document.querySelectorAll(
+                '[data-testid="behaviour/bootstrap-select/basic"] .bootstrap-select'
+              ).length,
+              bootstrap3Mode: Boolean(plugin && plugin.classList.contains('bs3')),
+              defaultButton: Boolean(toggle && toggle.classList.contains('btn-default')),
+              bootstrap5Button: Boolean(toggle && toggle.classList.contains('btn-light')),
+              bootstrap3Toggle: toggle && toggle.getAttribute('data-toggle'),
+              bootstrap5Toggle: toggle && toggle.getAttribute('data-bs-toggle')
+            };
+          })()`);
+          assert.equal(result.pluginRegistered, true, JSON.stringify(result));
+          assert.match(result.bootstrapVersion, /^3\./);
+          assert.equal(result.containers, 1);
+          assert.equal(result.bootstrap3Mode, true);
+          assert.equal(result.defaultButton, true);
+          assert.equal(result.bootstrap5Button, false);
+          assert.equal(result.bootstrap3Toggle, "dropdown");
+          assert.equal(result.bootstrap5Toggle, null);
+        });
+
+        test("SEL-002", "Bootstrap Select opens from mobile touch", async () => {
+          const root = '[data-testid="behaviour/bootstrap-select/basic"]';
+          await tapSelector(`${root} .dropdown-toggle`, "Bootstrap Select toggle");
+          await waitFor(
+            `document.querySelector(${JSON.stringify(`${root} .bootstrap-select`)})
+              .classList.contains('open')`,
+            "the Bootstrap Select menu to open",
+          );
+          const result = await evaluate(`(() => {
+            const root = document.querySelector(${JSON.stringify(root)});
+            const plugin = root.querySelector('.bootstrap-select');
+            const toggle = plugin.querySelector('.dropdown-toggle');
+            const menu = plugin.querySelector('.dropdown-menu');
+            return {
+              open: plugin.classList.contains('open'),
+              expanded: toggle.getAttribute('aria-expanded'),
+              visible: menu.getClientRects().length > 0 && getComputedStyle(menu).display !== 'none'
+            };
+          })()`);
+          assert.equal(result.open, true);
+          assert.equal(result.expanded, "true");
+          assert.equal(result.visible, true);
+        });
+
+        test("SEL-003", "Bootstrap Select reports one selected value from touch", async () => {
+          const root = '[data-testid="behaviour/bootstrap-select/basic"]';
+          await tapSelector(`${root} .dropdown-toggle`, "Bootstrap Select toggle");
+          await waitFor(
+            `document.querySelector(${JSON.stringify(`${root} .bootstrap-select`)})
+              .classList.contains('open')`,
+            "the Bootstrap Select menu to open",
+          );
+          await tapSelector(`${root} .dropdown-menu li:nth-child(2) a`,
+            "Bootstrap Select second item");
+          await waitFor(
+            `document.querySelector(${JSON.stringify(root)}).dataset.changeCount === '1'`,
+            "one Bootstrap Select value change",
+          );
+          const result = await evaluate(`(() => {
+            const root = document.querySelector(${JSON.stringify(root)});
+            const toggle = root.querySelector('.bootstrap-select .dropdown-toggle');
+            return {
+              value: root.dataset.value,
+              changes: root.dataset.changeCount,
+              sourceMatch: root.dataset.sourceMatch,
+              text: toggle.textContent.trim()
+            };
+          })()`);
+          assert.equal(result.value, "ketchup");
+          assert.equal(result.changes, "1");
+          assert.equal(result.sourceMatch, "true");
+          assert.match(result.text, /Ketchup/);
+        });
+      }
 
       return tests;
     }

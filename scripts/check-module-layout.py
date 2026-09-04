@@ -15,9 +15,13 @@ TRACKS = {
         "pom": ROOT / "teavm/teavm-bootstrap3/pom.xml",
         "sources": {
             "${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java",
+            "${project.parent.parent.basedir}/gwt/gwt-bootstrap3-themes/src/main/java",
+            "${project.parent.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/java",
         },
         "source_roots": (
             ROOT / "gwt/gwt-bootstrap3/src/main/java",
+            ROOT / "gwt/gwt-bootstrap3-themes/src/main/java",
+            ROOT / "gwt/gwt-bootstrap3-showcase/src/main/java",
         ),
         "excludes": {
             "org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java",
@@ -25,6 +29,12 @@ TRACKS = {
             "org/gwtbootstrap3/client/shared/js/JQuery.java",
             "org/gwtbootstrap3/client/ui/base/TooltipOptions.java",
             "org/gwtbootstrap3/client/ui/base/CarouselOptions.java",
+            "org/gwtbootstrap3/demo/client/ExtrasPages.java",
+            "org/gwtbootstrap3/demo/client/GwtBootstrap3DemoClientBundle.java",
+            "org/gwtbootstrap3/demo/client/ShowcaseScripts.java",
+            "org/gwtbootstrap3/demo/client/application/css/validation/**",
+            "org/gwtbootstrap3/demo/client/application/extras/**",
+            "org/gwtbootstrap3/demo/client/ui/PrettyPre.java",
         },
         "replacements": {
             "org/gwtbootstrap3/client/TeaVmBootstrap3EntryPoint.java",
@@ -32,6 +42,9 @@ TRACKS = {
             "org/gwtbootstrap3/client/shared/js/JQuery.java",
             "org/gwtbootstrap3/client/ui/base/TooltipOptions.java",
             "org/gwtbootstrap3/client/ui/base/CarouselOptions.java",
+            "org/gwtbootstrap3/demo/client/ExtrasPages.java",
+            "org/gwtbootstrap3/demo/client/ShowcaseScripts.java",
+            "org/gwtbootstrap3/demo/client/ui/PrettyPre.java",
         },
     },
     "Bootstrap 5": {

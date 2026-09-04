@@ -1,5 +1,7 @@
 package io.instanto.bootstrap5.teavm.demo;
 
+import com.google.gwt.core.client.GWT;
+
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.client.ui.Container;
@@ -18,6 +20,7 @@ public final class SharedShowcaseApp {
     }
 
     public static void main(final String[] args) {
+        GWT.setModuleBaseURL("teavm5/");
         Bootstrap5Resources.setAssetBase("teavm5/");
         new ShowcaseEntryPoint().onModuleLoad();
         mountUiBinderProof();

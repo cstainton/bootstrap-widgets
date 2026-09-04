@@ -3,6 +3,7 @@ package io.instanto.bootstrap.testing.teavm;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
@@ -19,6 +20,17 @@ import io.instanto.bootstrap.testing.contracts.BrowserBoundGwtContracts;
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM
 public class TeaVmGwtCompatibilityContractsTest {
+    @Test
+    public void moduleBaseUrlCanBeSuppliedByTheTeaVmHost() {
+        final String original = GWT.getModuleBaseURL();
+        try {
+            GWT.setModuleBaseURL("showcases/teavm");
+            assertEquals("showcases/teavm/", GWT.getModuleBaseURL());
+        } finally {
+            GWT.setModuleBaseURL(original);
+        }
+    }
+
     @Test
     public void safeHtmlEscapesAndPreservesTrustedFragments() {
         JvmSafeGwtContracts.safeHtmlEscapesAndPreservesTrustedFragments();

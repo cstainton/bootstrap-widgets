@@ -1,7 +1,10 @@
 # Behaviour specifications
 
 This module packages the shared Gherkin specifications used by the GWT and
-TeaVM runners. Bootstrap 3 showcase behaviour is the compatibility baseline.
+TeaVM runners. The original upstream GwtBootstrap3 project and showcase from
+which this repository was forked are the functional compatibility baseline;
+the refreshed Bootstrap 3 implementation is a target of those specifications,
+not their source of truth.
 
 Every scenario declares:
 
@@ -12,6 +15,12 @@ Every scenario declares:
 - subject, contract and execution tags;
 - applicability to GWT Bootstrap 3, TeaVM Bootstrap 3, GWT Bootstrap 5 and
   TeaVM Bootstrap 5.
+
+Each target is explicit. Use `@gwt3`, `@teavm3`, `@gwt5` or `@teavm5` when
+the scenario is required there, and the corresponding `@unsupported-gwt3`,
+`@unsupported-teavm3`, `@unsupported-gwt5` or `@unsupported-teavm5` when the
+library deliberately does not supply that feature. Omitting a target is an
+inventory error, not an implicit unsupported declaration.
 
 The authoritative tag and fixture-state definitions are in the
 [testing plan](../../TESTING-PLAN.md#tag-vocabulary). In particular,

@@ -49,6 +49,8 @@ import org.gwtbootstrap3.client.ui.form.validator.BlankValidator;
 import org.gwtbootstrap3.client.ui.theme.StandardThemes;
 import org.gwtbootstrap3.client.ui.theme.Theme;
 import org.gwtbootstrap3.client.ui.theme.Themes;
+import org.gwtbootstrap3.extras.select.client.ui.Option;
+import org.gwtbootstrap3.extras.select.client.ui.Select;
 import org.gwtbootstrap3.themes.client.BootswatchThemes;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -124,6 +126,7 @@ public final class Bootstrap3BrowserFixturesEntryPoint implements EntryPoint {
         root.add(verticalButtonGroupFixture());
         root.add(nestedButtonGroupFixture());
         root.add(buttonGroupRemovalFixture());
+        root.add(bootstrapSelectFixture());
 
         Document.get().getBody().setAttribute("data-fixtures-ready", "true");
         markReady();
@@ -1185,6 +1188,31 @@ public final class Bootstrap3BrowserFixturesEntryPoint implements EntryPoint {
         container.add(group);
         container.add(remove);
         return fixture("Button group removal", container);
+    }
+
+    private Widget bootstrapSelectFixture() {
+        FlowPanel state = tagged(new FlowPanel(), "behaviour/bootstrap-select/basic");
+        Select select = tagged(new Select(), "behaviour/bootstrap-select/basic/control");
+        addOption(select, "Mustard", "mustard");
+        addOption(select, "Ketchup", "ketchup");
+        addOption(select, "Relish", "relish");
+        initializeCounter(state.getElement(), CHANGE_COUNT);
+        state.getElement().setAttribute("data-value", "mustard");
+        select.addValueChangeHandler(event -> {
+            increment(state.getElement(), CHANGE_COUNT);
+            state.getElement().setAttribute("data-value", event.getValue());
+            state.getElement().setAttribute("data-source-match",
+                    Boolean.toString(event.getSource() == select));
+        });
+        state.add(select);
+        return fixture("Bootstrap Select", state);
+    }
+
+    private void addOption(Select select, String text, String value) {
+        Option option = new Option();
+        option.setText(text);
+        option.setValue(value);
+        select.add(option);
     }
 
     private void addPresetCheckbox(ButtonGroup group, String label, boolean value) {

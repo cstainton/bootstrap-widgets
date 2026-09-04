@@ -113,7 +113,7 @@ def verify_source_jars():
 def main():
     for module_path, module_name in GWT_SHOWCASES:
         prepare_gwt_showcase(module_path, module_name)
-    verify_teavm_showcase("teavm/teavm-bootstrap3", "teavm-bootstrap3-smoke.js")
+    verify_teavm_showcase("teavm/teavm-bootstrap3", "teavm-bootstrap3-showcase.js")
     verify_teavm_showcase("teavm/teavm-bootstrap5", "teavm-bootstrap5-smoke.js")
     verify_source_jars()
 

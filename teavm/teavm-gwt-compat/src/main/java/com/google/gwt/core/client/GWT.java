@@ -49,6 +49,7 @@ import java.util.ServiceLoader;
 public final class GWT {
 
     private static final Map<String, Object> REGISTRY = new HashMap<>();
+    private static String moduleBaseUrl = "./";
 
     private GWT() {
     }
@@ -101,7 +102,20 @@ public final class GWT {
     }
 
     public static String getModuleBaseURL() {
-        return "./";
+        return moduleBaseUrl;
+    }
+
+    /**
+     * Supplies the deployment location that a GWT compiler normally writes into the
+     * generated bootstrap script. TeaVM applications that execute shared GWT source
+     * should set this before invoking their entry point.
+     */
+    public static void setModuleBaseURL(final String value) {
+        if (value == null || value.isEmpty()) {
+            moduleBaseUrl = "./";
+            return;
+        }
+        moduleBaseUrl = value.endsWith("/") ? value : value + "/";
     }
 
     public static void log(final String message) {

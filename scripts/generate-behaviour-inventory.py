@@ -18,6 +18,7 @@ INVENTORY = (
     / "io/instanto/bootstrap/testing/showcase-behaviour-inventory.tsv"
 )
 REQUIRED_FEATURES = {
+    "bootstrap-select.feature",
     "button-groups.feature",
     "buttons.feature",
     "collapse.feature",
@@ -32,6 +33,7 @@ REQUIRED_FEATURES = {
     "widget-lifecycle.feature",
 }
 TARGET_TAGS = ("gwt3", "teavm3", "gwt5", "teavm5")
+UNSUPPORTED_TARGET_TAGS = {target: f"unsupported-{target}" for target in TARGET_TAGS}
 CONTRACT_TAGS = (
     "functional",
     "api-contract",
@@ -85,9 +87,28 @@ def parse_feature(path: Path) -> list[Scenario]:
         if len(baseline_values) != 1:
             raise ValueError(f"{path.name}:{spec_id}: expected exactly one baseline declaration")
         combined_tags = tuple(dict.fromkeys(feature_tags + scenario_tags))
-        missing = [target for target in TARGET_TAGS if target not in combined_tags]
+        missing = [
+            target
+            for target in TARGET_TAGS
+            if target not in combined_tags
+            and UNSUPPORTED_TARGET_TAGS[target] not in combined_tags
+        ]
         if missing:
-            raise ValueError(f"{path.name}:{spec_id}: missing target tags {', '.join(missing)}")
+            raise ValueError(
+                f"{path.name}:{spec_id}: targets must be required or explicitly unsupported: "
+                + ", ".join(missing)
+            )
+        contradictory = [
+            target
+            for target in TARGET_TAGS
+            if target in combined_tags
+            and UNSUPPORTED_TARGET_TAGS[target] in combined_tags
+        ]
+        if contradictory:
+            raise ValueError(
+                f"{path.name}:{spec_id}: targets cannot be both required and unsupported: "
+                + ", ".join(contradictory)
+            )
         deprecated = [tag for tag in DEPRECATED_TAGS if tag in combined_tags]
         if deprecated:
             raise ValueError(

@@ -21,7 +21,7 @@ JavaScript.
 
 The first executable tranche is now in the repository:
 
-- The shared-source UiBinder annotation processor has five compiler-level
+- The shared-source UiBinder annotation processor has twelve compiler-level
   contracts covering generated source compilation, typed construction,
   inherited setters, fields, handlers, service registration and negative
   diagnostics. Cross-compiler runtime fixtures remain open.
@@ -30,12 +30,13 @@ The first executable tranche is now in the repository:
   export in its inventory: 121 Bootstrap 3 fixtures and 131 Bootstrap 5
   fixtures. Extending the same enforcement across every optional extra and
   theme remains open.
-- Phase 1 fixture/API enforcement is complete for the core and Markdown
-  exports. The reviewed corpus contains 61 P0 and 8 P1 scenarios with stable
+- Phase 1 fixture/API enforcement is complete for the core, Markdown and first
+  Bootstrap 3 optional-extra contracts. The reviewed corpus contains 64 P0 and
+  8 P1 scenarios with stable
   IDs, fixture IDs, Bootstrap 3 showcase references, explicit subject,
   contract and execution classification, and a four-target matrix.
 - Phase 2 has a substantial rendered Chromium tranche for both compiled GWT
-  generations. One hundred and twenty-four mobile-touch tests execute 66
+  generations. One hundred and twenty-seven mobile-touch tests execute 69
   canonical scenarios covering buttons, button groups, dropdowns, forms,
   collapse/accordion, lifecycle, input groups, SuggestBox, overlays, tabs,
   required runtime assets and themes. Source-map integrity is enforced by the
@@ -49,16 +50,16 @@ The first executable tranche is now in the repository:
   target/case filtering. The planned Cucumber Tea frame host and
   document-scoped Mockatcha API remain open.
 - Phase 6 has five JVM-safe contracts against real `gwt-user`, four
-  browser-bound contracts through `GWTTestCase`, and ten contracts against
+  browser-bound contracts through `GWTTestCase`, and eleven contracts against
   `teavm-gwt-compat` in Chromium.
 - Phase 9 has an initial deployment gate. CI assembles the four showcases with
   local vendored JavaScript, renders each in Chromium, and passes that exact
   artifact to the Pages workflow for the same successful run.
 
-The current Maven matrix executes 293 tests: 5 processor contracts, 5 JVM
-reference contracts, 4 GWT browser reference contracts, 10 TeaVM compatibility
+The current Maven matrix executes 301 tests: 12 processor contracts, 5 JVM
+reference contracts, 4 GWT browser reference contracts, 11 TeaVM compatibility
 contracts, 128 Bootstrap 3 TeaVM tests and 141 Bootstrap 5 TeaVM tests. CI
-additionally executes 124 compiled-GWT mobile-touch tests. Phase 5, generated
+additionally executes 127 compiled-GWT mobile-touch tests. Phase 5, generated
 Cucumber Tea glue, the remaining Phase 3/4/6 work, the expanded behaviour
 matrix, pinned Chrome for Testing, structural snapshots and accessibility
 gating remain open.
@@ -123,9 +124,9 @@ Current rendered-browser coverage follows the priorities below:
 - Detect unapproved structural differences between GWT and TeaVM markup for
   the same Bootstrap generation.
 - Detect unintended markup changes that affect both compilers equally.
-- Preserve the battle-hardened Bootstrap 3 showcase behaviour as the initial
-  normative functional specification, rather than deriving expectations from
-  the Bootstrap 5 port.
+- Preserve the original upstream GwtBootstrap3 showcase behaviour as the
+  initial normative functional specification, rather than deriving
+  expectations from this fork or the Bootstrap 5 port.
 
 ## Non-goals
 
@@ -267,6 +268,7 @@ Scope tags:
 | Tag | Meaning |
 | --- | --- |
 | `@gwt3`, `@teavm3`, `@gwt5`, `@teavm5` | Compiler and Bootstrap-generation targets to which the scenario applies |
+| `@unsupported-gwt3`, `@unsupported-teavm3`, `@unsupported-gwt5`, `@unsupported-teavm5` | Explicitly records that a target does not supply the scenario; every target must be required or unsupported |
 | `@bootstrap3`, `@bootstrap5` | Generation-only scope for specifications that are independent of compiler |
 | `@p0`, `@p1`, `@p2`, `@p3` | Execution priority, from release-critical core behaviour to optional extras |
 
@@ -848,13 +850,15 @@ actually loaded.
 
 ## Functional Specification Baseline
 
-The existing Bootstrap 3 showcase is the normative behavioural source for the
-first corpus. It is a battle-hardened description of the original public API:
-its demo sections, actions, event logs and compositions define what a consumer
-expects. Bootstrap 5 and TeaVM scenarios inherit those expectations unless the
-target framework deliberately cannot support the Bootstrap 3 concept. Such an
-exception is recorded in the target matrix with the replacement behaviour; it
-is not inferred from whatever the current port happens to do.
+The original upstream GwtBootstrap3 project and its showcase are the normative
+behavioural source for the first corpus. This is the project from which the
+Bootstrap 3 sources in this repository were forked, not the refreshed fork
+itself. Its demo sections, actions, event logs and compositions are a
+battle-hardened description of what an existing consumer expects. Bootstrap 5
+and TeaVM scenarios inherit those functional expectations where applicable,
+while their API and DOM contracts may deliberately differ. An exception is
+recorded in the target matrix; it is not inferred from whatever the current
+port happens to do.
 
 Before implementing Cucumber Tea glue, extract and check in a showcase
 inventory with one record per demonstrated behaviour:
@@ -888,7 +892,7 @@ not on ease of implementation.
 
 | Priority | Feature files | Scenarios fixed before runner work begins |
 | --- | --- | --- |
-| P0 controls | `buttons.feature`, `button-groups.feature`, `forms.feature` | Click/disabled handling; type and size mapping; loading text and restoration; toggle value, active class and `aria-pressed`; checkbox-button independent values; radio-button exclusivity; label activation; text/list/check/radio value changes; explicit versus suppressed events; validation state and submit behaviour |
+| P0 controls | `buttons.feature`, `button-groups.feature`, `forms.feature`, `bootstrap-select.feature` | Click/disabled handling; type and size mapping; loading text and restoration; toggle value, active class and `aria-pressed`; checkbox-button independent values; radio-button exclusivity; label activation; text/list/check/radio value changes; explicit versus suppressed events; validation state and submit behaviour; Bootstrap Select initialization, touch opening and value propagation in Bootstrap 3 mode |
 | P0 JavaScript | `dropdowns.feature`, `collapse.feature`, `tabs.feature`, `overlays.feature` | Open/close from mouse and keyboard; outside-click and Escape; split buttons; disabled items; dropup direction; menu/button alignment; collapse events and ARIA; accordion exclusivity; tab pane selection and events; modal show/hide, backdrop, Escape, focus and lifecycle; tooltip/popover trigger, placement and disposal |
 | P0 lifecycle | `widget-lifecycle.feature`, `resources.feature`, `themes.feature` | Construction, mount, attach, detach and remount; handler cleanup; missing service/resource diagnostics; source-map presence; standard and Bootswatch selection; one stylesheet replaced rather than accumulated; persistence, current-theme and dark-theme reporting |
 | P1 navigation | `navigation.feature`, `pagination.feature`, `carousel.feature` | Anchor target/history behaviour; breadcrumb composition; nav/tab/dropdown nesting; active and disabled pages; previous/next boundaries; navbar collapse; carousel indicators, captions, wrap, interval, slide events and controls |
@@ -941,11 +945,12 @@ Feature: Theme switching
   Scenario: Current theme and dark flag describe the active stylesheet
 ```
 
-These scenarios first run against the known-good GWT Bootstrap 3 showcase.
-That establishes the executable reference before the same steps are enabled
-for Bootstrap 5 or either TeaVM target. A target cannot be marked supported
-until every applicable scenario passes; class inventory or successful
-construction alone is not functional coverage.
+These scenarios are derived from and first checked against the original
+upstream GwtBootstrap3 showcase. The refreshed GWT Bootstrap 3 showcase then
+becomes the first executable target before the same steps are enabled for
+Bootstrap 5 or either TeaVM target. A target cannot be marked supported until
+every applicable scenario passes; class inventory or successful construction
+alone is not functional coverage.
 
 ## Build and CI
 
