@@ -1,21 +1,145 @@
-# GWT Bootstrap 5 TeaVM Widget Backend
+# TeaVM Bootstrap 5
 
-This module is the experimental TeaVM track for Bootstrap 5-native widgets. It is separate from `teavm-bootstrap3` because Bootstrap 5 has different class names, JavaScript APIs, and component semantics.
+Bootstrap 5 widgets for a Java web application compiled with TeaVM.
 
-The target is a TeaVM-backed widget API for Bootstrap 5 without UiBinder or GWT DOM classes. It uses the shared `teavm-gwt-compat` module for the small GWT client surface needed by TeaVM entry points and root panel integration.
+You write ordinary GWT widget code. TeaVM compiles it to JavaScript instead of the GWT
+compiler. Nothing about your code has to know the difference.
 
-Current scope:
+## 1. Add the dependency
 
-- A small widget facade: `Widget`, `Panel`, `FlowPanel`, `RootPanel`, `Container`, `Row`, `Column`, `Button`, `Anchor`, `Label`, `Paragraph`, `Heading`, `Card`, `CardHeader`, `CardBody`, `CardFooter`, `Alert`, `Badge`, `ListGroup`, `ListGroupItem`, `Lead`, `Well`, `DropDown`, `Modal`, `Navbar`, `Nav`, `Progress`, `Form`, `Collapse`, `Tooltip`, `Popover`, `Carousel`, and `Pagination`.
-- Shared GWT compatibility entry point/root panel support from `teavm-gwt-compat`.
-- Plain TeaVM mounting through `Mount.toBody(...)` and `Mount.toElement(...)`, so `RootPanel` is optional.
-- TeaVM DOM wrappers for attributes, class names, visibility, text/html, child management, and lookup.
-- Modal interop through TeaVM JSO using Bootstrap 5's `bootstrap.Modal` API.
-- Bootstrap 5 dropdown, navbar, nav, progress, form, collapse, tooltip, popover, carousel and pagination markup generated without jQuery.
+```xml
+<dependency>
+  <groupId>io.instanto</groupId>
+  <artifactId>teavm-bootstrap5</artifactId>
+  <version>1.0-SNAPSHOT</version>
+</dependency>
+```
 
-Compatibility direction:
+Do not also add `gwt-user`. This library brings its own implementation of the GWT
+classes it needs, and having both gives you two of everything.
 
-- Keep Bootstrap 5 TeaVM code under `io.instanto.bootstrap5.teavm.*`.
-- Do not expose `org.gwtbootstrap3` facades from this module.
-- Port Bootstrap 3 widget concepts only where Bootstrap 5 has a clear equivalent.
-- Prefer Bootstrap 5 naming and behaviour over compatibility shims.
+## 2. Write your main
+
+```java
+public final class MyApp {
+    public static void main(String[] args) {
+        Bootstrap5.initialise();
+
+        Button save = new Button("Save");
+        save.setType(ButtonType.PRIMARY);
+        save.addClickHandler(event -> Window.alert("Saved"));
+
+        RootPanel.get().add(save);
+    }
+}
+```
+
+Two lines matter.
+
+`Bootstrap5.initialise()` puts the library's stylesheets on the page, and Bootstrap's
+own JavaScript if it is not there already. Call it once, before your first widget.
+Calling it again does nothing, so it is safe anywhere.
+
+`RootPanel.get().add(...)` puts a widget on the page. `RootPanel.get()` is the
+document body. If your widgets belong inside an element that is already there, name
+it instead:
+
+```java
+RootPanel.get("editor").add(new Container());
+```
+
+## 3. Your page
+
+Bootstrap 5 needs no jQuery, and `initialise()` will add Bootstrap's script for you,
+so a page can be as small as this:
+
+```html
+<body>
+  <script src="your-app.js"></script>
+</body>
+```
+
+If you would rather control the version yourself, add it before your application and
+`initialise()` will leave it alone.
+
+That is the whole setup. Everything below is optional.
+
+## Choosing a theme
+
+A default theme is applied for you, so widgets look right without any of this. To
+offer alternatives:
+
+```java
+Themes.register(StandardThemes.all());
+Themes.register(BootswatchThemes.all());
+Themes.restore();
+```
+
+Twenty-six Bootswatch themes ship in this artifact. If your page already declares a
+`<link id="bootstrap5-theme">`, that link is used and switching replaces its `href`,
+so a server-rendered starting theme survives startup without a flash.
+
+## The richer widgets
+
+Unlike the Bootstrap 3 track, the extras work here — slider, date picker, rich text
+editor, markdown editor:
+
+```java
+Slider slider = new Slider(0, 100);
+slider.setValue(25);
+RootPanel.get().add(slider);
+```
+
+Each fetches its JavaScript library when first used and builds itself when it arrives,
+so there is nothing to declare on the page. If a library cannot be loaded, the console
+says which module and which file, rather than the widget quietly staying blank.
+
+## One thing that will catch you out
+
+Add widgets through `RootPanel`. Do not append their elements yourself:
+
+```java
+someElement.appendChild(widget.getElement());   // don't
+```
+
+That puts the markup on the page but never tells the widget it was attached. Its
+`onLoad` never runs, and that is where a tooltip binds to its element and a slider
+builds itself. The widget looks right and does nothing.
+
+## Templates
+
+If you prefer markup to Java for laying out a screen, UiBinder templates work here.
+Write the `.ui.xml` as you would under GWT; a compile-time processor turns it into
+Java before either compiler sees it, so there is nothing to configure. A project with
+no templates generates nothing and pays nothing.
+
+[`UiBinderDemo.ui.xml`](src/main/java/io/instanto/bootstrap5/teavm/demo/UiBinderDemo.ui.xml)
+is a working example.
+
+## Try it
+
+The [TeaVM showcase](https://cstainton.github.io/bootstrap-widgets/teavm-bootstrap5.html)
+is this library running in a browser, beside the
+[GWT showcase](https://cstainton.github.io/bootstrap-widgets/bootstrap5/) built from
+the same source. Comparing the two is the point: where they differ, the compatibility
+layer is wrong.
+
+If you want to read a working application:
+
+- [`SharedShowcaseApp`](src/main/java/io/instanto/bootstrap5/teavm/demo/SharedShowcaseApp.java)
+  is the entry point, and it is a handful of lines.
+- [`ShowcaseEntryPoint`](../../gwt/gwt-bootstrap5-showcase/src/main/java/io/instanto/bootstrap5/showcase/client/ShowcaseEntryPoint.java)
+  is the showcase itself — around three thousand lines of ordinary widget code,
+  compiled unchanged by both compilers.
+
+## How it works, if you are curious
+
+This module compiles the same source as
+[`gwt-bootstrap5`](../../gwt/gwt-bootstrap5), its themes and its extras, against
+[`teavm-gwt-compat`](../teavm-gwt-compat), which reimplements the parts of
+`com.google.gwt.*` the widgets use.
+
+`initialise()` exists because GWT has a module system and TeaVM does not. In a GWT
+application, a `.gwt.xml` file declares the stylesheets a module needs and the
+generated bootstrap injects them before your code runs. Nothing does that here, so one
+call stands in for it.
