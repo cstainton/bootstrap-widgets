@@ -38,6 +38,41 @@
   </dependencies>
 
   <build>
+    <!--
+      Everything the matching GWT jars carry: the module descriptors and the
+      stylesheets, fonts and scripts under each resource directory. A consumer of this
+      library depends on one artifact, so what a GWT application would inherit through
+      a module has to arrive here instead.
+
+      The paths are relative because a property is not interpolated inside resources,
+      though it is inside build-helper's add-source below.
+    -->
+    <resources>
+      <resource>
+        <directory>../../gwt/gwt-bootstrap5/src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>../../gwt/gwt-bootstrap5-themes/src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>../../gwt/gwt-bootstrap5-extras/src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <!--
         The Bootstrap 5 widget API is compiled from the GWT module's own sources, so the

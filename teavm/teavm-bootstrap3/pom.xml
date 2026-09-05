@@ -41,15 +41,25 @@
   <build>
     <resources>
       <!--
-        The theme stylesheets. They used to arrive on the classpath through the
-        gwt-bootstrap3-themes jar, but that jar also carries the same classes this
-        module compiles from source, built against gwt-user. That was the one piece
-        of bytecode on this classpath not compiled against the compatibility layer.
-        Taking the resources from the source tree instead removes it.
+        Everything the matching GWT jars carry: the module descriptors and the
+        stylesheets, fonts and scripts under each resource directory. A consumer of
+        this library depends on one artifact, so what a GWT application would inherit
+        through a module has to arrive here instead.
+
+        The paths are relative because a property is not interpolated inside
+        resources, though it is inside build-helper's add-source above.
       -->
+      <resource>
+        <directory>../../gwt/gwt-bootstrap3/src/main/java</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
       <resource>
         <directory>../../gwt/gwt-bootstrap3-themes/src/main/java</directory>
         <includes>
+          <include>**/*.gwt.xml</include>
           <include>**/resource/**</include>
         </includes>
       </resource>
