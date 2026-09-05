@@ -16,6 +16,7 @@ import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
 import io.instanto.cucumber.tea.When;
 import io.instanto.mockatcha.dom.Dom;
+import org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupAddon;
@@ -68,9 +69,19 @@ public class Bootstrap3InputGroupSteps {
     private Button addonButton;
     private int buttonActions;
 
+    /**
+     * Starts the library the way an application does.
+     *
+     * <p>The same two steps the showcase takes before it builds anything: run the
+     * module's entry point, then mount into a host element. A test that reached for
+     * RootPanel directly would be exercising the widgets in a state no application is
+     * ever in -- no stylesheets, no plugin checks -- and would miss anything that
+     * depends on the module having been initialised.</p>
+     */
     @BeforeScenario
     public void createHost() {
         Dom.reset();
+        new TeaVmBootstrap3EntryPoint().onModuleLoad();
         Dom.container().setAttribute("id", "bootstrap3-input-group-host");
         host = RootPanel.get("bootstrap3-input-group-host");
     }

@@ -43,6 +43,10 @@ public class TeaVmBootstrap5EntryPoint implements EntryPoint {
 
     @Override
     public void onModuleLoad() {
+        // The stylesheets a GWT module lists in its .gwt.xml are injected by the
+        // bootstrap before any application code runs. TeaVM has no module system to read
+        // that, so the module's own initialisation has to do it here.
+        Bootstrap5Resources.ensureInjected();
         if (isBootstrapLoaded()) {
             return;
         }

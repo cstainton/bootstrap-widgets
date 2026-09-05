@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
+import io.instanto.bootstrap5.client.TeaVmBootstrap5EntryPoint;
 import io.instanto.bootstrap5.client.ui.Container;
 import io.instanto.bootstrap5.showcase.client.ShowcaseEntryPoint;
 
@@ -22,6 +23,9 @@ public final class SharedShowcaseApp {
     public static void main(final String[] args) {
         GWT.setModuleBaseURL("teavm5/");
         Bootstrap5Resources.setAssetBase("teavm5/");
+        // What GWT's bootstrap does before the application's own entry point: run the
+        // library module's initialisation first, so its stylesheets are on the page.
+        new TeaVmBootstrap5EntryPoint().onModuleLoad();
         new ShowcaseEntryPoint().onModuleLoad();
         mountUiBinderProof();
     }

@@ -20,6 +20,7 @@
 package org.gwtbootstrap3.client;
 
 import com.google.gwt.dom.client.Document;
+import org.gwtbootstrap3.client.ui.theme.Themes;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -37,6 +38,7 @@ import com.google.gwt.dom.client.Element;
  */
 public final class Bootstrap3Resources {
 
+    private static final String THEME = "bootstrap-3.4.1.min.cache.css";
     private static final String FONT_AWESOME = "font-awesome-4.7.0.min.cache.css";
     private static final String LIBRARY = "gwt-bootstrap3.cache.css";
     private static final String ID_PREFIX = "gwtbootstrap3-resource-";
@@ -66,6 +68,11 @@ public final class Bootstrap3Resources {
             return;
         }
         injected = true;
+        // Bootstrap itself, unless the page has already said which theme it wants.
+        // Themes owns a link with this id and swaps its href to change theme; creating
+        // it here means the widgets are styled from the first mount rather than from
+        // the first theme switch, and a page that declares its own link keeps it.
+        link(Themes.LINK_ID, base + THEME);
         link(ID_PREFIX + "font-awesome", base + FONT_AWESOME);
         link(ID_PREFIX + "library", base + LIBRARY);
     }

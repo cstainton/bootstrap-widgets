@@ -37,8 +37,23 @@ import org.teavm.jso.JSBody;
  */
 public class TeaVmBootstrap3EntryPoint implements EntryPoint {
 
+    /**
+     * Initialises the module: its stylesheets, then the checks it can only warn about.
+     *
+     * <p>On GWT this work is declarative -- the stylesheets a module needs are listed in
+     * its .gwt.xml and injected by the bootstrap before any application code runs. TeaVM
+     * has no module system to read that, so the equivalent has to happen here, and an
+     * application has to run this the way GWT's bootstrap runs an entry point.</p>
+     *
+     * <p>It was not happening at all: nothing called ensureInjected on this backend
+     * except Bootstrap3.mount, which the showcase does not use. The pages looked right
+     * only because their HTML declared a stylesheet link by hand, and anything the
+     * library adds on top of Bootstrap -- its own overrides, Font Awesome -- was simply
+     * missing.</p>
+     */
     @Override
     public void onModuleLoad() {
+        Bootstrap3Resources.ensureInjected();
         if (!isJQueryLoaded()) {
             warn("gwtbootstrap3: jQuery is not on the page; interactive widgets will not work.");
         } else if (!isBootstrapLoaded()) {

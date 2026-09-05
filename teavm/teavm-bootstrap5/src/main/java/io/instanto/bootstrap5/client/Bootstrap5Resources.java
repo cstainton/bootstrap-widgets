@@ -20,6 +20,7 @@
 package io.instanto.bootstrap5.client;
 
 import com.google.gwt.dom.client.Document;
+import io.instanto.bootstrap5.client.ui.theme.Themes;
 import com.google.gwt.dom.client.Element;
 
 /**
@@ -39,6 +40,7 @@ import com.google.gwt.dom.client.Element;
  */
 public final class Bootstrap5Resources {
 
+    private static final String THEME = "bootstrap-5.3.8.min.cache.css";
     private static final String ICONS = "bootstrap-icons-1.13.1.min.cache.css";
     private static final String LIBRARY = "gwt-bootstrap5.cache.css";
     private static final String ID_PREFIX = "bootstrap5-resource-";
@@ -96,6 +98,11 @@ public final class Bootstrap5Resources {
             return;
         }
         injected = true;
+        // Bootstrap itself, unless the page has already said which theme it wants.
+        // Themes owns a link with this id and swaps its href to change theme; creating
+        // it here means the widgets are styled from the first mount rather than from
+        // the first theme switch, and a page that declares its own link keeps it.
+        link(Themes.LINK_ID, cssBase() + THEME);
         link(ID_PREFIX + "icons", cssBase() + ICONS);
         link(ID_PREFIX + "library", cssBase() + LIBRARY);
     }

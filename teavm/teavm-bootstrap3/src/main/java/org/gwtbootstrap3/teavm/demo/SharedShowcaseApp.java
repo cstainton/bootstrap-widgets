@@ -20,6 +20,7 @@
 package org.gwtbootstrap3.teavm.demo;
 
 import org.gwtbootstrap3.client.Bootstrap3Resources;
+import org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint;
 import org.gwtbootstrap3.demo.client.GwtBootstrap3DemoEntryPoint;
 
 /**
@@ -42,6 +43,9 @@ public final class SharedShowcaseApp {
         // The default, css/, is where the site serves the library's stylesheets;
         // stated rather than assumed, since this is the GWT module's job otherwise.
         Bootstrap3Resources.setBase("css/");
+        // What GWT's bootstrap does before the application's own entry point: run the
+        // library module's initialisation first, so its stylesheets are on the page.
+        new TeaVmBootstrap3EntryPoint().onModuleLoad();
         new GwtBootstrap3DemoEntryPoint().onModuleLoad();
     }
 }
