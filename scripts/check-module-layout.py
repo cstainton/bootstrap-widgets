@@ -13,10 +13,11 @@ NS = {"m": "http://maven.apache.org/POM/4.0.0"}
 TRACKS = {
     "Bootstrap 3": {
         "pom": ROOT / "teavm/teavm-bootstrap3/pom.xml",
-        "sources": {
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java",
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap3-themes/src/main/java",
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/java",
+        "sources": {"${project.build.directory}/shared-sources"},
+        "unpacked": {
+            "gwt-bootstrap3",
+            "gwt-bootstrap3-themes",
+            "gwt-bootstrap3-showcase",
         },
         "source_roots": (
             ROOT / "gwt/gwt-bootstrap3/src/main/java",
@@ -94,6 +95,19 @@ TRACKS = {
 }
 
 
+def unpacked_artifacts(root):
+    """The shared source artifacts a track unpacks to compile against.
+
+    The modules used to name sibling directories. They now name artifacts, so the
+    thing worth checking is that the right ones are unpacked, not that a path is
+    spelled the way it was.
+    """
+    found = set()
+    for element in root.iter(f"{{{NS['m']}}}includeArtifactIds"):
+        found.update(part.strip() for part in (element.text or "").split(",") if part.strip())
+    return found
+
+
 def values(root, expression):
     return {node.text.strip() for node in root.findall(expression, NS) if node.text}
 
@@ -106,6 +120,11 @@ def check_track(name, track):
 
     if sources != track["sources"]:
         problems.append(f"{name} add-source entries are {sorted(sources)}, expected {sorted(track['sources'])}")
+    if "unpacked" in track:
+        unpacked = unpacked_artifacts(pom)
+        if unpacked != track["unpacked"]:
+            problems.append(
+                f"{name} unpacks {sorted(unpacked)}, expected {sorted(track['unpacked'])}")
     if excludes != track["excludes"]:
         problems.append(f"{name} compiler exclusions are {sorted(excludes)}, expected {sorted(track['excludes'])}")
 

@@ -15,6 +15,63 @@
   <description>TeaVM-backed Bootstrap 3 widget API, sharing the GWT track sources.</description>
 
   <dependencies>
+    <!-- Unpacked below; provided so it reaches no consumer. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gwt-bootstrap3</artifactId>
+      <version>${project.version}</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+      <!--
+        Source only. Without this the artifact's own dependencies follow it in,
+        including the GWT-compiled jars of these very modules, and TeaVM then links
+        against bytecode built for the other compiler.
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Unpacked below; provided so it reaches no consumer. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gwt-bootstrap3-themes</artifactId>
+      <version>${project.version}</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+      <!--
+        Source only. Without this the artifact's own dependencies follow it in,
+        including the GWT-compiled jars of these very modules, and TeaVM then links
+        against bytecode built for the other compiler.
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- Unpacked below; provided so it reaches no consumer. -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gwt-bootstrap3-showcase</artifactId>
+      <version>${project.version}</version>
+      <classifier>sources</classifier>
+      <scope>provided</scope>
+      <!--
+        Source only. Without this the artifact's own dependencies follow it in,
+        including the GWT-compiled jars of these very modules, and TeaVM then links
+        against bytecode built for the other compiler.
+      -->
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>io.instanto</groupId>
       <artifactId>teavm-gwt-compat</artifactId>
@@ -40,24 +97,9 @@
 
   <build>
     <resources>
-      <!--
-        Everything the matching GWT jars carry: the module descriptors and the
-        stylesheets, fonts and scripts under each resource directory. A consumer of
-        this library depends on one artifact, so what a GWT application would inherit
-        through a module has to arrive here instead.
-
-        The paths are relative because a property is not interpolated inside
-        resources, though it is inside build-helper's add-source above.
-      -->
+      <!-- What the matching GWT jars carry: module descriptors and resource files. -->
       <resource>
-        <directory>../../gwt/gwt-bootstrap3/src/main/java</directory>
-        <includes>
-          <include>**/*.gwt.xml</include>
-          <include>**/resource/**</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>../../gwt/gwt-bootstrap3-themes/src/main/java</directory>
+        <directory>${project.build.directory}/shared-sources</directory>
         <includes>
           <include>**/*.gwt.xml</include>
           <include>**/resource/**</include>
@@ -68,6 +110,33 @@
       </resource>
     </resources>
     <plugins>
+      <!--
+        The widget sources this module compiles, taken from the published artifacts
+        rather than from a sibling directory, so the build needs only a repository.
+        A sources jar carries the resources too, so one unpack serves the source
+        roots, the packaged stylesheets and the seam check below.
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-shared-bootstrap3-sources</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>sources</classifier>
+              <includeArtifactIds>gwt-bootstrap3,gwt-bootstrap3-themes,gwt-bootstrap3-showcase</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/shared-sources</outputDirectory>
+              <overWriteSnapshots>true</overWriteSnapshots>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!--
         The Bootstrap 3 widget API is compiled from the GWT module's own sources, so the
         TeaVM build and the GWT build share one definition of every widget rather than
@@ -88,9 +157,7 @@
             </goals>
             <configuration>
               <sources>
-                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java</source>
-                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3-themes/src/main/java</source>
-                <source>${project.parent.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/java</source>
+                <source>${project.build.directory}/shared-sources</source>
               </sources>
             </configuration>
           </execution>
@@ -141,7 +208,8 @@
         <executions>
           <execution>
             <id>verify-bootstrap3-source-seams</id>
-            <phase>validate</phase>
+            <!-- After the unpack, since half the files it checks arrive there. -->
+            <phase>process-sources</phase>
             <goals>
               <goal>enforce</goal>
             </goals>
@@ -149,11 +217,11 @@
               <rules>
                 <requireFilesExist>
                   <files>
-                    <file>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</file>
-                    <file>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</file>
-                    <file>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/shared/js/JQuery.java</file>
-                    <file>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/ui/base/TooltipOptions.java</file>
-                    <file>${project.parent.parent.basedir}/gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/ui/base/CarouselOptions.java</file>
+                    <file>${project.build.directory}/shared-sources/org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java</file>
+                    <file>${project.build.directory}/shared-sources/org/gwtbootstrap3/client/GwtBootstrap3ClientBundle.java</file>
+                    <file>${project.build.directory}/shared-sources/org/gwtbootstrap3/client/shared/js/JQuery.java</file>
+                    <file>${project.build.directory}/shared-sources/org/gwtbootstrap3/client/ui/base/TooltipOptions.java</file>
+                    <file>${project.build.directory}/shared-sources/org/gwtbootstrap3/client/ui/base/CarouselOptions.java</file>
                     <file>${project.basedir}/src/main/java/org/gwtbootstrap3/client/TeaVmBootstrap3EntryPoint.java</file>
                     <file>${project.basedir}/src/main/java/org/gwtbootstrap3/client/Bootstrap3Resources.java</file>
                     <file>${project.basedir}/src/main/java/org/gwtbootstrap3/client/shared/js/JQuery.java</file>
