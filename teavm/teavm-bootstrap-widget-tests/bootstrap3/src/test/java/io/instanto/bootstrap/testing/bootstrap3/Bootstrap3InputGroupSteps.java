@@ -16,7 +16,7 @@ import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
 import io.instanto.cucumber.tea.When;
 import io.instanto.mockatcha.dom.Dom;
-import org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint;
+import org.gwtbootstrap3.client.Bootstrap3;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupAddon;
@@ -81,7 +81,7 @@ public class Bootstrap3InputGroupSteps {
     @BeforeScenario
     public void createHost() {
         Dom.reset();
-        new TeaVmBootstrap3EntryPoint().onModuleLoad();
+        Bootstrap3.initialise();
         Dom.container().setAttribute("id", "bootstrap3-input-group-host");
         host = RootPanel.get("bootstrap3-input-group-host");
     }
