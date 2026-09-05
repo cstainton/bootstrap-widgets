@@ -6,10 +6,12 @@ import static org.junit.Assert.assertTrue;
 import org.gwtbootstrap3.client.ui.Form;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.teavm.jso.JSBody;
 import org.teavm.junit.SkipJVM;
 import org.teavm.junit.TeaVMTestRunner;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.RootPanel;
 
 @RunWith(TeaVMTestRunner.class)
@@ -30,6 +32,13 @@ public class Bootstrap3KnownSeamsTest {
         assertFalse(hasNamedFrame(target));
     }
 
-    @JSBody(params = "name", script = "return document.getElementsByName(name).length > 0;")
-    private static native boolean hasNamedFrame(String name);
+    private static boolean hasNamedFrame(String name) {
+        NodeList<Element> frames = Document.get().getBody().getElementsByTagName("iframe");
+        for (int index = 0; index < frames.getLength(); index++) {
+            if (name.equals(frames.getItem(index).getAttribute("name"))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

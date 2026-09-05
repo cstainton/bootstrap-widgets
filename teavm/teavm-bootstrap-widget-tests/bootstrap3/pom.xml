@@ -65,28 +65,34 @@
 
   <build>
     <plugins>
+      <!--
+        The scripts a browser test serves to the page it drives. They are already inside
+        the widget artifact this module tests, so they come from there and are flattened
+        to the root of the test classpath, which is the name the step definitions ask for.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>${maven-resources-plugin.version}</version>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
             <id>copy-bootstrap-browser-test-scripts</id>
             <phase>process-test-resources</phase>
             <goals>
-              <goal>copy-resources</goal>
+              <goal>unpack</goal>
             </goals>
             <configuration>
-              <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>../../../gwt/gwt-bootstrap3/src/main/java/org/gwtbootstrap3/client/resource/js</directory>
-                  <includes>
-                    <include>jquery-3.7.1.min.cache.js</include>
-                    <include>bootstrap-3.4.1.min.cache.js</include>
-                  </includes>
-                </resource>
-              </resources>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>teavm-bootstrap3</artifactId>
+                  <version>${project.version}</version>
+                  <includes>org/gwtbootstrap3/client/resource/js/jquery-3.7.1.min.cache.js,org/gwtbootstrap3/client/resource/js/bootstrap-3.4.1.min.cache.js</includes>
+                  <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                  </fileMappers>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
         </executions>

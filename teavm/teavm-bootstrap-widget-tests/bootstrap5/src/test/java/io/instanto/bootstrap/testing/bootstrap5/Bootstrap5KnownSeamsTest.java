@@ -6,11 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.teavm.jso.JSBody;
-import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.junit.SkipJVM;
 import org.teavm.junit.TeaVMTestRunner;
 
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import io.instanto.bootstrap5.client.ui.Button;
@@ -20,6 +21,7 @@ import io.instanto.bootstrap5.client.ui.Tooltip;
 import io.instanto.bootstrap5.client.ui.constants.ButtonType;
 import io.instanto.bootstrap5.client.ui.constants.Placement;
 import io.instanto.bootstrap5.client.ui.constants.Trigger;
+import io.instanto.mockatcha.dom.Dom;
 
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM
@@ -49,7 +51,7 @@ public class Bootstrap5KnownSeamsTest {
         range.setValue(42.5);
 
         RootPanel.get().add(range);
-        dispatchInput(range.getElement().unwrap());
+        Dom.fire(range.getElement().unwrap(), "input");
 
         assertEquals(1, events[0]);
         assertEquals(42.5, range.getValue(), 0.001);
@@ -91,10 +93,13 @@ public class Bootstrap5KnownSeamsTest {
         assertFalse(button.getStyleName().contains("btn-secondary"));
     }
 
-    @JSBody(params = "name", script = "return document.getElementsByName(name).length > 0;")
-    private static native boolean hasNamedFrame(String name);
-
-    @JSBody(params = "element", script =
-            "element.dispatchEvent(new Event('input', { bubbles: true }));")
-    private static native void dispatchInput(HTMLElement element);
+    private static boolean hasNamedFrame(String name) {
+        NodeList<Element> frames = Document.get().getBody().getElementsByTagName("iframe");
+        for (int index = 0; index < frames.getLength(); index++) {
+            if (name.equals(frames.getItem(index).getAttribute("name"))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

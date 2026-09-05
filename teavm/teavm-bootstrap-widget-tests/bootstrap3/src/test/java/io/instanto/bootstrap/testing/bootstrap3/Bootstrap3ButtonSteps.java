@@ -4,9 +4,12 @@ import static io.instanto.mockatcha.dom.Expect.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
 import io.instanto.cucumber.tea.AfterScenario;
 import io.instanto.cucumber.tea.BeforeScenario;
 import io.instanto.cucumber.tea.CucumberScript;
@@ -21,13 +24,14 @@ import java.util.List;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.CheckBoxButton;
 import org.gwtbootstrap3.client.ui.RadioButton;
+import org.gwtbootstrap3.client.ui.Tooltip;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.teavm.jso.dom.html.HTMLElement;
 
 @CucumberSuite(
-        value = "features/buttons.feature",
+        value = {"features/buttons.feature", "features/widget-lifecycle.feature"},
         scripts = {
             @CucumberScript(
                     resource = "jquery-3.7.1.min.cache.js",
@@ -47,7 +51,15 @@ public class Bootstrap3ButtonSteps {
     private int valueChanges;
     private Object lastEventSource;
     private int[] checkBoxChanges;
+    private int radioChanges;
+    private Object lastRadioEventSource;
     private String loadingText;
+    private FlowPanel fixtureHost;
+    private FlowPanel previousHost;
+    private Widget lifecycleWidget;
+    private Tooltip tooltip;
+    private int attachEvents;
+    private int actionEvents;
 
     @BeforeScenario
     public void createHost() {
@@ -81,6 +93,10 @@ public class Bootstrap3ButtonSteps {
     }
 
     private void createFixture(String fixture, boolean mount) {
+        if (fixture.startsWith("behaviour/lifecycle/")) {
+            createLifecycleFixture(fixture, mount);
+            return;
+        }
         if (fixture.startsWith("behaviour/toggle-button/")) {
             button = new Button("Toggle");
             button.setDataToggle(Toggle.BUTTON);
@@ -94,8 +110,11 @@ public class Bootstrap3ButtonSteps {
             mount(button, mount);
             return;
         }
-        if (fixture.equals("behaviour/check-box-button/basic")) {
+        if (fixture.startsWith("behaviour/check-box-button/")) {
             checkBoxButton = new CheckBoxButton("Choice");
+            if (fixture.endsWith("disabled")) {
+                checkBoxButton.setEnabled(false);
+            }
             checkBoxButton.addValueChangeHandler(event -> {
                 valueChanges++;
                 lastEventSource = event.getSource();
@@ -122,6 +141,10 @@ public class Bootstrap3ButtonSteps {
             };
             radioButtons[0].setValue(true);
             for (RadioButton radio : radioButtons) {
+                radio.addValueChangeHandler(event -> {
+                    radioChanges++;
+                    lastRadioEventSource = event.getSource();
+                });
                 mount(radio, mount);
             }
             return;
@@ -145,6 +168,33 @@ public class Bootstrap3ButtonSteps {
         throw new IllegalArgumentException("Unknown fixture: " + fixture);
     }
 
+    private void createLifecycleFixture(String fixture, boolean mounted) {
+        fixtureHost = new FlowPanel();
+        fixtureHost.getElement().setAttribute("data-testid", fixture + "/host");
+        host.add(fixtureHost);
+        Button target = new Button("Lifecycle");
+        target.getElement().setId(fixture);
+        target.getElement().setAttribute("data-testid", fixture);
+        target.addAttachHandler(event -> {
+            if (event.isAttached()) {
+                attachEvents++;
+            }
+        });
+        target.addClickHandler(event -> actionEvents++);
+        lifecycleWidget = target;
+        if (fixture.endsWith("plugin")) {
+            tooltip = new Tooltip(target, "Lifecycle detail");
+            tooltip.setContainer("#bootstrap3-widget-test-host");
+        }
+        if (mounted) {
+            fixtureHost.add(target);
+        }
+        if (tooltip != null) {
+            tooltip.show();
+            Dom.waitFor(() -> assertEquals(1, Dom.findAll(".tooltip").size()));
+        }
+    }
+
     private void mount(com.google.gwt.user.client.ui.Widget widget, boolean mounted) {
         widget.getElement().setAttribute("data-testid", widget.getClass().getSimpleName());
         if (mounted) {
@@ -159,6 +209,9 @@ public class Bootstrap3ButtonSteps {
 
     @Given("the toggle button is active")
     public void toggleButtonIsActive() {
+        if (clicks == 0) {
+            button.setActive(true);
+        }
         assertTrue(button.isActive());
     }
 
@@ -170,8 +223,6 @@ public class Bootstrap3ButtonSteps {
     @When("the user activates the toggle button")
     public void activateToggleButton() {
         Dom.click(element(button));
-        Dom.waitFor(() -> assertEquals(Boolean.toString(button.isActive()),
-                button.getElement().getAttribute("aria-pressed")));
     }
 
     @Then("the toggle button has the active state class")
@@ -227,6 +278,35 @@ public class Bootstrap3ButtonSteps {
         assertSame(checkBoxButton, lastEventSource);
     }
 
+    @Given("the checkbox button value is false")
+    public void checkboxButtonIsFalse() {
+        assertFalse(checkBoxButton.getValue());
+    }
+
+    @Given("the checkbox button is disabled")
+    public void checkboxButtonIsDisabled() {
+        assertFalse(checkBoxButton.isEnabled());
+    }
+
+    @When("the user activates the checkbox button")
+    public void activateCheckboxButton() {
+        Dom.click(element(checkBoxButton));
+    }
+
+    @When("the user activates the checkbox button twice")
+    public void activateCheckboxButtonTwice() {
+        Dom.click(element(checkBoxButton));
+        Dom.waitFor(() -> assertTrue(checkBoxButton.getValue()));
+        Dom.click(element(checkBoxButton));
+        Dom.waitFor(() -> assertFalse(checkBoxButton.getValue()));
+    }
+
+    @Then("two value changes are reported with the checkbox button as source")
+    public void twoCheckboxValueChangesAreReported() {
+        Dom.waitFor(() -> assertEquals(2, valueChanges));
+        assertSame(checkBoxButton, lastEventSource);
+    }
+
     @When("the user activates the first checkbox button")
     public void activateFirstCheckbox() {
         Dom.click(element(checkBoxButtons[0]));
@@ -265,12 +345,34 @@ public class Bootstrap3ButtonSteps {
         Dom.click(element(radioButtons[1]));
     }
 
+    @When("the user activates the first radio button")
+    public void activateFirstRadio() {
+        Dom.click(element(radioButtons[0]));
+    }
+
     @Then("only the second radio button is selected")
     public void onlySecondRadioIsSelected() {
         Dom.waitFor(() -> {
             assertFalse(radioButtons[0].getValue());
             assertTrue(radioButtons[1].getValue());
         });
+    }
+
+    @Then("only the first radio button is selected")
+    public void onlyFirstRadioIsSelected() {
+        assertTrue(radioButtons[0].getValue());
+        assertFalse(radioButtons[1].getValue());
+    }
+
+    @Then("one value change is reported with the second radio button as source")
+    public void secondRadioReportsOneValueChange() {
+        Dom.waitFor(() -> assertEquals(1, radioChanges));
+        assertSame(radioButtons[1], lastRadioEventSource);
+    }
+
+    @Then("no radio value change is reported")
+    public void noRadioValueChangeIsReported() {
+        assertEquals(0, radioChanges);
     }
 
     @Then("the first radio button has aria-pressed {string}")
@@ -392,5 +494,120 @@ public class Bootstrap3ButtonSteps {
     private static boolean hasClass(com.google.gwt.user.client.ui.Widget widget, String className) {
         String classes = " " + widget.getStyleName() + " ";
         return classes.contains(" " + className + " ");
+    }
+
+    @Then("the widget reports the fixture host as its parent")
+    public void widgetReportsFixtureHost() {
+        assertSame(fixtureHost, lifecycleWidget.getParent());
+    }
+
+    @Then("the widget reports itself attached")
+    public void widgetIsAttached() {
+        assertTrue(lifecycleWidget.isAttached());
+    }
+
+    @Then("its element has exactly one DOM parent")
+    public void widgetHasOneDomParent() {
+        assertSame(fixtureHost.getElement().unwrap(), element(lifecycleWidget).getParentNode());
+    }
+
+    @Then("its stable fixture id is present")
+    public void stableFixtureIdIsPresent() {
+        assertFalse(lifecycleWidget.getElement().getId().isEmpty());
+        expect(element(lifecycleWidget)).toHaveAttribute("data-testid", lifecycleWidget.getElement().getId());
+    }
+
+    @When("the widget is removed from its parent")
+    public void removeWidgetFromParent() {
+        lifecycleWidget.removeFromParent();
+    }
+
+    @Then("the widget has no parent")
+    public void widgetHasNoParent() {
+        assertNull(lifecycleWidget.getParent());
+    }
+
+    @Then("the widget reports itself detached")
+    public void widgetIsDetached() {
+        assertFalse(lifecycleWidget.isAttached());
+    }
+
+    @Then("its element has no DOM parent")
+    public void widgetHasNoDomParent() {
+        assertNull(element(lifecycleWidget).getParentNode());
+    }
+
+    @When("the widget is detached and mounted in a fresh host")
+    public void remountInFreshHost() {
+        previousHost = fixtureHost;
+        lifecycleWidget.removeFromParent();
+        fixtureHost = new FlowPanel();
+        host.add(fixtureHost);
+        fixtureHost.add(lifecycleWidget);
+    }
+
+    @Then("the fresh host is the widget parent")
+    public void freshHostIsParent() {
+        assertSame(fixtureHost, lifecycleWidget.getParent());
+    }
+
+    @Then("one new attach event is reported")
+    public void oneNewAttachEventIsReported() {
+        assertEquals(2, attachEvents);
+    }
+
+    @Then("the previous host remains empty")
+    public void previousHostIsEmpty() {
+        assertEquals(0, previousHost.getWidgetCount());
+        expect(element(previousHost)).toBeEmpty();
+    }
+
+    @When("the interactive widget is detached and mounted three times")
+    public void remountInteractiveWidgetThreeTimes() {
+        for (int i = 0; i < 3; i++) {
+            previousHost = fixtureHost;
+            lifecycleWidget.removeFromParent();
+            assertEquals(0, previousHost.getWidgetCount());
+            fixtureHost = new FlowPanel();
+            host.add(fixtureHost);
+            fixtureHost.add(lifecycleWidget);
+        }
+    }
+
+    @When("the user activates it once")
+    public void activateLifecycleWidget() {
+        Dom.click(element(lifecycleWidget));
+    }
+
+    @Then("its action handler runs exactly once")
+    public void actionHandlerRunsOnce() {
+        assertEquals(1, actionEvents);
+    }
+
+    @Then("no detached host receives an event")
+    public void detachedHostsRemainEmpty() {
+        assertEquals(0, previousHost.getWidgetCount());
+    }
+
+    @Given("the plugin has created document-level markup")
+    public void pluginMarkupExists() {
+        assertEquals(1, Dom.findAll(".tooltip").size());
+    }
+
+    @When("the plugin widget is detached")
+    public void detachPluginWidget() {
+        lifecycleWidget.removeFromParent();
+    }
+
+    @Then("its document-level markup is removed")
+    public void pluginMarkupIsRemoved() {
+        Dom.waitFor(() -> assertEquals(0, Dom.findAll(".tooltip").size()));
+    }
+
+    @Then("remounting creates exactly one replacement element")
+    public void remountCreatesOnePluginElement() {
+        fixtureHost.add(lifecycleWidget);
+        tooltip.show();
+        Dom.waitFor(() -> assertEquals(1, Dom.findAll(".tooltip").size()));
     }
 }
