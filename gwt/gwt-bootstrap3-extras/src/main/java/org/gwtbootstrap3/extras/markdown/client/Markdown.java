@@ -40,6 +40,23 @@ public final class Markdown {
     }
 
     /** Applies the GFM options. Called once by the module's entry point. */
+    /**
+     * Runs an action once the parser is usable.
+     *
+     * <p>The GWT module compiles marked and DOMPurify in, so by the time anything is
+     * rendered they are there and this runs immediately. The TeaVM counterpart fetches
+     * them, so it runs the action when they arrive. A panel can then be written once
+     * and be correct on both.</p>
+     */
+    public static void whenReady(final Runnable action) {
+        ensureResources();
+        action.run();
+    }
+
+    /** Nothing to fetch: the module compiles the parser into the application. */
+    public static void ensureResources() {
+    }
+
     public static native void configure() /*-{
         if ($wnd.marked && $wnd.marked.setOptions) {
             $wnd.marked.setOptions({ gfm: true, breaks: false });

@@ -79,6 +79,15 @@ public class GenerateModulesMojo extends AbstractMojo {
     @Parameter(defaultValue = "io.instanto.bootstrap5.client.Bootstrap5Resources")
     private String resourcesClass;
 
+    /**
+     * Which modules to generate for, by module name. All of them when empty.
+     *
+     * <p>A source tree usually holds more module descriptors than a backend has ported.
+     * Naming them keeps the generated classes to the modules that are ready.</p>
+     */
+    @Parameter
+    private java.util.List<String> includeModules;
+
     /** Prefix for the element ids the generated classes use. */
     @Parameter(defaultValue = "bootstrap5-")
     private String idPrefix;
@@ -126,8 +135,15 @@ public class GenerateModulesMojo extends AbstractMojo {
         }
 
         final String module = fileName.substring(0, fileName.length() - ".gwt.xml".length());
-        final String pkg = sourceRoot.toPath().relativize(dir).toString()
-                .replace(java.io.File.separatorChar, '.') + ".client";
+        if (includeModules != null && !includeModules.isEmpty() && !includeModules.contains(module)) {
+            return false;
+        }
+        // A descriptor normally sits above the client package it names. Some sit inside
+        // it, and appending another "client" to those produced a package that does not
+        // exist and a class nothing could refer to.
+        final String relative = sourceRoot.toPath().relativize(dir).toString()
+                .replace(java.io.File.separatorChar, '.');
+        final String pkg = relative.endsWith(".client") ? relative : relative + ".client";
         final String klass = module + "Resources";
         final String prefix = idPrefix + module.toLowerCase(Locale.ROOT) + "-";
 

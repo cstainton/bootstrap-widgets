@@ -48,7 +48,16 @@ public class MarkdownPanel extends Div {
 
     public void setMarkdown(final String markdown) {
         this.markdown = markdown == null ? "" : markdown;
-        getElement().setInnerHTML(Markdown.toHtml(this.markdown));
+        // The source meanwhile: an honest fallback, and what stays on screen if the
+        // parser never arrives. On GWT it is replaced in the same turn, because the
+        // module compiles the parser in and whenReady runs immediately.
+        getElement().setInnerText(this.markdown);
+        Markdown.whenReady(new Runnable() {
+            @Override
+            public void run() {
+                getElement().setInnerHTML(Markdown.toHtml(MarkdownPanel.this.markdown));
+            }
+        });
     }
 
     /** The Markdown source, as given. */

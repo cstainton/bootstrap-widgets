@@ -13,7 +13,10 @@ NS = {"m": "http://maven.apache.org/POM/4.0.0"}
 TRACKS = {
     "Bootstrap 3": {
         "pom": ROOT / "teavm/teavm-bootstrap3/pom.xml",
-        "sources": {"${project.build.directory}/shared-sources"},
+        "sources": {
+            "${project.build.directory}/shared-sources",
+            "${project.build.directory}/generated-sources/teavm-modules",
+        },
         "unpacked": {
             "gwt-bootstrap3",
             "gwt-bootstrap3-themes",
@@ -23,6 +26,9 @@ TRACKS = {
             ROOT / "gwt/gwt-bootstrap3/src/main/java",
             ROOT / "gwt/gwt-bootstrap3-themes/src/main/java",
             ROOT / "gwt/gwt-bootstrap3-showcase/src/main/java",
+            # Only the ported extras are compiled, but the seam check has to find the
+            # GWT halves of their seams, which live here.
+            ROOT / "gwt/gwt-bootstrap3-extras/src/main/java",
         ),
         "excludes": {
             "org/gwtbootstrap3/client/GwtBootstrap3EntryPoint.java",
@@ -31,11 +37,17 @@ TRACKS = {
             "org/gwtbootstrap3/client/ui/base/TooltipOptions.java",
             "org/gwtbootstrap3/client/ui/base/CarouselOptions.java",
             "org/gwtbootstrap3/demo/client/ExtrasPages.java",
+            "org/gwtbootstrap3/extras/markdown/client/Markdown.java",
+            "org/gwtbootstrap3/extras/markdown/client/ui/TextAreaSelection.java",
             "org/gwtbootstrap3/demo/client/GwtBootstrap3DemoClientBundle.java",
             "org/gwtbootstrap3/demo/client/ShowcaseScripts.java",
             "org/gwtbootstrap3/demo/client/application/css/validation/**",
             "org/gwtbootstrap3/demo/client/application/extras/**",
             "org/gwtbootstrap3/demo/client/ui/PrettyPre.java",
+            "org/gwtbootstrap3/extras/markdown/client/Markdown.java",
+            "org/gwtbootstrap3/extras/markdown/client/MarkdownClientBundle.java",
+            "org/gwtbootstrap3/extras/markdown/client/MarkdownEntryPoint.java",
+            "org/gwtbootstrap3/extras/markdown/client/ui/TextAreaSelection.java",
         },
         "replacements": {
             "org/gwtbootstrap3/client/TeaVmBootstrap3EntryPoint.java",

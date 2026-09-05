@@ -77,6 +77,16 @@ public final class Bootstrap3Resources {
         link(ID_PREFIX + "library", base + LIBRARY);
     }
 
+    /** Where this library's stylesheets are served from. */
+    public static String cssBase() {
+        return base;
+    }
+
+    /** Where this library's scripts are served from, beside the stylesheets. */
+    public static String jsBase() {
+        return scriptBase();
+    }
+
     /** Where scripts served alongside the stylesheets live. */
     public static String scriptBase() {
         return base.endsWith("css/") ? base.substring(0, base.length() - 4) + "js/" : base;
