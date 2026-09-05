@@ -20,6 +20,7 @@
 package org.gwtbootstrap3.client;
 
 import com.google.gwt.dom.client.Element;
+import org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -36,8 +37,38 @@ public final class Bootstrap3 {
     }
 
     /** Attaches {@code widget} to the document body. */
+    private static boolean initialised;
+
+    /**
+     * Prepares the library: one call, before the first widget is used.
+     *
+     * <p>GWT does this from the module descriptor, so a GWT application never writes
+     * it. TeaVM has no module system to read that descriptor, so this is the line that
+     * stands in for it -- it injects the stylesheets the library declares and checks
+     * for the JavaScript its interactive widgets need.</p>
+     *
+     * <pre>{@code
+     * public static void main(String[] args) {
+     *     Bootstrap3.initialise();
+     *     Bootstrap3.mount(new FancyWidget());
+     * }
+     * }</pre>
+     *
+     * <p>Calling it more than once does nothing. Mounting through this class calls it
+     * for you, so an application that only ever mounts that way need not; it is
+     * separate for the application that attaches widgets by some other route, and for
+     * a test that wants the library started before it builds anything.</p>
+     */
+    public static void initialise() {
+        if (initialised) {
+            return;
+        }
+        initialised = true;
+        new TeaVmBootstrap3EntryPoint().onModuleLoad();
+    }
+
     public static void mount(final IsWidget widget) {
-        Bootstrap3Resources.ensureInjected();
+        initialise();
         RootPanel.get().add(asWidget(widget));
     }
 
@@ -47,7 +78,7 @@ public final class Bootstrap3 {
      * @throws IllegalArgumentException if no element with that id exists
      */
     public static void mount(final String elementId, final IsWidget widget) {
-        Bootstrap3Resources.ensureInjected();
+        initialise();
         final RootPanel host = RootPanel.get(elementId);
         if (host == null) {
             throw new IllegalArgumentException("No element with id '" + elementId + "' on the page");
