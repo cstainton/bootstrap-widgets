@@ -1,4 +1,4 @@
-@p1 @widget @gwt3 @teavm3 @gwt5 @teavm5
+@p1 @widget @gwt3 @teavm3 @gwt5 @teavm5 @skip-jvm
 Feature: Input group composition
   Input groups preserve addon order, control sizing and nested button behaviour
   while using the native structure of their Bootstrap generation.

@@ -45,18 +45,37 @@ already do. We would like to delete it.
 
 ## What is required
 
-### 1. Serve a whole application directory from the test page's origin
+### 1. Serve a whole directory from the test page's origin
 
-`@ServeJS(from, as)` maps a single file to a single URL. That is not enough for a
-compiled GWT application: its bootstrap script loads generated permutations,
-stylesheets, images and other resources by relative path, so the entire directory
-has to be reachable at a stable base URL on the same origin as the test page.
+`@ServeJS(from, as)` maps a single file to a single URL, and `@CucumberSuite` can
+declare scripts but not stylesheets. Both of the things we want to test need more
+than that.
 
-We need a way to say "serve this directory at this path". The directory is a build
+A compiled GWT application cannot be hosted file by file: its bootstrap script loads
+generated permutations, stylesheets, images and other resources by relative path, so
+the whole directory has to be reachable at a stable base URL on the same origin as
+the test page.
+
+The direct widget tests need the same thing for a different reason. The widgets
+already load their own resources — `Bootstrap3.mount()` calls
+`Bootstrap3Resources.ensureInjected()`, which links the library's stylesheets by URL
+— so the test should not be loading CSS on their behalf and we are not asking for a
+`stylesheets` attribute. What is missing is somewhere for those URLs to resolve. With
+`css/` served, the widget does its own work and the test says nothing about it.
+
+One thing that stays a page-level decision either way: Bootstrap's own stylesheet
+arrives as a *theme*, through a link the page owns, because `ThemeSwitcher` swaps it
+at runtime. A widget does not inject it. So a scenario asserting applied layout —
+that the segments of an input group meet without a gap and share one height — cannot
+be answered by the direct suite at all, and belongs in the framed suite against a
+page that already has a theme. `ING-003` in `input-groups.feature` is the first
+example; it is currently reported as ignored.
+
+So: a way to say "serve this directory at this path". The directory is a build
 output, so its location is not a compile-time constant — this probably wants Maven
-or system-property configuration, or an annotation naming a logical application
-whose root is configured in the build. Please do not require a hard-coded
-workstation path.
+or system-property configuration, or an annotation naming a logical application whose
+root is configured in the build. Please do not require a hard-coded workstation
+path.
 
 ### 2. Open an application in a frame and know when it is ready
 
@@ -107,6 +126,16 @@ timeout.
 
 Some assertions are about applied CSS and layout rather than DOM structure, so we
 need to read computed style and element geometry inside the frame.
+
+`mockatcha-dom` already implements exact computed-style assertions. The missing
+public geometry, comparison and frame-window semantics are specified in
+[`MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md`](MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md).
+The subject application's widget module must load its declared and inherited
+stylesheets exactly as it does in normal use. Cucumber Tea only has to serve the
+complete module output and wait for the application to become ready; neither the
+test steps nor Mockatcha should select or inject Bootstrap stylesheets themselves.
+An application using a deliberate no-theme module remains responsible for choosing
+its theme in the usual way.
 
 ### 7. Tell us whether `.feature` files are executed
 
