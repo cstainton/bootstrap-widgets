@@ -22,21 +22,6 @@
     </dependency>
     <!-- theme catalogue only; the stylesheets are served by the host page -->
     <dependency>
-      <groupId>io.instanto</groupId>
-      <artifactId>gwt-bootstrap3-themes</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>io.instanto</groupId>
-          <artifactId>gwt-bootstrap3</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.gwtproject</groupId>
-          <artifactId>gwt-user</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.teavm</groupId>
       <artifactId>teavm-jso</artifactId>
       <version>${teavm.version}</version>
@@ -54,6 +39,24 @@
   </dependencies>
 
   <build>
+    <resources>
+      <!--
+        The theme stylesheets. They used to arrive on the classpath through the
+        gwt-bootstrap3-themes jar, but that jar also carries the same classes this
+        module compiles from source, built against gwt-user. That was the one piece
+        of bytecode on this classpath not compiled against the compatibility layer.
+        Taking the resources from the source tree instead removes it.
+      -->
+      <resource>
+        <directory>../../gwt/gwt-bootstrap3-themes/src/main/java</directory>
+        <includes>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <!--
         The Bootstrap 3 widget API is compiled from the GWT module's own sources, so the
