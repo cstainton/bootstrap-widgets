@@ -24,6 +24,7 @@
  */
 package org.gwtbootstrap3.teavm.demo;
 
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import org.gwtbootstrap3.client.ui.Anchor;
@@ -138,7 +139,7 @@ public final class Bootstrap3ShowcaseApp {
 
         final Container container = new Container();
         container.add(page());
-        Bootstrap3.mount(container);
+        RootPanel.get().add(container);
     }
 
     private static Row page() {

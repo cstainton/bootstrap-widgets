@@ -1,8 +1,8 @@
 package io.instanto.bootstrap5.teavm.demo;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.RootPanel;
 
-import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.client.TeaVmBootstrap5EntryPoint;
 import io.instanto.bootstrap5.client.ui.Container;
@@ -39,6 +39,6 @@ public final class SharedShowcaseApp {
         final Container container = new Container();
         container.addStyleName("pb-5");
         container.add(new UiBinderDemo());
-        Bootstrap5.mount(container);
+        RootPanel.get().add(container);
     }
 }

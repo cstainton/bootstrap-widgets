@@ -19,85 +19,44 @@
  */
 package org.gwtbootstrap3.client;
 
-import com.google.gwt.dom.client.Element;
-import org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.Widget;
-
 /**
- * Entry point for a TeaVM application using the Bootstrap 3 widgets, mirroring the
- * Bootstrap 5 track's {@code Bootstrap5}. Mounting through this class rather than
- * {@code RootPanel} directly is what injects the library's stylesheets, so a host page
- * does not have to know which ones the widgets need.
+ * Starts the Bootstrap 3 widgets on TeaVM.
+ *
+ * <p>One call, before the first widget is used. A GWT application never writes it,
+ * because a GWT module descriptor declares the stylesheets a module needs and the
+ * bootstrap injects them before any application code runs. TeaVM has no module system
+ * to read that descriptor, so this stands in for it.</p>
+ *
+ * <pre>{@code
+ * public static void main(String[] args) {
+ *     Bootstrap3.initialise();
+ *     RootPanel.get().add(new FancyWidget());
+ * }
+ * }</pre>
+ *
+ * <p>Widgets are then added through the ordinary GWT API this library emulates.
+ * {@code RootPanel.get()} wraps the document body and {@code RootPanel.get(id)} wraps
+ * any element already on the page, so a host element can come from wherever the
+ * application likes.</p>
+ *
+ * <p>Attach a widget's element directly -- with appendChild, say -- and it will render
+ * but never be told it was attached, so its onLoad never runs and anything that starts
+ * there, a tooltip binding to its element or a dropdown registering its handlers,
+ * silently never starts. RootPanel is what performs that attachment.</p>
  */
 public final class Bootstrap3 {
+
+    private static boolean initialised;
 
     private Bootstrap3() {
     }
 
-    /** Attaches {@code widget} to the document body. */
-    private static boolean initialised;
-
-    /**
-     * Prepares the library: one call, before the first widget is used.
-     *
-     * <p>GWT does this from the module descriptor, so a GWT application never writes
-     * it. TeaVM has no module system to read that descriptor, so this is the line that
-     * stands in for it -- it injects the stylesheets the library declares and checks
-     * for the JavaScript its interactive widgets need.</p>
-     *
-     * <pre>{@code
-     * public static void main(String[] args) {
-     *     Bootstrap3.initialise();
-     *     Bootstrap3.mount(new FancyWidget());
-     * }
-     * }</pre>
-     *
-     * <p>Calling it more than once does nothing. Mounting through this class calls it
-     * for you, so an application that only ever mounts that way need not; it is
-     * separate for the application that attaches widgets by some other route, and for
-     * a test that wants the library started before it builds anything.</p>
-     */
+    /** Prepares the library. Calling it more than once does nothing. */
     public static void initialise() {
         if (initialised) {
             return;
         }
         initialised = true;
         new TeaVmBootstrap3EntryPoint().onModuleLoad();
-    }
-
-    public static void mount(final IsWidget widget) {
-        initialise();
-        RootPanel.get().add(asWidget(widget));
-    }
-
-    /**
-     * Attaches {@code widget} inside the element with the given id.
-     *
-     * @throws IllegalArgumentException if no element with that id exists
-     */
-    public static void mount(final String elementId, final IsWidget widget) {
-        initialise();
-        final RootPanel host = RootPanel.get(elementId);
-        if (host == null) {
-            throw new IllegalArgumentException("No element with id '" + elementId + "' on the page");
-        }
-        host.add(asWidget(widget));
-    }
-
-    /** Attaches {@code widget} inside {@code host}. */
-    public static void mount(final Element host, final IsWidget widget) {
-        if (host == null) {
-            throw new IllegalArgumentException("host element must not be null");
-        }
-        mount(host.getId(), widget);
-    }
-
-    private static Widget asWidget(final IsWidget widget) {
-        if (widget == null) {
-            throw new IllegalArgumentException("widget must not be null");
-        }
-        return widget.asWidget();
     }
 }
