@@ -1,14 +1,21 @@
 package io.instanto.bootstrap.testing.teavm;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.user.client.ui.RootPanel;
 
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import com.google.gwt.user.client.ui.Label;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.teavm.junit.SkipJVM;
@@ -89,5 +96,57 @@ public class TeaVmGwtCompatibilityContractsTest {
     @Test
     public void checkboxValueBridgeUsesTheSubclassExtensionPointOnce() {
         BrowserBoundGwtContracts.checkboxValueBridgeUsesTheSubclassExtensionPointOnce();
+    }
+
+
+    @Test
+    public void rootPanelsAreCachedPerElement() {
+        final Label host = new Label();
+        host.getElement().setId("contract-root-host");
+        RootPanel.get().add(host);
+        try {
+            final RootPanel panel = RootPanel.get("contract-root-host");
+            assertNotNull(panel);
+            assertSame(panel, RootPanel.get("contract-root-host"));
+            panel.add(new Label("kept"));
+            assertEquals(1, RootPanel.get("contract-root-host").getWidgetCount());
+        } finally {
+            host.removeFromParent();
+        }
+    }
+
+    @Test
+    public void aReplacedElementGetsItsOwnRootPanel() {
+        final Label first = new Label();
+        first.getElement().setId("contract-replaced-host");
+        RootPanel.get().add(first);
+        final RootPanel before = RootPanel.get("contract-replaced-host");
+        first.removeFromParent();
+
+        final Label second = new Label();
+        second.getElement().setId("contract-replaced-host");
+        RootPanel.get().add(second);
+        try {
+            assertNotSame(before, RootPanel.get("contract-replaced-host"));
+        } finally {
+            second.removeFromParent();
+        }
+    }
+
+    @Test
+    public void aWrappingPanelIsDetachedWhenThePageCloses() {
+        final Label host = new Label();
+        host.getElement().setId("contract-detach-host");
+        RootPanel.get().add(host);
+        try {
+            final RootPanel panel = RootPanel.get("contract-detach-host");
+            assertTrue(RootPanel.isInDetachList(panel));
+            assertTrue(panel.isAttached());
+            RootPanel.detachNow(panel);
+            assertFalse(RootPanel.isInDetachList(panel));
+            assertFalse(panel.isAttached());
+        } finally {
+            host.removeFromParent();
+        }
     }
 }

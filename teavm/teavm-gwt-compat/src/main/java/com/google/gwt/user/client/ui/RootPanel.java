@@ -24,30 +24,131 @@
  */
 package com.google.gwt.user.client.ui;
 
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 
+/**
+ * The panels that wrap elements already on the page.
+ *
+ * <p>Two things here are less obvious than they look, and both were missing.</p>
+ *
+ * <p>A panel is cached per element, because it owns the widgets added to it. Returning
+ * a fresh panel for a second call on the same id would hand back something that shares
+ * an element with the first but knows nothing of its children: clearing one would leave
+ * the other's widgets on the page, and attaching would be announced twice.</p>
+ *
+ * <p>Widgets can also be registered for detachment when the page goes away, which is
+ * what gives them a last onUnload -- the moment a widget releases a plugin, a timer or
+ * a listener it put somewhere outside its own element.</p>
+ */
 public final class RootPanel extends ComplexPanel {
+
+    private static final Map<String, RootPanel> ROOTS = new HashMap<>();
+    private static final Set<Widget> TO_DETACH = new LinkedHashSet<>();
     private static RootPanel bodyRoot;
+    private static boolean closeHooked;
 
     private RootPanel(final Element element) {
         setElement(element);
         onAttach();
     }
 
-    /** No-op on TeaVM: there is no window-close detach pass to register with. */
-    public static void detachOnWindowClose(final Widget widget) {
-    }
-
+    /** The panel wrapping the document body. */
     public static RootPanel get() {
         if (bodyRoot == null) {
             bodyRoot = new RootPanel(Document.get().getBody());
+            detachOnWindowClose(bodyRoot);
         }
         return bodyRoot;
     }
 
+    /**
+     * The panel wrapping the element with this id, or null if there is no such element.
+     *
+     * <p>The same panel each time, so long as the element is: a page that replaces an
+     * element under an id it reuses gets a new panel rather than one whose widgets
+     * belong to markup that has gone.</p>
+     */
     public static RootPanel get(final String id) {
         final Element element = Document.get().getElementById(id);
-        return element == null ? null : new RootPanel(element);
+        if (element == null) {
+            return null;
+        }
+        final RootPanel existing = ROOTS.get(id);
+        if (existing != null && existing.getElement().unwrap() == element.unwrap()) {
+            return existing;
+        }
+        final RootPanel created = new RootPanel(element);
+        ROOTS.put(id, created);
+        // A panel wrapping an element has no parent widget to detach it, so it asks
+        // to be detached when the page closes, as GWT's does.
+        detachOnWindowClose(created);
+        return created;
     }
+
+    /**
+     * Asks for this widget to be detached when the page closes.
+     *
+     * <p>For a widget with no parent widget to detach it -- a panel wrapping an element
+     * already on the page, typically. GWT asserts against registering a widget that has
+     * a parent, and against registering twice; with assertions off both are harmless,
+     * and this behaves as that does.</p>
+     */
+    public static void detachOnWindowClose(final Widget widget) {
+        if (widget == null) {
+            throw new IllegalArgumentException("widget must not be null");
+        }
+        TO_DETACH.add(widget);
+        hookWindowClose();
+    }
+
+    /** Whether this widget will be detached when the page closes. */
+    public static boolean isInDetachList(final Widget widget) {
+        return TO_DETACH.contains(widget);
+    }
+
+    /** Detaches a registered widget now, and stops it being detached again later. */
+    public static void detachNow(final Widget widget) {
+        try {
+            detach(widget);
+        } finally {
+            TO_DETACH.remove(widget);
+        }
+    }
+
+    /** Detaches everything registered. Called as the page closes. */
+    public static void detachWidgets() {
+        for (final Widget widget : new LinkedHashSet<>(TO_DETACH)) {
+            detach(widget);
+        }
+        TO_DETACH.clear();
+    }
+
+    private static void detach(final Widget widget) {
+        if (widget.isAttached()) {
+            widget.onDetach();
+        }
+    }
+
+    private static void hookWindowClose() {
+        if (closeHooked) {
+            return;
+        }
+        closeHooked = true;
+        onWindowClose((JsAction) RootPanel::detachWidgets);
+    }
+
+    /** The shape a JSBody callback can invoke, as elsewhere in this layer. */
+    private interface JsAction extends org.teavm.jso.JSObject {
+        void run();
+    }
+
+    @org.teavm.jso.JSBody(params = {"handler"}, script =
+            "window.addEventListener('unload', function () { handler.run(); });")
+    private static native void onWindowClose(JsAction handler);
 }

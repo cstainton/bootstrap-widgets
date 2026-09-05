@@ -74,6 +74,7 @@ public final class BrowserBoundGwtContracts {
                 "the value-change DOM bridge must be initialized once through the subclass hook");
     }
 
+
     private static final class TrackingCheckBox extends CheckBox {
         private int initializations;
 

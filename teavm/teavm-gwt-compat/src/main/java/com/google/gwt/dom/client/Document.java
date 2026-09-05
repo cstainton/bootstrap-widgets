@@ -164,8 +164,8 @@ public final class Document {
 
     private int uniqueId;
 
-    public Element getBody() {
-        return new Element(HTMLDocument.current().getBody());
+    public BodyElement getBody() {
+        return new BodyElement(HTMLDocument.current().getBody());
     }
 
     public Element getElementById(final String id) {
