@@ -32,7 +32,12 @@
       <resource>
         <directory>${project.build.directory}/shared-sources</directory>
         <includes>
-          <include>**/*.gwt.xml</include>
+          <!--
+            Assets only. The module descriptors are read at build time, to generate
+            the class that loads these, and nothing reads them afterwards: TeaVM has
+            no module system, so shipping them would say a module exists here that
+            does not, describing Java compiled by the other compiler.
+          -->
           <include>**/resource/**</include>
         </includes>
       </resource>
