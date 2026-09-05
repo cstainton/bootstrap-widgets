@@ -306,24 +306,9 @@ public class Animate {
      */
     public static final <T extends UIObject> void removeAnimationOnEnd(final T widget, final String animation) {
         if (widget != null && animation != null) {
-            removeAnimationOnEnd(widget.getElement(), animation);
+            AnimateJs.removeOnEnd(widget.getElement(), animation);
         }
     }
-
-    /**
-     * Removes custom animation class on animation end.
-     *
-     * @param element Element to remove style from.
-     * @param animation Animation CSS class to remove.
-     */
-    private static final native void removeAnimationOnEnd(Element element, String animation) /*-{
-
-        var elem = $wnd.jQuery(element);
-        elem.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', { elem: elem }, function(event) {
-            event.data.elem.removeClass(animation);
-        });
-
-    }-*/;
 
     /**
      * Removes custom animation class and stops animation.
@@ -333,19 +318,9 @@ public class Animate {
      */
     public static final <T extends UIObject> void stopAnimation(final T widget, final String animation){
         if (widget != null && animation != null) {
-            stopAnimation(widget.getElement(), animation);
+            AnimateJs.remove(widget.getElement(), animation);
         }
     }
-
-    /**
-     * Removes custom animation class and stops animation.
-     *
-     * @param element Element to remove style from.
-     * @param animation Animation CSS class to remove.
-     */
-    private static final native void stopAnimation(Element element, String animation) /*-{
-        $wnd.jQuery(element).removeClass(animation);
-    }-*/;
 
     /**
      * Helper method, which returns unique class name for combination of animation and it's settings.
