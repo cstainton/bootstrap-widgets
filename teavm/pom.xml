@@ -23,6 +23,55 @@
   </modules>
 
   <build>
+    <!--
+      Where a module that compiles shared widget source puts it. Set
+      shared.source.artifacts and declare maven-dependency-plugin to opt in; a module
+      that does neither is unaffected, because the directory simply is not there.
+    -->
+    <resources>
+      <resource>
+        <directory>${project.build.directory}/shared-sources</directory>
+        <includes>
+          <include>**/*.gwt.xml</include>
+          <include>**/resource/**</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
+    <pluginManagement>
+      <plugins>
+        <!--
+          Unpacks the widget sources a track compiles, from the published artifacts
+          rather than from a sibling directory, so a module builds from a repository
+          alone. A sources jar carries the resource files as well as the Java, so one
+          unpack feeds the source root, the packaged assets and the seam checks.
+        -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>unpack-shared-sources</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>unpack-dependencies</goal>
+              </goals>
+              <configuration>
+                <classifier>sources</classifier>
+                <includeArtifactIds>${shared.source.artifacts}</includeArtifactIds>
+                <outputDirectory>${project.build.directory}/shared-sources</outputDirectory>
+                <overWriteSnapshots>true</overWriteSnapshots>
+                <excludes>META-INF/**</excludes>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

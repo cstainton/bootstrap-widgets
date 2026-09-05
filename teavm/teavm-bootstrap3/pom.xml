@@ -95,46 +95,16 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <shared.source.artifacts>gwt-bootstrap3,gwt-bootstrap3-themes,gwt-bootstrap3-showcase</shared.source.artifacts>
+  </properties>
+
   <build>
-    <resources>
-      <!-- What the matching GWT jars carry: module descriptors and resource files. -->
-      <resource>
-        <directory>${project.build.directory}/shared-sources</directory>
-        <includes>
-          <include>**/*.gwt.xml</include>
-          <include>**/resource/**</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-    </resources>
     <plugins>
-      <!--
-        The widget sources this module compiles, taken from the published artifacts
-        rather than from a sibling directory, so the build needs only a repository.
-        A sources jar carries the resources too, so one unpack serves the source
-        roots, the packaged stylesheets and the seam check below.
-      -->
+      <!-- Unpacks the shared widget sources; configured in the parent. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>unpack-shared-bootstrap3-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <classifier>sources</classifier>
-              <includeArtifactIds>gwt-bootstrap3,gwt-bootstrap3-themes,gwt-bootstrap3-showcase</includeArtifactIds>
-              <outputDirectory>${project.build.directory}/shared-sources</outputDirectory>
-              <overWriteSnapshots>true</overWriteSnapshots>
-              <excludes>META-INF/**</excludes>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <!--

@@ -51,13 +51,16 @@ TRACKS = {
     "Bootstrap 5": {
         "pom": ROOT / "teavm/teavm-bootstrap5/pom.xml",
         "sources": {
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap5/src/main/java",
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-themes/src/main/java",
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-extras/src/main/java",
-            "${project.parent.parent.basedir}/gwt/gwt-bootstrap5-showcase/src/main/java",
             "${project.build.directory}/generated-sources/teavm-modules",
+            "${project.build.directory}/shared-sources",
         },
-        "source_roots": (
+        "unpacked": {
+            "gwt-bootstrap5",
+            "gwt-bootstrap5-themes",
+            "gwt-bootstrap5-extras",
+            "gwt-bootstrap5-showcase",
+        },
+                "source_roots": (
             ROOT / "gwt/gwt-bootstrap5/src/main/java",
             ROOT / "gwt/gwt-bootstrap5-themes/src/main/java",
             ROOT / "gwt/gwt-bootstrap5-extras/src/main/java",
@@ -98,12 +101,12 @@ TRACKS = {
 def unpacked_artifacts(root):
     """The shared source artifacts a track unpacks to compile against.
 
-    The modules used to name sibling directories. They now name artifacts, so the
-    thing worth checking is that the right ones are unpacked, not that a path is
-    spelled the way it was.
+    The modules used to name sibling directories. They now name artifacts, and the
+    unpacking itself is configured once in the parent, so what a track declares is
+    the list and that is what is worth checking.
     """
     found = set()
-    for element in root.iter(f"{{{NS['m']}}}includeArtifactIds"):
+    for element in root.iter(f"{{{NS['m']}}}shared.source.artifacts"):
         found.update(part.strip() for part in (element.text or "").split(",") if part.strip())
     return found
 
