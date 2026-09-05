@@ -44,19 +44,35 @@ No dependencies. No DOM, no scene graph, no browser. Runnable on the JVM.
 
 ## The box
 
-```java
-LayoutBox box = LayoutBox.of(left, top, width, height);
+`mockatcha-layout` does not define a box. It defines what one has to answer, and the
+caller supplies the value:
 
-double left = box.left();
-double top = box.top();
-double right = box.right();
-double bottom = box.bottom();
-double width = box.width();
-double height = box.height();
+```java
+public interface LayoutBox {
+    double left();
+    double top();
+    double width();
+    double height();
+
+    default double right() { return left() + width(); }
+    default double bottom() { return top() + height(); }
+}
 ```
 
-Immutable, a value captured at the time of the call. It must not hold a live
-JavaScript object, a scene node, or anything that can change underneath the caller.
+A contract, not a value type. There is deliberately no factory and no record
+implementing it, because every caller already has a rectangle of its own -- `DOMRect`
+in the browser, `Rectangle` and `Bounds2D` in `sarto-geometry` -- and a library that
+shipped one more would force a conversion at every call site and raise the question
+of which is canonical.
+
+The implementation each caller writes is a few lines and stays with the caller, so no
+framework concept reaches this library. Its own tests are the proof: they implement
+the interface themselves rather than reaching for anything.
+
+Whatever supplies the values must be a snapshot taken when the call is made. An
+implementation reading through to a live JavaScript object or a mutable scene node
+would let a rectangle change between two assertions about it, so an adapter measures
+once and holds the numbers.
 
 Zero-sized boxes are permitted and are not an error: a `display:none` element and an
 unlaid-out node both legitimately measure zero. Negative width or height is rejected.
@@ -126,6 +142,10 @@ Plain JUnit on the JVM — no runner, no browser:
 7. Negative tolerance, negative extents and null boxes are argument errors.
 8. Every failure message contains both rectangles and the tolerance.
 
+These tests implement `LayoutBox` themselves, with a record in the test sources. If
+one ever needs a browser or a scene graph to express a case, the split has been drawn
+in the wrong place.
+
 ---
 
 # Part 2: `mockatcha-dom`
@@ -158,6 +178,9 @@ expect(element).toHaveStyle("display", "flex");
 ```java
 LayoutBox box = Dom.layout(element);
 ```
+
+`mockatcha-dom` implements `LayoutBox` itself, holding the numbers read from the
+rectangle rather than the live `DOMRect`.
 
 - Use `getBoundingClientRect()`. Not `offsetWidth`, `offsetTop`, or integer
   rounding.
@@ -249,13 +272,19 @@ wiring, not the arithmetic.
 already reports everything a rectangle needs:
 
 ```java
-LayoutBox box = LayoutBox.of(node.getLayoutX(), node.getLayoutY(),
-                             node.getWidth(), node.getHeight());
+record NodeBox(double left, double top, double width, double height)
+        implements LayoutBox {
+
+    static NodeBox of(Node node) {
+        return new NodeBox(node.getLayoutX(), node.getLayoutY(),
+                           node.getWidth(), node.getHeight());
+    }
+}
 ```
 
-So the scene testkit needs one adapter and gains the whole vocabulary — the
-relations, the tolerance semantics and the diagnostics are shared, and any bug fixed
-in one is fixed for both.
+So the scene testkit writes that record and gains the whole vocabulary -- the
+relations, the tolerance semantics and the diagnostics are shared, and a bug fixed in
+one is fixed for both.
 
 Two differences to settle when it is done, neither affecting Part 1:
 
@@ -265,15 +294,22 @@ Two differences to settle when it is done, neither affecting Part 1:
   space, and comparing across spaces must fail rather than compare nonsense. Whether
   the adapter resolves to scene-root coordinates or refuses is the scene testkit's
   decision.
-- **When bounds are valid.** A DOM box is meaningful once the element is laid out. A
-  scene node's is meaningful after a layout pulse, which `ScenePulse` already models.
-  The adapter should make it hard to measure a node that has not been laid out.
+- **When bounds are valid.** A DOM box is meaningful whenever the element is laid
+  out, because the browser lays out whether or not anyone asks. A scene has no engine
+  doing that: nothing has measured anything until something renders. `ScenePulse` is
+  where this already lives -- `ScenePulse.none()` does not advance the scene, and
+  `ScenePulse.renderingWith(graphics, width, height)` advances it by rendering. So
+  the rule is not "measure after a pulse" but "measure only after a pulse that
+  renders"; under `none()` a node's width and height are stale or zero. This can be
+  headless: `RecordingGraphics2D(width, height)` in `sarto-graphics-testkit`
+  implements `Graphics2D` and records each call, so a layout pass needs no window.
+  The adapter should make measuring an unrendered node hard to do by accident.
 
-`sarto-geometry` already has `Rectangle` and `Bounds2D`. Neither carries the relation
-vocabulary, so there is no duplication — but if `LayoutBox` is close enough to
-`Rectangle` to be a nuisance, the alternative is for `mockatcha-layout` to accept any
-four doubles and leave the value type to the caller. That is a decision to take
-before the first adapter, not after the second.
+`sarto-geometry` already has `Rectangle` and `Bounds2D`. Because the library asks for
+an interface rather than shipping a value type, either can satisfy it directly, and
+neither has to be converted or displaced. That is the reason for the decision: a
+rectangle is something every graphics library already owns, and the assertions were
+the only part missing.
 
 ---
 
