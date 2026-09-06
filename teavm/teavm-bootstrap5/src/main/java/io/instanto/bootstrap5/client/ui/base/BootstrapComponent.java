@@ -168,4 +168,36 @@ public final class BootstrapComponent {
 
     @JSBody(script = "return !!(window.bootstrap && window.bootstrap.Modal);")
     private static native boolean bootstrapPresent();
+    public static void releaseVisibility(Element element, String component) { releaseVisibilityNative(element.unwrap(), component); }
+    public static void rememberFocus(Element element) { rememberFocusNative(element.unwrap()); }
+
+    @JSBody(params = {"el", "name"}, script =
+            "if (!window.bootstrap || !window.bootstrap[name]) return;\n"
+             + "var instance = window.bootstrap[name].getInstance(el);\n"
+             + "if (!instance) return;\n"
+             + "// Complete pending transitions before disposing: Bootstrap's dispose alone does not\n"
+             + "// cancel transition callbacks or restore an Offcanvas scroll lock.\n"
+             + "var finish = function() { el.dispatchEvent(new el.ownerDocument.defaultView.Event('transitionend')); };\n"
+             + "if (el.classList.contains('showing')) finish();\n"
+             + "if (el.classList.contains('show')) instance.hide();\n"
+             + "if (el.classList.contains('hiding') || el.classList.contains('showing')) finish();\n"
+             + "instance.dispose();\n"
+             + "el.classList.remove('show', 'showing', 'hiding');\n"
+             + "if (el.__bootstrapRestoreFocus) el.__bootstrapRestoreFocus();\n")
+    private static native void releaseVisibilityNative(HTMLElement el, String name);
+
+    @JSBody(params = {"el"}, script =
+            "if (el.__bootstrapReturnFocus) return;\n"
+             + "var previous = el.ownerDocument.activeElement;\n"
+             + "if (!previous || el.contains(previous)) return;\n"
+             + "el.__bootstrapReturnFocus = previous;\n"
+             + "var restore = function() {\n"
+             + "    el.removeEventListener('hidden.bs.offcanvas', restore);\n"
+             + "    el.__bootstrapReturnFocus = null;\n"
+             + "    el.__bootstrapRestoreFocus = null;\n"
+             + "    if (previous.isConnected && typeof previous.focus === 'function') previous.focus();\n"
+             + "};\n"
+             + "el.__bootstrapRestoreFocus = restore;\n"
+             + "el.addEventListener('hidden.bs.offcanvas', restore);\n")
+    private static native void rememberFocusNative(HTMLElement el);
 }

@@ -23,22 +23,21 @@ classes it needs, and having both gives you two of everything.
 ```java
 public final class MyApp {
     public static void main(String[] args) {
-        Bootstrap5.initialise();
-
-        Button save = new Button("Save");
-        save.setType(ButtonType.PRIMARY);
-        save.addClickHandler(event -> Window.alert("Saved"));
-
-        RootPanel.get().add(save);
+        Bootstrap5.initialise(() -> {
+            Button save = new Button("Save");
+            save.setType(ButtonType.PRIMARY);
+            save.addClickHandler(event -> Window.alert("Saved"));
+            RootPanel.get().add(save);
+        });
     }
 }
 ```
 
 Two lines matter.
 
-`Bootstrap5.initialise()` puts the library's stylesheets on the page, and Bootstrap's
-own JavaScript if it is not there already. Call it once, before your first widget.
-Calling it again does nothing, so it is safe anywhere.
+`Bootstrap5.initialise(ready)` loads the library's stylesheets and Bootstrap's own
+JavaScript through the generated module loader. Build your widgets in the callback.
+Repeated calls share resource loading; each callback runs when the scripts are usable.
 
 `RootPanel.get().add(...)` puts a widget on the page. `RootPanel.get()` is the
 document body. If your widgets belong inside an element that is already there, name
@@ -48,10 +47,12 @@ it instead:
 RootPanel.get("editor").add(new Container());
 ```
 
-## 3. Your page
+## 3. Publish the bundled assets
 
-Bootstrap 5 needs no jQuery, and `initialise()` will add Bootstrap's script for you,
-so a page can be as small as this:
+Publish the library JAR's `META-INF/bootstrap5-assets/` tree alongside your application,
+preserving its directories. For a different location, set
+`Bootstrap5Resources.setAssetBase("assets/bootstrap5/")` before initialisation.
+No per-script HTML declarations are needed:
 
 ```html
 <body>
@@ -59,8 +60,9 @@ so a page can be as small as this:
 </body>
 ```
 
-If you would rather control the version yourself, add it before your application and
-`initialise()` will leave it alone.
+If the host already supplies the compatible Bootstrap runtime, it is reused. The
+no-argument `initialise()` starts loading but does not wait; use the callback before
+constructing widgets that depend on the scripts.
 
 That is the whole setup. Everything below is optional.
 
@@ -81,8 +83,7 @@ so a server-rendered starting theme survives startup without a flash.
 
 ## The richer widgets
 
-Unlike the Bootstrap 3 track, the extras work here — slider, date picker, rich text
-editor, markdown editor:
+The integrations include a slider, date picker, rich text editor and Markdown editor:
 
 ```java
 Slider slider = new Slider(0, 100);

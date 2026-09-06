@@ -31,12 +31,12 @@ import com.google.gwt.dom.client.Element;
  * the compiler injects them, so an application never writes a {@code <link>} for them.
  * TeaVM has no module system to do that, and the alternative -- asking every host page to
  * hand-wire the library's internals -- leaks mechanics the widgets exist to hide. So the
- * TeaVM backend injects the same set itself, from {@link Bootstrap5#mount}.</p>
+ * TeaVM backend injects the same set itself, from
+ * {@link Bootstrap5#initialise()}.</p>
  *
- * <p>Only the <em>additive</em> stylesheets belong here: the icon font and the library's
- * own rules, which sit on top of whatever Bootstrap build is in use. The Bootstrap or
- * Bootswatch stylesheet itself is not injected, because which one to load is an
- * application's choice and {@code Themes} already owns swapping it.</p>
+ * <p>The default Bootstrap theme is installed unless the page has already selected one.
+ * The icon font and the library's own rules are then layered on top. {@code Themes} owns
+ * the theme link and can replace its target later.</p>
  */
 public final class Bootstrap5Resources {
 
@@ -60,7 +60,7 @@ public final class Bootstrap5Resources {
 
     /**
      * Sets where this module's assets were deployed, which must be called before the
-     * first mount to have any effect. Everything else is derived from it, so an extra
+     * first initialisation to have any effect. Everything else is derived from it, so an extra
      * never needs configuring separately.
      */
     public static void setAssetBase(final String path) {
@@ -100,7 +100,7 @@ public final class Bootstrap5Resources {
         injected = true;
         // Bootstrap itself, unless the page has already said which theme it wants.
         // Themes owns a link with this id and swaps its href to change theme; creating
-        // it here means the widgets are styled from the first mount rather than from
+        // it here means the widgets are styled from initialisation rather than from
         // the first theme switch, and a page that declares its own link keeps it.
         link(Themes.LINK_ID, cssBase() + THEME);
         link(ID_PREFIX + "icons", cssBase() + ICONS);

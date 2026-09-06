@@ -37,7 +37,7 @@ jobs:
         run: mvn -B -DskipTests install
 
       - name: Run compatibility and widget browser tests
-        run: mvn -B -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-gwt-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests -am test
+        run: mvn -B -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-gwt-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
 
       - name: Compile showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile

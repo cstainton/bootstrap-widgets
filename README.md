@@ -27,6 +27,13 @@ Current core versions are GWT 2.13.1, TeaVM 0.15.0, Bootstrap 3.4.1, Bootstrap 5
 The GWT and TeaVM showcases use the same widget and showcase sources where possible. This makes
 differences between the compilers visible instead of hiding them behind separate demos.
 
+The Bootstrap 5 showcase groups native widgets under **Components** and **Interactive**.
+Cards, dialogs, [toasts](https://cstainton.github.io/bootstrap-widgets/bootstrap5/#toasts),
+[offcanvas panels](https://cstainton.github.io/bootstrap-widgets/bootstrap5/#offcanvas) and
+[loading placeholders](https://cstainton.github.io/bootstrap-widgets/bootstrap5/#placeholders)
+belong there. **Integrations** contains third-party editors, date pickers and sliders.
+Existing showcase routes and Maven artifact names are unchanged.
+
 ## Choosing An Artifact
 
 All artifacts use the `io.instanto` group ID and currently publish as `1.0-SNAPSHOT`.
@@ -65,9 +72,10 @@ resource loaders. Scripts load in declaration order, expose a readiness result, 
 are not loaded again when the host application already provides them.
 
 This compatibility layer covers what these widget libraries currently use; it is not a complete
-replacement for all of GWT. In particular, the TeaVM Bootstrap 3 showcase currently runs 41 of the
-original 55 pages. The remaining 14 pages depend on old extras with extensive JSNI code. Bootstrap 5
-extras are being moved to explicit JavaScript seams that both compilers can implement.
+replacement for all of GWT. TeaVM Bootstrap 3 now includes the shared Select, Slider,
+ToggleSwitch and Summernote showcase pages. See [EXTRAS-INVENTORY.md](EXTRAS-INVENTORY.md)
+for the remaining integrations. Bootstrap 5 integrations use explicit JavaScript seams that
+both compilers can implement.
 
 ## Using GitHub Packages
 
@@ -123,6 +131,21 @@ Javadoc JARs, which are published with the showcases. The GWT and TeaVM showcase
 JavaScript source maps and the corresponding Java source trees.
 
 ## Tests
+
+The Java/Gherkin widget suites currently need the `0.1.0-SNAPSHOT` builds of
+`cucumber-tea`, `cucumber-tea-codegen`, `gherkin-tea` and `mockatcha-dom` installed locally.
+They are not Maven Central dependencies. A clean CI runner needs access to those private
+toolkits before it can run the full gate and publish Pages.
+
+After installing the reactor, run the tests against its packaged artifacts:
+
+```bash
+mvn -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-gwt-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
+```
+
+Do not add `-am` to this test-only command: during an un-packaged reactor build Maven can
+substitute GWT class directories for source-classifier artifacts on TeaVM's classpath.
+Use `install` for whole-reactor builds and the command above for subsequent verification.
 
 The test suite includes:
 

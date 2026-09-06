@@ -81,10 +81,11 @@ public final class BootstrapEventBridge {
     }
 
     public static void unbindAll(final Element element) {
-        final Map<String, Registration> forElement = REGISTRATIONS.remove(element);
+        final Map<String, Registration> forElement = REGISTRATIONS.get(element);
         if (forElement == null) {
             return;
         }
+        REGISTRATIONS.remove(element);
         for (final Registration registration : new ArrayList<>(forElement.values())) {
             registration.dispose();
         }

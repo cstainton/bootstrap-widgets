@@ -177,4 +177,33 @@ public final class BootstrapComponent {
     public static native boolean isLoaded() /*-{
         return !!($wnd.bootstrap && $wnd.bootstrap.Modal);
     }-*/;
+    public static native void releaseVisibility(Element el, String name) /*-{
+        if (!$wnd.bootstrap || !$wnd.bootstrap[name]) return;
+        var instance = $wnd.bootstrap[name].getInstance(el);
+        if (!instance) return;
+        // Complete pending transitions before disposing: Bootstrap's dispose alone does not
+        // cancel transition callbacks or restore an Offcanvas scroll lock.
+        var finish = function() { el.dispatchEvent(new el.ownerDocument.defaultView.Event('transitionend')); };
+        if (el.classList.contains('showing')) finish();
+        if (el.classList.contains('show')) instance.hide();
+        if (el.classList.contains('hiding') || el.classList.contains('showing')) finish();
+        instance.dispose();
+        el.classList.remove('show', 'showing', 'hiding');
+        if (el.__bootstrapRestoreFocus) el.__bootstrapRestoreFocus();
+    }-*/;
+
+    public static native void rememberFocus(Element el) /*-{
+        if (el.__bootstrapReturnFocus) return;
+        var previous = el.ownerDocument.activeElement;
+        if (!previous || el.contains(previous)) return;
+        el.__bootstrapReturnFocus = previous;
+        var restore = function() {
+            el.removeEventListener('hidden.bs.offcanvas', restore);
+            el.__bootstrapReturnFocus = null;
+            el.__bootstrapRestoreFocus = null;
+            if (previous.isConnected && typeof previous.focus === 'function') previous.focus();
+        };
+        el.__bootstrapRestoreFocus = restore;
+        el.addEventListener('hidden.bs.offcanvas', restore);
+    }-*/;
 }

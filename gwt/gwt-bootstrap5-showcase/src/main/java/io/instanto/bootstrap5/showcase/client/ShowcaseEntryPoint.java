@@ -213,12 +213,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String IMG_THUMB = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='rgb(25,135,84)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='24'%3EThumbnail%3C/text%3E%3C/svg%3E";
     private static final String[] CSS_SECTIONS = {"buttons", "code", "forms", "gridSystem", "images", "responsiveUtilities", "tables", "typography"};
     private static final String[] CSS_LABELS = {"Buttons", "Code", "Forms", "Grid System", "Images", "Responsive Utilities", "Tables", "Typography"};
-    private static final String[] COMPONENT_SECTIONS = {"alerts", "badges", "breadcrumbs", "buttonDropdowns", "buttonGroups", "dropdowns", "icons", "inputGroups", "jumbotron", "labels", "listGroup", "mediaObjects", "navbar", "navs", "pageHeader", "pagination", "panels", "progressBars", "suggestBox", "thumbnails", "wells"};
-    private static final String[] COMPONENT_LABELS = {"Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
-    private static final String[] JS_SECTIONS = {"affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
-    private static final String[] JS_LABELS = {"Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] EXTRA_SECTIONS = {"cards", "dialogs", "datePicker", "richText", "markdown", "slider", "unsupportedExtras"};
-    private static final String[] EXTRA_LABELS = {"Cards", "Dialogs", "DatePicker", "Rich Text", "Markdown", "Slider", "Remaining Extras"};
+    private static final String[] COMPONENT_SECTIONS = {"cards", "placeholders", "alerts", "badges", "breadcrumbs", "buttonDropdowns", "buttonGroups", "dropdowns", "icons", "inputGroups", "jumbotron", "labels", "listGroup", "mediaObjects", "navbar", "navs", "pageHeader", "pagination", "panels", "progressBars", "suggestBox", "thumbnails", "wells"};
+    private static final String[] COMPONENT_LABELS = {"Cards", "Placeholders", "Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
+    private static final String[] JS_SECTIONS = {"toasts", "offcanvas", "dialogs", "affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
+    private static final String[] JS_LABELS = {"Toasts", "Offcanvas", "Dialogs", "Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
+    private static final String[] INTEGRATION_SECTIONS = {"datePicker", "richText", "markdown", "slider", "unsupportedExtras"};
+    private static final String[] INTEGRATION_LABELS = {"DatePicker", "Rich Text", "Markdown", "Slider", "Integration Roadmap"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -295,8 +295,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
             filterSections(row, token);
             return row;
         }
-        if (contains(EXTRA_SECTIONS, token)) {
-            Row row = createExtraSections();
+        if (contains(INTEGRATION_SECTIONS, token)) {
+            Row row = createIntegrationSections();
             filterSections(row, token);
             return row;
         }
@@ -333,18 +333,18 @@ public class ShowcaseEntryPoint implements EntryPoint {
         NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("navbar-collapse");
         NavbarCollapse navbarCollapse = new NavbarCollapse();
         navbarCollapse.getElement().setId("navbar-collapse");
-        navbar.getContainer().add(new NavbarBrand("GWT Bootstrap", "#home"));
+        navbar.getContainer().add(new NavbarBrand("Bootstrap", "#home"));
         navbar.getContainer().add(navbarCollapseButton);
         navbarCollapse.add(navbar.getNav());
         navbar.getContainer().add(navbarCollapse);
         navbar.getNav().add(new NavbarLink("Setup", "#setup"));
         navbar.getNav().add(dropdown("CSS", CSS_LABELS, CSS_SECTIONS));
         navbar.getNav().add(dropdown("Components", COMPONENT_LABELS, COMPONENT_SECTIONS));
-        navbar.getNav().add(dropdown("JavaScript", JS_LABELS, JS_SECTIONS));
-        navbar.getNav().add(dropdown("Extras", EXTRA_LABELS, EXTRA_SECTIONS));
+        navbar.getNav().add(dropdown("Interactive", JS_LABELS, JS_SECTIONS));
+        navbar.getNav().add(dropdown("Integrations", INTEGRATION_LABELS, INTEGRATION_SECTIONS));
         String docsBase = "teavm".equals(GWT.getModuleName()) ? "bootstrap5/" : "";
         navbar.getNav().add(dropdown("View Javadoc",
-                new String[] {"Core API", "Extras API"},
+                new String[] {"Core API", "Integrations API"},
                 new String[] {docsBase + "apidocs/index.html", docsBase + "extras-apidocs/index.html"}));
         navbar.getNav().add(dropdown("Other Builds",
                 new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
@@ -368,9 +368,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         Column column = fullColumn();
         Jumbotron jumbotron = new Jumbotron();
         jumbotron.getElement().setId("home");
-        jumbotron.add(new Heading(1, "GWT Bootstrap Showcase"));
-        jumbotron.add(new Paragraph("A GWT widget library migration fork backed by Bootstrap 5."));
-        jumbotron.add(new Paragraph("This page mirrors the Bootstrap 3 showcase structure so migration differences are visible rather than hidden. The Java-facing composition and event model should remain familiar; the rendering uses Bootstrap 5 classes and data-bs attributes."));
+        jumbotron.add(new Heading(1, "Bootstrap Showcase"));
+        jumbotron.add(new Paragraph("Explore Bootstrap components, layouts and interactive behaviour."));
+        jumbotron.add(new Paragraph("Components and Interactive cover native Bootstrap capabilities. Integrations contains the date picker, rich text and Markdown editors, and multi-handle slider. Each page includes working examples and Java code."));
         column.add(jumbotron);
         row.add(column);
         return row;
@@ -445,6 +445,14 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Row createComponentSections() {
         Row row = row();
         Column column = fullColumn(row);
+        addPageHeader(column, "cards", "Cards", null);
+        column.add(cardHeaderFooterPanel());
+        column.add(cardVariantsPanel());
+        column.add(panel("Bootstrap 5 native", sampleCard(), "Card card = new Card();"));
+        addPageHeader(column, "placeholders", "Placeholders", "loading skeletons");
+        column.add(panel("Static, glow and wave", NativeComponentsExamples.placeholders(),
+                "PlaceholderContainer skeleton = new PlaceholderContainer();\nskeleton.setAnimation(PlaceholderContainer.Animation.GLOW);\nskeleton.add(new Placeholder(8));"));
+
         addPageHeader(column, "alerts", "Alerts", null);
         column.add(new AlertsBasicView());
         column.add(alertDismissiblePanel());
@@ -551,6 +559,15 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Row createJavaScriptSections(RootPanel root) {
         Row row = row();
         Column column = fullColumn(row);
+        addPageHeader(column, "toasts", "Toasts", "notifications and independent stacks");
+        column.add(panel("Show, dismiss and auto-hide", NativeComponentsExamples.toasts(),
+                "ToastContainer notifications = new ToastContainer();\n// Mount the live region before sending a notification.\nnotifications.notify(\"Saved\", \"Your changes were saved.\", 5000);"));
+        addPageHeader(column, "offcanvas", "Offcanvas", "sliding detail and filter panels");
+        column.add(panel("Placement, backdrop and keyboard", NativeComponentsExamples.offcanvas(),
+                "Offcanvas panel = new Offcanvas();\npanel.setPlacement(OffcanvasPlacement.END);\npanel.add(new OffcanvasHeader(\"Details\"));\npanel.add(new OffcanvasBody(\"Panel content\"));\n// Mount, then show from a button's click handler.\npanel.show();"));
+        addPageHeader(column, "dialogs", "Dialogs", "alert, confirm and prompt");
+        column.add(dialogsPanel());
+
         addPageHeader(column, "affix", "Affix", "sticky positioning");
         column.add(affixPanel());
 
@@ -590,15 +607,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
         return row;
     }
 
-    private Row createExtraSections() {
+    private Row createIntegrationSections() {
         Row row = row();
         Column column = fullColumn(row);
-        addPageHeader(column, "cards", "Cards", null);
-        column.add(cardHeaderFooterPanel());
-        column.add(cardVariantsPanel());
-        column.add(panel("Bootstrap 5 native", sampleCard(), "Card is Bootstrap 5-native and replaces many Bootstrap 3 panel/card-extra use cases."));
-        addPageHeader(column, "dialogs", "Dialogs", "alert, confirm and prompt");
-        column.add(dialogsPanel());
 
         addPageHeader(column, "datePicker", "DatePicker", "Tempus Dominus 6");
         column.add(datePickerPanel());
@@ -612,33 +623,16 @@ public class ShowcaseEntryPoint implements EntryPoint {
         addPageHeader(column, "slider", "Slider", "noUiSlider 15");
         column.add(sliderPanel());
 
-        addPageHeader(column, "unsupportedExtras", "Remaining Extras", null);
-        column.add(panel("Still to migrate", new HTML(
-                "<p>Five are done and have their own pages: dialogs, the date picker, the rich text editor, the"
-                + " native range control and the slider. None of them brought jQuery with it, which turns out to"
-                + " be the pattern for the rest:</p>"
-                + "<div class='table-responsive'><table class='table table-sm'>"
-                + "<thead><tr><th scope='col'>Extra</th><th scope='col'>Standing</th></tr></thead><tbody>"
-                + "<tr><td>Bootbox</td><td>Replaced. <code>Dialogs</code> draws alert, confirm and prompt with the"
-                + " <code>Modal</code> widget, so no plugin and no jQuery.</td></tr>"
-                + "<tr><td>DatePicker, DateTimePicker</td><td>Replaced by Tempus Dominus 6, which targets"
-                + " Bootstrap 5 and needs no jQuery.</td></tr>"
-                + "<tr><td>Notify</td><td>Bootstrap 5 has toasts natively; no third-party library needed.</td></tr>"
-                + "<tr><td>Card</td><td>The flip-card library. Bootstrap 5 cards are native and covered by the"
-                + " <code>Card</code> widget on the Cards page &mdash; a different component.</td></tr>"
-                + "<tr><td>Respond, CacheManifest</td><td>Obsolete. An IE8 media-query shim and a dead HTML5 API.</td></tr>"
-                + "<tr><td>PositionedTabs</td><td>Covered by <code>TabPosition</code> on the Tabs page.</td></tr>"
-                + "<tr><td>Select, TagsInput, Typeahead</td><td>All three are one problem. Tom Select or Choices.js"
-                + " covers them without jQuery.</td></tr>"
-                + "<tr><td>Slider</td><td>Done, both ways. <code>Range</code> on the Forms page is the native control;"
-                + " the Slider page is noUiSlider for two handles, scales and pips.</td></tr>"
-                + "<tr><td>FullCalendar</td><td>FullCalendar 6 dropped jQuery.</td></tr>"
-                + "<tr><td>Gallery, Animate</td><td>Utility CSS and a lightbox; neither needs a jQuery plugin.</td></tr>"
-                + "<tr><td>Summernote</td><td>Replaced by Quill on the Rich Text page. Quill ships a UMD build and its"
-                + " own toolbar; TipTap is headless and ESM-first, which would mean writing the toolbar and"
-                + " adding a bundler. Neither does Markdown without a converter.</td></tr>"
-                + "</tbody></table></div>"),
-                "// The extras module carries no jQuery. Every extra so far has\n// either a jQuery-free replacement or a native Bootstrap 5\n// equivalent, so nothing pulls it back in."));
+        addPageHeader(column, "unsupportedExtras", "Integration Roadmap", "candidates, not yet available");
+        column.add(panel("Planned integrations", new HTML(
+                "<ul><li>Tom Select: searchable selects, tags and remote autocomplete.</li>"
+                + "<li>Tabulator: editable grids, grouping and progressive loading.</li>"
+                + "<li>SortableJS: sortable lists and Kanban cards.</li>"
+                + "<li>GridStack: draggable, resizable dashboards.</li>"
+                + "<li>PhotoSwipe: touch-friendly image galleries.</li></ul>"
+                + "<p>Toasts, Offcanvas and Placeholders are native components and have their own pages. "
+                + "Third-party integrations remain in the extras artifact; existing page links still work.</p>"),
+                "// These integrations are planned, not shipped APIs."));
         return row;
     }
 
