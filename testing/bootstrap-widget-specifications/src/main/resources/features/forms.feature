@@ -1,4 +1,4 @@
-@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5
+@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5 @skip-jvm
 Feature: Form labels, values and submission
   Form controls preserve the GWT value and event contracts while producing
   accessible native form markup.
@@ -11,7 +11,7 @@ Feature: Form labels, values and submission
     When the user activates its label
     Then the checkbox is checked
     And one value change is reported with the checkbox as source
-    And the label for attribute names the checkbox id
+    And the label is associated with the checkbox
 
   @browser @accessibility @functional @dom-contract
   Scenario: FRM-002 Activating a radio label selects its input once
@@ -21,7 +21,7 @@ Feature: Form labels, values and submission
     When the user activates its label
     Then the radio is selected
     And one value change is reported with the radio as source
-    And the label for attribute names the radio id
+    And the label is associated with the radio
 
   @browser @accessibility @functional @dom-contract
   Scenario: FRM-003 Activating a text field label focuses its input

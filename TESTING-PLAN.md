@@ -715,6 +715,10 @@ their native markup is expected to differ.
 tests. Add document-rooted scoping without changing its existing default
 document behaviour.
 
+The public computed-style and geometry contract, including tolerances,
+cross-document handling and acceptance tests, is defined in
+[`MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md`](MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md).
+
 Candidate API:
 
 ```java

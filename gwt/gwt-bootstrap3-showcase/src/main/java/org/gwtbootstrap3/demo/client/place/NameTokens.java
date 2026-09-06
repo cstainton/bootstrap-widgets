@@ -275,6 +275,7 @@ public class NameTokens {
         return SUMMERNOTE;
     }
 
+
     public static String getToggleSwitch() {
         return TOGGLESWITCH;
     }

@@ -1,4 +1,4 @@
-@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5
+@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5 @skip-jvm
 Feature: Dropdown direction and lifecycle
   Dropdowns retain their public composition model while each Bootstrap
   generation owns the plugin behaviour and positioning.

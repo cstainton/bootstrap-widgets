@@ -24,7 +24,6 @@
  */
 package com.google.gwt.user.client.ui;
 
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
@@ -94,12 +93,9 @@ public class Widget extends UIObject implements IsWidget, HasHandlers, HasClickH
 
     private boolean everAttached;
 
-    /**
-     * Receives a browser event routed to this widget. Handlers here bind real DOM
-     * listeners on registration, so nothing routes through a central dispatcher; the
-     * hook exists so widgets that override it keep compiling.
-     */
+    /** Receives a browser event before dispatching it to this widget's handlers. */
     public void onBrowserEvent(final com.google.gwt.user.client.Event event) {
+        DomEvent.fireNativeEvent(event, this);
     }
 
     protected void onEnsureDebugId(final String baseId) {
@@ -180,9 +176,7 @@ public class Widget extends UIObject implements IsWidget, HasHandlers, HasClickH
             return;
         }
         final EventListener<Event> listener = nativeEvent -> {
-            final DomEvent<H> event = type.createEvent();
-            event.setNativeEvent(new NativeEvent(nativeEvent));
-            fireEvent(event);
+            onBrowserEvent(new com.google.gwt.user.client.Event(nativeEvent));
         };
         nativeListeners.put(name, getElement().unwrap().onEvent(name, listener));
     }

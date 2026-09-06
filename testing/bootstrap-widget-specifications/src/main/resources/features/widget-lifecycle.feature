@@ -1,4 +1,4 @@
-@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5
+@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5 @skip-jvm
 Feature: Widget lifecycle
   Every exported widget must support predictable parent, attachment and
   handler lifecycle across repeated use.

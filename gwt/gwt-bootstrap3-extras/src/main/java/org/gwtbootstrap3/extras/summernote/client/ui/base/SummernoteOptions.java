@@ -30,11 +30,12 @@ import com.google.gwt.core.client.JsArrayString;
  *
  * @author Xiaodong SUN
  */
-class SummernoteOptions extends JavaScriptObject {
+class SummernoteOptions {
 
     /**
      * Default constructor
      */
+    final JavaScriptObject value = SummernoteJs.options();
     protected SummernoteOptions() {}
 
     /**
@@ -43,67 +44,48 @@ class SummernoteOptions extends JavaScriptObject {
      * @return a new instance of {@link SummernoteOptions}.
      */
     static SummernoteOptions newOptions() {
-        return JavaScriptObject.createObject().cast();
+        return new SummernoteOptions();
     }
 
     /**
      * @see {@link SummernoteBase#setPlaceholder(String)}
      */
-    final native void setPlaceholder(String placeholder) /*-{
-        this.placeholder = placeholder;
-    }-*/;
+    final void setPlaceholder(String placeholder) { SummernoteJs.property(value, "placeholder", placeholder); }
 
     /**
      * @see {@link SummernoteBase#setFontNames(boolean)}
      */
-    final native void setFontNames(JsArrayString fontNames) /*-{
-        this.fontNames = fontNames;
-    }-*/;
+    final void setFontNames(JsArrayString fontNames) { SummernoteJs.property(value, "fontNames", fontNames); }
 
     /**
      * @see {@link SummernoteBase#setFontNamesIgnoreCheck(boolean)}
      */
-    final native void setFontNamesIgnoreCheck(JsArrayString fontNamesIgnoreCheck) /*-{
-        this.fontNamesIgnoreCheck = fontNamesIgnoreCheck;
-    }-*/;
+    final void setFontNamesIgnoreCheck(JsArrayString fontNamesIgnoreCheck) { SummernoteJs.property(value, "fontNamesIgnoreCheck", fontNamesIgnoreCheck); }
 
     /**
      * @see {@link SummernoteBase#setDialogsInBody(boolean)}
      */
-    final native void setDialogsInBody(boolean dialogsInBody) /*-{
-        this.dialogsInBody = dialogsInBody;
-    }-*/;
+    final void setDialogsInBody(boolean dialogsInBody) { SummernoteJs.property(value, "dialogsInBody", dialogsInBody); }
 
     /**
      * @see {@link SummernoteBase#setDialogsFade(boolean)}
      */
-    final native void setDialogsFade(boolean dialogsFade) /*-{
-        this.dialogsFade = dialogsFade;
-    }-*/;
+    final void setDialogsFade(boolean dialogsFade) { SummernoteJs.property(value, "dialogsFade", dialogsFade); }
 
     /**
      * @see {@link SummernoteBase#setDisableDragAndDrop(boolean)}
      */
-    final native void setDisableDragAndDrop(boolean disableDragAndDrop) /*-{
-        this.disableDragAndDrop = disableDragAndDrop;
-    }-*/;
+    final void setDisableDragAndDrop(boolean disableDragAndDrop) { SummernoteJs.property(value, "disableDragAndDrop", disableDragAndDrop); }
 
     /**
      * @see {@link SummernoteBase#setShortcuts(boolean)}
      */
-    final native void setShortcuts(boolean shortcuts) /*-{
-        this.shortcuts = shortcuts;
-    }-*/;
+    final void setShortcuts(boolean shortcuts) { SummernoteJs.property(value, "shortcuts", shortcuts); }
 
     /**
      * @see {@link SummernoteBase#setShowToolbar(boolean)}
      */
-    final native void setShowToolbar(boolean showToolbar) /*-{
-        if (!showToolbar)
-            this.toolbar = false;
-        else if (this.toolbar)
-            delete this.toolbar;
-    }-*/;
+    final void setShowToolbar(boolean showToolbar) { SummernoteJs.toolbarVisible(value, showToolbar); }
 
     /**
      * Creates a new toolbar group.
@@ -113,16 +95,14 @@ class SummernoteOptions extends JavaScriptObject {
      * @return
      */
     static final JsArrayMixed newToolbarGroup(String name, ToolbarButton... buttons) {
-        JsArrayString arr = JavaScriptObject.createArray().cast();
+        JsArrayString arr = SummernoteJs.strings();
         for (ToolbarButton button : buttons) {
             arr.push(button.getId());
         }
         return getToolbarGroup(name, arr);
     }
 
-    private static final native JsArrayMixed getToolbarGroup(String name, JsArrayString buttons) /*-{
-        return [name, buttons];
-    }-*/;
+    private static JsArrayMixed getToolbarGroup(String name, JsArrayString buttons) { return SummernoteJs.group(name, buttons); }
 
     /**
      * Builds the toolbar.
@@ -130,84 +110,50 @@ class SummernoteOptions extends JavaScriptObject {
      * @param toolbarGroups
      * @return
      */
-    static final native JsArrayMixed buildToolbar(JsArrayMixed... toolbarGroups) /*-{
-        var arr = [];
-        for (var i = 0; i < toolbarGroups.length; i++) {
-            arr.push(toolbarGroups[i]);
-        }
-        return arr;
-    }-*/;
+    static JsArrayMixed buildToolbar(JsArrayMixed... toolbarGroups) {
+        JsArrayMixed result = SummernoteJs.mixed();
+        for (JsArrayMixed group : toolbarGroups) result.push(group);
+        return result;
+    }
 
     /**
      * @see {@link SummernoteBase#setToolbar(Toolbar)}
      */
-    final native void setToolbar(Toolbar toolbar) /*-{
-        this.toolbar = toolbar.@org.gwtbootstrap3.extras.summernote.client.ui.base.Toolbar::build()();
-    }-*/;
+    final void setToolbar(Toolbar toolbar) { SummernoteJs.property(value, "toolbar", toolbar.build()); }
 
     /**
      * @see {@link SummernoteBase#setDefaultHeight(int)}
      */
-    final native void setHeight(int height) /*-{
-        this.height = height;
-    }-*/;
+    final void setHeight(int height) { SummernoteJs.property(value, "height", height); }
 
     /**
      * @see {@link SummernoteBase#setMaxHeight(int)}
      */
-    final native void setMaxHeight(int maxHeight) /*-{
-        this.maxHeight = maxHeight;
-    }-*/;
+    final void setMaxHeight(int maxHeight) { SummernoteJs.property(value, "maxHeight", maxHeight); }
 
     /**
      * @see {@link SummernoteBase#setMinHeight(int)}
      */
-    final native void setMinHeight(int minHeight) /*-{
-        this.minHeight = minHeight;
-    }-*/;
+    final void setMinHeight(int minHeight) { SummernoteJs.property(value, "minHeight", minHeight); }
 
     /**
      * @see {@link SummernoteBase#setHasFocus(boolean)}
      */
-    final native void setFocus(boolean focus) /*-{
-        this.focus = focus;
-    }-*/;
+    final void setFocus(boolean focus) { SummernoteJs.property(value, "focus", focus); }
 
     /**
      * @see {@link SummernoteBase#setLanguage(SummernoteLanguage)}
      */
-    final native void setLanguage(SummernoteLanguage language) /*-{
-        this.lang = language.@org.gwtbootstrap3.extras.summernote.client.ui.base.SummernoteLanguage::getCode()();
-    }-*/;
+    final void setLanguage(SummernoteLanguage language) { SummernoteJs.property(value, "lang", language.getCode()); }
 
     /**
      * @see {@link SummernoteBase#setAirMode(boolean)}
      */
-    final native void setAirMode(boolean airMode) /*-{
-        this.airMode = airMode;
-    }-*/;
+    final void setAirMode(boolean airMode) { SummernoteJs.property(value, "airMode", airMode); }
 
     /**
      * @see {@link SummernoteBase#setHint(String, HintHandler)}
      */
-    final native void setHint(String match, HintHandler searchHandler) /*-{
-        this.hint = {
-            match: new RegExp(match),
-            search: function (keyword, callback) {
-                var items = searchHandler.@org.gwtbootstrap3.extras.summernote.client.ui.base.HintHandler::onSearch(Ljava/lang/String;)(keyword);
-                var result = [];
-                for (var i = 0; i < items.length; i++) {
-                    result.push(items[i]);
-                }
-                callback(result);
-            },
-            template: function (item) {
-                return searchHandler.@org.gwtbootstrap3.extras.summernote.client.ui.base.HintHandler::getTemplate(Ljava/lang/String;)(item);
-            },
-            content: function (item) {
-                return searchHandler.@org.gwtbootstrap3.extras.summernote.client.ui.base.HintHandler::getContent(Ljava/lang/String;)(item);
-            }
-        };
-    }-*/;
+    final void setHint(String match, HintHandler handler) { SummernoteJs.hint(value, match, handler); }
 
 }

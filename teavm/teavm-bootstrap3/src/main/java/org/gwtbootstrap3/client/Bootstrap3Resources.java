@@ -30,11 +30,12 @@ import com.google.gwt.dom.client.Element;
  * stylesheets with {@code <stylesheet src="..."/>} in {@code NoThemeResources.gwt.xml} and
  * the compiler injects them. TeaVM has no module system to do that, and asking every host
  * page to hand-wire the library's internals leaks mechanics the widgets exist to hide, so
- * the TeaVM backend injects the same set itself from {@link Bootstrap3#mount}.</p>
+ * the TeaVM backend injects the same set itself from
+ * {@link Bootstrap3#initialise()}.</p>
  *
- * <p>Only the <em>additive</em> stylesheets belong here: Font Awesome and the library's
- * own rules. The Bootstrap stylesheet itself is not injected, because which one to load is
- * an application's choice and {@code Themes} already owns swapping it.</p>
+ * <p>The default Bootstrap theme is installed unless the page has already selected one.
+ * Font Awesome and the library's own rules are then layered on top. {@code Themes} owns
+ * the theme link and can replace its target later.</p>
  */
 public final class Bootstrap3Resources {
 
@@ -51,7 +52,7 @@ public final class Bootstrap3Resources {
 
     /**
      * Sets where the library's stylesheets are served from, which must be called before
-     * the first mount to have any effect. Defaults to {@code css/}.
+     * the first initialisation to have any effect. Defaults to {@code css/}.
      */
     public static void setBase(final String path) {
         base = path == null || path.isEmpty() ? "" : path.endsWith("/") ? path : path + "/";
@@ -70,7 +71,7 @@ public final class Bootstrap3Resources {
         injected = true;
         // Bootstrap itself, unless the page has already said which theme it wants.
         // Themes owns a link with this id and swaps its href to change theme; creating
-        // it here means the widgets are styled from the first mount rather than from
+        // it here means the widgets are styled from initialisation rather than from
         // the first theme switch, and a page that declares its own link keeps it.
         link(Themes.LINK_ID, base + THEME);
         link(ID_PREFIX + "font-awesome", base + FONT_AWESOME);

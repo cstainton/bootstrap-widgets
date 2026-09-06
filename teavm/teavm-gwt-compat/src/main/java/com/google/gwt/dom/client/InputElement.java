@@ -77,6 +77,14 @@ public class InputElement extends Element {
         setPropertyBoolean("disabled", disabled);
     }
 
+    public boolean isReadOnly() {
+        return getPropertyBoolean("readOnly");
+    }
+
+    public void setReadOnly(final boolean readOnly) {
+        setPropertyBoolean("readOnly", readOnly);
+    }
+
     public String getType() {
         return getPropertyString("type");
     }

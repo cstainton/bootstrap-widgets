@@ -47,35 +47,62 @@ already do. We would like to delete it.
 
 ### 1. Serve a whole directory from the test page's origin
 
-`@ServeJS(from, as)` maps a single file to a single URL, and `@CucumberSuite` can
-declare scripts but not stylesheets. Both of the things we want to test need more
-than that.
+TeaVMTestRunner already serves classpath resources under `/resources/`. Direct
+widget tests use `/resources/META-INF/bootstrap3-assets/` for the library JAR's
+bundled assets. They do not need per-file `@ServeJS` or `@AttachJavaScript`
+annotations: the module initializer loads the dependencies. The separate directory
+hosting requirement below concerns compiled application outputs used by frame tests.
 
 A compiled GWT application cannot be hosted file by file: its bootstrap script loads
 generated permutations, stylesheets, images and other resources by relative path, so
 the whole directory has to be reachable at a stable base URL on the same origin as
 the test page.
 
-The direct widget tests need the same thing for a different reason. The widgets
-already load their own resources — `Bootstrap3.mount()` calls
-`Bootstrap3Resources.ensureInjected()`, which links the library's stylesheets by URL
-— so the test should not be loading CSS on their behalf and we are not asking for a
-`stylesheets` attribute. What is missing is somewhere for those URLs to resolve. With
-`css/` served, the widget does its own work and the test says nothing about it.
+The direct TeaVM widget tests use the same startup path as an application. They call
+`Bootstrap3.initialise()` or `Bootstrap5.initialise()` once, then add fixtures through
+the compatibility library's `RootPanel`. Initialisation installs the default Bootstrap
+theme and the library's additional stylesheets. Bootstrap 5 also installs its bundled
+runtime; Bootstrap 3 loads its vendored jQuery and Bootstrap scripts in order.
+Use `Bootstrap3.initialise(ready)` to wait before constructing fixtures. The host
+serves the bundled files; script attachment is performed by the module loader.
 
-One thing that stays a page-level decision either way: Bootstrap's own stylesheet
-arrives as a *theme*, through a link the page owns, because `ThemeSwitcher` swaps it
-at runtime. A widget does not inject it. So a scenario asserting applied layout —
-that the segments of an input group meet without a gap and share one height — cannot
-be answered by the direct suite at all, and belongs in the framed suite against a
-page that already has a theme. `ING-003` in `input-groups.feature` is the first
-example; it is currently reported as ignored.
+The test must not inject those resources itself. It must serve the complete packaged
+asset tree at the base path configured for the library so the URLs selected by
+initialisation resolve normally. With that in place, a direct test can inspect applied
+styles as well as markup and behaviour. `RootPanel` matters independently: appending a
+widget element by hand bypasses GWT attachment and therefore skips `onLoad()` and any
+plugin setup performed there.
 
 So: a way to say "serve this directory at this path". The directory is a build
 output, so its location is not a compile-time constant — this probably wants Maven
 or system-property configuration, or an annotation naming a logical application whose
 root is configured in the build. Please do not require a hard-coded workstation
 path.
+
+#### Resource identity and version conflicts
+
+A test application can contain several widget libraries, each with generated module
+initialisation and transitive browser assets. Maven normally selects one version of a
+given Java artifact, but differently named artifacts can still package incompatible
+versions of the same logical browser library. Exact URL or DOM-id deduplication is not
+enough: different URLs may install the same global API, and a generic presence check may
+accept an incompatible version that another module loaded first.
+
+Module initialisation therefore needs an explicit logical resource identity and expected
+version. The browser harness must exercise these cases:
+
+1. the same logical resource and version requested by two modules loads once and shares
+   one readiness result;
+2. different versions of the same global script or stylesheet fail with a diagnostic
+   before the second version is installed;
+3. unrelated resources from different modules coexist;
+4. a host-supplied global is accepted only when its compatible version can be verified;
+5. Bootstrap major versions are treated as conflicting global CSS unless an application
+   deliberately isolates them in separate documents.
+
+This is an application-composition contract, not a reason for Cucumber Tea, Mockatcha or
+individual steps to choose assets. They continue to observe the modules' own
+initialisation behaviour.
 
 ### 2. Open an application in a frame and know when it is ready
 
@@ -130,12 +157,12 @@ need to read computed style and element geometry inside the frame.
 `mockatcha-dom` already implements exact computed-style assertions. The missing
 public geometry, comparison and frame-window semantics are specified in
 [`MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md`](MOCKATCHA-DOM-STYLE-LAYOUT-REQUIREMENTS.md).
-The subject application's widget module must load its declared and inherited
-stylesheets exactly as it does in normal use. Cucumber Tea only has to serve the
-complete module output and wait for the application to become ready; neither the
-test steps nor Mockatcha should select or inject Bootstrap stylesheets themselves.
-An application using a deliberate no-theme module remains responsible for choosing
-its theme in the usual way.
+The subject must load resources exactly as it does in normal use. GWT does that through
+its module bootstrap. TeaVM tests call the library initialiser before adding fixtures
+through `RootPanel`; the host serves the packaged assets that initialiser references.
+Cucumber Tea and Mockatcha must not select or inject Bootstrap stylesheets on the
+subject's behalf. An application using a deliberate no-theme module remains responsible
+for choosing its theme in the usual way.
 
 ### 7. Tell us whether `.feature` files are executed
 

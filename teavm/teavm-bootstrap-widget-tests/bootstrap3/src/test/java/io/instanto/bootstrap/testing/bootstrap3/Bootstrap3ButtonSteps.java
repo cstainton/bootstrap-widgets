@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import io.instanto.cucumber.tea.AfterScenario;
 import io.instanto.cucumber.tea.BeforeScenario;
-import io.instanto.cucumber.tea.CucumberScript;
 import io.instanto.cucumber.tea.CucumberSuite;
 import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
@@ -31,15 +30,7 @@ import org.gwtbootstrap3.client.ui.constants.Toggle;
 import org.teavm.jso.dom.html.HTMLElement;
 
 @CucumberSuite(
-        value = {"features/buttons.feature", "features/widget-lifecycle.feature"},
-        scripts = {
-            @CucumberScript(
-                    resource = "jquery-3.7.1.min.cache.js",
-                    path = "jquery-3.7.1.min.cache.js"),
-            @CucumberScript(
-                    resource = "bootstrap-3.4.1.min.cache.js",
-                    path = "bootstrap-3.4.1.min.cache.js")
-        })
+        value = {"features/buttons.feature", "features/widget-lifecycle.feature"})
 public class Bootstrap3ButtonSteps {
     private RootPanel host;
     private Button button;
@@ -64,6 +55,7 @@ public class Bootstrap3ButtonSteps {
     @BeforeScenario
     public void createHost() {
         Dom.reset();
+        Bootstrap3TestRuntime.initialise();
         Dom.container().setAttribute("id", "bootstrap3-widget-test-host");
         host = RootPanel.get("bootstrap3-widget-test-host");
     }

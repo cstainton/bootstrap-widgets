@@ -183,7 +183,7 @@ public class MultipleSelect extends SelectBase<List<String>> {
 
     @Override
     public List<String> getValue() {
-        if (isAttached()) {
+        if (selectReady) {
             JsArrayString arr = getValue(getElement());
             List<String> result = new ArrayList<>(arr.length());
             for (int i = 0; i < arr.length(); i++) {
@@ -206,8 +206,9 @@ public class MultipleSelect extends SelectBase<List<String>> {
 
     @Override
     protected void setSelectedValue(List<String> value) {
-        if (isAttached()) {
-            final JsArrayString arr = JavaScriptObject.createArray().cast();
+        if (value == null) value = java.util.Collections.emptyList();
+        if (selectReady) {
+            final JsArrayString arr = SelectJs.strings();
             for (final String val : value) {
                 arr.push(val);
             }
@@ -252,7 +253,7 @@ public class MultipleSelect extends SelectBase<List<String>> {
     }
 
     private void setSelectAll(boolean selected) {
-        if (isAttached()) {
+        if (selectReady) {
             String cmd = selected ? SelectCommand.SELECT_ALL : SelectCommand.DESELECT_ALL;
             command(getElement(), cmd);
         } else {
@@ -262,13 +263,8 @@ public class MultipleSelect extends SelectBase<List<String>> {
         }
     }
 
-    private native JsArrayString getValue(Element e) /*-{
-        var value = $wnd.jQuery(e).selectpicker('val');
-        return value || [];
-    }-*/;
+    private JsArrayString getValue(Element e) { return SelectJs.values(e); }
 
-    private native void setValue(Element e, JsArrayString value) /*-{
-        $wnd.jQuery(e).selectpicker('val', value);
-    }-*/;
+    private void setValue(Element e, JsArrayString value) { SelectJs.value(e, value); }
 
 }

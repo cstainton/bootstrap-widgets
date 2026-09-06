@@ -39,6 +39,10 @@ public abstract class GwtEvent<H extends EventHandler> extends com.google.web.bi
     @Override
     public abstract Type<H> getAssociatedType();
 
+    public String toDebugString() {
+        return getClass().getName();
+    }
+
     @Override
     protected abstract void dispatch(H handler);
 

@@ -45,21 +45,13 @@ public class TeaVmBootstrap3EntryPoint implements EntryPoint {
      * has no module system to read that, so the equivalent has to happen here, and an
      * application has to run this the way GWT's bootstrap runs an entry point.</p>
      *
-     * <p>It was not happening at all: nothing called ensureInjected on this backend
-     * except Bootstrap3.mount, which the showcase does not use. The pages looked right
-     * only because their HTML declared a stylesheet link by hand, and anything the
-     * library adds on top of Bootstrap -- its own overrides, Font Awesome -- was simply
-     * missing.</p>
+     * <p>{@link Bootstrap3#initialise()} invokes this entry point explicitly, providing
+     * the module startup that GWT normally performs before application code runs.</p>
      */
     @Override
     public void onModuleLoad() {
         Bootstrap3Resources.ensureInjected();
-        if (!isJQueryLoaded()) {
-            warn("gwtbootstrap3: jQuery is not on the page; interactive widgets will not work.");
-        } else if (!isBootstrapLoaded()) {
-            warn("gwtbootstrap3: Bootstrap 3's JavaScript is not on the page; "
-                    + "modals, tooltips and other plugin-backed widgets will not work.");
-        }
+        NoThemeResourcesResources.whenReady(TeaVmBootstrap3EntryPoint::isBootstrapLoaded, () -> { });
     }
 
     /** True when jQuery is present. */
@@ -79,6 +71,4 @@ public class TeaVmBootstrap3EntryPoint implements EntryPoint {
             + " && typeof window.jQuery.fn.modal !== 'undefined';")
     private static native boolean bootstrapPresent();
 
-    @JSBody(params = {"msg"}, script = "if (window.console) { console.warn(msg); }")
-    private static native void warn(String msg);
 }

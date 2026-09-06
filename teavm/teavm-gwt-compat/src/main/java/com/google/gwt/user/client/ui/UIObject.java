@@ -41,6 +41,11 @@ public abstract class UIObject {
         return element;
     }
 
+    @Deprecated
+    public com.google.gwt.user.client.Element getStyleElement() {
+        return com.google.gwt.user.client.Element.as(getElement());
+    }
+
     protected void setElement(final Element element) {
         if (element == null) {
             throw new IllegalArgumentException("element must not be null");
@@ -121,16 +126,21 @@ public abstract class UIObject {
         return primaryStyleName;
     }
 
-    public Style getStyle() {
-        return getElement().getStyle();
-    }
 
     public void setVisible(final boolean visible) {
-        getElement().getStyle().setDisplay(visible ? null : Style.Display.NONE);
+        setVisible(getElement(), visible);
     }
 
     public boolean isVisible() {
-        return !"none".equals(getElement().getStyle().getProperty("display"));
+        return isVisible(getElement());
+    }
+
+    public static void setVisible(final com.google.gwt.dom.client.Element element, final boolean visible) {
+        element.getStyle().setDisplay(visible ? null : Style.Display.NONE);
+    }
+
+    public static boolean isVisible(final com.google.gwt.dom.client.Element element) {
+        return !"none".equals(element.getStyle().getProperty("display"));
     }
 
     public void setTitle(final String title) {

@@ -92,7 +92,22 @@ public class GenerateModulesMojo extends AbstractMojo {
     @Parameter(defaultValue = "bootstrap5-")
     private String idPrefix;
 
-    private static final Pattern BUNDLE_SCRIPT = Pattern.compile("@Source\\(\"([^\"]+\\.js)\"\\)");
+    /** Optional Java method references that recognise scripts already supplied by a host. */
+    @Parameter
+    private java.util.Map<String, String> scriptPresence;
+
+    /** Text-only ClientBundles whose synchronous API is retained through generated providers. */
+    @Parameter
+    private java.util.List<String> inlineTextBundles;
+
+    @Parameter(defaultValue = "${project.build.outputDirectory}")
+    private java.io.File classOutput;
+
+    private static final Pattern BUNDLE_SOURCE = Pattern.compile(
+            "@(?:[\\w.]+\\.)?Source\\s*\\(\\s*(?:value\\s*=\\s*)?(\\{[^}]*\\}|\"[^\"]*\")\\s*\\)");
+    private static final Pattern SOURCE_LITERAL = Pattern.compile("\"([^\"]+)\"");
+
+    private record BundleAsset(Path file, String path, boolean inline) { }
 
     @Override
     public void execute() throws MojoExecutionException {
@@ -119,6 +134,10 @@ public class GenerateModulesMojo extends AbstractMojo {
     private boolean generate(final Path modulePath) throws MojoExecutionException {
         final Path dir = modulePath.getParent();
         final String fileName = modulePath.getFileName().toString();
+        final String module = fileName.substring(0, fileName.length() - ".gwt.xml".length());
+        if (includeModules != null && !includeModules.isEmpty() && !includeModules.contains(module)) {
+            return false;
+        }
         final Document document = parse(modulePath);
 
         final List<String> stylesheets = new ArrayList<>();
@@ -126,18 +145,29 @@ public class GenerateModulesMojo extends AbstractMojo {
         for (int i = 0; i < sheets.getLength(); i++) {
             final String src = ((Element) sheets.item(i)).getAttribute("src");
             if (!src.isEmpty()) {
-                stylesheets.add(fileNameOf(src));
+                stylesheets.add(src);
             }
         }
-        final List<String> scripts = bundleScripts(dir);
-        if (stylesheets.isEmpty() && scripts.isEmpty()) {
+        final Set<String> scriptNames = new LinkedHashSet<>();
+        final NodeList declaredScripts = document.getElementsByTagName("script");
+        for (int i = 0; i < declaredScripts.getLength(); i++) {
+            final String src = ((Element) declaredScripts.item(i)).getAttribute("src");
+            if (!src.isEmpty()) {
+                scriptNames.add(src);
+            }
+        }
+        final List<BundleAsset> bundled = bundleAssets(dir);
+        for (final BundleAsset asset : bundled) {
+            if (asset.path().endsWith(".js") && !asset.inline()) {
+                scriptNames.add(asset.path());
+            }
+        }
+        final List<String> scripts = new ArrayList<>(scriptNames);
+        if (stylesheets.isEmpty() && scripts.isEmpty() && bundled.isEmpty()
+                && document.getElementsByTagName("public").getLength() == 0) {
             return false;
         }
 
-        final String module = fileName.substring(0, fileName.length() - ".gwt.xml".length());
-        if (includeModules != null && !includeModules.isEmpty() && !includeModules.contains(module)) {
-            return false;
-        }
         // A descriptor normally sits above the client package it names. Some sit inside
         // it, and appending another "client" to those produced a package that does not
         // exist and a class nothing could refer to.
@@ -151,7 +181,12 @@ public class GenerateModulesMojo extends AbstractMojo {
                         .resolve(klass + ".java"),
                 render(fileName, pkg, module, klass, prefix, stylesheets, scripts));
 
-        copyAssets(document, dir, scripts);
+        copyAssets(document, dir);
+        for (final BundleAsset asset : bundled) {
+            for (final Path target : targets()) {
+                copyInto(asset.file(), target.resolve(asset.path()).getParent());
+            }
+        }
 
         getLog().info("  " + fileName + " -> " + klass + " ("
                 + stylesheets.size() + " stylesheet" + (stylesheets.size() == 1 ? "" : "s")
@@ -160,30 +195,99 @@ public class GenerateModulesMojo extends AbstractMojo {
     }
 
     /**
-     * The scripts a module's ClientBundle inlines on GWT.
+     * The resources a module's ClientBundle declares on GWT.
      *
      * <p>They are declared in Java rather than in the module file, because on GWT they
-     * are compiled into the output rather than served. The same list is what has to be
-     * fetched here instead.</p>
+     * are compiled into the output rather than served. Keep non-script resources too:
+     * images, data and styles belong in the consuming application's asset tree.</p>
      */
-    private List<String> bundleScripts(final Path dir) throws MojoExecutionException {
-        final Set<String> found = new LinkedHashSet<>();
+    private List<BundleAsset> bundleAssets(final Path dir) throws MojoExecutionException {
+        final List<BundleAsset> found = new ArrayList<>();
         try (Stream<Path> paths = Files.walk(dir)) {
             final List<Path> bundles = new ArrayList<>();
-            paths.filter(p -> p.getFileName().toString().endsWith("ClientBundle.java"))
+            paths.filter(p -> p.getFileName().toString().endsWith(".java"))
                  .forEach(bundles::add);
             bundles.sort(Path::compareTo);
             for (final Path bundle : bundles) {
-                final Matcher matcher = BUNDLE_SCRIPT.matcher(
-                        Files.readString(bundle, StandardCharsets.UTF_8));
+                final String source = Files.readString(bundle, StandardCharsets.UTF_8);
+                if (!Pattern.compile("\\bextends\\s+[^{;]*\\bClientBundle\\b").matcher(source).find()) {
+                    continue;
+                }
+                final Matcher packageMatcher = Pattern.compile("package\\s+([\\w.]+)\\s*;").matcher(source);
+                final String packageName = packageMatcher.find() ? packageMatcher.group(1) : "";
+                final String simpleName = bundle.getFileName().toString().replace(".java", "");
+                final boolean inline = inlineTextBundles != null
+                        && inlineTextBundles.contains(packageName + "." + simpleName);
+                if (inline) {
+                    generateTextBundle(bundle, source, packageName, simpleName);
+                }
+                final Matcher matcher = BUNDLE_SOURCE.matcher(source);
                 while (matcher.find()) {
-                    found.add(fileNameOf(matcher.group(1)));
+                    final Matcher literal = SOURCE_LITERAL.matcher(matcher.group(1));
+                    while (literal.find()) {
+                        final String path = literal.group(1);
+                        final Path file = bundle.getParent().resolve(path).normalize();
+                        if (!Files.isRegularFile(file)) {
+                            throw new MojoExecutionException("Missing ClientBundle resource " + path + " in " + bundle);
+                        }
+                        String deployed = path.startsWith("resource/") ? path.substring(9) : path;
+                        if (Path.of(deployed).isAbsolute() || deployed.contains("..")) {
+                            throw new MojoExecutionException("Unsupported resource path " + path + " in " + bundle);
+                        }
+                        found.add(new BundleAsset(file, deployed, inline));
+                    }
                 }
             }
         } catch (final IOException problem) {
             throw new MojoExecutionException("could not scan " + dir, problem);
         }
-        return new ArrayList<>(found);
+        return found;
+    }
+
+    private void generateTextBundle(Path bundle, String source, String packageName, String simpleName)
+            throws IOException, MojoExecutionException {
+        final String implementation = simpleName + "_TeaVM";
+        final StringBuilder java = new StringBuilder("package " + packageName + ";\n"
+                + "// Generated from ClientBundle declarations.\n"
+                + "public final class " + implementation + " implements " + simpleName + " {\n");
+        final Matcher methods = Pattern.compile("@Source\\(\"([^\"]+)\"\\)\\s*TextResource\\s+(\\w+)\\(\\)\\s*;").matcher(source);
+        int count = 0;
+        while (methods.find()) {
+            count++;
+            final Path file = bundle.getParent().resolve(methods.group(1)).normalize();
+            if (!file.startsWith(sourceRoot.toPath().normalize()) || !Files.isRegularFile(file)) {
+                throw new MojoExecutionException("Invalid text resource " + file);
+            }
+            final String text = Files.readString(file, StandardCharsets.UTF_8);
+            final String method = methods.group(2);
+            java.append("public com.google.gwt.resources.client.TextResource ").append(method)
+                    .append("() { return new com.google.gwt.resources.client.TextResource() {\n")
+                    .append("public String getName() { return \"").append(method).append("\"; }\n")
+                    .append("public String getText() { StringBuilder text = new StringBuilder();\n");
+            // Separate append calls avoid the class-file limit on a single string constant.
+            for (int start = 0; start < text.length(); start += 8000) {
+                java.append("text.append(\"").append(javaLiteral(text.substring(start, Math.min(start + 8000, text.length()))))
+                        .append("\");\n");
+            }
+            java.append("return text.toString(); }\n}; }\n");
+        }
+        long declarations = Pattern.compile("\\bTextResource\\s+\\w+\\(\\)\\s*;").matcher(source).results().count();
+        if (count == 0 || count != declarations) {
+            throw new MojoExecutionException("Inline text bundles require literal @Source on every TextResource: " + bundle);
+        }
+        java.append("}\n");
+        final Path target = outputRoot.toPath().resolve(packageName.replace('.', '/')).resolve(implementation + ".java");
+        Files.createDirectories(target.getParent());
+        Files.writeString(target, java, StandardCharsets.UTF_8);
+        final Path service = classOutput.toPath().resolve("META-INF/services/" + packageName + "." + simpleName);
+        Files.createDirectories(service.getParent());
+        Files.writeString(service, packageName + "." + implementation + "\n", StandardCharsets.UTF_8);
+    }
+
+    private static String javaLiteral(String value) {
+        return value.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\r", "\\r").replace("\n", "\\n").replace("\t", "\\t")
+                .replace("\b", "\\b").replace("\f", "\\f");
     }
 
     private String render(final String moduleFile, final String pkg, final String module,
@@ -191,12 +295,14 @@ public class GenerateModulesMojo extends AbstractMojo {
             final List<String> scripts) {
         final StringBuilder body = new StringBuilder();
         for (final String sheet : stylesheets) {
-            body.append("            .stylesheet(").append(shortName(resourcesClass))
-                .append(".cssBase() + \"").append(sheet).append("\")\n");
+            body.append("            .stylesheet(").append(assetUrl(sheet, "css")).append(")\n");
         }
         for (final String script : scripts) {
-            body.append("            .script(").append(shortName(resourcesClass))
-                .append(".jsBase() + \"").append(script).append("\")\n");
+            body.append("            .script(").append(assetUrl(script, "js"));
+            if (scriptPresence != null && scriptPresence.containsKey(fileNameOf(script))) {
+                body.append(", ").append(scriptPresence.get(fileNameOf(script)));
+            }
+            body.append(")\n");
         }
         // Trailing newline is trimmed so the chained call ends cleanly.
         if (body.length() > 0) {
@@ -222,7 +328,7 @@ public class GenerateModulesMojo extends AbstractMojo {
              + " */\n"
              + "public final class " + klass + " {\n\n"
              + "    private static final ScriptModule MODULE = ScriptModule.named(\""
-             + module + "\")\n" + body + ";\n\n"
+             + module + "\")" + (body.length() == 0 ? "" : "\n" + body) + ";\n\n"
              + "    private " + klass + "() {\n"
              + "    }\n\n"
              + "    /** Injects this module's resources once; further calls do nothing. */\n"
@@ -247,34 +353,21 @@ public class GenerateModulesMojo extends AbstractMojo {
              + "}\n";
     }
 
-    /** Copies the module's own css and js out to where they will be served. */
-    private void copyAssets(final Document document, final Path dir, final List<String> scripts)
+    private String assetUrl(String path, String kind) {
+        String relative = path.startsWith(kind + "/") ? path.substring(kind.length() + 1) : "../" + path;
+        return shortName(resourcesClass) + "." + kind + "Base() + \"" + relative + "\"";
+    }
+
+    /** Copies declared public assets with their paths and include/exclude rules preserved. */
+    private void copyAssets(final Document document, final Path dir)
             throws MojoExecutionException {
         final NodeList publics = document.getElementsByTagName("public");
         for (int i = 0; i < publics.getLength(); i++) {
-            final Path base = dir.resolve(((Element) publics.item(i)).getAttribute("path"));
-            for (final String kind : new String[] {"css", "js"}) {
-                final Path from = base.resolve(kind);
-                if (!Files.isDirectory(from)) {
-                    continue;
-                }
-                for (final Path target : targets()) {
-                    copyMatching(from, target.resolve(kind), "." + kind);
-                }
+            final Element declaration = (Element) publics.item(i);
+            final Path base = dir.resolve(declaration.getAttribute("path"));
+            for (final Path target : targets()) {
+                copyPublic(base, target, declaration);
             }
-        }
-        // A module may inline its scripts through a ClientBundle without declaring a
-        // public path, in which case they still have to be served from somewhere.
-        try (Stream<Path> paths = Files.walk(dir)) {
-            final List<Path> loose = new ArrayList<>();
-            paths.filter(p -> scripts.contains(p.getFileName().toString())).forEach(loose::add);
-            for (final Path asset : loose) {
-                for (final Path target : targets()) {
-                    copyInto(asset, target.resolve("js"));
-                }
-            }
-        } catch (final IOException problem) {
-            throw new MojoExecutionException("could not collect assets under " + dir, problem);
         }
     }
 
@@ -287,17 +380,35 @@ public class GenerateModulesMojo extends AbstractMojo {
         return targets;
     }
 
-    private void copyMatching(final Path from, final Path to, final String suffix)
+    private void copyPublic(final Path from, final Path to, final Element declaration)
             throws MojoExecutionException {
-        try (Stream<Path> paths = Files.list(from)) {
+        if (!Files.isDirectory(from)) {
+            return;
+        }
+        try (Stream<Path> paths = Files.walk(from)) {
             final List<Path> assets = new ArrayList<>();
-            paths.filter(p -> p.getFileName().toString().endsWith(suffix)).forEach(assets::add);
+            paths.filter(Files::isRegularFile).forEach(assets::add);
             for (final Path asset : assets) {
-                copyInto(asset, to);
+                String relative = from.relativize(asset).toString().replace(java.io.File.separatorChar, '/');
+                if ((declaration.getElementsByTagName("include").getLength() == 0
+                        || matches(declaration, "include", relative)) && !matches(declaration, "exclude", relative)) {
+                    copyInto(asset, to.resolve(relative).getParent());
+                }
             }
         } catch (final IOException problem) {
             throw new MojoExecutionException("could not copy assets from " + from, problem);
         }
+    }
+
+    private boolean matches(Element declaration, String tag, String path) {
+        NodeList patterns = declaration.getElementsByTagName(tag);
+        for (int i = 0; i < patterns.getLength(); i++) {
+            String glob = ((Element) patterns.item(i)).getAttribute("name");
+            if (org.codehaus.plexus.util.SelectorUtils.matchPath(glob, path, true)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void copyInto(final Path asset, final Path directory) throws MojoExecutionException {

@@ -234,12 +234,13 @@ Part 1.
 
 ## Not in scope
 
-`mockatcha-dom` does not serve or inject stylesheets. The test application boots the
-widget module the way an ordinary application does, so the module system loads the
-stylesheets and scripts it declares. The host only serves that output and waits until
-it is ready. **A test step must never inject Bootstrap's stylesheet as a substitute
-for module initialization** — that asserts against a fixture the test invented rather
-than against the library.
+`mockatcha-dom` does not serve or inject stylesheets. A GWT subject receives resources
+through its module bootstrap. A TeaVM subject calls `Bootstrap3.initialise()` or
+`Bootstrap5.initialise()` before adding widgets through the compatibility library's
+`RootPanel`; the host serves the packaged asset tree those initialisers reference.
+**A test step must never inject Bootstrap's stylesheet as a substitute for library
+initialisation** — that asserts against a fixture the test invented rather than against
+the library.
 
 ## Acceptance tests
 

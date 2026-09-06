@@ -1,5 +1,7 @@
 package org.gwtbootstrap3.extras.slider.client.ui;
 
+import org.gwtbootstrap3.extras.slider.client.ui.base.SliderJs;
+
 /*
  * #%L
  * GwtBootstrap3
@@ -57,46 +59,16 @@ public class Slider extends SliderBase<Double> {
     }
 
     @Override
-    protected native void setValue(Element e, Double value) /*-{
-        var doubleValue = value.@java.lang.Double::doubleValue()();
-        if (this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::isSliderNamespaceAvailable()())
-            $wnd.jQuery(e).slider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::SET_VALUE, doubleValue);
-        else
-            $wnd.jQuery(e).bootstrapSlider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::SET_VALUE, doubleValue);
-    }-*/;
+    protected void setValue(Element e, Double value) { SliderJs.value(e, value.toString()); }
 
     @Override
-    protected native Double getValue(Element e) /*-{
-        var value;
-        if (this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::isSliderNamespaceAvailable()())
-            value = $wnd.jQuery(e).slider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::GET_VALUE);
-        else
-            value = $wnd.jQuery(e).bootstrapSlider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::GET_VALUE);
-        return @java.lang.Double::new(D)(value);
-    }-*/;
+    protected Double getValue(Element e) { return convertValue(SliderJs.value(e)); }
 
     @Override
-    protected native void setFormatterOption(JavaScriptObject options) /*-{
-        var slider = this;
-        options.formatter = function(value) {
-            var val = @java.lang.Double::new(D)(value);
-            return slider.@org.gwtbootstrap3.extras.slider.client.ui.Slider::formatTooltip(Ljava/lang/Double;)(val);
-        };
-    }-*/;
+    protected void setFormatterOption(JavaScriptObject options) { SliderJs.formatter(options, value -> formatTooltip(convertValue(value))); }
 
     @Override
-    protected native void setFormatter(Element e) /*-{
-        var slider = this;
-        var attr = @org.gwtbootstrap3.extras.slider.client.ui.base.SliderOption::FORMATTER;
-        var formatter = function(value) {
-            var val = @java.lang.Double::new(D)(value);
-            return slider.@org.gwtbootstrap3.extras.slider.client.ui.Slider::formatTooltip(Ljava/lang/Double;)(val);
-        };
-        if (this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::isSliderNamespaceAvailable()())
-            $wnd.jQuery(e).slider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::SET_ATTRIBUTE, attr, formatter);
-        else
-            $wnd.jQuery(e).bootstrapSlider(@org.gwtbootstrap3.extras.slider.client.ui.base.SliderCommand::SET_ATTRIBUTE, attr, formatter);
-    }-*/;
+    protected void setFormatter(Element e) { SliderJs.formatter(e, value -> formatTooltip(convertValue(value))); }
 
     @Override
     protected String format(Double value) {
@@ -111,27 +83,15 @@ public class Slider extends SliderBase<Double> {
     }
 
     @Override
-    protected native void onSlide(Event event) /*-{
-        var value = @java.lang.Double::new(D)(event.value);
-        this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::fireSlideEvent(Ljava/lang/Double;)(value);
-    }-*/;
+    protected void onSlide(Event event) { fireSlideEvent(convertValue(SliderJs.eventValue(event, false))); }
 
     @Override
-    protected native void onSlideStart(Event event) /*-{
-        var value = @java.lang.Double::new(D)(event.value);
-        this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::fireSlideStartEvent(Ljava/lang/Double;)(value);
-    }-*/;
+    protected void onSlideStart(Event event) { fireSlideStartEvent(convertValue(SliderJs.eventValue(event, false))); }
 
     @Override
-    protected native void onSlideStop(Event event) /*-{
-        var value = @java.lang.Double::new(D)(event.value);
-        this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::fireSlideStopEvent(Ljava/lang/Double;)(value);
-    }-*/;
+    protected void onSlideStop(Event event) { fireSlideStopEvent(convertValue(SliderJs.eventValue(event, false))); }
 
     @Override
-    protected native void onSlideChange(Event event) /*-{
-        var value = @java.lang.Double::new(D)(event.value.newValue);
-        this.@org.gwtbootstrap3.extras.slider.client.ui.Slider::fireChangeEvent(Ljava/lang/Double;)(value);
-    }-*/;
+    protected void onSlideChange(Event event) { fireChangeEvent(convertValue(SliderJs.eventValue(event, true))); }
 
 }

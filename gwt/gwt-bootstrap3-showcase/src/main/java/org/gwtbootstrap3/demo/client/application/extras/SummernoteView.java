@@ -47,18 +47,10 @@ import org.gwtbootstrap3.extras.summernote.client.ui.base.ToolbarButton;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -225,58 +217,23 @@ public class SummernoteView extends Composite {
             }
         });
 
-        // Hint for emoji
-        RequestBuilder requestBuilder = new RequestBuilder(RequestBuilder.GET, "https://api.github.com/emojis");
-        requestBuilder.setCallback(new RequestCallback() {
-
-            @Override
-            public void onResponseReceived(Request request, Response response) {
-                String text = response.getText();
-                final JSONObject emojiUrls = JSONParser.parseStrict(text).isObject();
-                GWT.log("Found " + emojiUrls.size() + " emojis");
-                hintEmoji.setHint(":([\\-+\\w]+)$", new DefaultHintHandler() {
-
-                    @Override
-                    public String[] onSearch(String keyword) {
-                        List<String> result = new ArrayList<>(0);
-                        for (String key : emojiUrls.keySet()) {
-                            if (key.indexOf(keyword) == 0)
-                                result.add(key);
-                        }
-                        return result.toArray(new String[0]);
-                    }
-
-                    @Override
-                    public String getTemplate(String item) {
-                        String url = emojiUrls.get(item).isString().stringValue();
-                        return "<img src=\"" + url + "\" style=\"width:20px\"/> :" + item + ":";
-                    }
-
-                    @Override
-                    public Node getContent(String item) {
-                        String url = emojiUrls.get(item).isString().stringValue();
-                        ImageElement img = Document.get().createImageElement();
-                        img.setSrc(url);
-                        img.getStyle().setWidth(20, Unit.PX);
-                        return img;
-                    }
-                });
-                hintEmoji.reconfigure();
+        // Bundled suggestions keep the example usable offline, without a GitHub API request.
+        hintEmoji.setHint(":([\\-+\\w]+)$", new DefaultHintHandler() {
+            private final String[] names = {"smile", "heart", "thumbsup"};
+            private final String[] symbols = {"\uD83D\uDE04", "\u2764", "\uD83D\uDC4D"};
+            @Override public String[] onSearch(String keyword) {
+                List<String> result = new ArrayList<>();
+                for (String name : names) if (name.startsWith(keyword)) result.add(name);
+                return result.toArray(new String[0]);
             }
-
-            @Override
-            public void onError(Request request, Throwable exception) {
-                GWT.log("Error while requesting emojis", exception);
+            private String symbol(String name) {
+                for (int i = 0; i < names.length; i++) if (names[i].equals(name)) return symbols[i];
+                return name;
             }
+            @Override public String getTemplate(String item) { return symbol(item) + " :" + item + ":"; }
+            @Override public Node getContent(String item) { return Document.get().createTextNode(symbol(item)); }
         });
-        try {
-            requestBuilder.send();
-        } catch (RequestException e) {
-            GWT.log("Error while sending request for emojis", e);
-        }
 
-        // Customize toolbar
-        customToolbar.setFontNames(SummernoteFontName.HELVETICA_NEUE, SummernoteFontName.VERDANA, SummernoteFontName.ARIAL);
         customToolbar.setToolbar(new Toolbar()
             .addGroup(ToolbarButton.FONT_NAME, ToolbarButton.FONT_SIZE)
             .addGroup(ToolbarButton.UNDO, ToolbarButton.REDO)

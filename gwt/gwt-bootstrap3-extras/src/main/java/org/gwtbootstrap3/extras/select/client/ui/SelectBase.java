@@ -105,6 +105,7 @@ import com.google.gwt.user.client.ui.impl.FocusImpl;
 public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>, HasEnabled, Focusable,
         HasType<ButtonType>, HasSize<ButtonSize>, IsEditor<LeafValueEditor<T>>, HasAllSelectHandlers<T> {
 
+    protected boolean selectReady;
     private LeafValueEditor<T> editor;
     private ButtonType type;
     private ButtonSize size;
@@ -147,20 +148,28 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
     @Override
     protected void onLoad() {
         super.onLoad();
-        // Inject the language JS is necessary
-        if (language.getJs() != null) {
-            ScriptInjector.fromString(language.getJs().getText())
-                .setWindow(ScriptInjector.TOP_WINDOW).inject();
-        }
-        initialize(getElement(), options);
-        bindSelectEvents(getElement());
+        SelectJs.whenReady(() -> {
+            if (!isAttached() || selectReady) return;
+            SelectJs.restoreDefaults();
+            if (language.getJs() != null) {
+                ScriptInjector.fromString(language.getJs().getText())
+                    .setWindow(ScriptInjector.TOP_WINDOW).inject();
+            }
+            bindSelectEvents(getElement());
+            selectReady = true;
+            initialize(getElement(), options);
+            SelectJs.restoreDefaults();
+        });
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        unbindSelectEvents(getElement());
-        command(getElement(), SelectCommand.DESTROY);
+        if (selectReady) {
+            unbindSelectEvents(getElement());
+            command(getElement(), SelectCommand.DESTROY);
+            selectReady = false;
+        }
     }
 
     @Override
@@ -633,7 +642,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      */
     public void setWindowPaddingTopRightBottomLeft(final int top, final int right,
             final int bottom, final int left) {
-        JsArrayNumber array = JavaScriptObject.createArray(4).cast();
+        JsArrayNumber array = SelectJs.numbers();
         array.push(top);
         array.push(right);
         array.push(bottom);
@@ -732,7 +741,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
     }
 
     private Element getFocusElement() {
-        if (!isAttached()) {
+        if (!selectReady) {
             return selectElement;
         }
         return getElement().getParentElement().getFirstChildElement();
@@ -844,7 +853,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * change any underlying values that affect the layout of the element.
      */
     public void render() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.RENDER);
     }
 
@@ -852,7 +861,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * Toggles the select menu open/closed.
      */
     public void toggle() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.TOGGLE);
     }
 
@@ -860,7 +869,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * Enables the device's native menu for select menus.
      */
     public void mobile() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.MOBILE);
     }
 
@@ -868,7 +877,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * WHEN CHANGING ANY SETTINGS CALL REFRESH AFTER!!
      */
     public void refresh() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.REFRESH);
     }
 
@@ -877,7 +886,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * the select itself.
      */
     public void show() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.SHOW);
         else
             super.setVisible(true);
@@ -888,7 +897,7 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
      * the select itself.
      */
     public void hide() {
-        if (isAttached())
+        if (selectReady)
             command(getElement(), SelectCommand.HIDE);
         else
             super.setVisible(false);
@@ -904,66 +913,43 @@ public abstract class SelectBase<T> extends ComplexWidget implements HasValue<T>
 
     @Override
     public boolean isVisible() {
-        if (isAttached()) {
+        if (selectReady) {
             return isVisible(selectElement.getParentElement());
         }
         return super.isVisible();
     }
 
-    private native void initialize(Element e, SelectOptions options) /*-{
-        $wnd.jQuery(e).selectpicker(options);
-    }-*/;
+    private void initialize(Element e, SelectOptions options) {
+        SelectJs.initialize(e, options.value);
+    }
 
     /**
      * Binds the select events.
      *
      * @param e
      */
-    private native void bindSelectEvents(Element e) /*-{
-        var select = this;
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::LOADED_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.LoadedEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasLoadedHandlers;)(select);
+    private void bindSelectEvents(Element e) {
+        SelectJs.bind(e, event -> {
+            switch (event) {
+                case "loaded": LoadedEvent.fire(this); break;
+                case "changed": onValueChange(); break;
+                case "show": ShowEvent.fire(this); break;
+                case "shown": ShownEvent.fire(this); break;
+                case "hide": HideEvent.fire(this); break;
+                case "hidden": HiddenEvent.fire(this); break;
+                case "rendered": RenderedEvent.fire(this); break;
+                case "refreshed": RefreshedEvent.fire(this); break;
+                default: break;
+            }
         });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::CHANGED_EVENT, function(event, clickedIndex, newValue, oldValue) {
-            select.@org.gwtbootstrap3.extras.select.client.ui.SelectBase::onValueChange()();
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::SHOW_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.ShowEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasShowHandlers;)(select);
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::SHOWN_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.ShownEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasShownHandlers;)(select);
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::HIDE_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.HideEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasHideHandlers;)(select);
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::HIDDEN_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.HiddenEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasHiddenHandlers;)(select);
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::RENDERED_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.RenderedEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasRenderedHandlers;)(select);
-        });
-        $wnd.jQuery(e).on(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::REFRESHED_EVENT, function(event) {
-            @org.gwtbootstrap3.extras.select.client.ui.event.RefreshedEvent::fire(Lorg/gwtbootstrap3/extras/select/client/ui/event/HasRefreshedHandlers;)(select);
-        });
-    }-*/;
+    }
 
     /**
      * Unbinds the select events.
      *
      * @param e
      */
-    private native void unbindSelectEvents(Element e) /*-{
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::LOADED_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::CHANGED_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::SHOW_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::SHOWN_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::HIDE_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::HIDDEN_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::RENDERED_EVENT);
-        $wnd.jQuery(e).off(@org.gwtbootstrap3.extras.select.client.ui.event.HasAllSelectHandlers::REFRESHED_EVENT);
-    }-*/;
+    private void unbindSelectEvents(Element e) { SelectJs.unbind(e); }
 
-    protected native void command(Element e, String command) /*-{
-        $wnd.jQuery(e).selectpicker(command);
-    }-*/;
+    protected void command(Element e, String command) { SelectJs.command(e, command); }
 }

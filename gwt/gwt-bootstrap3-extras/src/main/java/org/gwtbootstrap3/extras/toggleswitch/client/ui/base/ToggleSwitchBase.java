@@ -34,7 +34,6 @@ import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.ColorType;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.constants.SizeType;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.editor.client.IsEditor;
 import com.google.gwt.editor.client.LeafValueEditor;
@@ -65,6 +64,7 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
     private final IdMixin<ToggleSwitchBase> idMixin = new IdMixin<ToggleSwitchBase>(this);
     private final AttributeMixin<ToggleSwitchBase> attributeMixin = new AttributeMixin<ToggleSwitchBase>(this);
     private LeafValueEditor<Boolean> editor;
+    private boolean switchReady;
 
     protected ToggleSwitchBase(InputElement element) {
         this.element = element;
@@ -74,13 +74,21 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
     @Override
     protected void onLoad() {
         super.onLoad();
-        switchInit(getElement());
+        ToggleSwitchJs.whenReady(() -> {
+            if (isAttached() && !switchReady) {
+                ToggleSwitchJs.init(getElement(), this::onChange);
+                switchReady = true;
+            }
+        });
     }
 
     @Override
     protected void onUnload() {
         super.onUnload();
-        switchDestroy(getElement());
+        if (switchReady) {
+            ToggleSwitchJs.destroy(getElement());
+            switchReady = false;
+        }
     }
 
     @Override
@@ -201,8 +209,8 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
 
     @Override
     public Boolean getValue() {
-        if (isAttached()) {
-            return switchState(getElement());
+        if (switchReady) {
+            return ToggleSwitchJs.state(getElement());
         }
         return element.isChecked();
     }
@@ -215,8 +223,8 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
     @Override
     public void setValue(final Boolean value, final boolean fireEvents) {
         Boolean oldValue = getValue();
-        if (isAttached()) {
-            switchState(getElement(), value, true);
+        if (switchReady) {
+            ToggleSwitchJs.state(getElement(), value, true);
         } else {
             element.setChecked(value);
         }
@@ -298,7 +306,7 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
 
     @Override
     public void setVisible(boolean visible) {
-        if (isAttached()) {
+        if (switchReady) {
             setVisible(getElement().getParentElement().getParentElement(), visible);
         } else {
             super.setVisible(visible);
@@ -307,7 +315,7 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
 
     @Override
     public boolean isVisible() {
-        if (isAttached()) {
+        if (switchReady) {
             return isVisible(getElement().getParentElement().getParentElement());
         }
         return super.isVisible();
@@ -322,33 +330,43 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
     }
 
     private void updateSwitch(Option option, String value) {
-        if (isAttached()) {
-            switchCmd(getElement(), option.getCommand(), value);
-        } else {
-            attributeMixin.setAttribute(option.getAttribute(), value);
+        attributeMixin.setAttribute(option.getAttribute(), value);
+        if (switchReady) {
+            ToggleSwitchJs.command(getElement(), option.getCommand(), value);
         }
     }
 
     private void updateSwitch(Option option, boolean value) {
-        if (isAttached()) {
-            switchCmd(getElement(), option.getCommand(), value);
+        if (option == Option.DISABLED) {
+            element.setDisabled(value);
+        } else if (option == Option.READONLY) {
+            element.setReadOnly(value);
         } else {
             attributeMixin.setAttribute(option.getAttribute(), Boolean.toString(value));
+        }
+        if (switchReady) {
+            ToggleSwitchJs.command(getElement(), option.getCommand(), value);
         }
     }
 
     private String getStringAttribute(Option option) {
-        if (isAttached()) {
-            return getCommandStringValue(getElement(), option.getCommand());
+        if (switchReady) {
+            return ToggleSwitchJs.stringValue(getElement(), option.getCommand());
         } else {
             return attributeMixin.getAttribute(option.getAttribute());
         }
     }
 
     private boolean getBooleanAttribute(Option option) {
-        if (isAttached()) {
-            return getCommandBooleanValue(getElement(), option.getCommand());
+        if (switchReady) {
+            return ToggleSwitchJs.booleanValue(getElement(), option.getCommand());
         } else {
+            if (option == Option.DISABLED) {
+                return element.isDisabled();
+            }
+            if (option == Option.READONLY) {
+                return element.isReadOnly();
+            }
             String value = attributeMixin.getAttribute(option.getAttribute());
             if (value != null && !value.isEmpty()) {
                 return Boolean.valueOf(value);
@@ -358,41 +376,4 @@ public class ToggleSwitchBase extends Widget implements HasSize<SizeType>, HasVa
         }
     }
 
-    private native void switchInit(Element e) /*-{
-        $wnd.jQuery(e).bootstrapSwitch();
-
-        var me = this;
-        $wnd.jQuery(e).on('switchChange.bootstrapSwitch', function (em, state) {
-            me.@org.gwtbootstrap3.extras.toggleswitch.client.ui.base.ToggleSwitchBase::onChange(Z)(state);
-        });
-    }-*/;
-
-    private native void switchDestroy(Element e) /*-{
-        $wnd.jQuery(e).off('switchChange.bootstrapSwitch');
-        $wnd.jQuery(e).bootstrapSwitch('destroy');
-    }-*/;
-
-    private native void switchCmd(Element e, String cmd, String value) /*-{
-        $wnd.jQuery(e).bootstrapSwitch(cmd, value);
-    }-*/;
-
-    private native void switchCmd(Element e, String cmd, boolean value) /*-{
-        $wnd.jQuery(e).bootstrapSwitch(cmd, value);
-    }-*/;
-
-    private native String getCommandStringValue(Element e, String cmd) /*-{
-        return $wnd.jQuery(e).bootstrapSwitch(cmd);
-    }-*/;
-
-    private native boolean getCommandBooleanValue(Element e, String cmd) /*-{
-        return $wnd.jQuery(e).bootstrapSwitch(cmd);
-    }-*/;
-
-    private native void switchState(Element e, boolean value, boolean skip) /*-{
-        $wnd.jQuery(e).bootstrapSwitch('state', value, skip);
-    }-*/;
-
-    private native boolean switchState(Element e) /*-{
-        return $wnd.jQuery(e).bootstrapSwitch('state');
-    }-*/;
 }

@@ -111,12 +111,14 @@ public final class Document {
         return TextAreaElement.as(createElement("textarea"));
     }
 
-    public Element createSelectElement() {
-        return createElement("select");
+    public Element createOptGroupElement() { return createElement("optgroup"); }
+
+    public SelectElement createSelectElement() {
+        return SelectElement.as(createElement("select"));
     }
 
-    public Element createOptionElement() {
-        return createElement("option");
+    public OptionElement createOptionElement() {
+        return OptionElement.as(createElement("option"));
     }
 
     public FormElement createFormElement() {

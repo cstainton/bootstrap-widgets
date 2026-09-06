@@ -1,4 +1,4 @@
-@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5
+@p0 @widget @gwt3 @teavm3 @gwt5 @teavm5 @skip-jvm
 Feature: Button state and selection
   Bootstrap 3 showcase controls define the consumer-visible button contract.
 
@@ -63,6 +63,7 @@ Feature: Button state and selection
     Then only the second radio button is selected
     And the first radio button has aria-pressed "false"
     And the second radio button has aria-pressed "true"
+    And one value change is reported with the second radio button as source
 
   @api-contract @accessibility @dom-contract
   Scenario: BTN-007 Loading state replaces and then restores button content
@@ -96,3 +97,30 @@ Feature: Button state and selection
     Then the button reports the small size
     And the small size class is present
     And the large size class is absent
+
+  @browser @functional
+  Scenario: BTN-010 Repeated checkbox activation reports one event per transition
+    Given fixture "behaviour/check-box-button/repeated" is mounted
+    Given Bootstrap 3 showcase route "buttonGroups" section "Checkbox button group" defines the baseline
+    And the checkbox button value is false
+    When the user activates the checkbox button twice
+    Then the checkbox button value is false
+    And two value changes are reported with the checkbox button as source
+
+  @browser @functional
+  Scenario: BTN-011 Disabled checkbox button ignores user activation
+    Given fixture "behaviour/check-box-button/disabled" is mounted
+    Given Bootstrap 3 showcase route "buttonGroups" section "Checkbox button group" defines the baseline
+    And the checkbox button is disabled
+    When the user activates the checkbox button
+    Then the checkbox button value is false
+    And no value change is reported
+
+  @browser @functional
+  Scenario: BTN-012 Reactivating the selected radio does not report a value change
+    Given fixture "behaviour/radio-buttons/exclusive" is mounted
+    Given Bootstrap 3 showcase route "buttonGroups" section "Radio button group" defines the baseline
+    And the first radio button is selected
+    When the user activates the first radio button
+    Then only the first radio button is selected
+    And no radio value change is reported

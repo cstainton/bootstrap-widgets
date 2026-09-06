@@ -10,13 +10,11 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import io.instanto.cucumber.tea.AfterScenario;
 import io.instanto.cucumber.tea.BeforeScenario;
-import io.instanto.cucumber.tea.CucumberScript;
 import io.instanto.cucumber.tea.CucumberSuite;
 import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
 import io.instanto.cucumber.tea.When;
 import io.instanto.mockatcha.dom.Dom;
-import org.gwtbootstrap3.client.Bootstrap3;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.InputGroup;
 import org.gwtbootstrap3.client.ui.InputGroupAddon;
@@ -38,23 +36,13 @@ import org.teavm.jso.dom.xml.NodeList;
  *
  * <p>ING-003 is deliberately left unbound, and cucumber-tea reports it as ignored
  * naming the steps it lacks. It asserts layout: that the segments of an input group
- * meet without a gap and share one height. That is true only once Bootstrap's own
- * stylesheet is applied, and the theme is a page-level choice in this library --
- * ThemeSwitcher swaps the link at runtime -- so it is not something a widget injects
- * for itself. A test page that serves no stylesheet cannot answer the question, and
- * inventing the rules here would assert our own fixture rather than Bootstrap. It
- * belongs in the framed suite, against a page that already has a theme.</p>
+ * meet without a gap and share one height. {@code Bootstrap3.initialise()} selects
+ * the module stylesheet and the test host serves that packaged asset, so the direct
+ * suite has the right subject. The scenario remains unbound only until Mockatcha
+ * exposes the geometry comparisons specified for it.</p>
  */
 @CucumberSuite(
-        value = {"features/input-groups.feature"},
-        scripts = {
-            @CucumberScript(
-                    resource = "jquery-3.7.1.min.cache.js",
-                    path = "jquery-3.7.1.min.cache.js"),
-            @CucumberScript(
-                    resource = "bootstrap-3.4.1.min.cache.js",
-                    path = "bootstrap-3.4.1.min.cache.js")
-        })
+        value = {"features/input-groups.feature"})
 public class Bootstrap3InputGroupSteps {
 
     private static final String PREFIX = "£";
@@ -72,16 +60,15 @@ public class Bootstrap3InputGroupSteps {
     /**
      * Starts the library the way an application does.
      *
-     * <p>The same two steps the showcase takes before it builds anything: run the
-     * module's entry point, then mount into a host element. A test that reached for
-     * RootPanel directly would be exercising the widgets in a state no application is
-     * ever in -- no stylesheets, no plugin checks -- and would miss anything that
-     * depends on the module having been initialised.</p>
+     * <p>The same two steps the showcase takes before it builds anything: initialise
+     * the library, then add through {@code RootPanel}. Reaching straight for the panel
+     * would exercise widgets without the resources and plugin checks an application
+     * receives.</p>
      */
     @BeforeScenario
     public void createHost() {
         Dom.reset();
-        Bootstrap3.initialise();
+        Bootstrap3TestRuntime.initialise();
         Dom.container().setAttribute("id", "bootstrap3-input-group-host");
         host = RootPanel.get("bootstrap3-input-group-host");
     }

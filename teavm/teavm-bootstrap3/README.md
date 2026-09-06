@@ -23,21 +23,22 @@ classes it needs, and having both gives you two of everything.
 ```java
 public final class MyApp {
     public static void main(String[] args) {
-        Bootstrap3.initialise();
-
-        Button save = new Button("Save");
-        save.setType(ButtonType.PRIMARY);
-        save.addClickHandler(event -> Window.alert("Saved"));
-
-        RootPanel.get().add(save);
+        Bootstrap3.initialise(() -> {
+            Button save = new Button("Save");
+            save.setType(ButtonType.PRIMARY);
+            save.addClickHandler(event -> Window.alert("Saved"));
+            RootPanel.get().add(save);
+        });
     }
 }
 ```
 
 Two lines matter.
 
-`Bootstrap3.initialise()` puts the library's stylesheets on the page. Call it once,
-before your first widget. Calling it again does nothing, so it is safe anywhere.
+`Bootstrap3.initialise(ready)` adds the library's stylesheets and loads its vendored
+jQuery and Bootstrap scripts in order. The callback runs when the scripts are usable;
+construct and attach your widgets there. Existing host dependencies are reused.
+Repeated calls share the same loading operation and each callback runs once.
 
 `RootPanel.get().add(...)` puts a widget on the page. `RootPanel.get()` is the
 document body. If your widgets belong inside an element that is already there, name
@@ -47,18 +48,24 @@ it instead:
 RootPanel.get("editor").add(new Panel());
 ```
 
-## 3. Add Bootstrap's own JavaScript to your page
+## 3. Publish the bundled assets
 
-Bootstrap 3 needs jQuery, and both belong to the page rather than to this library:
+The library JAR contains `META-INF/bootstrap3-assets/`, including CSS, JavaScript,
+fonts and source maps. Publish the contents alongside your application, preserving
+the `css/`, `js/` and `fonts/` directories. These files come from the GWT module's
+public resources and ClientBundle declarations.
 
 ```html
-<script src="jquery-3.7.1.min.cache.js"></script>
-<script src="bootstrap-3.4.1.min.cache.js"></script>
 <script src="your-app.js"></script>
 ```
 
-If either is missing, `initialise()` says so on the console — otherwise your modals
-and dropdowns would simply do nothing, with no clue why.
+If you publish them under another directory, call
+`Bootstrap3Resources.setBase("assets/bootstrap3/css/")` before initialization.
+The script directory is derived as `assets/bootstrap3/js/`. A failed script load
+is reported on the console and the application callback does not run.
+
+The no-argument `initialise()` starts loading and returns immediately. Use it only
+when subsequent code does not require the scripts yet, or the host already loaded them.
 
 That is the whole setup. Everything below is optional.
 
@@ -104,12 +111,24 @@ If you want to read a working application:
 - [`GwtBootstrap3DemoEntryPoint`](../../gwt/gwt-bootstrap3-showcase/src/main/java/org/gwtbootstrap3/demo/client/GwtBootstrap3DemoEntryPoint.java)
   is the showcase itself — ordinary widget code, compiled unchanged by both compilers.
 
-## What is missing
+## Extras
 
-The extras — Bootstrap Select, Summernote, FullCalendar, the date pickers — are not
-available on this backend. They are jQuery plugins reached through 353 hand-written
-JavaScript methods that only the GWT compiler understands. The showcase is short the
-14 pages that use them; the other 41 are here.
+The extras port includes Animate, Card, Markdown, ToggleSwitch, Slider, Select and
+Summernote. Slider/RangeSlider, Select/MultipleSelect and the editor compile from the
+shared GWT widget classes, with TeaVM bridges for native plugin operations. Their
+original showcase pages are included.
+
+Bootstrap 3 retains Summernote and jQuery. The Bootstrap 5 tracks use Quill instead.
+Summernote supports custom toolbars, HTML operations, read-only mode, hints, locale
+selection and image callbacks. The showcase uses a small bundled emoji catalogue
+rather than fetching it from GitHub.
+
+These extras currently ship inside teavm-bootstrap3, not a separate extras artifact.
+Scripts, styles and locale text resources are bundled in the JAR. Widgets initialize
+after their core dependencies, and destroy their plugin instance when detached.
+
+Other extras, including FullCalendar and the date pickers, still need their native
+browser calls ported. Bundling their assets alone does not port their widgets.
 
 ## How it works, if you are curious
 
@@ -118,7 +137,7 @@ This module compiles the same source as
 [`teavm-gwt-compat`](../teavm-gwt-compat), which reimplements the parts of
 `com.google.gwt.*` the widgets use.
 
-`initialise()` exists because GWT has a module system and TeaVM does not. In a GWT
-application, a `.gwt.xml` file declares the stylesheets a module needs and the
-generated bootstrap injects them before your code runs. Nothing does that here, so one
-call stands in for it.
+The module build reads resource declarations from `.gwt.xml` and ClientBundle
+sources, bundles those assets, and generates TeaVM module loaders. `initialise()`
+starts the core loader; extras use their generated loaders when needed. Applications
+do not need to repeat the library's script and stylesheet declarations.

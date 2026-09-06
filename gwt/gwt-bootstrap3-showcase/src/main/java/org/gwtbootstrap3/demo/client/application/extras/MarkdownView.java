@@ -38,7 +38,7 @@ public class MarkdownView extends Composite {
             + "- So the preview matches the server\n\n"
             + "- [x] task lists\n"
             + "- [ ] and tables\n\n"
-            + "| Extra | Stores |\n| --- | --- |\n| Summernote | HTML |\n| Markdown | Markdown |\n\n"
+            + "| Extra | Stores |\n| --- | --- |\n| Rich Text | HTML |\n| Markdown | Markdown |\n\n"
             + "> ~~Struck~~ text, `code`, and [links](https://commonmark.org).\n";
 
     interface Binder extends UiBinder<Widget, MarkdownView> {

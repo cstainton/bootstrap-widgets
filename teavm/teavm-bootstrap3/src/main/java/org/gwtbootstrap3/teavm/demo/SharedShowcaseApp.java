@@ -40,12 +40,10 @@ public final class SharedShowcaseApp {
     }
 
     public static void main(final String[] args) {
-        // The default, css/, is where the site serves the library's stylesheets;
-        // stated rather than assumed, since this is the GWT module's job otherwise.
-        Bootstrap3Resources.setBase("css/");
+        // The site publishes the module's generated asset tree beside its JavaScript.
+        Bootstrap3Resources.setBase("teavm/css/");
         // What GWT's bootstrap does before the application's own entry point: run the
         // library module's initialisation first, so its stylesheets are on the page.
-        Bootstrap3.initialise();
-        new GwtBootstrap3DemoEntryPoint().onModuleLoad();
+        Bootstrap3.initialise(() -> new GwtBootstrap3DemoEntryPoint().onModuleLoad());
     }
 }

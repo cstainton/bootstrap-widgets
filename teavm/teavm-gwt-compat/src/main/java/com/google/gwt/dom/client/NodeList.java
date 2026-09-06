@@ -14,9 +14,16 @@ import org.teavm.jso.dom.html.HTMLElement;
 public class NodeList<T> {
 
     private final JSObject list;
+    private final java.util.function.Function<HTMLElement, T> wrap;
 
+    @SuppressWarnings("unchecked")
     public NodeList(final JSObject list) {
+        this(list, element -> (T) new Element(element));
+    }
+
+    public NodeList(JSObject list, java.util.function.Function<HTMLElement, T> wrap) {
         this.list = list;
+        this.wrap = wrap;
     }
 
     public int getLength() {
@@ -29,7 +36,7 @@ public class NodeList<T> {
             return null;
         }
         final HTMLElement item = item(list, index);
-        return item == null ? null : (T) new Element(item);
+        return item == null ? null : wrap.apply(item);
     }
 
     @JSBody(params = {"list"}, script = "return list.length | 0;")

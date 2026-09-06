@@ -29,7 +29,7 @@ import org.gwtbootstrap3.demo.client.place.NameTokens;
  * <p>A seam, in the same sense as the rest of this repository: one file per backend,
  * the other excluded by the compiler plugin. The extras reach the browser through 352
  * JSNI methods, which only the GWT compiler understands, so this file is the GWT half
- * and teavm-bootstrap3 holds a counterpart that returns null for every token.</p>
+ * and teavm-bootstrap3 holds a counterpart for the ported extras pages.</p>
  *
  * <p>Splitting them out is what lets the entry point itself stay shared. It is the same
  * switch on both backends; only the set of pages it can reach differs.</p>

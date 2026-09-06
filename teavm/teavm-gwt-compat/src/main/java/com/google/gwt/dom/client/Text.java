@@ -33,7 +33,7 @@ import org.teavm.jso.dom.xml.Node;
  * <p>TeaVM's {@code Text} extends {@code Node} rather than {@code CharacterData},
  * so the data accessors go through the node's {@code data} property directly.</p>
  */
-public class Text {
+public class Text extends com.google.gwt.dom.client.Node {
 
     private final org.teavm.jso.dom.xml.Text node;
 

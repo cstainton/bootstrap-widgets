@@ -61,7 +61,7 @@ public class Option extends AbstractTextWidget implements HasName, TakesValue<St
      * @return the {@link OptionElement}.
      */
     public OptionElement getSelectElement() {
-        return getElement().cast();
+        return OptionElement.as(getElement());
     }
 
     /**

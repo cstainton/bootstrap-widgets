@@ -22,24 +22,30 @@ package org.gwtbootstrap3.demo.client;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The TeaVM half of the extras seam: no extras pages.
+ * The TeaVM half of the extras page registry.
  *
- * <p>gwt-bootstrap3-extras reaches the browser through 352 JSNI methods across 51
- * files. JSNI is compiled by GWT alone, so until those are rewritten as JSBody -- the
- * same conversion the Bootstrap 5 extras went through, at seven times the size -- the
- * fourteen pages that use them have nothing to run.</p>
- *
- * <p>Returning null rather than a placeholder is deliberate: the entry point falls
- * through to its own switch, and a token with no page is already handled there. The
- * showcase is short fourteen of its fifty-five pages, and behaves normally otherwise.</p>
+ * <p>Only shared pages whose widget dependencies have been ported are reachable here.
+ * A null result lets the entry point use its normal route handling.</p>
  */
 final class ExtrasPages {
 
     private ExtrasPages() {
     }
 
-    /** Always null; no extras page is available on this backend. */
+    /** Returns a shared showcase page when its dependencies have been ported. */
     static Widget forToken(final String token) {
+        if (org.gwtbootstrap3.demo.client.place.NameTokens.SUMMERNOTE.equals(token)) {
+            return new org.gwtbootstrap3.demo.client.application.extras.SummernoteView();
+        }
+        if (org.gwtbootstrap3.demo.client.place.NameTokens.SELECT.equals(token)) {
+            return new org.gwtbootstrap3.demo.client.application.extras.BootstrapSelectView();
+        }
+        if (org.gwtbootstrap3.demo.client.place.NameTokens.SLIDER.equals(token)) {
+            return new org.gwtbootstrap3.demo.client.application.extras.SliderView();
+        }
+        if (org.gwtbootstrap3.demo.client.place.NameTokens.TOGGLESWITCH.equals(token)) {
+            return new org.gwtbootstrap3.demo.client.application.extras.ToggleSwitchView();
+        }
         return null;
     }
 }

@@ -29,8 +29,7 @@ package org.gwtbootstrap3.client;
  *
  * <pre>{@code
  * public static void main(String[] args) {
- *     Bootstrap3.initialise();
- *     RootPanel.get().add(new FancyWidget());
+ *     Bootstrap3.initialise(() -> RootPanel.get().add(new FancyWidget()));
  * }
  * }</pre>
  *
@@ -51,12 +50,18 @@ public final class Bootstrap3 {
     private Bootstrap3() {
     }
 
-    /** Prepares the library. Calling it more than once does nothing. */
+    /** Starts loading the library. Use the callback overload before constructing widgets. */
     public static void initialise() {
         if (initialised) {
             return;
         }
         initialised = true;
         new TeaVmBootstrap3EntryPoint().onModuleLoad();
+    }
+
+    /** Starts the application once the vendored jQuery and Bootstrap scripts are usable. */
+    public static void initialise(final Runnable ready) {
+        initialise();
+        NoThemeResourcesResources.whenReady(TeaVmBootstrap3EntryPoint::isBootstrapLoaded, ready);
     }
 }

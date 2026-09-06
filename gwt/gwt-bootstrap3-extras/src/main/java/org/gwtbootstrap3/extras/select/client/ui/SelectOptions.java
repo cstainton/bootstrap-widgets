@@ -31,7 +31,7 @@ import com.google.gwt.core.client.JavaScriptObject;
  *
  * @author Xiaodong Sun
  */
-class SelectOptions extends JavaScriptObject {
+class SelectOptions {
 
     private static final String DATA_PREFIX = "data-";
 
@@ -72,53 +72,15 @@ class SelectOptions extends JavaScriptObject {
     static final String CONTENT = DATA_PREFIX + "content";
     static final String HIDDEN = DATA_PREFIX + "hidden";
 
-    /**
-     * Default constructor
-     */
-    protected SelectOptions() {}
+    final JavaScriptObject value = SelectJs.options(Styles.FONT_AWESOME_BASE, IconType.CHECK.getCssName());
 
-    /**
-     * Creates a new instance of {@link SelectOptions}.
-     *
-     * @return a new instance of {@link SelectOptions}.
-     */
-    static SelectOptions newOptions() {
-        SelectOptions options = JavaScriptObject.createObject().cast();
-        options.init(Styles.FONT_AWESOME_BASE, IconType.CHECK.getCssName());
-        return options;
+    static SelectOptions newOptions() { return new SelectOptions(); }
+
+    final void setCountSelectedTextHandler(CountSelectedTextHandler handler) {
+        SelectJs.countText(value, handler);
     }
 
-    private final native void init(String iconBase, String tickIcon) /*-{
-        this.iconBase = iconBase;
-        this.tickIcon = tickIcon;
-    }-*/;
-
-    /**
-     * @see {@link SelectBase#setCountSelectedTextHandler(CountSelectedTextHandler)}
-     */
-    final native void setCountSelectedTextHandler(CountSelectedTextHandler handler) /*-{
-        if (handler) {
-            this.countSelectedText = function(selectedCount, totalCount) {
-                handler.@org.gwtbootstrap3.extras.select.client.ui.CountSelectedTextHandler::getCountSelectedText(II)(selectedCount, totalCount);
-            }
-        } else if (this.countSelectedText) {
-            delete this.countSelectedText;
-        }
-    }-*/;
-
-    /**
-     * @see {@link MultipleSelect#setMaxOptionsTextHandler(MaxOptionsTextHandler)}
-     */
-    final native void setMaxOptionsTextHandler(MaxOptionsTextHandler handler) /*-{
-        if (handler) {
-            this.maxOptionsText = function(numAll, numGroup) {
-                return [
-                    handler.@org.gwtbootstrap3.extras.select.client.ui.MaxOptionsTextHandler::getMaxSelectOptionsText(I)(numAll),
-                    handler.@org.gwtbootstrap3.extras.select.client.ui.MaxOptionsTextHandler::getMaxGroupOptionsText(I)(numGroup)
-                ];
-            }
-        } else if (this.maxOptionsText) {
-            delete this.maxOptionsText;
-        }
-    }-*/;
+    final void setMaxOptionsTextHandler(MaxOptionsTextHandler handler) {
+        SelectJs.maxText(value, handler);
+    }
 }

@@ -31,7 +31,7 @@ import org.teavm.jso.JSObject;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.xml.Node;
 
-public class Element {
+public class Element extends com.google.gwt.dom.client.Node {
     private final HTMLElement element;
     private final Style style;
 
@@ -45,6 +45,10 @@ public class Element {
 
     public HTMLElement unwrap() {
         return element;
+    }
+
+    public String getString() {
+        return getPropertyString("outerHTML");
     }
 
     /** Narrows an opaque GWT JavaScript value to an element wrapper. */

@@ -53,6 +53,7 @@ public class Bootstrap3FormSteps {
     @BeforeScenario
     public void createHost() {
         Dom.reset();
+        Bootstrap3TestRuntime.initialise();
         Dom.container().setAttribute("id", "bootstrap3-form-test-host");
         host = RootPanel.get("bootstrap3-form-test-host");
     }

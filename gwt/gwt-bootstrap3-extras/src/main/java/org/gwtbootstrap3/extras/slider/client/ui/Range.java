@@ -81,7 +81,7 @@ public class Range {
      * @return a JavaScript number array
      */
     public JsArrayNumber toJsArray() {
-        JsArrayNumber array = JavaScriptObject.createArray().cast();
+        JsArrayNumber array = org.gwtbootstrap3.extras.slider.client.ui.base.SliderJs.numbers();
         array.push(minValue);
         array.push(maxValue);
         return array;
@@ -98,7 +98,7 @@ public class Range {
     public static Range fromString(String value) {
         if (value == null || value.isEmpty())
             return null;
-        JsArrayNumber array = JsonUtils.safeEval(value);
+        JsArrayNumber array = org.gwtbootstrap3.extras.slider.client.ui.base.SliderJs.parseNumbers(value);
         return new Range(array);
     }
 

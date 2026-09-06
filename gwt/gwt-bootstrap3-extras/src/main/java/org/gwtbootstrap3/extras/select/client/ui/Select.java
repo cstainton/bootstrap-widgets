@@ -59,7 +59,7 @@ public class Select extends SelectBase<String> {
 
     @Override
     public String getValue() {
-        if (isAttached()) {
+        if (selectReady) {
             return getValue(getElement());
         }
         return getSelectedValue();
@@ -76,7 +76,7 @@ public class Select extends SelectBase<String> {
 
     @Override
     protected void setSelectedValue(String value) {
-        if (isAttached()) {
+        if (selectReady) {
             setValue(getElement(), value);
         } else {
             for (Entry<OptionElement, Option> entry : itemMap.entrySet()) {
@@ -100,12 +100,8 @@ public class Select extends SelectBase<String> {
         return null;
     }
 
-    private native String getValue(Element e) /*-{
-        return $wnd.jQuery(e).selectpicker('val');
-    }-*/;
+    private String getValue(Element e) { return SelectJs.value(e); }
 
-    private native void setValue(Element e, String value) /*-{
-        $wnd.jQuery(e).selectpicker('val', value);
-    }-*/;
+    private void setValue(Element e, String value) { SelectJs.value(e, value); }
 
 }

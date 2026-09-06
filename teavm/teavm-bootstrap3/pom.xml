@@ -148,12 +148,26 @@
               <packagedRoot>${project.build.outputDirectory}/META-INF/bootstrap3-assets</packagedRoot>
               <resourcesClass>org.gwtbootstrap3.client.Bootstrap3Resources</resourcesClass>
               <idPrefix>gwtbootstrap3-</idPrefix>
+              <scriptPresence>
+                <jquery-3.7.1.min.cache.js>org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint::isJQueryLoaded</jquery-3.7.1.min.cache.js>
+                <bootstrap-3.4.1.min.cache.js>org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint::isBootstrapLoaded</bootstrap-3.4.1.min.cache.js>
+              </scriptPresence>
               <!-- The extras that are ported. One line per extra as each lands. -->
               <includeModules>
+                <!-- Supplies the core CSS, JavaScript and fonts to the packaged asset tree. -->
+                <includeModule>NoThemeResources</includeModule>
                 <includeModule>Markdown</includeModule>
+                <includeModule>SliderResources</includeModule>
+                <includeModule>SelectResources</includeModule>
+                <includeModule>SummernoteResources</includeModule>
+                <includeModule>ToggleSwitchResources</includeModule>
                 <includeModule>CardResources</includeModule>
                 <includeModule>AnimateResources</includeModule>
               </includeModules>
+              <inlineTextBundles>
+                <inlineTextBundle>org.gwtbootstrap3.extras.select.client.SelectClientBundle</inlineTextBundle>
+                <inlineTextBundle>org.gwtbootstrap3.extras.summernote.client.SummernoteClientBundle</inlineTextBundle>
+              </inlineTextBundles>
             </configuration>
           </execution>
         </executions>
@@ -172,7 +186,7 @@
             <configuration>
               <classifier>sources</classifier>
               <includeArtifactIds>gwt-bootstrap3-extras</includeArtifactIds>
-              <includes>org/gwtbootstrap3/extras/animate/**,org/gwtbootstrap3/extras/card/**,org/gwtbootstrap3/extras/markdown/**</includes>
+              <includes>org/gwtbootstrap3/extras/animate/**,org/gwtbootstrap3/extras/card/**,org/gwtbootstrap3/extras/markdown/**,org/gwtbootstrap3/extras/toggleswitch/**,org/gwtbootstrap3/extras/slider/**,org/gwtbootstrap3/extras/select/**,org/gwtbootstrap3/extras/summernote/**</includes>
               <outputDirectory>${project.build.directory}/shared-sources</outputDirectory>
               <overWriteSnapshots>true</overWriteSnapshots>
             </configuration>
@@ -226,20 +240,41 @@
           </annotationProcessorPaths>
           <excludes>
             <!--
-              The fourteen showcase pages backed by gwt-bootstrap3-extras, which is not
-              ported: it reaches the browser through 352 JSNI methods. ExtrasPages is
-              the seam; this module supplies its own, returning null for every token.
+              ExtrasPages selects shared pages whose dependencies have been ported.
+              Keep the remaining extras pages out of this compiler's source set.
             -->
             <exclude>org/gwtbootstrap3/demo/client/ExtrasPages.java</exclude>
             <!-- Seam: prettify.js arrives by URL here, not inlined by a ClientBundle. -->
             <exclude>org/gwtbootstrap3/demo/client/ShowcaseScripts.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/ui/PrettyPre.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/GwtBootstrap3DemoClientBundle.java</exclude>
-            <exclude>org/gwtbootstrap3/demo/client/application/extras/**</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/AnimateView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/BootboxJSView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/CardView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/DatePickerView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/DateTimePickerView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/FullCalendarView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/GalleryView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/MarkdownView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/NotifyView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/OfflineView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/TagsInputView.java</exclude>
+            <exclude>org/gwtbootstrap3/demo/client/application/extras/TypeaheadView.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/application/css/validation/**</exclude>
             <!-- The GWT halves of the markdown seams; TeaVM copies sit beside them. -->
             <exclude>org/gwtbootstrap3/extras/animate/client/ui/AnimateJs.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/toggleswitch/client/ui/base/ToggleSwitchJs.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/toggleswitch/client/ToggleSwitchClientBundle.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/toggleswitch/client/ToggleSwitchEntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/extras/markdown/client/Markdown.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/slider/client/ui/base/SliderJs.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/slider/client/SliderClientBundle.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/slider/client/SliderEntryPoint.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/select/client/ui/SelectJs.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/select/client/SelectEntryPoint.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/summernote/client/ui/base/SummernoteJs.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/summernote/client/event/SummernoteImageUploadEvent.java</exclude>
+            <exclude>org/gwtbootstrap3/extras/summernote/client/SummernoteEntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/extras/markdown/client/MarkdownClientBundle.java</exclude>
             <exclude>org/gwtbootstrap3/extras/markdown/client/MarkdownEntryPoint.java</exclude>
             <exclude>org/gwtbootstrap3/extras/markdown/client/ui/TextAreaSelection.java</exclude>

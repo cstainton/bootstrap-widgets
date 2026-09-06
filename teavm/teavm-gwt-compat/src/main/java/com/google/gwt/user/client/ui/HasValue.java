@@ -26,7 +26,7 @@ package com.google.gwt.user.client.ui;
 
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 
-public interface HasValue<T> extends HasValueChangeHandlers<T> {
+public interface HasValue<T> extends HasValueChangeHandlers<T>, com.google.gwt.user.client.TakesValue<T> {
     T getValue();
 
     void setValue(T value);

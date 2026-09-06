@@ -65,6 +65,7 @@ public final class ScriptModule {
     private final String name;
     private final List<String> stylesheets = new ArrayList<>();
     private final List<String> scripts = new ArrayList<>();
+    private final List<Presence> scriptPresence = new ArrayList<>();
     private final List<Runnable> waiting = new ArrayList<>();
     private Presence presence;
     private boolean started;
@@ -88,7 +89,13 @@ public final class ScriptModule {
 
     /** Adds a script. These load in the order declared, each after the one before. */
     public ScriptModule script(final String src) {
+        return script(src, null);
+    }
+
+    /** Adds a script that can be skipped when its dependency is already available. */
+    public ScriptModule script(final String src, final Presence present) {
         scripts.add(src);
+        scriptPresence.add(present);
         return this;
     }
 
@@ -150,6 +157,11 @@ public final class ScriptModule {
             return;
         }
         final String src = scripts.get(index);
+        final Presence present = scriptPresence.get(index);
+        if (present != null && present.isPresent()) {
+            loadFrom(index + 1);
+            return;
+        }
         addScript(src, (JsAction) () -> loadFrom(index + 1), (JsAction) () -> fail(src));
     }
 
