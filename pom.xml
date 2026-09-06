@@ -42,6 +42,53 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/cstainton/bootstrap-widgets</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>github-cucumber-tea</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/cstainton/cucumber-tea</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>github-gherkin-tea</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/cstainton/gherkin-tea</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>github-mockatcha</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/cstainton/mockatcha</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <modules>
     <module>widget-processor</module>
     <module>teavm-module-plugin</module>
