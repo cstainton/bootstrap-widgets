@@ -240,7 +240,7 @@
                 -->
                 <resource>
                   <directory>${project.parent.basedir}/gwt/gwt-bootstrap3-showcase/src/main/resources/org/gwtbootstrap3/demo/client/resource/js</directory>
-                  <targetPath>js</targetPath>
+                  <targetPath>teavm/js</targetPath>
                   <includes><include>prettify.js</include></includes>
                 </resource>
                 <resource>
