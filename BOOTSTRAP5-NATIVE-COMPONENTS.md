@@ -36,8 +36,9 @@ Third-party libraries are under Integrations. `#cards`, `#dialogs` and the other
 routes remain valid. The new routes are `#toasts`, `#offcanvas` and `#placeholders` on both
 showcases. Source examples accompany each page.
 
-Tom Select, Tabulator, SortableJS, GridStack and PhotoSwipe remain candidates, not shipped
-APIs. They are listed on the integration roadmap rather than shown as working components.
+Tom Select, Tabulator, SortableJS, GridStack and PhotoSwipe have separate integration
+pages and shared Java wrappers in the extras artifact. See [Bootstrap 5 integrations](BOOTSTRAP5-INTEGRATIONS.md)
+for the supported APIs and remaining coverage.
 
 ## Tests
 

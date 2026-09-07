@@ -217,8 +217,8 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private static final String[] COMPONENT_LABELS = {"Cards", "Placeholders", "Alerts", "Badges", "Breadcrumbs", "Button Dropdowns", "Button Groups", "Dropdowns", "Icons", "Input Groups", "Jumbotron", "Labels", "List Group", "Media Objects", "Navbar", "Navs", "Page Header", "Pagination", "Panels", "Progress Bars", "SuggestBox", "Thumbnails", "Wells"};
     private static final String[] JS_SECTIONS = {"toasts", "offcanvas", "dialogs", "affix", "carousel", "collapse", "modals", "popover", "scrollspy", "tabs", "tooltips"};
     private static final String[] JS_LABELS = {"Toasts", "Offcanvas", "Dialogs", "Affix", "Carousel", "Collapse", "Modals", "Popover", "ScrollSpy", "Tabs", "Tooltips"};
-    private static final String[] INTEGRATION_SECTIONS = {"datePicker", "richText", "markdown", "slider", "unsupportedExtras"};
-    private static final String[] INTEGRATION_LABELS = {"DatePicker", "Rich Text", "Markdown", "Slider", "Integration Roadmap"};
+    private static final String[] INTEGRATION_SECTIONS = {"datePicker", "richText", "markdown", "slider", "searchableSelect", "dataGrid", "sortableLists", "dashboard", "gallery", "unsupportedExtras"};
+    private static final String[] INTEGRATION_LABELS = {"DatePicker", "Rich Text", "Markdown", "Slider", "Searchable Select", "Data Grid", "Sortable Lists", "Dashboard", "Gallery", "About Integrations"};
 
     static {
         // The showcase inherits GwtBootstrap5NoTheme, so nothing else claims the
@@ -370,7 +370,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         jumbotron.getElement().setId("home");
         jumbotron.add(new Heading(1, "Bootstrap Showcase"));
         jumbotron.add(new Paragraph("Explore Bootstrap components, layouts and interactive behaviour."));
-        jumbotron.add(new Paragraph("Components and Interactive cover native Bootstrap capabilities. Integrations contains the date picker, rich text and Markdown editors, and multi-handle slider. Each page includes working examples and Java code."));
+        jumbotron.add(new Paragraph("Components and Interactive cover native Bootstrap capabilities. Integrations adds editors, advanced selection, data grids, sortable lists, dashboards and image galleries. Each page includes working examples and Java code."));
         column.add(jumbotron);
         row.add(column);
         return row;
@@ -623,16 +623,26 @@ public class ShowcaseEntryPoint implements EntryPoint {
         addPageHeader(column, "slider", "Slider", "noUiSlider 15");
         column.add(sliderPanel());
 
-        addPageHeader(column, "unsupportedExtras", "Integration Roadmap", "candidates, not yet available");
-        column.add(panel("Planned integrations", new HTML(
-                "<ul><li>Tom Select: searchable selects, tags and remote autocomplete.</li>"
-                + "<li>Tabulator: editable grids, grouping and progressive loading.</li>"
-                + "<li>SortableJS: sortable lists and Kanban cards.</li>"
-                + "<li>GridStack: draggable, resizable dashboards.</li>"
-                + "<li>PhotoSwipe: touch-friendly image galleries.</li></ul>"
-                + "<p>Toasts, Offcanvas and Placeholders are native components and have their own pages. "
-                + "Third-party integrations remain in the extras artifact; existing page links still work.</p>"),
-                "// These integrations are planned, not shipped APIs."));
+        addPageHeader(column, "searchableSelect", "Searchable Select", "search, tags and asynchronous options");
+        column.add(panel("Selection and tags", IntegrationExamples.selects(),
+                "SearchableSelect tags = new SearchableSelect();\ntags.setMultiple(true);\ntags.setAllowCreate(true);\ntags.addOption(\"java\", \"Java\");\ntags.addValueChangeHandler(event -> { /* event.getValue() */ });"));
+        addPageHeader(column, "dataGrid", "Data Grid", "editing, grouping and paging");
+        column.add(panel("Editable team directory", IntegrationExamples.grid(),
+                "DataTable table = new DataTable();\ntable.setColumns(columns);\ntable.setRows(rows);\ntable.setGroupBy(\"team\");\ntable.setPageSize(5);"));
+        addPageHeader(column, "sortableLists", "Sortable Lists", "drag cards between columns");
+        column.add(panel("Work board", IntegrationExamples.sortable(),
+                "SortableList todo = new SortableList();\ntodo.setGroup(\"work\");\ntodo.add(new Paragraph(\"Review changes\"));\ntodo.addValueChangeHandler(event -> { /* ordered child widgets */ });"));
+        addPageHeader(column, "dashboard", "Dashboard", "move and resize tiles");
+        column.add(panel("Custom layout", IntegrationExamples.dashboard(),
+                "Dashboard dashboard = new Dashboard();\nDashboardTile tile = new DashboardTile(\"summary\", 0, 0, 6, 2);\ntile.add(new Paragraph(\"Summary\"));\ndashboard.add(tile);\n// dashboard.getLayoutJson() stores positions, not widget contents."));
+        addPageHeader(column, "gallery", "Gallery", "open an image, zoom or swipe");
+        column.add(panel("Image viewer", IntegrationExamples.gallery(),
+                "ImageGallery gallery = new ImageGallery();\ngallery.addImage(\"landscape.svg\", \"landscape.svg\", 960, 640, \"Landscape\");"));
+        addPageHeader(column, "unsupportedExtras", "About Integrations", "optional components");
+        column.add(panel("Loading integrations", new HTML(
+                "<p>Each integration bundles its own scripts and styles. Enable only the modules your application uses. "
+                + "Widgets release plugin listeners when removed, and can be attached again.</p>"),
+                "<inherits name=\"io.instanto.bootstrap5.extras.select.Select\"/>"));
         return row;
     }
 

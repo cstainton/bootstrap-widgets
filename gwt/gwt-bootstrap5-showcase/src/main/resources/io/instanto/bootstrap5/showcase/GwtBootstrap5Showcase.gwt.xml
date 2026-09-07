@@ -5,6 +5,11 @@
     <inherits name="io.instanto.bootstrap5.extras.datepicker.DatePicker"/>
     <inherits name="io.instanto.bootstrap5.extras.richtext.RichText"/>
     <inherits name="io.instanto.bootstrap5.extras.slider.Slider"/>
+    <inherits name="io.instanto.bootstrap5.extras.select.Select"/>
+    <inherits name="io.instanto.bootstrap5.extras.grid.Grid"/>
+    <inherits name="io.instanto.bootstrap5.extras.sortable.Sortable"/>
+    <inherits name="io.instanto.bootstrap5.extras.dashboard.Dashboard"/>
+    <inherits name="io.instanto.bootstrap5.extras.gallery.Gallery"/>
     <inherits name="io.instanto.bootstrap5.extras.markdown.Markdown"/>
     <set-property name="compiler.useSourceMaps" value="true"/>
     <set-configuration-property name="compiler.embedSourceMaps" value="false"/>

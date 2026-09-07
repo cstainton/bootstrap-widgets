@@ -91,7 +91,9 @@ Add the package repository to the consuming build:
 </repository>
 ```
 
-GitHub Packages requires GitHub credentials in Maven `settings.xml`, including for public packages.
+GitHub Packages repositories are listed in each module's POM. Maven downloads require
+credentials in `settings.xml`, including for public packages. See
+[GitHub's Maven authentication instructions](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry).
 Then add the artifact for the track you want, for example:
 
 ```xml
@@ -101,6 +103,12 @@ Then add the artifact for the track you want, for example:
   <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
+
+## Public dependency repositories
+
+Bootstrap Widgets uses `cucumber-tea`, `gherkin-tea` and `mockatcha-dom` as test dependencies.
+They are published in GitHub Packages under their companion repositories. Public source
+repositories make the code accessible, but do not remove Maven registry authentication.
 
 ## Build
 
@@ -133,9 +141,9 @@ JavaScript source maps and the corresponding Java source trees.
 ## Tests
 
 The Java/Gherkin widget suites currently need the `0.1.0-SNAPSHOT` builds of
-`cucumber-tea`, `cucumber-tea-codegen`, `gherkin-tea` and `mockatcha-dom` installed locally.
-They are not Maven Central dependencies. A clean CI runner needs access to those private
-toolkits before it can run the full gate and publish Pages.
+`cucumber-tea`, `cucumber-tea-codegen`, `gherkin-tea` and `mockatcha-dom`, either installed
+locally or downloaded from GitHub Packages. CI uses a token with package read access;
+private companion repositories also require access to those repositories.
 
 After installing the reactor, run the tests against its packaged artifacts:
 

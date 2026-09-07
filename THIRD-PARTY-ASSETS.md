@@ -91,6 +91,16 @@ the core widgets. Inheriting an extra's GWT module loads only that extra's resou
 | noUiSlider | 15.8.1 | `nouislider` | MIT | Slider for what a native range input cannot do: two handles, non-linear scales, tooltips, pips. No dependencies. Licence text at `gwt/gwt-bootstrap5-extras/NOUISLIDER-LICENSE`. |
 | marked | 18.0.11 | `marked` | MIT | Markdown parser, configured for GitHub Flavoured Markdown so a client-side preview matches what flexmark-java renders with its tables, strikethrough and task list extensions. No dependencies. |
 | DOMPurify | 3.4.14 | `dompurify` | MPL-2.0 OR Apache-2.0 | Sanitises rendered Markdown before it reaches the DOM. marked does not sanitise, by design, and Markdown permits raw HTML. |
+| Tom Select | 2.6.2 | `tom-select` | Apache-2.0 | Searchable selects, multiple selection, tags and asynchronous options; Bootstrap 5 stylesheet. |
+| Tabulator | 6.5.2 | `tabulator-tables` | MIT | Editable data grids, grouping, tree rows and pagination; Bootstrap 5 stylesheet. |
+| SortableJS | 1.15.7 | `sortablejs` | MIT | List reordering and moving widgets between lists. |
+| GridStack | 13.2.0 | `gridstack` | MIT | Responsive, draggable and resizable dashboard tiles. |
+| PhotoSwipe | 5.4.4 | `photoswipe` | MIT | Image lightbox, zoom and swipe navigation; UMD core and lightbox distributions. |
+
+The five integration distributions come from their official npm release archives. Their
+licences are kept in `gwt/gwt-bootstrap5-extras/*-LICENSE` and bundled under each
+module's `client/resource/licenses/` directory. Available upstream maps accompany the
+vendored files. The build does not run npm or retrieve assets from a CDN.
 
 Programmatic alert, confirm and prompt dialogs use the core `Dialogs` and `Modal`
 widgets. They do not vendor Bootbox or add jQuery to the Bootstrap 5 track.
