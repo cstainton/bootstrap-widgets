@@ -47,6 +47,15 @@ import org.gwtbootstrap3.demo.client.place.NameTokens;
 public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
 
     private ApplicationView shell;
+    private final java.util.function.Supplier<Widget> setupFactory;
+
+    public GwtBootstrap3DemoEntryPoint() {
+        this(org.gwtbootstrap3.demo.client.application.general.SetupView::new);
+    }
+
+    public GwtBootstrap3DemoEntryPoint(java.util.function.Supplier<Widget> setupFactory) {
+        this.setupFactory = setupFactory;
+    }
 
     @Override
     public void onModuleLoad() {
@@ -147,7 +156,7 @@ public class GwtBootstrap3DemoEntryPoint implements EntryPoint {
             case NameTokens.RESPONSIVE_UTILITIES:
                 return new org.gwtbootstrap3.demo.client.application.css.ResponsiveUtilitiesView();
             case NameTokens.SETUP:
-                return new org.gwtbootstrap3.demo.client.application.general.SetupView();
+                return setupFactory.get();
             case NameTokens.SUGGEST_BOX:
                 return new org.gwtbootstrap3.demo.client.application.components.SuggestBoxView();
             case NameTokens.TABLES:

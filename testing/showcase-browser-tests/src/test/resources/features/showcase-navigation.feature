@@ -2,6 +2,29 @@
 Feature: The compiled showcase replaces pages and keeps navigation usable
   The application starts itself inside a same-origin frame. Tests do not initialise widgets or assets.
 
+  Scenario Outline: Setup instructions match the compiler used by the showcase
+    Given the showcase "<application>#setup" is open
+    Then setup includes "<expected>" but not "<excluded>"
+    And the application has no startup errors
+    Examples:
+      | application           | expected                                         | excluded                   |
+      | index.html            | org.gwtbootstrap3.GwtBootstrap3                   | Bootstrap3.initialise      |
+      | bootstrap5/index.html | <artifactId>gwt-bootstrap5</artifactId>            | Bootstrap5.initialise      |
+      | teavm.html            | <artifactId>teavm-bootstrap3</artifactId>           | org.gwtbootstrap3.GwtBootstrap3 |
+      | teavm-bootstrap5.html | <artifactId>teavm-bootstrap5</artifactId>           | <artifactId>gwt-bootstrap5</artifactId> |
+
+  Scenario Outline: TeaVM setup explains template generation and asset initialisation
+    Given the showcase "<application>#setup" is open
+    Then setup includes "widget-processor" but not "Support for IE8"
+    And setup includes "annotationProcessorPaths" but not "GWT Module"
+    And setup includes "<initialise>" but not "Bootstrap2 Look-a-like Setup"
+    And setup includes "<assets>" but not "Respond module"
+    And the application has no startup errors
+    Examples:
+      | application           | initialise          | assets                      |
+      | teavm.html            | Bootstrap3.initialise | META-INF/bootstrap3-assets/ |
+      | teavm-bootstrap5.html | Bootstrap5.initialise | META-INF/bootstrap5-assets/ |
+
   Scenario Outline: Navigation remains readable after restoring a dark theme
     Given the showcase "<application>" is open
     When I choose theme "<theme>"

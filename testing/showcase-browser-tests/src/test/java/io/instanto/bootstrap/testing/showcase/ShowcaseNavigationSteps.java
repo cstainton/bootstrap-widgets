@@ -36,6 +36,15 @@ public class ShowcaseNavigationSteps {
 
     private DomScope page() { return app.page(); }
 
+    @Then("setup includes {string} but not {string}")
+    public void setupText(String expected, String excluded) {
+        Dom.waitFor(() -> {
+            String text = page().root().getTextContent();
+            assertTrue("Missing setup instruction: " + expected, text.contains(expected));
+            assertFalse("Setup contains instructions for another runtime: " + excluded, text.contains(excluded));
+        });
+    }
+
     @When("I choose theme {string}")
     public void chooseTheme(String theme) {
         selectedTheme = theme;

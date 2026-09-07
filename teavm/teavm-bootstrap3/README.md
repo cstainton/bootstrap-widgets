@@ -96,6 +96,23 @@ That puts the markup on the page but never tells the widget it was attached. Its
 `onLoad` never runs, and that is where a tooltip binds to its element and a dropdown
 registers its handlers. The widget looks right and does nothing.
 
+## UiBinder templates
+
+UiBinder is supported on TeaVM through the `widget-processor` annotation processor.
+Keep `Owner.ui.xml` beside its Java owner and use `UiBinder`, `@UiField`,
+`@UiHandler` and `GWT.create(Binder.class)` as in the shared showcase.
+The processor generates Java and a service descriptor during compilation; the
+compatibility layer uses these to construct the binder.
+
+See [UiBinder setup](../UIBINDER.md) for the Maven configuration, template packaging
+and current limits. The showcase already configures this; a separate application
+needs the processor too.
+
+The shared [ButtonsView.java](../../gwt/gwt-bootstrap3-showcase/src/main/java/org/gwtbootstrap3/demo/client/application/css/ButtonsView.java)
+and [ButtonsView.ui.xml](../../gwt/gwt-bootstrap3-showcase/src/main/java/org/gwtbootstrap3/demo/client/application/css/ButtonsView.ui.xml)
+are a working example. Attach the resulting view through `RootPanel` inside the
+`Bootstrap3.initialise(...)` callback, just like a widget built in Java.
+
 ## Try it
 
 The [TeaVM showcase](https://cstainton.github.io/bootstrap-widgets/teavm.html) is this

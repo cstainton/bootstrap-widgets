@@ -24,7 +24,7 @@ public final class SharedShowcaseApp {
         // What GWT's bootstrap does before the application's own entry point: run the
         // library module's initialisation first, so its stylesheets are on the page.
         Bootstrap5.initialise(() -> {
-            new ShowcaseEntryPoint().onModuleLoad();
+            new ShowcaseEntryPoint(TeaVmSetupView::new).onModuleLoad();
         });
     }
 
