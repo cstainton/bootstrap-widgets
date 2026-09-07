@@ -702,7 +702,7 @@ public abstract class SliderBase<T> extends Widget implements
         }
         String value = attributeMixin.getAttribute(option.getDataAttribute());
         if (value != null && !value.isEmpty()) {
-            return Double.valueOf(value);
+            return Double.parseDouble(value);
         }
         return defaultValue;
     }

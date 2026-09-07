@@ -66,7 +66,7 @@ public class DecimalMinValidator<T extends Number> extends AbstractValidator<T> 
         if (value instanceof Number) {
             return ((Number) value).doubleValue() >= minValue.doubleValue();
         } else {
-            return Double.valueOf(value.toString()).doubleValue() >= minValue.doubleValue();
+            return Double.parseDouble(value.toString()) >= minValue.doubleValue();
         }
     }
 

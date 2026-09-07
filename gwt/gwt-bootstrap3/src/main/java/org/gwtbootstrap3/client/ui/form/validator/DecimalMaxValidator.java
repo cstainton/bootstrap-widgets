@@ -66,7 +66,7 @@ public class DecimalMaxValidator<T> extends AbstractValidator<T> {
         if (value instanceof Number) {
             return ((Number) value).doubleValue() <= maxValue.doubleValue();
         } else {
-            return Double.valueOf(value.toString()).doubleValue() <= maxValue.doubleValue();
+            return Double.parseDouble(value.toString()) <= maxValue.doubleValue();
         }
     }
 

@@ -111,38 +111,51 @@ public class CellTree extends AbstractCellTree {
             this.element = element;
         }
 
+        private void checkActive() {
+            if (destroyed) {
+                throw new IllegalStateException("Tree node has been destroyed");
+            }
+        }
+
         @Override
         public int getChildCount() {
+            checkActive();
             return children.size();
         }
 
         @Override
         public Object getChildValue(final int i) {
+            checkActive();
             return children.get(i).value;
         }
 
         @Override
         public int getIndex() {
+            checkActive();
             return index;
         }
 
         @Override
         public TreeNode getParent() {
+            checkActive();
             return parent;
         }
 
         @Override
         public Object getValue() {
+            checkActive();
             return value;
         }
 
         @Override
         public boolean isChildLeaf(final int i) {
+            checkActive();
             return viewModel.isLeaf(children.get(i).value);
         }
 
         @Override
         public boolean isChildOpen(final int i) {
+            checkActive();
             return children.get(i).open;
         }
 
@@ -159,6 +172,7 @@ public class CellTree extends AbstractCellTree {
         @Override
         public TreeNode setChildOpen(final int i, final boolean shouldOpen,
                 final boolean fireEvents) {
+            checkActive();
             final Node child = children.get(i);
             setOpen(child, shouldOpen);
             return child.open ? child : null;
@@ -187,7 +201,9 @@ public class CellTree extends AbstractCellTree {
 
         @Override
         protected void render() {
-            renderChildren(owner, this, cell);
+            if (!owner.destroyed && owner.childView == this) {
+                renderChildren(owner, this, cell);
+            }
         }
     }
 
@@ -236,18 +252,26 @@ public class CellTree extends AbstractCellTree {
     /** Opens or closes a node, fetching its children the first time it opens. */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void setOpen(final Node node, final boolean open) {
+        if (node.destroyed) {
+            throw new IllegalStateException("Tree node has been destroyed");
+        }
         if (node.open == open) {
             return;
         }
         node.open = open;
 
         if (!open) {
+            node.destroyed = true;
+            if (node.parent != null) {
+                node.parent.children.set(node.index,
+                        new Node(node.value, node.parent, node.index, node.element));
+            }
             if (node.nodeInfo != null) {
                 node.nodeInfo.unsetDataDisplay();
                 node.nodeInfo = null;
             }
             node.childView = null;
-            node.children.clear();
+            destroyChildren(node);
             renderNodeChildren(node);
             return;
         }
@@ -266,9 +290,23 @@ public class CellTree extends AbstractCellTree {
         ((TreeViewModel.NodeInfo) info).setDataDisplay(view);
     }
 
+    private void destroyChildren(final Node node) {
+        for (final Node child : node.children) {
+            child.destroyed = true;
+            destroyChildren(child);
+            if (child.nodeInfo != null) {
+                child.nodeInfo.unsetDataDisplay();
+                child.nodeInfo = null;
+            }
+            child.childView = null;
+            child.open = false;
+        }
+        node.children.clear();
+    }
+
     /** Rebuilds a node's child elements from the values its view now holds. */
     private <T> void renderChildren(final Node node, final ChildView<T> view, final Cell<T> cell) {
-        node.children.clear();
+        destroyChildren(node);
         final List<T> values = view.getRowData();
         for (int i = 0; i < values.size(); i++) {
             final T value = values.get(i);

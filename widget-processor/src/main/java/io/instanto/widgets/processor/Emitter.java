@@ -67,6 +67,7 @@ final class Emitter {
     private final Map<String, String> styleClasses = new LinkedHashMap<>();
     private String styleCss;
     private final Map<String, TypeElement> withFields = new LinkedHashMap<>();
+    private final java.util.Set<String> withInstances = new java.util.HashSet<>();
 
     Emitter(final ProcessingEnvironment env, final Element owner) {
         this.env = env;
@@ -74,7 +75,15 @@ final class Emitter {
     }
 
     String body() {
-        return body.toString();
+        final StringBuilder declarations = new StringBuilder();
+        for (final Map.Entry<String, TypeElement> entry : withFields.entrySet()) {
+            if (withInstances.contains(entry.getKey())) {
+                declarations.append("        final ").append(entry.getValue().getQualifiedName())
+                        .append(' ').append(local(entry.getKey())).append(" = new ")
+                        .append(entry.getValue().getQualifiedName()).append("();\n");
+            }
+        }
+        return declarations.append(body).toString();
     }
 
     String rootType() {
@@ -140,13 +149,13 @@ final class Emitter {
     }
 
     /**
-     * Reads the {@code <ui:with>} declarations and makes each one a local.
+     * Reads {@code <ui:with>} types; only instance reads need a generated local.
      *
      * <p>These are the objects a template is allowed to read values from: a template
      * says {@code targetHistoryToken="{nameTokens.getHome}"} and means the value that
      * call returns. GWT instantiates them through deferred binding unless the owner
      * provides one; for a plain class that is a constructor call, which is what this
-     * emits.</p>
+     * emits when an instance member is read. Static-only references need no object.</p>
      */
     void readWith(final Node root) {
         final NodeList children = root.getChildNodes();
@@ -170,12 +179,12 @@ final class Emitter {
                         typeName + ", named by <ui:with>, is not on the compile path", owner);
             }
             withFields.put(name, type);
-            // Prefixed, because the template chooses this name and a bare one can obscure
-            // a package: a ui:with field called "tokens" would make tokens.Tokens.get()
-            // resolve against the local instead of the package, and not compile.
-            body.append("        final ").append(typeName).append(' ').append(local(name))
-                .append(" = new ").append(typeName).append("();\n");
         }
+    }
+
+    private String withInstance(final String field) {
+        withInstances.add(field);
+        return local(field);
     }
 
     /** The Java name for a ui:with field, kept clear of anything it could obscure. */
@@ -222,14 +231,17 @@ final class Emitter {
                 // A static read through an instance compiles but reads as a mistake.
                 final String target = method.getModifiers()
                         .contains(javax.lang.model.element.Modifier.STATIC)
-                        ? type.getQualifiedName().toString() : local(root);
+                        ? type.getQualifiedName().toString() : withInstance(root);
                 return target + "." + name + "()";
             }
         }
         for (final Element member2 : env.getElementUtils().getAllMembers(type)) {
             if (member2.getKind() == ElementKind.FIELD
                     && member2.getSimpleName().contentEquals(member)) {
-                return local(root) + "." + member;
+                final String target = member2.getModifiers()
+                        .contains(javax.lang.model.element.Modifier.STATIC)
+                        ? type.getQualifiedName().toString() : withInstance(root);
+                return target + "." + member;
             }
         }
         throw new UiBinderProcessor.Failure(

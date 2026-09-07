@@ -45,6 +45,10 @@ public class FlowPanel extends ComplexPanel implements InsertPanel.ForIsWidget {
 
     @Override
     public void insert(final IsWidget child, final int beforeIndex) {
-        insert(child == null ? null : child.asWidget(), beforeIndex);
+        // Match the Widget overload: null children are rejected, never ignored.
+        if (child == null) {
+            throw new NullPointerException("child");
+        }
+        insert(child.asWidget(), beforeIndex);
     }
 }

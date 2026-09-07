@@ -61,7 +61,10 @@ public class ProgressBar extends Div implements HasType<ProgressBarType> {
 
     public double getPercent() {
         final String width = getElement().getStyle().getWidth();
-        return width == null ? 0 : Double.valueOf(width.substring(0, width.indexOf("%")));
+        if (width == null || !width.endsWith("%")) {
+            return 0;
+        }
+        return Double.parseDouble(width.substring(0, width.length() - 1));
     }
 
     @Override

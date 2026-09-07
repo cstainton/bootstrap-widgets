@@ -178,6 +178,30 @@ public class UiBinderProcessorTest {
         assertTrue(compilation.diagnostics(), compilation.success);
         assertContains(compilation.generated("fixture/Sample_BinderImpl.java"),
                 "button2.setText(tokens.Tokens.getHome());");
+        assertFalse(compilation.generated("fixture/Sample_BinderImpl.java")
+                .contains("new tokens.Tokens()"));
+    }
+
+    @Test
+    public void instantiatesUiWithForInstanceMethodsAndFieldsOnly() throws Exception {
+        for (final String member : new String[] {"getLabel", "caption", "HOME"}) {
+            final Compilation compilation = compile(
+                    sampleOwner("com.google.gwt.event.dom.client.ClickEvent"),
+                    "<ui:UiBinder xmlns:ui=\"urn:ui:com.google.gwt.uibinder\" "
+                    + "xmlns:w=\"urn:import:widgets\">"
+                    + "<ui:with field=\"tokens\" type=\"tokens.Tokens\"/>"
+                    + "<w:Panel><w:Button ui:field=\"action\" kind=\"PRIMARY\" text=\"{tokens."
+                    + member + "}\"/></w:Panel></ui:UiBinder>");
+            assertTrue(compilation.diagnostics(), compilation.success);
+            final String generated = compilation.generated("fixture/Sample_BinderImpl.java");
+            if (member.equals("HOME")) {
+                assertContains(generated, "tokens.Tokens.HOME");
+                assertFalse(generated.contains("new tokens.Tokens()"));
+            } else {
+                assertContains(generated, "final tokens.Tokens uiWith_tokens = new tokens.Tokens();",
+                        "uiWith_tokens." + (member.equals("getLabel") ? "getLabel()" : "caption"));
+            }
+        }
     }
 
     @Test
@@ -264,6 +288,9 @@ public class UiBinderProcessorTest {
                 "package fixture; public class UnsupportedEvent {}\n");
         write(sources, "tokens/Tokens.java",
                 "package tokens; public class Tokens {\n"
+                + "  public static final String HOME = \"home\";\n"
+                + "  public String caption = \"caption\";\n"
+                + "  public String getLabel() { return caption; }\n"
                 + "  public static String getHome() { return \"home\"; }\n"
                 + "}\n");
         write(sources, "widgets/Kind.java",

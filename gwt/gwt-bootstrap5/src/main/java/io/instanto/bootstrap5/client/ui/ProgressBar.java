@@ -71,7 +71,7 @@ public class ProgressBar extends ElementPanel implements HasType<ProgressBarType
         if (width == null || !width.endsWith("%")) {
             return 0;
         }
-        return Double.valueOf(width.substring(0, width.length() - 1));
+        return Double.parseDouble(width.substring(0, width.length() - 1));
     }
 
     public void setVariant(Variant variant) {

@@ -150,7 +150,7 @@ public class SuggestBox extends com.google.gwt.user.client.ui.SuggestBox impleme
             if (!suggestBox.getElement().getStyle().getZIndex().equals("")) {
                 try {
                     getPopupPanel().getElement().getStyle()
-                            .setZIndex(Integer.valueOf(suggestBox.getElement().getStyle().getZIndex()));
+                            .setZIndex(Integer.parseInt(suggestBox.getElement().getStyle().getZIndex()));
                 } catch (Exception e) {
                     // Do nothing. We tried....
                 }
