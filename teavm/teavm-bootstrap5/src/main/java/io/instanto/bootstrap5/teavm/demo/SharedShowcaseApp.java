@@ -1,11 +1,9 @@
 package io.instanto.bootstrap5.teavm.demo;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
-import io.instanto.bootstrap5.client.ui.Container;
 import io.instanto.bootstrap5.showcase.client.ShowcaseEntryPoint;
 
 /**
@@ -27,19 +25,7 @@ public final class SharedShowcaseApp {
         // library module's initialisation first, so its stylesheets are on the page.
         Bootstrap5.initialise(() -> {
             new ShowcaseEntryPoint().onModuleLoad();
-            mountUiBinderProof();
         });
     }
 
-    /**
-     * One panel the GWT showcase does not have, because it demonstrates something only
-     * this backend needs: a UiBinder template working without GWT's generator. Keeping it
-     * on the page also keeps it compiled, since TeaVM only compiles what is reached.
-     */
-    private static void mountUiBinderProof() {
-        final Container container = new Container();
-        container.addStyleName("pb-5");
-        container.add(new UiBinderDemo());
-        RootPanel.get().add(container);
-    }
 }

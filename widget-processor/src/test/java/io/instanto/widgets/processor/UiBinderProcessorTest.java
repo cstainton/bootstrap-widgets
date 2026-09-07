@@ -19,6 +19,8 @@
  */
 package io.instanto.widgets.processor;
 
+import static org.junit.Assert.assertEquals;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -233,12 +235,50 @@ public class UiBinderProcessorTest {
                 "button2.setText(\"first\\nsecond\");");
     }
 
+    @Test
+    public void generatesNestedTextBundleWithBinaryServiceName() throws Exception {
+        String owner = sampleOwner("com.google.gwt.event.dom.client.ClickEvent")
+                .replace("public class Sample {", "public class Sample {\n"
+                        + "interface Source extends com.google.gwt.resources.client.ClientBundle {\n"
+                        + "@com.google.gwt.resources.client.ClientBundle.Source(\"Sample.ui.xml\")\n"
+                        + "com.google.gwt.resources.client.TextResource template(); }\n");
+        Compilation compiled = compile(owner, validTemplate());
+        assertTrue(compiled.diagnostics(), compiled.success);
+        assertEquals("fixture.Sample_Source_TextBundle\n", Files.readString(compiled.classes.resolve(
+                "META-INF/services/fixture.Sample$Source")));
+        try (var loader = new java.net.URLClassLoader(new java.net.URL[] {compiled.classes.toUri().toURL()})) {
+            Object bundle = loader.loadClass("fixture.Sample_Source_TextBundle").getConstructor().newInstance();
+            Object text = bundle.getClass().getMethod("template").invoke(bundle);
+            Class<?> resource = loader.loadClass("com.google.gwt.resources.client.TextResource");
+            assertEquals(validTemplate(), resource.getMethod("getText").invoke(text));
+            assertEquals("template", resource.getMethod("getName").invoke(text));
+        }
+    }
+
+    @Test
+    public void missingTextResourceFailsCompilationInsteadOfTheBrowser() throws Exception {
+        Compilation compiled = compile("package fixture; public interface Sample extends "
+                + "com.google.gwt.resources.client.ClientBundle {\n"
+                + "@com.google.gwt.resources.client.ClientBundle.Source(\"missing.xml\")\n"
+                + "com.google.gwt.resources.client.TextResource template(); }", validTemplate());
+        assertFalse(compiled.success);
+        assertTrue(compiled.diagnostics(), compiled.diagnostics().contains("Missing @Source resource"));
+    }
+
     private Compilation compile(final String owner, final String template) throws Exception {
         final Path workspace = Files.createTempDirectory("uibinder-processor-test-");
         workspaces.add(workspace);
         final Path sources = Files.createDirectories(workspace.resolve("src"));
         final Path generated = Files.createDirectories(workspace.resolve("generated"));
         final Path classes = Files.createDirectories(workspace.resolve("classes"));
+
+        write(sources, "com/google/gwt/resources/client/ClientBundle.java",
+                "package com.google.gwt.resources.client; public interface ClientBundle {\n"
+                + "@java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD)\n"
+                + "@interface Source { String[] value(); } }");
+        write(sources, "com/google/gwt/resources/client/TextResource.java",
+                "package com.google.gwt.resources.client; public interface TextResource {\n"
+                + "String getText(); String getName(); }");
 
         write(sources, "com/google/gwt/uibinder/client/UiBinder.java",
                 "package com.google.gwt.uibinder.client;\n"

@@ -108,6 +108,17 @@ jobs:
       - name: Smoke-test assembled showcases in Chromium
         run: bash scripts/smoke-showcase-pages.sh
 
+      - name: Exercise compiled showcase navigation in Java
+        run: mvn -B -f testing/showcase-browser-tests/pom.xml test
+
+      - name: Upload showcase navigation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: showcase-navigation-results
+          path: testing/showcase-browser-tests/target/surefire-reports/*
+          if-no-files-found: warn
+
       - name: Exercise compiled GWT widgets with mobile touch input
         run: node scripts/run-browser-behaviour-tests.mjs
 

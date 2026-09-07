@@ -87,6 +87,15 @@ inside `javac` as an annotation processor, which has the advantage of a real typ
 model rather than an approximation of one. A module with no templates generates
 nothing, so this costs an application that does not use UiBinder exactly nothing.
 
+Text-only `ClientBundle` interfaces also get generated providers, including nested
+source bundles used to display templates. Their service descriptors use binary
+names (`View$Source`), and missing source resources fail compilation rather than
+leaving `GWT.create` to fail when a page is opened.
+
+The Bootstrap 5 UiBinder example is a routed page shared by both compilers. The
+HTML hosts do not append extra navigation or demonstrations outside the shared
+application. Both hosts load the same showcase spacing stylesheet.
+
 **Module resources.** `teavm-module-maven-plugin` reads the same `.gwt.xml` and
 ClientBundle declarations the GWT build reads, and writes one class per module that
 loads the same files by URL, plus the assets themselves.
@@ -98,6 +107,11 @@ already on the page is recognised without fetching a second copy. Widgets ask
 `whenReady(...)` instead of polling for a global to appear.
 
 ## Assembling the site
+
+After assembly, run `mvn -f testing/showcase-browser-tests/pom.xml test`. These
+Java/Gherkin tests use Mockatcha's same-origin application frames and
+`TeaVMTestRunner` to check the built GWT and TeaVM pages, without initialising
+widgets or loading their assets from the harness. CI runs them before publication.
 
 `showcase-site` collects everything into one directory of static pages.
 

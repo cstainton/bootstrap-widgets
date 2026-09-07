@@ -280,6 +280,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         if ("setup".equals(token)) {
             return createSetup();
         }
+        if ("uiBinder".equals(token)) {
+            return panel("UiBinder", new UiBinderDemo(),
+                    "@UiField Button counter;\n@UiHandler(\"counter\")\nvoid onCounterClick(ClickEvent event) { ... }");
+        }
         if (contains(CSS_SECTIONS, token)) {
             Row row = createCssSections();
             filterSections(row, token);
@@ -338,6 +342,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbarCollapse.add(navbar.getNav());
         navbar.getContainer().add(navbarCollapse);
         navbar.getNav().add(new NavbarLink("Setup", "#setup"));
+        navbar.getNav().add(new NavbarLink("UiBinder", "#uiBinder"));
         navbar.getNav().add(dropdown("CSS", CSS_LABELS, CSS_SECTIONS));
         navbar.getNav().add(dropdown("Components", COMPONENT_LABELS, COMPONENT_SECTIONS));
         navbar.getNav().add(dropdown("Interactive", JS_LABELS, JS_SECTIONS));
@@ -346,9 +351,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbar.getNav().add(dropdown("View Javadoc",
                 new String[] {"Core API", "Integrations API"},
                 new String[] {docsBase + "apidocs/index.html", docsBase + "extras-apidocs/index.html"}));
+        boolean teaVm = "teavm".equals(GWT.getModuleName());
         navbar.getNav().add(dropdown("Other Builds",
-                new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
-                new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
+                new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)",
+                        teaVm ? "Bootstrap 5 Showcase (GWT)" : "Bootstrap 5 Showcase (TeaVM)"},
+                teaVm ? new String[] {"./", "./teavm.html", "bootstrap5/"}
+                        : new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
         navbar.getNav().add(new NavbarLink("Fork on GitHub", "https://github.com/cstainton/bootstrap-widgets"));
         navbar.getNav().add(new ThemeSwitcher());
         return navbar;

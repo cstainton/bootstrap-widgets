@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to="GwtBootstrap5Showcase">
+    <public path="public"/>
     <inherits name="io.instanto.bootstrap5.GwtBootstrap5NoTheme"/>
     <inherits name="io.instanto.bootstrap5.themes.GwtBootstrap5Themes"/>
     <inherits name="io.instanto.bootstrap5.extras.datepicker.DatePicker"/>

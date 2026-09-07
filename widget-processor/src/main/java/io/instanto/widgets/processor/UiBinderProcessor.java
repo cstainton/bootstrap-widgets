@@ -85,6 +85,7 @@ public class UiBinderProcessor extends AbstractProcessor {
             return false;
         }
         for (final Element element : round.getRootElements()) {
+            new TextBundleGenerator(processingEnv).process(element);
             if (element.getKind() != ElementKind.CLASS) {
                 continue;
             }
