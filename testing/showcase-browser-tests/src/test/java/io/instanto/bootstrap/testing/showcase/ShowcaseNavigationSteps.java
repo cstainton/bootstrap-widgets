@@ -18,6 +18,8 @@ import org.teavm.jso.dom.html.HTMLElement;
 @CucumberSuite("features/showcase-navigation.feature")
 public class ShowcaseNavigationSteps {
     private FramedApplication app;
+    private String application;
+    private String selectedTheme;
 
     @BeforeScenario public void reset() { Dom.reset(); }
 
@@ -27,11 +29,54 @@ public class ShowcaseNavigationSteps {
 
     @Given("the showcase {string} is open")
     public void open(String application) {
+        this.application = application;
         app = FramedApplication.open("/resources/applications/showcase/" + application, 1440, 900)
                 .awaitReady(page -> page.findByTextOrNull("Other Builds") != null, 20000);
     }
 
     private DomScope page() { return app.page(); }
+
+    @When("I choose theme {string}")
+    public void chooseTheme(String theme) {
+        selectedTheme = theme;
+        HTMLElement toggle = page().find("#showcase > nav .dropdown:last-child > button");
+        Dom.click(toggle);
+        DomScope menu = page().within((HTMLElement) toggle.getParentNode());
+        Dom.waitFor(() -> expect(menu.findByRole("link", theme)).toBeVisible());
+        Dom.click(menu.findByRole("link", theme));
+    }
+
+    @When("I reopen the showcase at width {int}")
+    public void reopen(int width) {
+        app.close();
+        open(application);
+        app.resize(width, 900);
+        if (width < 1200) {
+            HTMLElement toggle = page().find("nav .navbar-toggler");
+            Dom.waitFor(() -> expect(toggle).toBeVisible());
+            Dom.click(toggle);
+            Dom.waitFor(() -> { expect(page().find("nav .navbar-collapse")).toHaveClass("show"); });
+            HTMLElement components = page().findByText("Components");
+            Dom.click(toggle);
+            Dom.waitFor(() -> { expect(components).toBeHidden(); });
+            Dom.click(toggle);
+            Dom.waitFor(() -> { expect(page().find("nav .navbar-collapse")).toHaveClass("show"); });
+        }
+        Dom.waitFor(() -> expect(page().findByText("Components")).toBeVisible());
+    }
+
+    @Then("the navbar uses {string} mode with brand colour {string}")
+    public void navbarTheme(String mode, String colour) {
+        Dom.waitFor(() -> {
+            expect(page().find("#showcase > nav")).toHaveAttribute("data-bs-theme", mode);
+            expect(page().find("#showcase > nav .navbar-brand")).toHaveStyle("color", colour);
+            expect(page().findByText("Components")).toBeVisible();
+            if ("dark".equals(mode)) {
+                expect(page().findByText("Components")).toHaveStyle("color",
+                        "Darkly".equals(selectedTheme) ? "rgba(255, 255, 255, 0.6)" : "rgba(255, 255, 255, 0.55)");
+            }
+        });
+    }
 
     @When("I select {string} then {string}")
     public void select(String category, String destination) {

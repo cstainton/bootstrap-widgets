@@ -2,6 +2,28 @@
 Feature: The compiled showcase replaces pages and keeps navigation usable
   The application starts itself inside a same-origin frame. Tests do not initialise widgets or assets.
 
+  Scenario Outline: Navigation remains readable after restoring a dark theme
+    Given the showcase "<application>" is open
+    When I choose theme "<theme>"
+    Then the navbar uses "dark" mode with brand colour "rgb(255, 255, 255)"
+    When I reopen the showcase at width <width>
+    Then the navbar uses "dark" mode with brand colour "rgb(255, 255, 255)"
+    When I select "Components" then "Alerts"
+    Then section "alerts" is visible
+    When I choose theme "Bootstrap"
+    Then the navbar uses "light" mode with brand colour "rgb(0, 0, 0)"
+    And the application has no startup errors
+    Examples:
+      | application           | theme  | width |
+      | teavm-bootstrap5.html  | Darkly | 1440  |
+      | teavm-bootstrap5.html  | Darkly | 390   |
+      | teavm-bootstrap5.html  | Slate  | 1440  |
+      | teavm-bootstrap5.html  | Slate  | 390   |
+      | bootstrap5/index.html | Darkly | 1440  |
+      | bootstrap5/index.html | Darkly | 390   |
+      | bootstrap5/index.html | Slate  | 1440  |
+      | bootstrap5/index.html | Slate  | 390   |
+
   Scenario Outline: Component routes render after selecting another page
     Given the showcase "<application>" is open
     When I select "Interactive" then "Toasts"

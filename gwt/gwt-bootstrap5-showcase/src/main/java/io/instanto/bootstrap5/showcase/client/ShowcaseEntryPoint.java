@@ -44,6 +44,7 @@ import io.instanto.bootstrap5.client.ui.Affix;
 import io.instanto.bootstrap5.client.ui.ScrollSpy;
 import com.google.gwt.core.client.GWT;
 import io.instanto.bootstrap5.client.ui.theme.StandardThemes;
+import io.instanto.bootstrap5.client.ui.theme.ColorModes;
 import io.instanto.bootstrap5.client.ui.theme.ThemeSwitcher;
 import io.instanto.bootstrap5.client.ui.theme.Themes;
 import io.instanto.bootstrap5.themes.client.BootswatchThemes;
@@ -334,6 +335,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Navbar createNavbar() {
         Navbar navbar = new Navbar();
         navbar.addStyleName("sticky-top");
+        // Navbar colour variables require a local mode, not just the document's mode.
+        navbar.getElement().setAttribute(ColorModes.ATTRIBUTE, ColorModes.isDark() ? "dark" : "light");
+        ColorModes.addColorModeChangeHandler(mode -> navbar.getElement().setAttribute(
+                ColorModes.ATTRIBUTE, ColorModes.isDark() ? "dark" : "light"));
         NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("navbar-collapse");
         NavbarCollapse navbarCollapse = new NavbarCollapse();
         navbarCollapse.getElement().setId("navbar-collapse");
