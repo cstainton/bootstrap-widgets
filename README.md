@@ -145,6 +145,11 @@ The Java/Gherkin widget suites currently need the `0.1.0-SNAPSHOT` builds of
 locally or downloaded from GitHub Packages. CI uses a token with package read access;
 private companion repositories also require access to those repositories.
 
+For CI, store a classic token with `read:packages` scope in the repository's Actions
+secret `PACKAGES_READ_TOKEN`. It is used only for the companion Maven registries;
+the built-in `GITHUB_TOKEN` remains in use for this repository. Renew the package
+token before its expiry. Do not add token values to POMs, workflows or source control.
+
 After installing the reactor, run the tests against its packaged artifacts:
 
 ```bash

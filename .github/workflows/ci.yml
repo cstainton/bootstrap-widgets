@@ -15,6 +15,7 @@ jobs:
       packages: read
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Check out
@@ -44,17 +45,17 @@ jobs:
               <server>
                 <id>github-cucumber-tea</id>
                 <username>${env.GITHUB_ACTOR}</username>
-                <password>${env.GITHUB_TOKEN}</password>
+                <password>${env.PACKAGES_READ_TOKEN}</password>
               </server>
               <server>
                 <id>github-gherkin-tea</id>
                 <username>${env.GITHUB_ACTOR}</username>
-                <password>${env.GITHUB_TOKEN}</password>
+                <password>${env.PACKAGES_READ_TOKEN}</password>
               </server>
               <server>
                 <id>github-mockatcha</id>
                 <username>${env.GITHUB_ACTOR}</username>
-                <password>${env.GITHUB_TOKEN}</password>
+                <password>${env.PACKAGES_READ_TOKEN}</password>
               </server>
             </servers>
           </settings>
