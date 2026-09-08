@@ -1329,6 +1329,12 @@ async function main() {
           `document.getElementById('${linkId}').href.includes('bootswatch-flatly')`,
           "the Flatly theme stylesheet",
         );
+        // The href changes before the stylesheet loads and moves the next touch target.
+        await waitFor(
+          `(() => { const link = document.getElementById('${linkId}');
+            return link.sheet && link.sheet.href === link.href; })()`,
+          "the Flatly stylesheet to finish applying",
+        );
         const previousUrl = await evaluate(`document.getElementById('${linkId}').href`);
         assert.match(previousUrl, /bootswatch-flatly/);
 
