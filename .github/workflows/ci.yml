@@ -78,10 +78,19 @@ jobs:
         run: python3 scripts/check-module-layout.py
 
       - name: Build and install reactor artifacts
-        run: mvn -B -DskipTests install
+        run: mvn -B -U -DskipTests install
 
       - name: Run compatibility and widget browser tests
         run: mvn -B -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
+
+      - name: Upload test results including unfinished specifications
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: widget-test-results
+          path: '**/target/surefire-reports/*'
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Compile showcase with GWT
         run: mvn -B -f gwt/gwt-bootstrap3-showcase/pom.xml -DskipTests -Dgwt.forceCompilation=true gwt:compile
@@ -103,6 +112,17 @@ jobs:
 
       - name: Smoke-test assembled showcases in Chromium
         run: bash scripts/smoke-showcase-pages.sh
+
+      - name: Exercise compiled showcase navigation in Java
+        run: mvn -B -f testing/showcase-browser-tests/pom.xml test
+
+      - name: Upload showcase navigation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: showcase-navigation-results
+          path: testing/showcase-browser-tests/target/surefire-reports/*
+          if-no-files-found: warn
 
       - name: Exercise compiled GWT widgets with mobile touch input
         run: node scripts/run-browser-behaviour-tests.mjs

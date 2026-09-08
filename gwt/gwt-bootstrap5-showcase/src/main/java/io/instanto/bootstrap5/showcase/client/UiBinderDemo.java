@@ -1,4 +1,4 @@
-package io.instanto.bootstrap5.teavm.demo;
+package io.instanto.bootstrap5.showcase.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -11,14 +11,7 @@ import io.instanto.bootstrap5.client.ui.Button;
 import io.instanto.bootstrap5.client.ui.PanelBody;
 import io.instanto.bootstrap5.client.ui.TextBox;
 
-/**
- * A UiBinder template on the TeaVM backend.
- *
- * <p>The same code a GWT application writes. GWT satisfies the GWT.create below with a
- * compile-time generator reached through deferred binding; TeaVM has no generator SPI, so
- * the build runs the equivalent step earlier and registers the result. Nothing here is
- * TeaVM-specific.</p>
- */
+/** Shared UiBinder example showing field binding and click handlers. */
 public class UiBinderDemo extends Composite {
 
     interface Binder extends UiBinder<PanelBody, UiBinderDemo> { }
@@ -32,6 +25,8 @@ public class UiBinderDemo extends Composite {
 
     public UiBinderDemo() {
         initWidget(BINDER.createAndBindUi(this));
+        counter.getElement().setAttribute("data-testid", "counter");
+        counter.getElement().setAttribute("aria-label", "Click counter");
     }
 
     @UiHandler("counter")

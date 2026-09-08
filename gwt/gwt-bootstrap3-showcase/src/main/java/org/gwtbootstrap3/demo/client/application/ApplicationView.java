@@ -52,6 +52,8 @@ public class ApplicationView extends Composite {
     SimplePanel contentContainer;
     @UiField
     NavbarCollapse navbarCollapse;
+    @UiField
+    org.gwtbootstrap3.client.ui.AnchorListItem otherRuntime;
 
     /** The nav menu, so a page change can collapse it. */
     public NavbarCollapse getNavbarCollapse() {
@@ -65,6 +67,10 @@ public class ApplicationView extends Composite {
     private static final Binder BINDER = GWT.create(Binder.class);
     public ApplicationView() {
         initWidget(BINDER.createAndBindUi(this));
+        if ("teavm".equals(GWT.getModuleName())) {
+            otherRuntime.setText("Bootstrap 3 Showcase (GWT)");
+            otherRuntime.setHref("./");
+        }
     }
 
     /** Shows a page in the shell. This was the framework's slot protocol. */

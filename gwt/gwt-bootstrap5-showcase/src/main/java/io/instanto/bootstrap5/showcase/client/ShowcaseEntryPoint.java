@@ -44,6 +44,7 @@ import io.instanto.bootstrap5.client.ui.Affix;
 import io.instanto.bootstrap5.client.ui.ScrollSpy;
 import com.google.gwt.core.client.GWT;
 import io.instanto.bootstrap5.client.ui.theme.StandardThemes;
+import io.instanto.bootstrap5.client.ui.theme.ColorModes;
 import io.instanto.bootstrap5.client.ui.theme.ThemeSwitcher;
 import io.instanto.bootstrap5.client.ui.theme.Themes;
 import io.instanto.bootstrap5.themes.client.BootswatchThemes;
@@ -209,6 +210,16 @@ import io.instanto.bootstrap5.client.ui.Well;
 
 public class ShowcaseEntryPoint implements EntryPoint {
 
+    private final java.util.function.Supplier<Widget> setupFactory;
+
+    public ShowcaseEntryPoint() {
+        this(SetupView::new);
+    }
+
+    public ShowcaseEntryPoint(java.util.function.Supplier<Widget> setupFactory) {
+        this.setupFactory = setupFactory;
+    }
+
     private static final String IMG_WIDE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='240'%3E%3Crect width='100%25' height='100%25' fill='rgb(13,110,253)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='32'%3EBootstrap 5%3C/text%3E%3C/svg%3E";
     private static final String IMG_THUMB = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180'%3E%3Crect width='100%25' height='100%25' fill='rgb(25,135,84)'/%3E%3Ctext x='50%25' y='50%25' fill='white' text-anchor='middle' dominant-baseline='middle' font-family='sans-serif' font-size='24'%3EThumbnail%3C/text%3E%3C/svg%3E";
     private static final String[] CSS_SECTIONS = {"buttons", "code", "forms", "gridSystem", "images", "responsiveUtilities", "tables", "typography"};
@@ -280,6 +291,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
         if ("setup".equals(token)) {
             return createSetup();
         }
+        if ("uiBinder".equals(token)) {
+            return panel("UiBinder", new UiBinderDemo(),
+                    "@UiField Button counter;\n@UiHandler(\"counter\")\nvoid onCounterClick(ClickEvent event) { ... }");
+        }
         if (contains(CSS_SECTIONS, token)) {
             Row row = createCssSections();
             filterSections(row, token);
@@ -330,6 +345,10 @@ public class ShowcaseEntryPoint implements EntryPoint {
     private Navbar createNavbar() {
         Navbar navbar = new Navbar();
         navbar.addStyleName("sticky-top");
+        // Navbar colour variables require a local mode, not just the document's mode.
+        navbar.getElement().setAttribute(ColorModes.ATTRIBUTE, ColorModes.isDark() ? "dark" : "light");
+        ColorModes.addColorModeChangeHandler(mode -> navbar.getElement().setAttribute(
+                ColorModes.ATTRIBUTE, ColorModes.isDark() ? "dark" : "light"));
         NavbarCollapseButton navbarCollapseButton = new NavbarCollapseButton("navbar-collapse");
         NavbarCollapse navbarCollapse = new NavbarCollapse();
         navbarCollapse.getElement().setId("navbar-collapse");
@@ -338,6 +357,7 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbarCollapse.add(navbar.getNav());
         navbar.getContainer().add(navbarCollapse);
         navbar.getNav().add(new NavbarLink("Setup", "#setup"));
+        navbar.getNav().add(new NavbarLink("UiBinder", "#uiBinder"));
         navbar.getNav().add(dropdown("CSS", CSS_LABELS, CSS_SECTIONS));
         navbar.getNav().add(dropdown("Components", COMPONENT_LABELS, COMPONENT_SECTIONS));
         navbar.getNav().add(dropdown("Interactive", JS_LABELS, JS_SECTIONS));
@@ -346,9 +366,12 @@ public class ShowcaseEntryPoint implements EntryPoint {
         navbar.getNav().add(dropdown("View Javadoc",
                 new String[] {"Core API", "Integrations API"},
                 new String[] {docsBase + "apidocs/index.html", docsBase + "extras-apidocs/index.html"}));
+        boolean teaVm = "teavm".equals(GWT.getModuleName());
         navbar.getNav().add(dropdown("Other Builds",
-                new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)", "Bootstrap 5 Showcase (TeaVM)"},
-                new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
+                new String[] {"Bootstrap 3 Showcase (GWT)", "Bootstrap 3 Showcase (TeaVM)",
+                        teaVm ? "Bootstrap 5 Showcase (GWT)" : "Bootstrap 5 Showcase (TeaVM)"},
+                teaVm ? new String[] {"./", "./teavm.html", "bootstrap5/"}
+                        : new String[] {"../", "../teavm.html", "../teavm-bootstrap5.html"}));
         navbar.getNav().add(new NavbarLink("Fork on GitHub", "https://github.com/cstainton/bootstrap-widgets"));
         navbar.getNav().add(new ThemeSwitcher());
         return navbar;
@@ -377,10 +400,9 @@ public class ShowcaseEntryPoint implements EntryPoint {
     }
 
     private Widget createSetup() {
-        Row row = section("setup", "Setup", "Bootstrap 5-native module setup");
+        Row row = section("setup", "Setup", "Application setup");
         Column column = fullColumn(row);
-        column.add(panel("Maven", new HTML("<p>Use the Bootstrap 5 module when migrating code/templates to Bootstrap 5 idioms.</p>"), "<dependency>\n  <groupId>io.instanto</groupId>\n  <artifactId>gwt-bootstrap5</artifactId>\n  <version>1.0-SNAPSHOT</version>\n</dependency>"));
-        column.add(panel("GWT Module", new HTML("<p>Inherit the Bootstrap 5 GWT module.</p>"), "<inherits name=\"io.instanto.bootstrap5.GwtBootstrap5\"/>"));
+        column.add(setupFactory.get());
         column.add(panel("UiBinder", uiBinderProbe(), uiBinderSource()));
         return row;
     }

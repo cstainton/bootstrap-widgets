@@ -8,7 +8,7 @@
   <artifactId>teavm-bootstrap5</artifactId>
   <name>TeaVM Bootstrap 5</name>
   <packaging>jar</packaging>
-  <description>Bootstrap 5-native TeaVM widget backend built without UiBinder or GWT DOM dependencies.</description>
+  <description>Shared Bootstrap 5 widgets and UiBinder templates compiled with TeaVM and gwt-user-compat.</description>
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>

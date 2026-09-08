@@ -107,15 +107,20 @@ That puts the markup on the page but never tells the widget it was attached. Its
 `onLoad` never runs, and that is where a tooltip binds to its element and a slider
 builds itself. The widget looks right and does nothing.
 
-## Templates
+## UiBinder templates
 
 If you prefer markup to Java for laying out a screen, UiBinder templates work here.
-Write the `.ui.xml` as you would under GWT; a compile-time processor turns it into
-Java before either compiler sees it, so there is nothing to configure. A project with
-no templates generates nothing and pays nothing.
+Keep `Owner.ui.xml` beside its Java owner and use `UiBinder`, `@UiField`,
+`@UiHandler` and `GWT.create(Binder.class)` as in the shared showcase.
+The `widget-processor` annotation processor generates Java and a service descriptor
+during compilation; the compatibility layer uses these to construct the binder.
+The showcase already configures this; a separate application needs the processor too.
 
-[`UiBinderDemo.ui.xml`](src/main/java/io/instanto/bootstrap5/teavm/demo/UiBinderDemo.ui.xml)
-is a working example.
+See [UiBinder setup](../UIBINDER.md) for the Maven configuration, template packaging
+and current limits. The shared [UiBinderDemo.java](../../gwt/gwt-bootstrap5-showcase/src/main/java/io/instanto/bootstrap5/showcase/client/UiBinderDemo.java)
+and [UiBinderDemo.ui.xml](../../gwt/gwt-bootstrap5-showcase/src/main/java/io/instanto/bootstrap5/showcase/client/UiBinderDemo.ui.xml)
+demonstrate field binding and click handlers. Attach the resulting view through
+`RootPanel` inside the `Bootstrap5.initialise(...)` callback.
 
 ## Try it
 
