@@ -153,7 +153,7 @@ token before its expiry. Do not add token values to POMs, workflows or source co
 After installing the reactor, run the tests against its packaged artifacts:
 
 ```bash
-mvn -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:gwt-user-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
+mvn -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
 ```
 
 Do not add `-am` to this test-only command: during an un-packaged reactor build Maven can
