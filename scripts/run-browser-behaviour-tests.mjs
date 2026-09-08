@@ -115,7 +115,7 @@ function signalAndWait(child, signal, timeout) {
       resolveExit(true);
     };
     child.once("exit", onExit);
-    child.kill(signal);
+    if (signal) child.kill(signal);
     timer = setTimeout(() => {
       child.off("exit", onExit);
       resolveExit(false);
@@ -123,7 +123,15 @@ function signalAndWait(child, signal, timeout) {
   });
 }
 
-async function stopBrowser(browser) {
+async function stopBrowser(browser, cdp) {
+  if (cdp) {
+    try {
+      await cdp.send("Browser.close");
+      if (await signalAndWait(browser, null, 5000)) return;
+    } catch {
+      // A disconnected browser still needs the process shutdown fallback.
+    }
+  }
   if (await signalAndWait(browser, "SIGTERM", 5000)) return;
   if (await signalAndWait(browser, "SIGKILL", 2000)) return;
   browser.unref();
@@ -2094,10 +2102,10 @@ async function main() {
     console.log(`${total - failures}/${total} compiled GWT mobile touch tests passed`);
     if (failures) process.exitCode = 1;
   } finally {
+    await stopBrowser(browser, cdp);
     cdp?.close();
-    await stopBrowser(browser);
     server.close();
-    rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+    rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
     if (process.exitCode && browserStderr) {
       console.error(browserStderr);
     }
