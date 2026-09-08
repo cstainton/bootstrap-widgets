@@ -1,15 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>io.instanto</groupId>
   <artifactId>bootstrap-widgets</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Bootstrap Widgets</name>
   <description>Bootstrap 3 and Bootstrap 5 widget libraries for GWT and TeaVM.</description>
-
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -17,18 +13,15 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <organization>
     <name>GWT Bootstrap</name>
     <url>https://github.com/cstainton/bootstrap-widgets</url>
   </organization>
-
   <scm>
     <connection>scm:git:https://github.com/cstainton/bootstrap-widgets.git</connection>
     <developerConnection>scm:git:git@github.com:cstainton/bootstrap-widgets.git</developerConnection>
     <url>https://github.com/cstainton/bootstrap-widgets</url>
   </scm>
-
   <distributionManagement>
     <repository>
       <id>github</id>
@@ -41,7 +34,6 @@
       <url>https://maven.pkg.github.com/cstainton/bootstrap-widgets</url>
     </snapshotRepository>
   </distributionManagement>
-
   <repositories>
     <repository>
       <id>github</id>
@@ -87,8 +79,11 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>github-teavm-compat</id>
+      <url>https://maven.pkg.github.com/cstainton/teavm-compat</url>
+    </repository>
   </repositories>
-
   <modules>
     <module>widget-processor</module>
     <module>teavm-module-plugin</module>
@@ -97,7 +92,6 @@
     <module>teavm</module>
     <module>showcase-site</module>
   </modules>
-
   <properties>
     <dependency-check-maven.version>12.1.0</dependency-check-maven.version>
     <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
@@ -137,6 +131,7 @@
     <teavm.junit.js.runner>browser-chrome</teavm.junit.js.runner>
     <cucumber-tea.version>0.1.0-SNAPSHOT</cucumber-tea.version>
     <mockatcha.version>0.1.0-SNAPSHOT</mockatcha.version>
+    <teavm-compat.version>0.1.0-SNAPSHOT</teavm-compat.version>
   </properties>
   <build>
     <plugins>
@@ -161,7 +156,9 @@
           <execution>
             <id>spotbugs-report</id>
             <phase>process-classes</phase>
-            <goals><goal>spotbugs</goal></goals>
+            <goals>
+              <goal>spotbugs</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -173,19 +170,20 @@
           <execution>
             <id>name-spotbugs-html-report</id>
             <phase>process-classes</phase>
-            <goals><goal>run</goal></goals>
+            <goals>
+              <goal>run</goal>
+            </goals>
             <configuration>
               <target>
                 <move todir="${project.build.directory}/spotbugs">
-                  <fileset dir="${project.build.directory}/spotbugs" includes="spotbugs.html" erroronmissingdir="false"/>
-                  <globmapper from="spotbugs.html" to="${project.artifactId}-spotbugs.html"/>
+                  <fileset dir="${project.build.directory}/spotbugs" includes="spotbugs.html" erroronmissingdir="false" />
+                  <globmapper from="spotbugs.html" to="${project.artifactId}-spotbugs.html" />
                 </move>
               </target>
             </configuration>
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -259,4 +257,15 @@
       </build>
     </profile>
   </profiles>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.instanto</groupId>
+        <artifactId>teavm-compat-bom</artifactId>
+        <version>${teavm-compat.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

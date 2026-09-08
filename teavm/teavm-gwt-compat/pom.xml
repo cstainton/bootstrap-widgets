@@ -1,29 +1,20 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <groupId>io.instanto</groupId>
-    <artifactId>teavm-bootstrap-widgets</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-
+  <groupId>io.instanto</groupId>
   <artifactId>teavm-gwt-compat</artifactId>
-  <name>TeaVM GWT Compatibility Runtime</name>
-  <packaging>jar</packaging>
-  <description>Minimal GWT client API subset backed by TeaVM DOM APIs, so the widget sources compile unchanged on both backends.</description>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.teavm</groupId>
-      <artifactId>teavm-jso</artifactId>
-      <version>${teavm.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.teavm</groupId>
-      <artifactId>teavm-jso-apis</artifactId>
-      <version>${teavm.version}</version>
-    </dependency>
-  </dependencies>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <description>Relocated to the independent TeaVM compatibility build.</description>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/cstainton/bootstrap-widgets</url>
+    </repository>
+    <relocation>
+      <groupId>io.instanto</groupId>
+      <artifactId>gwt-user-compat</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <message>Compatibility libraries are maintained in cstainton/teavm-compat.</message>
+    </relocation>
+  </distributionManagement>
 </project>

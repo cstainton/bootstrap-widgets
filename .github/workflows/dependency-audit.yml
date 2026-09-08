@@ -17,6 +17,8 @@ jobs:
   audit:
     name: OWASP dependency audit
     runs-on: ubuntu-latest
+    env:
+      PACKAGES_READ_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Check out
@@ -38,6 +40,11 @@ jobs:
           cat > "$HOME/.m2/settings.xml" <<'XML'
           <settings>
             <servers>
+              <server>
+                <id>github-teavm-compat</id>
+                <username>${env.GITHUB_ACTOR}</username>
+                <password>${env.PACKAGES_READ_TOKEN}</password>
+              </server>
               <server>
                 <id>github</id>
                 <username>${GITHUB_ACTOR}</username>

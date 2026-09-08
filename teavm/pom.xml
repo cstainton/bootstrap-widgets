@@ -1,43 +1,25 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>io.instanto</groupId>
     <artifactId>bootstrap-widgets</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-
   <artifactId>teavm-bootstrap-widgets</artifactId>
   <packaging>pom</packaging>
   <name>TeaVM Bootstrap Widgets</name>
-
   <modules>
     <module>teavm-gwt-compat</module>
     <module>teavm-bootstrap3</module>
     <module>teavm-bootstrap5</module>
     <module>teavm-bootstrap-widget-tests</module>
-    <module>teavm-gwt-compat-contracts</module>
   </modules>
-
   <build>
-    <!--
-      Where a module that compiles shared widget source puts it. Set
-      shared.source.artifacts and declare maven-dependency-plugin to opt in; a module
-      that does neither is unaffected, because the directory simply is not there.
-    -->
     <resources>
       <resource>
         <directory>${project.build.directory}/shared-sources</directory>
         <includes>
-          <!--
-            Assets only. The module descriptors are read at build time, to generate
-            the class that loads these, and nothing reads them afterwards: TeaVM has
-            no module system, so shipping them would say a module exists here that
-            does not, describing Java compiled by the other compiler.
-          -->
           <include>**/resource/**</include>
         </includes>
       </resource>
@@ -45,15 +27,8 @@
         <directory>src/main/resources</directory>
       </resource>
     </resources>
-
     <pluginManagement>
       <plugins>
-        <!--
-          Unpacks the widget sources a track compiles, from the published artifacts
-          rather than from a sibling directory, so a module builds from a repository
-          alone. A sources jar carries the resource files as well as the Java, so one
-          unpack feeds the source root, the packaged assets and the seam checks.
-        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
@@ -76,7 +51,6 @@
         </plugin>
       </plugins>
     </pluginManagement>
-
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -99,7 +73,7 @@
                     <exclude>com.google.gwt:gwt-user</exclude>
                     <exclude>com.google.gwt:gwt-dev</exclude>
                   </excludes>
-                  <message>TeaVM modules must use teavm-gwt-compat, never gwt-user or gwt-dev.</message>
+                  <message>TeaVM modules must use gwt-user-compat, never gwt-user or gwt-dev.</message>
                 </bannedDependencies>
               </rules>
             </configuration>

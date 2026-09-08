@@ -1,21 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>io.instanto</groupId>
     <artifactId>teavm-bootstrap-widgets</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-
   <artifactId>teavm-bootstrap5</artifactId>
   <name>TeaVM Bootstrap 5</name>
   <packaging>jar</packaging>
   <description>Bootstrap 5-native TeaVM widget backend built without UiBinder or GWT DOM dependencies.</description>
-
   <dependencies>
-    <!-- Unpacked below; provided, and source only. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap5</artifactId>
@@ -29,7 +23,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided, and source only. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap5-themes</artifactId>
@@ -43,7 +36,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided, and source only. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap5-extras</artifactId>
@@ -57,7 +49,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided, and source only. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap5-showcase</artifactId>
@@ -73,8 +64,7 @@
     </dependency>
     <dependency>
       <groupId>io.instanto</groupId>
-      <artifactId>teavm-gwt-compat</artifactId>
-      <version>${project.version}</version>
+      <artifactId>gwt-user-compat</artifactId>
     </dependency>
     <dependency>
       <groupId>org.teavm</groupId>
@@ -92,46 +82,15 @@
       <version>${teavm.version}</version>
     </dependency>
   </dependencies>
-
   <properties>
     <shared.source.artifacts>gwt-bootstrap5,gwt-bootstrap5-themes,gwt-bootstrap5-extras,gwt-bootstrap5-showcase</shared.source.artifacts>
   </properties>
-
   <build>
-    <!--
-      Everything the matching GWT jars carry: the module descriptors and the
-      stylesheets, fonts and scripts under each resource directory. A consumer of this
-      library depends on one artifact, so what a GWT application would inherit through
-      a module has to arrive here instead.
-
-      The paths are relative because a property is not interpolated inside resources,
-      though it is inside build-helper's add-source below.
-    -->
     <plugins>
-      <!-- Unpacks the shared widget sources; configured in the parent. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
-
-      <!--
-        The Bootstrap 5 widget API is compiled from the GWT module's own sources, so the
-        TeaVM build and the GWT build share one definition of every widget rather than
-        maintaining a parallel copy. Two groups are excluded:
-          * the three classes that hold JSNI - the entry point, the event bridge and
-            the component seam - which this module re-implements against TeaVM's
-            @JSBody under the same package and API. Every widget is shared source.
-      -->
-      <!--
-        The TeaVM equivalent of GWT's module declarations, read from the very same
-        .gwt.xml files rather than declared again. Nothing is imposed on an
-        application: it constructs a widget and the widget asks for what it needs.
-      -->
-      <!--
-        The TeaVM counterpart of the GWT module declarations: a class per module that
-        loads what it needs and reports when it is usable, plus the assets themselves.
-        Reads the same .gwt.xml and ClientBundle the GWT build reads.
-      -->
       <plugin>
         <groupId>io.instanto</groupId>
         <artifactId>teavm-module-maven-plugin</artifactId>
@@ -152,7 +111,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -173,19 +131,10 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!--
-            UiBinder for TeaVM. GWT reaches its generator through deferred binding,
-            which TeaVM has no equivalent for; running the same step inside javac
-            puts it somewhere both compilers can use, and gives it the real type
-            model rather than an approximation of one. A module with no templates
-            generates nothing, so this costs an application that does not use
-            UiBinder exactly nothing.
-          -->
           <annotationProcessorPaths>
             <path>
               <groupId>io.instanto</groupId>
@@ -198,18 +147,9 @@
             <exclude>io/instanto/bootstrap5/client/ui/base/BootstrapEventBridge.java</exclude>
             <exclude>io/instanto/bootstrap5/client/ui/base/BootstrapComponent.java</exclude>
             <exclude>io/instanto/bootstrap5/client/ui/base/InputEvents.java</exclude>
-            <!--
-              Only the Markdown extra crosses to TeaVM so far; the others still reach
-              the browser through JSNI and a ClientBundle.
-            -->
             <exclude>io/instanto/bootstrap5/extras/datepicker/client/DatePickerClientBundle.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/datepicker/client/DatePickerEntryPoint.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/datepicker/client/ui/DatePickerJs.java</exclude>
-            <!--
-              GWT-only pieces of the Markdown extra: the ClientBundle that inlines the
-              vendored scripts and the entry point that injects them. MarkdownResources
-              loads them by URL instead.
-            -->
             <exclude>io/instanto/bootstrap5/extras/markdown/client/MarkdownClientBundle.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/markdown/client/MarkdownEntryPoint.java</exclude>
             <exclude>io/instanto/bootstrap5/extras/markdown/client/Markdown.java</exclude>
@@ -238,14 +178,12 @@
           </excludes>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
             <id>verify-bootstrap5-source-seams</id>
-            <!-- After the unpack, since half the files it checks arrive there. -->
             <phase>process-sources</phase>
             <goals>
               <goal>enforce</goal>
@@ -269,12 +207,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!--
-        The Markdown extra's scripts are inlined into the GWT output by a ClientBundle,
-        so they are never emitted as files. TeaVM loads them by URL instead, which means
-        shipping them beside the compiled module.
-      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
@@ -345,24 +277,23 @@
               </resources>
             </configuration>
           </execution>
-            <execution>
-              <id>copy-icon-fonts</id>
-              <phase>process-classes</phase>
-              <goals>
-                <goal>copy-resources</goal>
-              </goals>
-              <configuration>
-                <outputDirectory>${project.build.directory}/teavm/fonts</outputDirectory>
-                <resources>
-                  <resource>
-                    <directory>${project.build.directory}/shared-sources/io/instanto/bootstrap5/client/resource/fonts</directory>
-                  </resource>
-                </resources>
-              </configuration>
-            </execution>
+          <execution>
+            <id>copy-icon-fonts</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/teavm/fonts</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/shared-sources/io/instanto/bootstrap5/client/resource/fonts</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.teavm</groupId>
         <artifactId>teavm-maven-plugin</artifactId>

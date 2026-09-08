@@ -1,25 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>io.instanto</groupId>
     <artifactId>teavm-bootstrap-widgets</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-
   <artifactId>teavm-bootstrap3</artifactId>
   <name>TeaVM Bootstrap 3</name>
   <packaging>jar</packaging>
   <description>TeaVM-backed Bootstrap 3 widget API, sharing the GWT track sources.</description>
-
   <dependencies>
-    <!--
-      The extras, unpacked one at a time. Only the ported ones are taken, so adding
-      an extra is a line in the include list below rather than a wall of exclusions
-      for the seventeen that are not ready.
-    -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap3-extras</artifactId>
@@ -33,18 +23,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided so it reaches no consumer. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap3</artifactId>
       <version>${project.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
-      <!--
-        Source only. Without this the artifact's own dependencies follow it in,
-        including the GWT-compiled jars of these very modules, and TeaVM then links
-        against bytecode built for the other compiler.
-      -->
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -52,18 +36,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided so it reaches no consumer. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap3-themes</artifactId>
       <version>${project.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
-      <!--
-        Source only. Without this the artifact's own dependencies follow it in,
-        including the GWT-compiled jars of these very modules, and TeaVM then links
-        against bytecode built for the other compiler.
-      -->
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -71,18 +49,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- Unpacked below; provided so it reaches no consumer. -->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>gwt-bootstrap3-showcase</artifactId>
       <version>${project.version}</version>
       <classifier>sources</classifier>
       <scope>provided</scope>
-      <!--
-        Source only. Without this the artifact's own dependencies follow it in,
-        including the GWT-compiled jars of these very modules, and TeaVM then links
-        against bytecode built for the other compiler.
-      -->
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -92,10 +64,8 @@
     </dependency>
     <dependency>
       <groupId>io.instanto</groupId>
-      <artifactId>teavm-gwt-compat</artifactId>
-      <version>${project.version}</version>
+      <artifactId>gwt-user-compat</artifactId>
     </dependency>
-    <!-- theme catalogue only; the stylesheets are served by the host page -->
     <dependency>
       <groupId>org.teavm</groupId>
       <artifactId>teavm-jso</artifactId>
@@ -112,24 +82,15 @@
       <version>${teavm.version}</version>
     </dependency>
   </dependencies>
-
   <properties>
     <shared.source.artifacts>gwt-bootstrap3,gwt-bootstrap3-themes,gwt-bootstrap3-showcase</shared.source.artifacts>
   </properties>
-
   <build>
     <plugins>
-      <!-- Unpacks the shared widget sources; configured in the parent. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
-
-      <!--
-        The TeaVM counterpart of an extra's GWT module: a class that loads what the
-        module declares and says when it is usable. Reads the same .gwt.xml and
-        ClientBundle the GWT build reads, from the unpacked sources.
-      -->
       <plugin>
         <groupId>io.instanto</groupId>
         <artifactId>teavm-module-maven-plugin</artifactId>
@@ -152,9 +113,7 @@
                 <jquery-3.7.1.min.cache.js>org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint::isJQueryLoaded</jquery-3.7.1.min.cache.js>
                 <bootstrap-3.4.1.min.cache.js>org.gwtbootstrap3.client.TeaVmBootstrap3EntryPoint::isBootstrapLoaded</bootstrap-3.4.1.min.cache.js>
               </scriptPresence>
-              <!-- The extras that are ported. One line per extra as each lands. -->
               <includeModules>
-                <!-- Supplies the core CSS, JavaScript and fonts to the packaged asset tree. -->
                 <includeModule>NoThemeResources</includeModule>
                 <includeModule>Markdown</includeModule>
                 <includeModule>SliderResources</includeModule>
@@ -172,7 +131,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -193,14 +151,6 @@
           </execution>
         </executions>
       </plugin>
-
-      <!--
-        The Bootstrap 3 widget API is compiled from the GWT module's own sources, so the
-        TeaVM build and the GWT build share one definition of every widget rather than
-        maintaining a parallel copy. Two groups are excluded:
-          * the entry point and the jQuery bridge, which this module re-implements
-            against TeaVM's @JSBody under the same package and API.
-      -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -221,16 +171,10 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <!--
-            UiBinder for TeaVM, as on the Bootstrap 5 module. The showcase templates are
-            the point: forty-one of the fifty-five pages are ordinary widget code, and
-            this is what turns their .ui.xml into something both compilers can build.
-          -->
           <annotationProcessorPaths>
             <path>
               <groupId>io.instanto</groupId>
@@ -239,12 +183,7 @@
             </path>
           </annotationProcessorPaths>
           <excludes>
-            <!--
-              ExtrasPages selects shared pages whose dependencies have been ported.
-              Keep the remaining extras pages out of this compiler's source set.
-            -->
             <exclude>org/gwtbootstrap3/demo/client/ExtrasPages.java</exclude>
-            <!-- Seam: prettify.js arrives by URL here, not inlined by a ClientBundle. -->
             <exclude>org/gwtbootstrap3/demo/client/ShowcaseScripts.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/ui/PrettyPre.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/GwtBootstrap3DemoClientBundle.java</exclude>
@@ -261,7 +200,6 @@
             <exclude>org/gwtbootstrap3/demo/client/application/extras/TagsInputView.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/application/extras/TypeaheadView.java</exclude>
             <exclude>org/gwtbootstrap3/demo/client/application/css/validation/**</exclude>
-            <!-- The GWT halves of the markdown seams; TeaVM copies sit beside them. -->
             <exclude>org/gwtbootstrap3/extras/animate/client/ui/AnimateJs.java</exclude>
             <exclude>org/gwtbootstrap3/extras/toggleswitch/client/ui/base/ToggleSwitchJs.java</exclude>
             <exclude>org/gwtbootstrap3/extras/toggleswitch/client/ToggleSwitchClientBundle.java</exclude>
@@ -286,14 +224,12 @@
           </excludes>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
           <execution>
             <id>verify-bootstrap3-source-seams</id>
-            <!-- After the unpack, since half the files it checks arrive there. -->
             <phase>process-sources</phase>
             <goals>
               <goal>enforce</goal>
@@ -319,7 +255,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>org.teavm</groupId>
         <artifactId>teavm-maven-plugin</artifactId>

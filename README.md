@@ -54,13 +54,13 @@ same widget composition and event-handling model where that still fits Bootstrap
 drop-in replacement. Templates, styles, and removed Bootstrap 3 concepts may need changes. See
 [BOOTSTRAP5-PORTING.md](BOOTSTRAP5-PORTING.md) for current coverage.
 
-TeaVM artifacts have separate names because they use TeaVM libraries and `teavm-gwt-compat` instead
+TeaVM artifacts have separate names because they use TeaVM libraries and `gwt-user-compat` instead
 of `gwt-user`. The build rejects `gwt-user` and `gwt-dev` on TeaVM module classpaths.
 
 ## TeaVM Support
 
 The TeaVM builds compile the corresponding GWT widget sources. They do not maintain a second copy of
-the widget API. `teavm-gwt-compat` implements the part of the GWT client API used by those sources and
+the widget API. `gwt-user-compat` implements the part of the GWT client API used by those sources and
 provides TeaVM-backed DOM, events, widgets, history, scheduling, and resource support.
 
 UiBinder templates are supported through the `widget-processor` annotation processor. It generates
@@ -153,7 +153,7 @@ token before its expiry. Do not add token values to POMs, workflows or source co
 After installing the reactor, run the tests against its packaged artifacts:
 
 ```bash
-mvn -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:teavm-gwt-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
+mvn -pl :gwt-user-jvm-contract-tests,:gwt-bootstrap-widget-tests,:gwt-user-compat-contracts,:teavm-bootstrap3-tests,:teavm-bootstrap5-tests test
 ```
 
 Do not add `-am` to this test-only command: during an un-packaged reactor build Maven can
@@ -163,7 +163,7 @@ Use `install` for whole-reactor builds and the command above for subsequent veri
 The test suite includes:
 
 - shared Gherkin behaviour specifications based on the original GwtBootstrap3 showcase;
-- API contracts run against both `gwt-user` and `teavm-gwt-compat`;
+- API contracts run against both `gwt-user` and `gwt-user-compat`;
 - compiled GWT and TeaVM widget fixtures;
 - real-browser showcase smoke tests and mobile touch tests.
 
@@ -183,3 +183,13 @@ work.
 
 Third-party browser assets and their versions are listed in
 [THIRD-PARTY-ASSETS.md](THIRD-PARTY-ASSETS.md).
+
+## Shared compatibility libraries
+
+TeaVM's GWT client adapter is now maintained and published independently in
+[teavm-compat](https://github.com/cstainton/teavm-compat). This build imports its BOM
+and consumes `gwt-user-compat`; portable reference contracts come from
+`gwt-api-contracts`. The old coordinates remain relocation POMs during migration.
+Configure Maven server `github-teavm-compat` with package read access. No sibling
+checkout is needed. Compatibility fixes and contracts belong in that repository;
+Bootstrap-specific widget adapters and scenarios remain here.

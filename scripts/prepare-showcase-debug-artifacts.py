@@ -24,7 +24,6 @@ SOURCE_MODULES = (
     "gwt/gwt-bootstrap5",
     "gwt/gwt-bootstrap5-extras",
     "gwt/gwt-bootstrap5-themes",
-    "teavm/teavm-gwt-compat",
     "teavm/teavm-bootstrap3",
     "teavm/teavm-bootstrap5",
 )
