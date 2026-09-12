@@ -13,7 +13,7 @@ import io.instanto.bootstrap5.extras.sortable.client.ui.SortableList;
 import io.instanto.bootstrap5.extras.dashboard.client.ui.*;
 import io.instanto.bootstrap5.extras.gallery.client.ui.ImageGallery;
 import io.instanto.cucumber.tea.*;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import org.teavm.jso.dom.html.HTMLDocument;
 import java.util.*;
 

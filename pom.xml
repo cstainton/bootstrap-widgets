@@ -36,6 +36,12 @@
   </distributionManagement>
   <repositories>
     <repository>
+      <id>github-webapp-testkit</id>
+      <url>https://maven.pkg.github.com/instanto-io/webapp-testkit</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+    <repository>
       <id>github</id>
       <name>GitHub Packages</name>
       <url>https://maven.pkg.github.com/cstainton/bootstrap-widgets</url>
@@ -131,6 +137,7 @@
     <teavm.junit.js.runner>browser-chrome</teavm.junit.js.runner>
     <cucumber-tea.version>0.1.0-SNAPSHOT</cucumber-tea.version>
     <mockatcha.version>0.1.0-SNAPSHOT</mockatcha.version>
+    <webapp-testkit.version>0.1.0-SNAPSHOT</webapp-testkit.version>
     <teavm-compat.version>0.1.0-SNAPSHOT</teavm-compat.version>
   </properties>
   <build>

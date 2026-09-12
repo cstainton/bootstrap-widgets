@@ -1,6 +1,6 @@
 package io.instanto.bootstrap.testing.showcase;
 
-import static io.instanto.mockatcha.dom.Expect.expect;
+import static io.instanto.webapp.testkit.dom.Expect.expect;
 import static org.junit.Assert.*;
 
 import io.instanto.cucumber.tea.AfterScenario;
@@ -9,9 +9,9 @@ import io.instanto.cucumber.tea.CucumberSuite;
 import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
 import io.instanto.cucumber.tea.When;
-import io.instanto.mockatcha.dom.Dom;
-import io.instanto.mockatcha.dom.DomScope;
-import io.instanto.mockatcha.dom.FramedApplication;
+import io.instanto.webapp.testkit.dom.Dom;
+import io.instanto.webapp.testkit.dom.DomScope;
+import io.instanto.webapp.testkit.app.FramedApplication;
 import org.teavm.jso.dom.html.HTMLAnchorElement;
 import org.teavm.jso.dom.html.HTMLElement;
 

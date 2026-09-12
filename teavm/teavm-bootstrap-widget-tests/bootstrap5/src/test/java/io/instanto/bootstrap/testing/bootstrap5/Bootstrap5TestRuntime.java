@@ -4,8 +4,8 @@ import io.instanto.bootstrap5.client.Bootstrap5;
 import io.instanto.bootstrap5.client.Bootstrap5Resources;
 import io.instanto.bootstrap5.client.ui.html.Div;
 import com.google.gwt.user.client.ui.RootPanel;
-import io.instanto.mockatcha.dom.Dom;
-import static io.instanto.mockatcha.dom.Expect.expect;
+import io.instanto.webapp.testkit.dom.Dom;
+import static io.instanto.webapp.testkit.dom.Expect.expect;
 import static org.junit.Assert.assertTrue;
 
 /** Uses the same packaged module loader as an application, including its stylesheets. */

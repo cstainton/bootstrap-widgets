@@ -21,7 +21,7 @@ import io.instanto.bootstrap5.client.ui.Tooltip;
 import io.instanto.bootstrap5.client.ui.constants.ButtonType;
 import io.instanto.bootstrap5.client.ui.constants.Placement;
 import io.instanto.bootstrap5.client.ui.constants.Trigger;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM

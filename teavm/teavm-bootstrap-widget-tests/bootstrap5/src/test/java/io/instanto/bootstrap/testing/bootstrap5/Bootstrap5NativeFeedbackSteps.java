@@ -6,7 +6,7 @@ import com.google.gwt.user.client.ui.RootPanel;
 import io.instanto.bootstrap5.client.ui.*;
 import io.instanto.bootstrap5.client.ui.constants.PlaceholderSize;
 import io.instanto.cucumber.tea.*;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

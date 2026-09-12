@@ -7,7 +7,7 @@ import io.instanto.cucumber.tea.CucumberSuite;
 import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.When;
 import io.instanto.cucumber.tea.Then;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitch;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.ToggleSwitchRadio;
 import org.gwtbootstrap3.extras.toggleswitch.client.ui.base.ToggleSwitchBase;

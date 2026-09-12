@@ -2,7 +2,7 @@ package io.instanto.bootstrap.testing.bootstrap3;
 
 import com.google.gwt.user.client.ui.RootPanel;
 import io.instanto.cucumber.tea.*;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import org.gwtbootstrap3.extras.summernote.client.ui.Summernote;
 import org.gwtbootstrap3.extras.summernote.client.ui.base.*;
 import org.teavm.jso.dom.html.HTMLElement;

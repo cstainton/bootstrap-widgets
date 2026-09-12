@@ -1,6 +1,6 @@
 package io.instanto.bootstrap.testing.bootstrap5;
 
-import static io.instanto.mockatcha.dom.Expect.expect;
+import static io.instanto.webapp.testkit.dom.Expect.expect;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -20,7 +20,7 @@ import io.instanto.cucumber.tea.CucumberSuite;
 import io.instanto.cucumber.tea.Given;
 import io.instanto.cucumber.tea.Then;
 import io.instanto.cucumber.tea.When;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

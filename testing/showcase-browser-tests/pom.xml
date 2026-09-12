@@ -13,8 +13,8 @@
   <dependencies>
     <dependency><groupId>io.instanto</groupId><artifactId>cucumber-tea</artifactId><version>${cucumber-tea.version}</version><scope>test</scope></dependency>
     <dependency><groupId>io.instanto</groupId><artifactId>cucumber-tea-codegen</artifactId><version>${cucumber-tea.version}</version><scope>test</scope></dependency>
-    <dependency><groupId>io.instanto</groupId><artifactId>mockatcha-dom</artifactId><version>${mockatcha.version}</version><scope>test</scope></dependency>
-    <dependency><groupId>io.instanto</groupId><artifactId>mockatcha-browser-testkit</artifactId><version>${mockatcha.version}</version><scope>test</scope></dependency>
+    <dependency><groupId>io.instanto</groupId><artifactId>webapp-testkit-dom</artifactId><version>${webapp-testkit.version}</version><scope>test</scope></dependency>
+    <dependency><groupId>io.instanto</groupId><artifactId>webapp-testkit-app</artifactId><version>${webapp-testkit.version}</version><scope>test</scope></dependency>
     <dependency><groupId>org.teavm</groupId><artifactId>teavm-junit</artifactId><version>${teavm.version}</version><scope>test</scope></dependency>
     <dependency><groupId>org.teavm</groupId><artifactId>teavm-classlib</artifactId><version>${teavm.version}</version><scope>test</scope></dependency>
     <dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>${junit.version}</version><scope>test</scope></dependency>
@@ -23,7 +23,7 @@
     <plugin>
       <groupId>org.codehaus.mojo</groupId><artifactId>exec-maven-plugin</artifactId><version>3.6.3</version>
       <executions><execution><id>stage-showcase-application</id><phase>process-test-resources</phase><goals><goal>java</goal></goals>
-        <configuration><mainClass>io.instanto.mockatcha.browser.ApplicationFiles</mainClass><classpathScope>test</classpathScope>
+        <configuration><mainClass>io.instanto.webapp.testkit.app.ApplicationFiles</mainClass><classpathScope>test</classpathScope>
           <arguments><argument>${showcase.site}</argument><argument>${project.build.testOutputDirectory}/applications/showcase</argument></arguments>
         </configuration>
       </execution></executions>

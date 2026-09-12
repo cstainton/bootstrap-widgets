@@ -2,7 +2,7 @@ package io.instanto.bootstrap.testing.bootstrap3;
 
 import com.google.gwt.user.client.ui.RootPanel;
 import io.instanto.cucumber.tea.*;
-import io.instanto.mockatcha.dom.Dom;
+import io.instanto.webapp.testkit.dom.Dom;
 import org.gwtbootstrap3.extras.select.client.ui.*;
 import org.teavm.jso.dom.html.HTMLElement;
 import java.util.Arrays;
